@@ -1,0 +1,159 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #f6f4ef;
+  --surface: #ffffff;
+  --surface-2: #f0ede6;
+  --text: #1d1b22;
+  --muted: #6b6676;
+  --border: #e2ddd3;
+  --accent: #b5541b;
+  --accent-text: #ffffff;
+  --discord: #5865f2;
+  --ok: #1f7a4d;
+  --ok-bg: #e3f4ea;
+  --warn: #8a5a00;
+  --warn-bg: #fdf1d6;
+  --info: #2b5aa8;
+  --info-bg: #e3ecfb;
+  --danger: #b42318;
+  --danger-bg: #fde7e5;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #15131a;
+    --surface: #1f1c26;
+    --surface-2: #2a2633;
+    --text: #efecf4;
+    --muted: #a49eb1;
+    --border: #353042;
+    --accent: #e8813d;
+    --accent-text: #1a1206;
+    --ok: #6fd39d;
+    --ok-bg: #173325;
+    --warn: #f1c25b;
+    --warn-bg: #3a2d10;
+    --info: #8db4f5;
+    --info-bg: #1b2a45;
+    --danger: #ff8b80;
+    --danger-bg: #42191a;
+  }
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+@layer components {
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.875rem;
+    padding: 1.25rem;
+  }
+  .muted {
+    color: var(--muted);
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    border-radius: 0.6rem;
+    padding: 0.55rem 1rem;
+    font-weight: 600;
+    background: var(--accent);
+    color: var(--accent-text);
+    cursor: pointer;
+    transition: filter 0.15s;
+  }
+  .btn:hover {
+    filter: brightness(1.08);
+  }
+  .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  .btn-secondary {
+    background: var(--surface-2);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .btn-danger {
+    background: var(--danger-bg);
+    color: var(--danger);
+    border: 1px solid var(--danger);
+  }
+  .btn-discord {
+    background: var(--discord);
+    color: #fff;
+  }
+  .btn-sm {
+    padding: 0.3rem 0.65rem;
+    font-size: 0.85rem;
+  }
+  .input {
+    width: 100%;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text);
+    border-radius: 0.5rem;
+    padding: 0.5rem 0.7rem;
+  }
+  .label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+  }
+  .link {
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .badge {
+    display: inline-block;
+    border-radius: 999px;
+    padding: 0.1rem 0.6rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .badge-pending {
+    background: var(--danger-bg);
+    color: var(--danger);
+  }
+  .badge-proposed {
+    background: var(--warn-bg);
+    color: var(--warn);
+  }
+  .badge-confirmed {
+    background: var(--ok-bg);
+    color: var(--ok);
+  }
+  .badge-played {
+    background: var(--surface-2);
+    color: var(--muted);
+  }
+  .alert-error {
+    background: var(--danger-bg);
+    color: var(--danger);
+    border-radius: 0.5rem;
+    padding: 0.6rem 0.8rem;
+  }
+  .alert-ok {
+    background: var(--ok-bg);
+    color: var(--ok);
+    border-radius: 0.5rem;
+    padding: 0.6rem 0.8rem;
+  }
+  .alert-info {
+    background: var(--info-bg);
+    color: var(--info);
+    border-radius: 0.5rem;
+    padding: 0.6rem 0.8rem;
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "port": 3000
+    },
+    {
+      "name": "dev-no-db",
+      "runtimeExecutable": "env",
+      "runtimeArgs": [
+        "NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:9",
+        "NEXT_PUBLIC_SUPABASE_ANON_KEY=dummy",
+        "SUPABASE_SERVICE_ROLE_KEY=dummy",
+        "npx", "next", "dev", "-p", "3005"
+      ],
+      "port": 3005
+    }
+  ]
+}
