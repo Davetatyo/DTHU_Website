@@ -1,5 +1,7 @@
 # DT Meccsszervező
 
+> **Developers and agents:** start with [handover.md](handover.md) and [state.md](state.md).
+
 Match organizer for the Dice Throne online tournament. Karnyx keeps doing pairings and results;
 this app helps players find their opponent (Karnyx ↔ Facebook ↔ Discord name), agree on a match
 time, and shows everyone the schedule with calendar export. The UI is Hungarian.
