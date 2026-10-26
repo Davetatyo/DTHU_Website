@@ -40,11 +40,11 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
             </Link>
 
             <div className="order-last flex w-full flex-wrap gap-2 sm:order-none sm:w-auto">
-              <Link href="/" className="btn btn-sm btn-secondary">
+              <Link href="/" className="btn btn-sm btn-green">
                 <HomeIcon />
                 Főoldal
               </Link>
-              <Link href="/menetrend" className="btn btn-sm btn-schedule">
+              <Link href="/menetrend" className="btn btn-sm btn-blue">
                 <CalendarIcon />
                 Közelgő meccsek
               </Link>

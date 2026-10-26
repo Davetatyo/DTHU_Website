@@ -20,6 +20,7 @@
   --danger-bg: #fde7e5;
   --admin: #c62828;
   --admin-text: #ffffff;
+  --ok-solid: #1f8a52;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -42,6 +43,7 @@
     --danger-bg: #42191a;
     --admin: #e5484d;
     --admin-text: #ffffff;
+    --ok-solid: #2a9d5f;
   }
 }
 
@@ -112,10 +114,30 @@ body {
     background: var(--admin);
     color: var(--admin-text);
   }
-  .btn-schedule {
+  .btn-green {
     background: var(--ok-bg);
     color: var(--ok);
     border: 2px solid var(--ok);
+  }
+  .btn-blue {
+    background: var(--info-bg);
+    color: var(--info);
+    border: 2px solid var(--info);
+  }
+  /* The main "we played" action: solid green and larger than other buttons. */
+  .btn-played {
+    background: var(--ok-solid);
+    color: #ffffff;
+    padding: 0.7rem 1.4rem;
+    font-size: 1.05rem;
+    box-shadow: 0 2px 10px color-mix(in srgb, var(--ok-solid) 40%, transparent);
+  }
+  /* Secondary helpers that should not compete with the main action. */
+  .btn-quiet {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    font-weight: 500;
   }
   .btn-discord {
     background: var(--discord);

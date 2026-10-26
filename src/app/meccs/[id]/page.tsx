@@ -112,13 +112,20 @@ export default async function MatchPage({
       {uzenet && <p className="alert-ok">{uzenet}</p>}
       {hiba && <p className="alert-error">{hiba}</p>}
 
-      {overdue && canAct && (
-        <div className="card flex flex-wrap items-center justify-between gap-3" style={{ borderColor: "var(--accent)" }}>
-          <div>
-            <div className="font-bold">Elmúlt a megbeszélt időpont</div>
-            <div className="muted text-sm">Lejátszottátok? Jelöld itt, az eredményt pedig rögzítsétek a Karnyxban.</div>
-          </div>
-          {playedForm("✓ Lejátszottuk", "btn")}
+      {/* Main actions first: the big green "played" button, the Facebook copy as a quiet helper. */}
+      {match.status !== "bye" && (
+        <div
+          className="card flex flex-wrap items-center gap-3"
+          style={overdue && canAct ? { borderColor: "var(--ok-solid)" } : undefined}
+        >
+          {overdue && canAct && (
+            <p className="w-full text-sm">
+              <strong>Elmúlt a megbeszélt időpont.</strong> Ha lejátszottátok, jelöld itt, az eredményt pedig
+              rögzítsétek a Karnyxban.
+            </p>
+          )}
+          {canAct && playedForm("✓ Lejátszottuk", "btn btn-played")}
+          <CopyButton text={fbText} label="Üzenet másolása Facebookra" className="btn btn-sm btn-quiet" />
         </div>
       )}
 
@@ -207,11 +214,6 @@ export default async function MatchPage({
         </form>
       )}
 
-      <div className="card flex flex-wrap items-center gap-2">
-        <CopyButton text={fbText} label="Üzenet másolása Facebookra" />
-        {canAct && !overdue && playedForm("✓ Lejátszottuk", "btn btn-secondary btn-sm")}
-      </div>
-
       {isAdmin && match.status !== "bye" && (
         <details className="card">
           <summary className="cursor-pointer font-bold">Admin</summary>
@@ -228,7 +230,6 @@ export default async function MatchPage({
               />
             </form>
             <div className="flex flex-wrap gap-2">
-              {match.status !== "played" && playedForm("Lejátszottnak jelölöm", "btn btn-secondary btn-sm")}
               <form action={adminResetMatch}>
                 <input type="hidden" name="match_id" value={match.id} />
                 <SubmitButton className="btn btn-danger btn-sm">Visszaállítás (nincs időpont)</SubmitButton>
