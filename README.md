@@ -15,10 +15,12 @@ Discord channel webhook · Supabase pg_cron for reminders.
 - **Players** log in with Discord, pick their Karnyx name from the roster and enter their
   Facebook name. On their match page they propose 1–3 times; the opponent accepts one →
   confirmed, announced on Discord, addable to Google/Apple/Outlook calendars.
-- **Players** click "Lejátszottuk" after the game. When every match in the round is played, Discord
-  gets a "next round can start" message.
-- **Reminders** (every 10 min via Supabase): 1 hour before each confirmed match, and one warning
-  48 hours before the round deadline listing matches without an agreed time.
+- **Players** click "Lejátszottuk" after the game. When every match in the round is played, the
+  admin page marks the round complete and opens the next round's import.
+- **Discord posts:** round start (pings everyone, Bye players on a "Pihen:" line), a short ping to
+  the player who has to answer a time suggestion, confirmed times (no ping), the admin's manual
+  "Emlékeztető", and one automatic warning 48 hours before the deadline (hourly check via Supabase)
+  pinging players whose match has no agreed time.
 - **Public schedule** at `/menetrend` with a subscribable calendar feed (`/api/calendar`,
   `?player=<Karnyx name>` for one player).
 
@@ -67,7 +69,7 @@ the Supabase URL settings (Site URL and `…/auth/callback` redirect).
 Supabase → **Database → Extensions**: enable `pg_cron` and `pg_net`. Then in the SQL Editor:
 
 ```sql
-select cron.schedule('dt-reminders', '*/10 * * * *', $$
+select cron.schedule('dt-reminders', '0 * * * *', $$
   select net.http_get(
     url := 'https://YOUR-APP.vercel.app/api/cron/reminders',
     headers := jsonb_build_object('Authorization', 'Bearer YOUR_CRON_SECRET')

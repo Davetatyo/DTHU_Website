@@ -72,7 +72,7 @@ export async function proposeTimes(formData: FormData) {
     ? [sameName(match.a.karnyx_name, profile.karnyx_name) ? match.b! : match.a]
     : [match.a, match.b!];
   const proposerName = playing ? profile.karnyx_name! : "Az admin";
-  const { notified, unregistered, failed } = await notifyProposal(match, recipients, proposerName, slots, await getSiteUrl());
+  const { notified, unregistered, failed } = await notifyProposal(match, recipients, proposerName, await getSiteUrl());
 
   const list = (players: { karnyx_name: string }[]) => players.map((p) => p.karnyx_name).join(" és ");
   const parts = ["Javaslat elmentve."];

@@ -30,6 +30,11 @@ export async function notifyRoundOpened(round: Round, siteUrl: string) {
   await postToDiscord(roundOpenedLines(round, matches, profiles, siteUrl));
 }
 
+/** One short line: ping whoever has to answer, plus the match link. */
+export function proposalLine(match: MatchView, recipients: Player[], proposerName: string, profiles: Map<string, Profile>, siteUrl: string): string {
+  return `📅 ${recipients.map((p) => mention(p, profiles)).join(", ")}, **${proposerName}** időpontot javasolt: ${siteUrl}/meccs/${match.id}`;
+}
+
 /**
  * Pings the players who have to answer a proposal. Only players who logged in (so we know
  * their Discord ID) can be pinged, so this reports exactly who was reached.
@@ -38,7 +43,6 @@ export async function notifyProposal(
   match: MatchView,
   recipients: Player[],
   proposerName: string,
-  slots: Date[],
   siteUrl: string,
 ): Promise<{ notified: Player[]; unregistered: Player[]; failed: boolean }> {
   const profiles = await getProfilesByKarnyx(names([match]));
@@ -46,20 +50,20 @@ export async function notifyProposal(
   const unregistered = recipients.filter((p) => !reachable.includes(p));
   if (reachable.length === 0) return { notified: [], unregistered, failed: false };
 
-  const sent = await postToDiscord([
-    `📅 ${reachable.map((p) => mention(p, profiles)).join(", ")}: **${proposerName}** időpontot javasolt a ${match.round.number}. fordulós meccsetekre:`,
-    ...slots.map((s) => `• ${formatDateTime(s)}`),
-    `Válassz itt: ${siteUrl}/meccs/${match.id}`,
-  ]);
+  const sent = await postToDiscord([proposalLine(match, reachable, proposerName, profiles, siteUrl)]);
   return { notified: sent ? reachable : [], unregistered, failed: !sent };
 }
 
-export async function notifyConfirmed(match: MatchView, scheduledAt: Date, siteUrl: string) {
-  const profiles = await getProfilesByKarnyx(names([match]));
-  await postToDiscord([
-    `✅ **Megerősítve:** ${mention(match.a, profiles)} vs ${mention(match.b, profiles)}, ${formatDateTime(scheduledAt)} (${match.round.number}. forduló)`,
+/** Announces an agreed time for everyone to see; names are bold, nobody is pinged. */
+export function confirmedLines(match: MatchView, scheduledAt: Date, siteUrl: string): string[] {
+  return [
+    `✅ **Megerősítve:** **${match.a.karnyx_name}** vs **${match.b?.karnyx_name}**, ${formatDateTime(scheduledAt)} (${match.round.number}. forduló)`,
     `${siteUrl}/meccs/${match.id}`,
-  ]);
+  ];
+}
+
+export async function notifyConfirmed(match: MatchView, scheduledAt: Date, siteUrl: string) {
+  await postToDiscord(confirmedLines(match, scheduledAt, siteUrl));
 }
 
 export type ReminderTargets = {
@@ -128,8 +132,4 @@ export async function notifyReminder(round: Round, targets: ReminderTargets, sit
     pinged: everyone.filter((p) => profileFor(profiles, p)?.discord_id),
     unregistered: everyone.filter((p) => !profileFor(profiles, p)?.discord_id),
   };
-}
-
-export async function notifyRoundComplete(round: Round) {
-  await postToDiscord([`🏁 A ${round.number}. forduló minden meccse lejátszva, jöhet a következő forduló!`]);
 }
