@@ -4,6 +4,7 @@ import { createAdminClient } from "@/lib/supabase/server";
 import { DEFAULT_TIMEZONE } from "@/lib/time";
 import { saveProfile } from "./actions";
 import { SubmitButton } from "@/components/SubmitButton";
+import { InfoTip } from "@/components/InfoTip";
 
 const COMMON_ZONES = [DEFAULT_TIMEZONE, "Europe/London", "Europe/Berlin", "Europe/Bucharest", "America/New_York"];
 
@@ -37,6 +38,7 @@ export default async function ProfilePage({ searchParams }: { searchParams: Prom
         <div>
           <label className="label" htmlFor="karnyx_name">
             Karnyx név
+            <InfoTip text="A lista a verseny párosításaiból készül. Egy nevet csak egy felhasználó foglalhat le, így a bot a te meccseidnél téged jelöl meg." />
           </label>
           {available.length > 0 ? (
             <select id="karnyx_name" name="karnyx_name" className="input" defaultValue={profile.karnyx_name ?? ""} required>
@@ -58,12 +60,14 @@ export default async function ProfilePage({ searchParams }: { searchParams: Prom
         <div>
           <label className="label" htmlFor="facebook_name">
             Facebook név
+            <InfoTip text="Ezen a néven keresnek majd a Facebook csoportban. Csak a bejelentkezett felhasználók látják." />
           </label>
           <input id="facebook_name" name="facebook_name" className="input" defaultValue={profile.facebook_name ?? ""} required />
         </div>
         <div>
           <label className="label" htmlFor="timezone">
             Időzóna
+            <InfoTip text="Az oldalon minden időpontot ebben az időzónában látsz és adsz meg. Ha Magyarországon vagy, hagyd Budapesten." />
           </label>
           <select id="timezone" name="timezone" className="input" defaultValue={profile.timezone}>
             {zones.map((z) => (

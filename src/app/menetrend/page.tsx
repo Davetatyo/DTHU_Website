@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { CopyButton } from "@/components/CopyButton";
+import { InfoTip } from "@/components/InfoTip";
 import { getCurrentProfile, sameName } from "@/lib/auth";
 import { getActiveTournament, getPlayers, getScheduledMatches } from "@/lib/data";
 import { googleSubscribeUrl, webcalUrl } from "@/lib/ics";
@@ -69,7 +70,10 @@ export default async function SchedulePage({ searchParams }: { searchParams: Pro
       ))}
 
       <section className="card space-y-3">
-        <h2 className="font-bold">Feliratkozás naptárban {jatekos ? `(${jatekos} meccsei)` : "(összes meccs)"}</h2>
+        <h2 className="font-bold">
+          Feliratkozás naptárban {jatekos ? `(${jatekos} meccsei)` : "(összes meccs)"}
+          <InfoTip text="Feliratkozás után a naptárad magától frissül, amikor új meccs kerül megbeszélésre vagy egy időpont változik. Fent egy játékost kiválasztva csak az ő meccseire iratkozhatsz fel." />
+        </h2>
         <p className="muted text-sm">
           Feliratkozás után az új és módosított meccsek maguktól megjelennek a naptáradban. A Google Naptár csak
           néhány óránként frissít, az Apple és az Outlook gyakrabban.

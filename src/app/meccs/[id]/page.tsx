@@ -4,6 +4,7 @@ import { CopyButton } from "@/components/CopyButton";
 import { SlotPicker } from "@/components/SlotPicker";
 import { StatusBadge } from "@/components/StatusBadge";
 import { SubmitButton } from "@/components/SubmitButton";
+import { InfoTip } from "@/components/InfoTip";
 import { getCurrentProfile, sameName } from "@/lib/auth";
 import { matchEvent } from "@/lib/calendar";
 import { getMatch, getProfilesByKarnyx, getProposals, isParticipant, profileFor } from "@/lib/data";
@@ -124,8 +125,16 @@ export default async function MatchPage({
               rögzítsétek a Karnyxban.
             </p>
           )}
-          {canAct && playedForm("✓ Lejátszottuk", "btn btn-played")}
-          <CopyButton text={fbText} label="Üzenet másolása Facebookra" className="btn btn-sm btn-quiet" />
+          {canAct && (
+            <span className="inline-flex items-center">
+              {playedForm("✓ Lejátszottuk", "btn btn-played")}
+              <InfoTip text="Nyomd meg, ha a meccs megvolt. Bármelyikőtök jelölheti. Az eredményt továbbra is a Karnyxba írjátok be." />
+            </span>
+          )}
+          <span className="inline-flex items-center">
+            <CopyButton text={fbText} label="Üzenet másolása Facebookra" className="btn btn-sm btn-quiet" />
+            <InfoTip text="Kimásol egy kész üzenetet a meccs linkjével, amit beilleszthetsz a Facebook csoportba. Hasznos, ha az ellenfeled még nem regisztrált az oldalon." />
+          </span>
         </div>
       )}
 
@@ -154,7 +163,10 @@ export default async function MatchPage({
 
       {event && match.status === "confirmed" && (
         <div className="card">
-          <div className="muted text-sm">Megbeszélt időpont</div>
+          <div className="muted text-sm">
+            Megbeszélt időpont
+            <InfoTip text="A meccs megerősítve. Add hozzá a naptáradhoz. Ha mégsem jó, lent javasolj új időpontot: ekkor újra az ellenfeled választ." />
+          </div>
           <div className="text-2xl font-bold">{formatDateTime(event.start, tz)}</div>
           <div className="mt-3 flex flex-wrap gap-2">
             <a className="btn btn-sm" href={googleCalendarUrl(event)} target="_blank" rel="noreferrer">
@@ -171,6 +183,7 @@ export default async function MatchPage({
         <div className="card">
           <h2 className="font-bold">
             {proposedByMe ? "A te javaslataid" : `${proposerName(open[0].proposed_by)} javasolt időpontjai`}
+            <InfoTip text="Mindig a másik fél választ egyet az Elfogadom gombbal. Ha valamelyikőtök új időpontokat küld, ezek érvényüket vesztik." />
           </h2>
           <ul className="mt-3 space-y-2">
             {open.map((p) => (
@@ -204,6 +217,7 @@ export default async function MatchPage({
                 : open.length > 0
                   ? "Egyik sem jó? Javasolj másikat"
                   : "Javasolj időpontokat"}
+            <InfoTip text="Legfeljebb 3 időpont, a forduló határidejéig. Ha az ellenfeled regisztrált, Discordon jelölést kap, és kiválaszt egyet vagy újat javasol." />
           </h2>
           <p className="muted text-sm">
             Válassz egy napot, írd be az időt, és add hozzá. Legfeljebb 3 időpontot javasolhatsz{tz !== DEFAULT_TIMEZONE ? ` (${tz} szerint)` : ""}. Az ellenfeled

@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { SubmitButton } from "@/components/SubmitButton";
+import { InfoTip } from "@/components/InfoTip";
 import { byeWarnings, parseByeNames, parseKarnyxPaste } from "@/lib/karnyx";
 import { importRound } from "./actions";
 
@@ -44,6 +45,7 @@ export function ImportForm({
       <div>
         <label className="label" htmlFor="bye">
           Bye (pihenő játékos)
+          <InfoTip text="A Karnyx a pihenő játékost nem másolja ki a párosítással. Írd be a nevét: a forduló indításakor Bye-t kap, és a Discord üzenet végén a Pihen: sorban szerepel." />
         </label>
         <input
           id="bye"
@@ -124,6 +126,7 @@ export function ImportForm({
         <div>
           <label className="label" htmlFor="deadline">
             Határidő
+            <InfoTip text="Alapból egy hét múlva. Időpontot csak eddig lehet javasolni. Később az admin oldalon módosítható." />
           </label>
           <input id="deadline" type="datetime-local" name="deadline" className="input" defaultValue={defaultDeadline} required />
         </div>

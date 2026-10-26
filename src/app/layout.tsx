@@ -56,6 +56,16 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
             </div>
 
             <div className="ml-auto flex items-center gap-2">
+              <Link href="/gyik" className="btn btn-sm btn-secondary" title="Gyakran ismételt kérdések" aria-label="GYIK">
+                <span
+                  className="flex h-5 w-5 items-center justify-center rounded-full text-xs font-bold"
+                  style={{ border: "1.5px solid currentColor" }}
+                  aria-hidden
+                >
+                  ?
+                </span>
+                <span className="hidden sm:inline">GYIK</span>
+              </Link>
               {profile ? (
                 <>
                   <Link
@@ -88,6 +98,12 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
           </nav>
         </header>
         <main className="mx-auto max-w-4xl px-4 py-6">{children}</main>
+        <footer className="muted mx-auto max-w-4xl px-4 pb-8 pt-2 text-center text-sm">
+          Kérdésed van?{" "}
+          <Link href="/gyik" className="link">
+            Gyakran ismételt kérdések
+          </Link>
+        </footer>
       </body>
     </html>
   );

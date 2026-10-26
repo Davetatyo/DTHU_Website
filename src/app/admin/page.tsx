@@ -2,6 +2,7 @@ import Link from "next/link";
 import { MatchList } from "@/components/MatchList";
 import { MatchupGrid } from "@/components/MatchupGrid";
 import { SubmitButton } from "@/components/SubmitButton";
+import { InfoTip } from "@/components/InfoTip";
 import { getReminderTargets } from "@/lib/notify";
 import { requireAdmin } from "@/lib/auth";
 import { getActiveTournament, getOpenProposalCounts, getPlayers, getRoundMatches, getRounds } from "@/lib/data";
@@ -67,7 +68,10 @@ export default async function AdminPage({
       {tournament && round && reminder && (
         <section className="card flex flex-wrap items-center justify-between gap-3" style={{ borderColor: "var(--accent)" }}>
           <div>
-            <h2 className="font-bold">Emlékeztető a {round.number}. fordulóhoz</h2>
+            <h2 className="font-bold">
+              Emlékeztető a {round.number}. fordulóhoz
+              <InfoTip text="Discordon megjelöli mindkét játékost ott, ahol még nincs időpont-javaslat, és azt, akinek egy javaslatra kell válaszolnia. A nem regisztrált játékosok csak névvel szerepelnek. Küldés előtt megerősítést kér." />
+            </h2>
             <p className="muted text-sm">
               {reminder.unscheduled.length} meccsnek nincs még időpont-javaslata, {reminder.awaitingAnswer.length} javaslat
               vár válaszra. A gomb Discordon megjelöli ezeket a játékosokat.
@@ -176,6 +180,7 @@ export default async function AdminPage({
             <div>
               <label className="label" htmlFor="round-deadline">
                 Határidő (most: {formatDateTime(round.deadline, tz)})
+                <InfoTip text="Időpontot csak a határidőig lehet javasolni. A 48 órás automatikus figyelmeztetés az új határidőhöz igazodik." />
               </label>
               <input
                 id="round-deadline"
@@ -219,6 +224,7 @@ export default async function AdminPage({
                 {v.label}
               </Link>
             ))}
+            <InfoTip text="Kártyák: minden meccs egy kártya, a színe az állapotot mutatja, a zöld pötty regisztrált játékost jelöl. Lista: tömör nézet egy sorban meccsenként." />
           </div>
           {listView ? (
             <MatchList matches={matches} timeZone={tz} />
@@ -248,7 +254,10 @@ export default async function AdminPage({
       )}
 
       <section className="card space-y-3">
-        <h2 className="text-lg font-bold">Felhasználók és adminok</h2>
+        <h2 className="text-lg font-bold">
+          Felhasználók és adminok
+          <InfoTip text="Adminná csak olyat tehetsz, aki már belépett az oldalra: keresd Discord vagy Karnyx név alapján. A Név felszabadítása akkor kell, ha valaki rossz Karnyx nevet foglalt le." />
+        </h2>
         <form action={addAdmin} className="flex flex-wrap gap-2">
           <input name="query" className="input max-w-sm" placeholder="Discord vagy Karnyx név" required />
           <SubmitButton className="btn">Adminná teszem</SubmitButton>
