@@ -44,20 +44,19 @@ Entry template:
 - **Registrations:** only 2 profiles so far (1 admin). Players still need to log in and
   claim their Karnyx names before Discord pings reach them.
 - Discord webhook is configured and tested; Discord login works on the live domain.
+- Scheduled job `dt-reminders` runs hourly in Supabase (pg_cron + pg_net, secret in Vault as
+  `dt_cron_secret`); verified 2026-10-26 with `200 {"warnings":0}`. Round 1's 48h warning
+  is due from about 2026-10-31 12:25.
 - Automated tests: 36 unit tests passing; lint and type check clean.
 
 ## Next steps
 
-### Needs the owner (manual setup)
-1. **Set up the hourly scheduled job** in Supabase so the 48h-before-deadline warning
-   actually runs. Until then, only the manual "Emlékeztető küldése" button reminds players.
-   Steps: Database → Extensions → enable `pg_cron` and `pg_net`, then run the SQL from
-   README §6 with the live URL `https://dthuonlinebajnoksag.vercel.app/api/cron/reminders`
-   and the `CRON_SECRET` from `.env.local`. Verify with a manual call (should return
-   `{"warnings":0}` while no deadline is within 48 h).
-2. Ask players in the Facebook group to log in once and pick their Karnyx name.
-3. Optional: tag the release in git (`git tag v1.0 e527783 && git push origin v1.0`) and tag
+### Needs the owner
+1. Ask players in the Facebook group to log in once and pick their Karnyx name.
+2. Optional: tag the release in git (`git tag v1.0 e527783 && git push origin v1.0`) and tag
    future versions the same way.
+3. Around 2026-10-31 12:25, confirm the first automatic 48h warning appeared on Discord
+   (or check `net._http_response` for `{"warnings":1}`).
 
 ### Ideas discussed, not decided (ask the owner before building)
 - Crop the logo to just the glowing dice for a clearer small icon, and use it as favicon.
@@ -82,6 +81,12 @@ None open.
 ---
 
 ## Changelog
+
+### Ops · 2026-10-26
+Owner set up the hourly Supabase job (`dt-reminders`, `0 * * * *`) calling
+`/api/cron/reminders`, with the cron secret stored in Supabase Vault as `dt_cron_secret`.
+Verified with a manual request and the first hourly run (`200 {"warnings":0}`). README §6
+now shows this Vault-based SQL. No app changes; still v1.0.
 
 ### Docs · 2026-10-26
 Added `handover.md` (how the project works, conventions, gotchas) and this `state.md`

@@ -38,7 +38,7 @@ The app does **not** record results or standings. Those stay in Karnyx.
 | Database + login | Supabase (Postgres, Auth with Discord provider) | project URL is in `.env.local` |
 | Discord login app | Discord Developer Portal | redirect is the Supabase `/auth/v1/callback` URL |
 | Announcements | Discord channel webhook "DT Meccsszervező" | URL in `.env.local` / Vercel |
-| Scheduled job | Supabase `pg_cron` + `pg_net` calling `/api/cron/reminders` | **not set up yet**, see `state.md` |
+| Scheduled job | Supabase `pg_cron` job `dt-reminders` (hourly) + `pg_net` calling `/api/cron/reminders` | secret stored in Supabase Vault as `dt_cron_secret`; checks in README §6 |
 
 ⚠️ **There is only one database.** Local development (`npm run dev`) talks to the same
 Supabase project as the live site, with real tournament data. Never click buttons that write

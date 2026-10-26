@@ -68,16 +68,47 @@ the Supabase URL settings (Site URL and `…/auth/callback` redirect).
 
 ### 6. Reminders
 
-Supabase → **Database → Extensions**: enable `pg_cron` and `pg_net`. Then in the SQL Editor:
+Already set up for the live site. To set it up again (e.g. a new Supabase project):
+
+Supabase → **Database → Extensions**: enable `pg_cron` and `pg_net`. Then in the SQL Editor,
+store the `CRON_SECRET` from `.env.local` in Vault (never commit the value):
 
 ```sql
-select cron.schedule('dt-reminders', '0 * * * *', $$
-  select net.http_get(
-    url := 'https://YOUR-APP.vercel.app/api/cron/reminders',
-    headers := jsonb_build_object('Authorization', 'Bearer YOUR_CRON_SECRET')
-  );
-$$);
+select vault.create_secret('PASTE_CRON_SECRET_HERE', 'dt_cron_secret');
 ```
+
+and schedule the hourly job:
+
+```sql
+select cron.schedule(
+  'dt-reminders',
+  '0 * * * *',
+  $$
+  select net.http_get(
+    url := 'https://dthuonlinebajnoksag.vercel.app/api/cron/reminders',
+    headers := jsonb_build_object(
+      'Authorization',
+      'Bearer ' || (select decrypted_secret from vault.decrypted_secrets where name = 'dt_cron_secret')
+    ),
+    timeout_milliseconds := 10000
+  );
+  $$
+);
+```
+
+Checks:
+
+```sql
+select jobname, schedule, active from cron.job;                                -- job exists and is active
+select status, return_message, start_time from cron.job_run_details
+  order by start_time desc limit 5;                                             -- hourly runs (UTC)
+select status_code, content, error_msg, created from net._http_response
+  order by created desc limit 5;                                                -- expect 200 {"warnings":0}
+```
+
+`401` means the Vault secret doesn't match `CRON_SECRET`
+(fix: `select vault.update_secret((select id from vault.secrets where name = 'dt_cron_secret'), 'VALUE');`).
+Stop the job with `select cron.unschedule('dt-reminders');`.
 
 ## Running a tournament
 
