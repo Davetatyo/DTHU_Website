@@ -1,9 +1,10 @@
 // Discord messages for the tournament channel (Hungarian text).
 
-import { getProfilesByKarnyx, getRoundMatches } from "./data";
+import { getProfilesByKarnyx, getRoundMatches, profileFor } from "./data";
 import { mention, postToDiscord } from "./discord";
+import { createAdminClient } from "./supabase/server";
 import { formatDateTime } from "./time";
-import type { MatchView, Round } from "./types";
+import type { MatchView, Player, Profile, Round } from "./types";
 
 function names(matches: MatchView[]): string[] {
   return matches.flatMap((m) => [m.a.karnyx_name, ...(m.b ? [m.b.karnyx_name] : [])]);
@@ -17,19 +18,33 @@ export async function notifyRoundOpened(round: Round, siteUrl: string) {
     `Egyeztessetek időpontot itt: ${siteUrl}`,
     "",
     ...matches.map((m) =>
-      m.b ? `${m.table_no}. ${mention(m.a, profiles)} vs ${mention(m.b, profiles)}` : `${m.table_no}. ${mention(m.a, profiles)}: erőnyerő`,
+      m.b ? `${m.table_no}. ${mention(m.a, profiles)} vs ${mention(m.b, profiles)}` : `${m.table_no}. ${mention(m.a, profiles)}: Bye`,
     ),
   ]);
 }
 
-export async function notifyProposal(match: MatchView, proposerName: string, slots: Date[], siteUrl: string) {
-  const opponent = match.a.karnyx_name.toLowerCase() === proposerName.toLowerCase() ? match.b : match.a;
+/**
+ * Pings the players who have to answer a proposal. Only players who logged in (so we know
+ * their Discord ID) can be pinged, so this reports exactly who was reached.
+ */
+export async function notifyProposal(
+  match: MatchView,
+  recipients: Player[],
+  proposerName: string,
+  slots: Date[],
+  siteUrl: string,
+): Promise<{ notified: Player[]; unregistered: Player[]; failed: boolean }> {
   const profiles = await getProfilesByKarnyx(names([match]));
-  await postToDiscord([
-    `📅 ${mention(opponent, profiles)}, **${proposerName}** időpontot javasolt a ${match.round.number}. fordulós meccsetekre:`,
+  const reachable = recipients.filter((p) => profileFor(profiles, p)?.discord_id);
+  const unregistered = recipients.filter((p) => !reachable.includes(p));
+  if (reachable.length === 0) return { notified: [], unregistered, failed: false };
+
+  const sent = await postToDiscord([
+    `📅 ${reachable.map((p) => mention(p, profiles)).join(", ")}: **${proposerName}** időpontot javasolt a ${match.round.number}. fordulós meccsetekre:`,
     ...slots.map((s) => `• ${formatDateTime(s)}`),
     `Válassz itt: ${siteUrl}/meccs/${match.id}`,
   ]);
+  return { notified: sent ? reachable : [], unregistered, failed: !sent };
 }
 
 export async function notifyConfirmed(match: MatchView, scheduledAt: Date, siteUrl: string) {
@@ -38,6 +53,74 @@ export async function notifyConfirmed(match: MatchView, scheduledAt: Date, siteU
     `✅ **Megerősítve:** ${mention(match.a, profiles)} vs ${mention(match.b, profiles)}, ${formatDateTime(scheduledAt)} (${match.round.number}. forduló)`,
     `${siteUrl}/meccs/${match.id}`,
   ]);
+}
+
+export type ReminderTargets = {
+  /** Matches where nobody has suggested a time: both players are reminded. */
+  unscheduled: MatchView[];
+  /** Matches with an open suggestion: only the player who has to answer is reminded. */
+  awaitingAnswer: { match: MatchView; responders: Player[]; proposer: string }[];
+};
+
+/** Who still owes an action in the round: no suggestion sent yet, or a suggestion to answer. */
+export async function getReminderTargets(roundId: string): Promise<ReminderTargets> {
+  const matches = await getRoundMatches(roundId);
+  const unscheduled = matches.filter((m) => m.status === "pending");
+  const proposed = matches.filter((m) => m.status === "proposed");
+  if (proposed.length === 0) return { unscheduled, awaitingAnswer: [] };
+
+  const { data } = await createAdminClient()
+    .from("proposals")
+    .select("match_id, proposed_by")
+    .in("match_id", proposed.map((m) => m.id))
+    .eq("status", "open");
+  const proposerId = new Map((data ?? []).map((p) => [p.match_id as string, p.proposed_by as string | null]));
+  const profiles = await getProfilesByKarnyx(names(proposed));
+
+  const awaitingAnswer = proposed.map((match) => {
+    const players = [match.a, match.b!];
+    const byPlayer = players.find((p) => profileFor(profiles, p)?.id === proposerId.get(match.id));
+    // If an admin suggested the times, both players have to answer.
+    return {
+      match,
+      responders: byPlayer ? players.filter((p) => p !== byPlayer) : players,
+      proposer: byPlayer?.karnyx_name ?? "az admin",
+    };
+  });
+  return { unscheduled, awaitingAnswer };
+}
+
+export function reminderLines(round: Round, targets: ReminderTargets, profiles: Map<string, Profile>, siteUrl: string): string[] {
+  const lines = [`⏰ **Emlékeztető: ${round.number}. forduló**, határidő: ${formatDateTime(round.deadline)}`];
+  if (targets.unscheduled.length) {
+    lines.push("", "**Még nincs időpont-javaslat, javasoljatok időpontot:**");
+    lines.push(...targets.unscheduled.map((m) => `• ${mention(m.a, profiles)} vs ${mention(m.b, profiles)}`));
+  }
+  if (targets.awaitingAnswer.length) {
+    lines.push("", "**Javaslat vár a válaszotokra, fogadjatok el egyet vagy javasoljatok újat:**");
+    lines.push(
+      ...targets.awaitingAnswer.map(
+        (t) => `• ${t.responders.map((p) => mention(p, profiles)).join(", ")} (${t.proposer} javasolt)`,
+      ),
+    );
+  }
+  lines.push("", `Egyeztetés itt: ${siteUrl}`);
+  return lines;
+}
+
+/** Posts the admin's manual reminder. Returns the players it pinged and those it could only name. */
+export async function notifyReminder(round: Round, targets: ReminderTargets, siteUrl: string) {
+  const everyone = [
+    ...targets.unscheduled.flatMap((m) => [m.a, m.b!]),
+    ...targets.awaitingAnswer.flatMap((t) => t.responders),
+  ];
+  const profiles = await getProfilesByKarnyx(everyone.map((p) => p.karnyx_name));
+  const sent = await postToDiscord(reminderLines(round, targets, profiles, siteUrl));
+  return {
+    sent,
+    pinged: everyone.filter((p) => profileFor(profiles, p)?.discord_id),
+    unregistered: everyone.filter((p) => !profileFor(profiles, p)?.discord_id),
+  };
 }
 
 export async function notifyRoundComplete(round: Round) {

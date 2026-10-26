@@ -71,7 +71,7 @@ export function ImportForm({
                         <div className="muted text-xs">{p.b.heroes.join(", ")}</div>
                       </>
                     ) : (
-                      <span className="muted">erőnyerő</span>
+                      <span className="muted">Bye</span>
                     )}
                   </td>
                 </tr>

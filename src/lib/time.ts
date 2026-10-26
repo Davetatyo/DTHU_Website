@@ -65,6 +65,29 @@ export function dayKey(value: string | Date, timeZone = DEFAULT_TIMEZONE): strin
   return utcToWallTime(new Date(value), timeZone).slice(0, 10);
 }
 
+export type PickerDay = { key: string; weekday: string; day: number; month: string; label: string };
+
+const MAX_PICKER_DAYS = 21;
+
+/** Calendar days between two wall times ("2026-10-27T18:00"), labelled in Hungarian, for the slot picker. */
+export function pickerDays(minWall: string, maxWall: string): PickerDay[] {
+  const toUtcDay = (wall: string) => Date.parse(`${wall.slice(0, 10)}T00:00:00Z`);
+  const days: PickerDay[] = [];
+  for (let t = toUtcDay(minWall); t <= toUtcDay(maxWall) && days.length < MAX_PICKER_DAYS; t += 86_400_000) {
+    const date = new Date(t);
+    const fmt = (options: Intl.DateTimeFormatOptions) =>
+      new Intl.DateTimeFormat("hu-HU", { timeZone: "UTC", ...options }).format(date);
+    days.push({
+      key: date.toISOString().slice(0, 10),
+      weekday: fmt({ weekday: "short" }),
+      day: date.getUTCDate(),
+      month: fmt({ month: "short" }),
+      label: fmt({ month: "short", day: "numeric", weekday: "long" }),
+    });
+  }
+  return days;
+}
+
 export function isValidTimeZone(timeZone: string): boolean {
   try {
     new Intl.DateTimeFormat("en-US", { timeZone });

@@ -2,10 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { requireProfile } from "@/lib/auth";
+import { requireProfile, sameName } from "@/lib/auth";
 import { getMatch, isParticipant } from "@/lib/data";
 import { notifyConfirmed, notifyProposal } from "@/lib/notify";
-import { checkRoundComplete } from "@/lib/rounds";
+import { setMatchPlayed } from "@/lib/rounds";
 import { getSiteUrl } from "@/lib/site";
 import { createAdminClient } from "@/lib/supabase/server";
 import { wallTimeToUtc } from "@/lib/time";
@@ -25,7 +25,7 @@ async function authorize(matchId: string) {
   if (!profile.is_admin && !isParticipant(match, profile.karnyx_name)) {
     back(matchId, "hiba", "Ez nem a te meccsed.");
   }
-  if (match.status === "bye") back(matchId, "hiba", "Ez egy erőnyerő kör, nincs mit egyeztetni.");
+  if (match.status === "bye") back(matchId, "hiba", "Ez egy Bye, nincs mit egyeztetni.");
   return { profile, match };
 }
 
@@ -34,10 +34,10 @@ export async function proposeTimes(formData: FormData) {
   const { profile, match } = await authorize(matchId);
 
   if (match.status === "played") back(matchId, "hiba", "A meccs már le van játszva.");
-  if (match.round.closed_at && !profile.is_admin) back(matchId, "hiba", "Ez a forduló már lezárult.");
+  if (match.round.closed_at) back(matchId, "hiba", "Ez a forduló már lezárult.");
 
   const raw = formData.getAll("slot").map(String).filter(Boolean);
-  if (raw.length === 0) back(matchId, "hiba", "Adj meg legalább egy időpontot.");
+  if (raw.length === 0) back(matchId, "hiba", "Válassz legalább egy időpontot.");
 
   const now = Date.now();
   const deadline = new Date(match.round.deadline).getTime();
@@ -50,7 +50,8 @@ export async function proposeTimes(formData: FormData) {
       back(matchId, "hiba", "Érvénytelen időpont.");
     }
     if (date.getTime() < now) back(matchId, "hiba", "Csak jövőbeli időpontot javasolhatsz.");
-    if (date.getTime() > deadline && !profile.is_admin) back(matchId, "hiba", "Az időpont a forduló határideje utánra esik.");
+    // Applies to admins too; only adminSetTime may schedule past the deadline.
+    if (date.getTime() > deadline) back(matchId, "hiba", "Az időpont a forduló határideje utánra esik.");
     if (!slots.some((s) => s.getTime() === date.getTime())) slots.push(date);
   }
 
@@ -65,9 +66,24 @@ export async function proposeTimes(formData: FormData) {
     .update({ status: "proposed", scheduled_at: null, reminder_sent: false, updated_at: new Date().toISOString() })
     .eq("id", matchId);
 
-  const proposerName = isParticipant(match, profile.karnyx_name) ? profile.karnyx_name! : "Az admin";
-  await notifyProposal(match, proposerName, slots, await getSiteUrl());
-  back(matchId, "uzenet", "Elküldve! Az ellenfeled értesítést kap Discordon.");
+  // Players answer their opponent's proposal; an admin's proposal goes to both players.
+  const playing = isParticipant(match, profile.karnyx_name);
+  const recipients = playing
+    ? [sameName(match.a.karnyx_name, profile.karnyx_name) ? match.b! : match.a]
+    : [match.a, match.b!];
+  const proposerName = playing ? profile.karnyx_name! : "Az admin";
+  const { notified, unregistered, failed } = await notifyProposal(match, recipients, proposerName, slots, await getSiteUrl());
+
+  const list = (players: { karnyx_name: string }[]) => players.map((p) => p.karnyx_name).join(" és ");
+  const parts = ["Javaslat elmentve."];
+  if (notified.length) parts.push(`${list(notified)} értesítést kapott Discordon.`);
+  if (unregistered.length) {
+    parts.push(
+      `${list(unregistered)} még nem regisztrált az oldalon, ezért nem kapott értesítést. Küldd el neki a meccs linkjét Facebookon az „Üzenet másolása” gombbal.`,
+    );
+  }
+  if (failed) parts.push("A Discord értesítés nem ment ki, küldd el a linket Facebookon.");
+  back(matchId, "uzenet", parts.join(" "));
 }
 
 export async function acceptProposal(formData: FormData) {
@@ -78,7 +94,8 @@ export async function acceptProposal(formData: FormData) {
   const db = createAdminClient();
   const { data: proposal } = await db.from("proposals").select("*").eq("id", proposalId).eq("match_id", matchId).maybeSingle();
   if (!proposal || proposal.status !== "open") back(matchId, "hiba", "Ez a javaslat már nem érvényes.");
-  if (proposal.proposed_by === profile.id && !profile.is_admin) {
+  // The proposer never accepts their own times, even as admin: the other side decides.
+  if (proposal.proposed_by === profile.id) {
     back(matchId, "hiba", "A saját javaslatodat az ellenfelednek kell elfogadnia.");
   }
 
@@ -104,17 +121,8 @@ export async function acceptProposal(formData: FormData) {
 export async function markPlayed(formData: FormData) {
   const matchId = String(formData.get("match_id"));
   await authorize(matchId);
-  const now = new Date().toISOString();
-  const db = createAdminClient();
-  const { data } = await db
-    .from("matches")
-    .update({ status: "played", played_at: now, updated_at: now })
-    .eq("id", matchId)
-    .select("round_id")
-    .single();
-  await db.from("proposals").update({ status: "superseded" }).eq("match_id", matchId).eq("status", "open");
-  if (data) await checkRoundComplete(data.round_id);
-  back(matchId, "uzenet", "Lejátszottként jelölve. Az eredményt rögzítsd a Karnyxban!");
+  await setMatchPlayed(matchId);
+  back(matchId, "uzenet", "Lejátszottként jelölve. Az eredményt rögzítsétek a Karnyxban!");
 }
 
 export async function adminSetTime(formData: FormData) {
@@ -123,9 +131,9 @@ export async function adminSetTime(formData: FormData) {
   if (!profile.is_admin) back(matchId, "hiba", "Csak admin teheti meg.");
   let date: Date;
   try {
-    date = wallTimeToUtc(String(formData.get("time")), profile.timezone);
+    date = wallTimeToUtc(String(formData.get("slot")), profile.timezone);
   } catch {
-    back(matchId, "hiba", "Érvénytelen időpont.");
+    back(matchId, "hiba", "Válassz egy időpontot.");
   }
   const db = createAdminClient();
   await db.from("proposals").update({ status: "superseded" }).eq("match_id", matchId).eq("status", "open");

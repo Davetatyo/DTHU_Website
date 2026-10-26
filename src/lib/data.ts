@@ -56,6 +56,19 @@ export async function getProposals(matchId: string): Promise<Proposal[]> {
   return (data ?? []) as Proposal[];
 }
 
+/** Number of open (unanswered) proposals per match. */
+export async function getOpenProposalCounts(matchIds: string[]): Promise<Map<string, number>> {
+  const counts = new Map<string, number>();
+  if (matchIds.length === 0) return counts;
+  const { data } = await createAdminClient()
+    .from("proposals")
+    .select("match_id")
+    .in("match_id", matchIds)
+    .eq("status", "open");
+  for (const row of data ?? []) counts.set(row.match_id, (counts.get(row.match_id) ?? 0) + 1);
+  return counts;
+}
+
 /** Scheduled matches of a tournament, optionally only from `from` onwards. */
 export async function getScheduledMatches(tournamentId: string, from?: Date): Promise<MatchView[]> {
   let query = createAdminClient()

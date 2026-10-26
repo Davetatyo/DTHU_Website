@@ -1,15 +1,22 @@
+import Link from "next/link";
 import { MatchList } from "@/components/MatchList";
+import { ConfirmButton } from "@/components/ConfirmButton";
+import { MatchupGrid } from "@/components/MatchupGrid";
+import { getReminderTargets } from "@/lib/notify";
 import { requireAdmin } from "@/lib/auth";
-import { getActiveTournament, getPlayers, getRoundMatches, getRounds } from "@/lib/data";
+import { getActiveTournament, getOpenProposalCounts, getPlayers, getRoundMatches, getRounds } from "@/lib/data";
 import { createAdminClient } from "@/lib/supabase/server";
 import { formatDateTime, utcToWallTime } from "@/lib/time";
 import type { Profile } from "@/lib/types";
 import {
   addAdmin,
+  adminMarkPlayed,
   createTournament,
   deleteLatestRound,
+  deleteTournament,
   releaseNickname,
   removeAdmin,
+  sendReminder,
   testWebhook,
   updateDeadline,
 } from "./actions";
@@ -17,8 +24,13 @@ import { ImportForm } from "./ImportForm";
 
 const WEEK_MS = 7 * 24 * 3600_000;
 
-export default async function AdminPage({ searchParams }: { searchParams: Promise<{ uzenet?: string; hiba?: string }> }) {
-  const { uzenet, hiba } = await searchParams;
+export default async function AdminPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ uzenet?: string; hiba?: string; nezet?: string }>;
+}) {
+  const { uzenet, hiba, nezet } = await searchParams;
+  const listView = nezet === "lista";
   const me = await requireAdmin();
   const tz = me.timezone;
   const tournament = await getActiveTournament();
@@ -29,8 +41,16 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
   const { data } = await createAdminClient().from("profiles").select("*").order("created_at");
   const profiles = (data ?? []) as Profile[];
 
-  const claimed = new Set(profiles.map((p) => p.karnyx_name?.toLowerCase()).filter(Boolean));
+  const claimed = new Set(profiles.flatMap((p) => (p.karnyx_name ? [p.karnyx_name.toLowerCase()] : [])));
+  const openProposals = listView ? new Map<string, number>() : await getOpenProposalCounts(matches.map((m) => m.id));
   const unregistered = players.filter((p) => !claimed.has(p.karnyx_name.toLowerCase()));
+  const reminder = round && !round.closed_at ? await getReminderTargets(round.id) : null;
+  const reminderPlayerCount = reminder
+    ? reminder.unscheduled.length * 2 + reminder.awaitingAnswer.reduce((n, t) => n + t.responders.length, 0)
+    : 0;
+  const webhookConfigured = !!process.env.DISCORD_WEBHOOK_URL;
+  const now = new Date();
+  const awaitingPlayed = matches.filter((m) => m.status === "confirmed" && m.scheduled_at && new Date(m.scheduled_at) < now);
   const counts = {
     pending: matches.filter((m) => m.status === "pending").length,
     proposed: matches.filter((m) => m.status === "proposed").length,
@@ -43,6 +63,31 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
       <h1 className="text-2xl font-bold">Admin</h1>
       {uzenet && <p className="alert-ok">{uzenet}</p>}
       {hiba && <p className="alert-error">{hiba}</p>}
+
+      {tournament && round && reminder && (
+        <section className="card flex flex-wrap items-center justify-between gap-3" style={{ borderColor: "var(--accent)" }}>
+          <div>
+            <h2 className="font-bold">Emlékeztető a {round.number}. fordulóhoz</h2>
+            <p className="muted text-sm">
+              {reminder.unscheduled.length} meccsnek nincs még időpont-javaslata, {reminder.awaitingAnswer.length} javaslat
+              vár válaszra. A gomb Discordon megjelöli ezeket a játékosokat.
+            </p>
+            {!webhookConfigured && (
+              <p className="mt-1 text-sm" style={{ color: "var(--danger)" }}>
+                A Discord webhook nincs beállítva (DISCORD_WEBHOOK_URL), ezért most nem lehet küldeni.
+              </p>
+            )}
+          </div>
+          <form action={sendReminder}>
+            <input type="hidden" name="tournament_id" value={tournament.id} />
+            <ConfirmButton
+              label="⏰ Emlékeztető küldése"
+              confirm={`Discord emlékeztető küldése ${reminderPlayerCount} játékosnak?`}
+              disabled={!webhookConfigured || reminderPlayerCount === 0}
+            />
+          </form>
+        </section>
+      )}
 
       <section className="card space-y-3">
         <h2 className="text-lg font-bold">Verseny</h2>
@@ -61,18 +106,55 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
           </form>
           {tournament && <p className="muted mt-2 text-xs">Az új verseny lesz az aktív, a mostani archiválódik.</p>}
         </details>
+        {tournament && (
+          <details>
+            <summary className="cursor-pointer text-sm font-semibold" style={{ color: "var(--danger)" }}>
+              Verseny törlése
+            </summary>
+            <form action={deleteTournament} className="mt-3 space-y-2">
+              <input type="hidden" name="tournament_id" value={tournament.id} />
+              <p className="text-sm">
+                Véglegesen törli a(z) <strong>{tournament.name}</strong> versenyt: mind a {rounds.length} fordulót, a
+                párosításokat, az időpont-javaslatokat és a játékoslistát. Nem visszavonható. A játékosok fiókja és
+                Karnyx neve megmarad.
+              </p>
+              <p className="muted text-xs">Ha csak az utolsó forduló párosítása rossz, elég lent a „Forduló törlése”.</p>
+              <label className="label" htmlFor="confirm_name">
+                Írd be a verseny nevét a megerősítéshez
+              </label>
+              <div className="flex flex-wrap gap-2">
+                <input id="confirm_name" name="confirm_name" className="input max-w-sm" autoComplete="off" required />
+                <ConfirmButton
+                  label="Verseny törlése"
+                  confirm={`Biztosan véglegesen törlöd a(z) „${tournament.name}” versenyt?`}
+                  className="btn btn-danger"
+                />
+              </div>
+            </form>
+          </details>
+        )}
       </section>
 
       {tournament && (
-        <section className="card space-y-3">
-          <h2 className="text-lg font-bold">Új forduló párosítása</h2>
-          <ImportForm
-            tournamentId={tournament.id}
-            nextRound={(round?.number ?? 0) + 1}
-            defaultDeadline={utcToWallTime(new Date(Date.now() + WEEK_MS), tz)}
-            knownPlayers={players.map((p) => p.karnyx_name)}
-          />
-        </section>
+        // While a round is still being played, keep the import collapsed; open it when the next round is due.
+        <details className="card" open={!round || !!round.completed_at}>
+          <summary className="cursor-pointer text-lg font-bold">
+            Új forduló párosítása ({(round?.number ?? 0) + 1}. forduló)
+            {round && !round.completed_at && (
+              <span className="muted ml-2 text-sm font-normal">
+                a {round.number}. forduló még tart, kattints a megnyitáshoz
+              </span>
+            )}
+          </summary>
+          <div className="mt-3">
+            <ImportForm
+              tournamentId={tournament.id}
+              nextRound={(round?.number ?? 0) + 1}
+              defaultDeadline={utcToWallTime(new Date(Date.now() + WEEK_MS), tz)}
+              knownPlayers={players.map((p) => p.karnyx_name)}
+            />
+          </div>
+        </details>
       )}
 
       {tournament && round && (
@@ -104,7 +186,43 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
             </div>
             <button className="btn btn-secondary">Módosítás</button>
           </form>
-          <MatchList matches={matches} timeZone={tz} />
+          {awaitingPlayed.length > 0 && (
+            <div className="space-y-2 rounded-lg p-3" style={{ background: "var(--surface-2)" }}>
+              <div className="font-semibold">Elmúlt az időpont, lejátszásra vár ({awaitingPlayed.length})</div>
+              {awaitingPlayed.map((m) => (
+                <div key={m.id} className="flex flex-wrap items-center justify-between gap-2">
+                  <span>
+                    {m.a.karnyx_name} <span className="muted">vs</span> {m.b?.karnyx_name}
+                    <span className="muted ml-2 text-sm">{formatDateTime(m.scheduled_at!, tz)}</span>
+                  </span>
+                  <form action={adminMarkPlayed}>
+                    <input type="hidden" name="match_id" value={m.id} />
+                    <button className="btn btn-sm">✓ Lejátszva</button>
+                  </form>
+                </div>
+              ))}
+            </div>
+          )}
+          <div className="flex gap-1 text-sm">
+            {[
+              { label: "Kártyák", href: "/admin", active: !listView },
+              { label: "Lista", href: "/admin?nezet=lista", active: listView },
+            ].map((v) => (
+              <Link
+                key={v.label}
+                href={v.href}
+                className={`btn btn-sm ${v.active ? "" : "btn-secondary"}`}
+                aria-current={v.active ? "page" : undefined}
+              >
+                {v.label}
+              </Link>
+            ))}
+          </div>
+          {listView ? (
+            <MatchList matches={matches} timeZone={tz} />
+          ) : (
+            <MatchupGrid matches={matches} timeZone={tz} registeredNames={claimed} openProposalCounts={openProposals} />
+          )}
           <details>
             <summary className="cursor-pointer text-sm font-semibold">Hibás beillesztés? Forduló törlése</summary>
             <form action={deleteLatestRound} className="mt-3 flex flex-wrap items-center gap-3">

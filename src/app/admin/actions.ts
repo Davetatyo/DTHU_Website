@@ -6,7 +6,8 @@ import { requireAdmin, sameName } from "@/lib/auth";
 import { getPlayers, getRounds } from "@/lib/data";
 import { postToDiscord } from "@/lib/discord";
 import { parseKarnyxPaste } from "@/lib/karnyx";
-import { notifyRoundOpened } from "@/lib/notify";
+import { getReminderTargets, notifyReminder, notifyRoundOpened } from "@/lib/notify";
+import { setMatchPlayed } from "@/lib/rounds";
 import { getSiteUrl } from "@/lib/site";
 import { createAdminClient } from "@/lib/supabase/server";
 import { wallTimeToUtc } from "@/lib/time";
@@ -99,6 +100,24 @@ export async function updateDeadline(formData: FormData) {
   done("uzenet", "Határidő módosítva.");
 }
 
+/**
+ * Deletes a whole tournament with its roster, rounds, matches and proposals (via cascade).
+ * Player profiles and their Karnyx name claims are kept for the next tournament.
+ */
+export async function deleteTournament(formData: FormData) {
+  await requireAdmin();
+  const db = createAdminClient();
+  const { data: tournament } = await db.from("tournaments").select("*").eq("id", String(formData.get("tournament_id"))).maybeSingle();
+  if (!tournament) done("hiba", "A verseny nem található.");
+  const typed = String(formData.get("confirm_name") ?? "").trim();
+  if (typed.toLowerCase() !== String(tournament.name).trim().toLowerCase()) {
+    done("hiba", `A törléshez pontosan írd be a verseny nevét: „${tournament.name}”.`);
+  }
+  const { error } = await db.from("tournaments").delete().eq("id", tournament.id);
+  if (error) done("hiba", "A törlés nem sikerült, próbáld újra.");
+  done("uzenet", `A(z) „${tournament.name}” verseny és minden fordulója törölve. Hozz létre újat, ha újrakezdenéd.`);
+}
+
 /** Deletes the latest round (e.g. after a wrong paste) and reopens the one before it. */
 export async function deleteLatestRound(formData: FormData) {
   await requireAdmin();
@@ -142,6 +161,35 @@ export async function releaseNickname(formData: FormData) {
   await requireAdmin();
   await createAdminClient().from("profiles").update({ karnyx_name: null }).eq("id", String(formData.get("profile_id")));
   done("uzenet", "Karnyx név felszabadítva, a játékos újra választhat.");
+}
+
+export async function adminMarkPlayed(formData: FormData) {
+  await requireAdmin();
+  await setMatchPlayed(String(formData.get("match_id")));
+  done("uzenet", "Lejátszottként jelölve.");
+}
+
+export async function sendReminder(formData: FormData) {
+  await requireAdmin();
+  const rounds = await getRounds(String(formData.get("tournament_id")));
+  const round = rounds[0];
+  if (!round) done("hiba", "Nincs futó forduló.");
+  if (!process.env.DISCORD_WEBHOOK_URL) done("hiba", "A Discord webhook nincs beállítva (DISCORD_WEBHOOK_URL).");
+
+  const targets = await getReminderTargets(round.id);
+  if (targets.unscheduled.length + targets.awaitingAnswer.length === 0) {
+    done("uzenet", "Nincs kinek emlékeztetőt küldeni: minden meccsnek van megbeszélt időpontja vagy le van játszva.");
+  }
+
+  const { sent, pinged, unregistered } = await notifyReminder(round, targets, await getSiteUrl());
+  if (!sent) done("hiba", "Az emlékeztető nem ment ki Discordra. Próbáld újra, vagy nézd meg a webhook beállítást.");
+  const parts = [`Emlékeztető elküldve Discordra, ${pinged.length} játékos megjelölve.`];
+  if (unregistered.length) {
+    parts.push(
+      `${unregistered.length} játékos még nem regisztrált, őket csak névvel említettük (érd el őket Facebookon): ${unregistered.map((p) => p.karnyx_name).join(", ")}.`,
+    );
+  }
+  done("uzenet", parts.join(" "));
 }
 
 export async function testWebhook() {

@@ -1,5 +1,18 @@
 import { describe, expect, it } from "vitest";
-import { formatDateTime, utcToWallTime, wallTimeToUtc } from "./time";
+import { formatDateTime, pickerDays, utcToWallTime, wallTimeToUtc } from "./time";
+
+describe("pickerDays", () => {
+  it("lists every day from min to max, inclusive", () => {
+    const days = pickerDays("2026-10-30T21:15", "2026-11-02T10:00");
+    expect(days.map((d) => d.key)).toEqual(["2026-10-30", "2026-10-31", "2026-11-01", "2026-11-02"]);
+    expect(days[0].day).toBe(30);
+    expect(days[2].month).toContain("nov");
+  });
+
+  it("caps very long ranges", () => {
+    expect(pickerDays("2026-10-01T00:00", "2027-01-01T00:00")).toHaveLength(21);
+  });
+});
 
 describe("wallTimeToUtc", () => {
   it("converts Budapest summer time (UTC+2)", () => {

@@ -127,7 +127,7 @@ describe("parseKarnyxPaste", () => {
     const { pairings, warnings } = parseKarnyxPaste(text);
     expect(pairings).toHaveLength(2);
     expect(pairings[1]).toMatchObject({ a: { name: "Cili" }, b: null });
-    expect(warnings.some((w) => w.includes("erőnyerő"))).toBe(true);
+    expect(warnings.some((w) => w.includes("Bye"))).toBe(true);
   });
 
   it("warns about wrong hero counts and duplicates", () => {

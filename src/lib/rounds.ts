@@ -2,6 +2,20 @@ import { notifyRoundComplete } from "./notify";
 import { createAdminClient } from "./supabase/server";
 import type { Round } from "./types";
 
+/** Marks the match played, closes open proposals, and checks whether the round is now complete. */
+export async function setMatchPlayed(matchId: string) {
+  const now = new Date().toISOString();
+  const db = createAdminClient();
+  const { data } = await db
+    .from("matches")
+    .update({ status: "played", played_at: now, updated_at: now })
+    .eq("id", matchId)
+    .select("round_id")
+    .single();
+  await db.from("proposals").update({ status: "superseded" }).eq("match_id", matchId).eq("status", "open");
+  if (data) await checkRoundComplete(data.round_id);
+}
+
 /** Marks the round complete (and announces it once) when every match is played or a bye. */
 export async function checkRoundComplete(roundId: string) {
   const db = createAdminClient();

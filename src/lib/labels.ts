@@ -5,7 +5,7 @@ export const STATUS_LABEL: Record<MatchStatus, string> = {
   proposed: "Időpont javasolva",
   confirmed: "Megerősítve",
   played: "Lejátszva",
-  bye: "Erőnyerő",
+  bye: "Bye",
 };
 
 export const STATUS_CLASS: Record<MatchStatus, string> = {

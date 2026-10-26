@@ -64,7 +64,7 @@ export function parseKarnyxPaste(text: string): ParseResult {
     pairings.push({ tableNo: i / 2 + 1, a: players[i], b: players[i + 1] ?? null });
   }
   if (players.length % 2 === 1) {
-    warnings.push(`Páratlan létszám: ${players[players.length - 1].name} erőnyerő (bye)`);
+    warnings.push(`Páratlan létszám: ${players[players.length - 1].name} kap Bye-t`);
   }
 
   return { players, pairings, warnings };

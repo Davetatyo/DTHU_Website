@@ -45,7 +45,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
           {opponent ? (
             <div className="mt-1 text-2xl font-bold">vs {opponent.karnyx_name}</div>
           ) : (
-            <div className="mt-1 text-2xl font-bold">Erőnyerő kör</div>
+            <div className="mt-1 text-2xl font-bold">Bye</div>
           )}
           <div className="mt-2 flex flex-wrap items-center gap-3">
             <StatusBadge status={myMatch.status} />
