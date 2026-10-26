@@ -1,6 +1,7 @@
 import { requireProfile, sameName } from "@/lib/auth";
 import { getActiveTournament, getPlayers } from "@/lib/data";
 import { createAdminClient } from "@/lib/supabase/server";
+import { isProfileComplete, NOT_PLAYING } from "@/lib/profile";
 import { DEFAULT_TIMEZONE } from "@/lib/time";
 import { saveProfile } from "./actions";
 import { SubmitButton } from "@/components/SubmitButton";
@@ -20,6 +21,8 @@ export default async function ProfilePage({ searchParams }: { searchParams: Prom
   );
   const available = players.filter((p) => !takenByOthers.has(p.karnyx_name.toLowerCase()));
   const zones = [...new Set([...COMMON_ZONES, ...Intl.supportedValuesOf("timeZone")])];
+  // A saved profile without a Karnyx name belongs to an organiser or spectator.
+  const karnyxDefault = profile.karnyx_name ?? (isProfileComplete(profile) ? NOT_PLAYING : "");
 
   return (
     <div className="card mx-auto max-w-lg">
@@ -27,9 +30,10 @@ export default async function ProfilePage({ searchParams }: { searchParams: Prom
       <p className="muted mt-1">
         Discord: <strong>{profile.discord_username ?? "?"}</strong>
       </p>
-      {!profile.karnyx_name && (
+      {!isProfileComplete(profile) && (
         <p className="alert-info mt-4">
-          Válaszd ki a Karnyx nevedet és add meg a Facebook nevedet, hogy az ellenfeleid megtaláljanak.
+          Válaszd ki a Karnyx nevedet és add meg a Facebook nevedet, hogy az ellenfeleid megtaláljanak. Ha nem
+          játszol a versenyben (szervező vagy néző vagy), a listában válaszd a „Nem játszom” lehetőséget.
         </p>
       )}
       {hiba && <p className="alert-error mt-4">{hiba}</p>}
@@ -38,13 +42,14 @@ export default async function ProfilePage({ searchParams }: { searchParams: Prom
         <div>
           <label className="label" htmlFor="karnyx_name">
             Karnyx név
-            <InfoTip text="A lista a verseny párosításaiból készül. Egy nevet csak egy felhasználó foglalhat le, így a bot a te meccseidnél téged jelöl meg." />
+            <InfoTip text="A lista a verseny párosításaiból készül. Egy nevet csak egy felhasználó foglalhat le, így a bot a te meccseidnél téged jelöl meg. Ha nem játszol, válaszd a „Nem játszom” lehetőséget, így senki nevét nem foglalod le." />
           </label>
           {available.length > 0 ? (
-            <select id="karnyx_name" name="karnyx_name" className="input" defaultValue={profile.karnyx_name ?? ""} required>
+            <select id="karnyx_name" name="karnyx_name" className="input" defaultValue={karnyxDefault} required>
               <option value="" disabled>
                 Válassz…
               </option>
+              <option value={NOT_PLAYING}>Nem játszom ebben a versenyben (szervező / néző)</option>
               {available.map((p) => (
                 <option key={p.id} value={p.karnyx_name}>
                   {p.karnyx_name}
@@ -53,9 +58,13 @@ export default async function ProfilePage({ searchParams }: { searchParams: Prom
               ))}
             </select>
           ) : (
-            <input id="karnyx_name" name="karnyx_name" className="input" defaultValue={profile.karnyx_name ?? ""} required />
+            <input id="karnyx_name" name="karnyx_name" className="input" defaultValue={profile.karnyx_name ?? ""} />
           )}
-          <p className="muted mt-1 text-sm">Nem találod magad? Lehet, hogy más foglalta le, szólj az adminnak.</p>
+          <p className="muted mt-1 text-sm">
+            {available.length > 0
+              ? "Nem találod magad? Lehet, hogy más foglalta le, szólj az adminnak."
+              : "Ha nem játszol a versenyben, hagyd üresen."}
+          </p>
         </div>
         <div>
           <label className="label" htmlFor="facebook_name">

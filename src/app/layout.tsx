@@ -35,7 +35,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
                 style={{ border: "1px solid var(--border)" }}
               />
               <span className="truncate">
-                DTHUN<span className="hidden lg:inline"> Meccsszervező</span>
+                DTHUN<span className="hidden xl:inline"> Meccsszervező</span>
               </span>
             </Link>
 

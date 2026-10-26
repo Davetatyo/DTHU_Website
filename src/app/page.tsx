@@ -3,6 +3,7 @@ import { MatchList } from "@/components/MatchList";
 import { StatusBadge } from "@/components/StatusBadge";
 import { getCurrentProfile, sameName } from "@/lib/auth";
 import { getActiveTournament, getLatestRound, getRoundMatches, isParticipant } from "@/lib/data";
+import { isProfileComplete } from "@/lib/profile";
 import { DEFAULT_TIMEZONE, formatDateTime } from "@/lib/time";
 
 export default async function HomePage({ searchParams }: { searchParams: Promise<{ uzenet?: string }> }) {
@@ -23,9 +24,9 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
     <div className="space-y-6">
       {uzenet === "profil" && <p className="alert-ok">Profil mentve.</p>}
 
-      {viewer && !viewer.karnyx_name && (
+      {viewer && !isProfileComplete(viewer) && (
         <p className="alert-info">
-          Még nem választottad ki a Karnyx nevedet.{" "}
+          Még nem töltötted ki a profilodat.{" "}
           <Link href="/profil" className="link">
             Profil kitöltése
           </Link>

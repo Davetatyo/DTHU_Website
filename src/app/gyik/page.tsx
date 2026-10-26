@@ -24,6 +24,14 @@ const SECTIONS: Section[] = [
         a: "A lista az admin által beillesztett párosításokból készül, ezért akkor jelenik meg, ha már szerepelsz egy fordulóban. Ha a neved mégsem szerepel, valószínűleg más foglalta le tévedésből: szólj egy adminnak, aki felszabadítja.",
       },
       {
+        q: "Nem játszom, csak szervező vagy néző vagyok. Mit válasszak?",
+        a: "A profilodban a Karnyx név listájából válaszd a „Nem játszom ebben a versenyben” lehetőséget, és add meg a Facebook nevedet. Így senki Karnyx nevét nem foglalod le, és ugyanúgy látod a meccseket és a menetrendet. Ha később játszol, csak válaszd ki a nevedet.",
+      },
+      {
+        q: "Hogyan lesz valaki admin?",
+        a: "Előbb lépjen be egyszer az oldalra Discorddal. Utána egy admin az Admin felületen, a „Felhasználók és adminok” részben a Discord vagy Karnyx neve alapján adminná teheti. Adminnak nem kell játszania a versenyben.",
+      },
+      {
         q: "Ki látja a Facebook és Discord nevemet?",
         a: "Csak a bejelentkezett felhasználók. A közelgő meccsek listája és a naptár nyilvános, de ott csak a Karnyx nevek szerepelnek.",
       },

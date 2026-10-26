@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { isBootstrapAdmin } from "@/lib/auth";
+import { isProfileComplete } from "@/lib/profile";
 import { createAdminClient, createSessionClient } from "@/lib/supabase/server";
 import { getSiteUrl } from "@/lib/site";
 
@@ -19,7 +20,7 @@ export async function GET(request: NextRequest) {
   const displayName: string | null = meta.custom_claims?.global_name ?? meta.full_name ?? discordUsername;
 
   const admin = createAdminClient();
-  const { data: existing } = await admin.from("profiles").select("id, is_admin, karnyx_name").eq("id", data.user.id).maybeSingle();
+  const { data: existing } = await admin.from("profiles").select("id, is_admin, facebook_name").eq("id", data.user.id).maybeSingle();
 
   await admin.from("profiles").upsert({
     id: data.user.id,
@@ -29,5 +30,6 @@ export async function GET(request: NextRequest) {
     is_admin: existing?.is_admin || isBootstrapAdmin(discordUsername),
   });
 
-  return NextResponse.redirect(existing?.karnyx_name ? `${site}/` : `${site}/profil`);
+  // Only unfinished profiles go to the profile page; organisers without a Karnyx name are fine.
+  return NextResponse.redirect(existing && isProfileComplete(existing) ? `${site}/` : `${site}/profil`);
 }
