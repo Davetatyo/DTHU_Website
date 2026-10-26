@@ -18,6 +18,8 @@
   --info-bg: #e3ecfb;
   --danger: #b42318;
   --danger-bg: #fde7e5;
+  --admin: #c62828;
+  --admin-text: #ffffff;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -38,6 +40,8 @@
     --info-bg: #1b2a45;
     --danger: #ff8b80;
     --danger-bg: #42191a;
+    --admin: #e5484d;
+    --admin-text: #ffffff;
   }
 }
 
@@ -103,6 +107,15 @@ body {
     background: var(--danger-bg);
     color: var(--danger);
     border: 1px solid var(--danger);
+  }
+  .btn-admin {
+    background: var(--admin);
+    color: var(--admin-text);
+  }
+  .btn-outline {
+    background: var(--surface-2);
+    color: var(--text);
+    border: 1.5px solid color-mix(in srgb, var(--text) 35%, transparent);
   }
   .btn-discord {
     background: var(--discord);
