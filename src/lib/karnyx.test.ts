@@ -1,5 +1,22 @@
 import { describe, expect, it } from "vitest";
-import { parseKarnyxPaste } from "./karnyx";
+import { byeWarnings, parseByeNames, parseKarnyxPaste } from "./karnyx";
+
+describe("parseByeNames", () => {
+  it("splits on commas and new lines, trims and dedupes", () => {
+    expect(parseByeNames(" Dave, subi\nDAVE \n\n")).toEqual(["Dave", "subi"]);
+  });
+
+  it("returns nothing for an empty field", () => {
+    expect(parseByeNames("   ")).toEqual([]);
+  });
+});
+
+describe("byeWarnings", () => {
+  it("flags a Bye player who is also paired", () => {
+    const { pairings } = parseKarnyxPaste("A Avatar\nB Avatar\nC Avatar\nAnna\nD Avatar\nE Avatar\nF Avatar\nBéla");
+    expect(byeWarnings(["anna", "Cili"], pairings)).toEqual(["anna szerepel a párosításban is, nem kaphat Bye-t"]);
+  });
+});
 
 // Round 1 as copied from Karnyx by davetatyo (note the blank line after his own match).
 const ROUND_1 = `Santa Avatar

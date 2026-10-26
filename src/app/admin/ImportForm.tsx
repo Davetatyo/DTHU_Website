@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { SubmitButton } from "@/components/SubmitButton";
-import { parseKarnyxPaste } from "@/lib/karnyx";
+import { byeWarnings, parseByeNames, parseKarnyxPaste } from "@/lib/karnyx";
 import { importRound } from "./actions";
 
 export function ImportForm({
@@ -17,9 +17,13 @@ export function ImportForm({
   knownPlayers: string[];
 }) {
   const [text, setText] = useState("");
+  const [byeText, setByeText] = useState("");
   const result = useMemo(() => parseKarnyxPaste(text), [text]);
+  const byes = useMemo(() => parseByeNames(byeText), [byeText]);
+  const byeProblems = useMemo(() => byeWarnings(byes, result.pairings), [byes, result.pairings]);
   const known = useMemo(() => new Set(knownPlayers.map((n) => n.toLowerCase())), [knownPlayers]);
   const isNew = (name: string) => knownPlayers.length > 0 && !known.has(name.toLowerCase());
+  const warnings = [...result.warnings, ...byeProblems];
 
   return (
     <form action={importRound} className="space-y-3">
@@ -37,9 +41,33 @@ export function ImportForm({
         placeholder={"Santa Avatar\nKrampus Avatar\nHeadless Horseman Avatar\nEngineerGnome\n…"}
       />
 
-      {result.warnings.length > 0 && (
+      <div>
+        <label className="label" htmlFor="bye">
+          Bye (pihenő játékos)
+        </label>
+        <input
+          id="bye"
+          name="bye"
+          className="input max-w-sm"
+          list="bye-players"
+          autoComplete="off"
+          value={byeText}
+          onChange={(e) => setByeText(e.target.value)}
+          placeholder="Karnyx név, pl. moi"
+        />
+        <datalist id="bye-players">
+          {knownPlayers.map((n) => (
+            <option key={n} value={n} />
+          ))}
+        </datalist>
+        <p className="muted mt-1 text-xs">
+          A Karnyx a Bye-t nem másolja ki a párosítással, ezért itt add meg. Több név esetén vesszővel válaszd el.
+        </p>
+      </div>
+
+      {warnings.length > 0 && (
         <ul className="alert-error list-inside list-disc text-sm">
-          {result.warnings.map((w) => (
+          {warnings.map((w) => (
             <li key={w}>{w}</li>
           ))}
         </ul>
@@ -77,6 +105,16 @@ export function ImportForm({
                   </td>
                 </tr>
               ))}
+              {byes.map((name) => (
+                <tr key={`bye-${name}`} className="border-t" style={{ borderColor: "var(--border)" }}>
+                  <td className="py-1 pr-2">Bye</td>
+                  <td className="py-1 pr-2">
+                    <strong>{name}</strong>
+                    {isNew(name) && <span className="badge badge-proposed ml-1">új</span>}
+                  </td>
+                  <td className="muted py-1">pihen</td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
@@ -89,8 +127,8 @@ export function ImportForm({
           </label>
           <input id="deadline" type="datetime-local" name="deadline" className="input" defaultValue={defaultDeadline} required />
         </div>
-        <SubmitButton disabled={result.pairings.length === 0}>
-          {nextRound}. forduló indítása ({result.pairings.length} meccs)
+        <SubmitButton disabled={result.pairings.length === 0 || byeProblems.length > 0}>
+          {nextRound}. forduló indítása ({result.pairings.length} meccs{byes.length ? ` + ${byes.length} Bye` : ""})
         </SubmitButton>
       </div>
       <p className="muted text-xs">Az indítás lezárja az előző fordulót, és kiküldi a párosításokat Discordra.</p>

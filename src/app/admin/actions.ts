@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { requireAdmin, sameName } from "@/lib/auth";
 import { getPlayers, getRounds } from "@/lib/data";
 import { postToDiscord } from "@/lib/discord";
-import { parseKarnyxPaste } from "@/lib/karnyx";
+import { byeWarnings, parseByeNames, parseKarnyxPaste } from "@/lib/karnyx";
 import { getReminderTargets, notifyReminder, notifyRoundOpened } from "@/lib/notify";
 import { setMatchPlayed } from "@/lib/rounds";
 import { getSiteUrl } from "@/lib/site";
@@ -33,6 +33,10 @@ export async function importRound(formData: FormData) {
   const tournamentId = String(formData.get("tournament_id"));
   const { pairings, players } = parseKarnyxPaste(String(formData.get("text") ?? ""));
   if (pairings.length === 0) done("hiba", "Nem találtam párosítást a beillesztett szövegben.");
+  // Karnyx leaves Bye players out of the copied pairings, so the admin types them in.
+  const byes = parseByeNames(String(formData.get("bye") ?? ""));
+  const [byeProblem] = byeWarnings(byes, pairings);
+  if (byeProblem) done("hiba", byeProblem);
 
   let deadline: Date;
   try {
@@ -60,6 +64,17 @@ export async function importRound(formData: FormData) {
       idByName.set(p.name.toLowerCase(), data.id);
     }
   }
+  // Bye players already on the roster keep their heroes; unknown ones are added without heroes.
+  for (const name of byes) {
+    if (idByName.has(name.toLowerCase())) continue;
+    const { data, error } = await db
+      .from("players")
+      .insert({ tournament_id: tournamentId, karnyx_name: name, heroes: [] })
+      .select("id")
+      .single();
+    if (error || !data) done("hiba", `Nem sikerült felvenni: ${name}`);
+    idByName.set(name.toLowerCase(), data.id);
+  }
 
   const rounds = await getRounds(tournamentId);
   const now = new Date().toISOString();
@@ -71,18 +86,28 @@ export async function importRound(formData: FormData) {
     .single();
   if (error || !round) done("hiba", "Nem sikerült létrehozni a fordulót.");
 
-  await db.from("matches").insert(
-    pairings.map((pairing) => ({
+  await db.from("matches").insert([
+    ...pairings.map((pairing) => ({
       round_id: round.id,
       table_no: pairing.tableNo,
       player_a_id: idByName.get(pairing.a.name.toLowerCase()),
       player_b_id: pairing.b ? idByName.get(pairing.b.name.toLowerCase()) : null,
       status: pairing.b ? "pending" : "bye",
     })),
-  );
+    ...byes.map((name, i) => ({
+      round_id: round.id,
+      table_no: pairings.length + i + 1,
+      player_a_id: idByName.get(name.toLowerCase()),
+      player_b_id: null,
+      status: "bye",
+    })),
+  ]);
 
   await notifyRoundOpened(round, await getSiteUrl());
-  done("uzenet", `A ${round.number}. forduló elindult ${pairings.length} meccsel.`);
+  done(
+    "uzenet",
+    `A ${round.number}. forduló elindult ${pairings.length} meccsel${byes.length ? `, Bye: ${byes.join(", ")}` : ""}.`,
+  );
 }
 
 export async function updateDeadline(formData: FormData) {

@@ -69,3 +69,22 @@ export function parseKarnyxPaste(text: string): ParseResult {
 
   return { players, pairings, warnings };
 }
+
+/**
+ * Bye players typed in by the admin (Karnyx leaves them out of the copied pairings).
+ * Accepts names separated by commas or new lines; duplicates are dropped.
+ */
+export function parseByeNames(text: string): string[] {
+  const names: string[] = [];
+  for (const raw of text.split(/[,\n]/)) {
+    const name = raw.trim();
+    if (name && !names.some((n) => n.toLowerCase() === name.toLowerCase())) names.push(name);
+  }
+  return names;
+}
+
+/** Problems with the typed Bye names, checked against the pasted pairings. */
+export function byeWarnings(byes: string[], pairings: ParsedPairing[]): string[] {
+  const paired = new Set(pairings.flatMap((p) => [p.a.name, ...(p.b ? [p.b.name] : [])]).map((n) => n.toLowerCase()));
+  return byes.filter((n) => paired.has(n.toLowerCase())).map((n) => `${n} szerepel a párosításban is, nem kaphat Bye-t`);
+}

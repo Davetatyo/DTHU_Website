@@ -10,17 +10,24 @@ function names(matches: MatchView[]): string[] {
   return matches.flatMap((m) => [m.a.karnyx_name, ...(m.b ? [m.b.karnyx_name] : [])]);
 }
 
-export async function notifyRoundOpened(round: Round, siteUrl: string) {
-  const matches = await getRoundMatches(round.id);
-  const profiles = await getProfilesByKarnyx(names(matches));
-  await postToDiscord([
+/** Round announcement: the pairs first, then one "Pihen:" line naming the Bye players. */
+export function roundOpenedLines(round: Round, matches: MatchView[], profiles: Map<string, Profile>, siteUrl: string): string[] {
+  const pairs = matches.filter((m) => m.b);
+  const resting = matches.filter((m) => !m.b);
+  const lines = [
     `🎲 **Elindult a ${round.number}. forduló!** Határidő: ${formatDateTime(round.deadline)}`,
     `Egyeztessetek időpontot itt: ${siteUrl}`,
     "",
-    ...matches.map((m) =>
-      m.b ? `${m.table_no}. ${mention(m.a, profiles)} vs ${mention(m.b, profiles)}` : `${m.table_no}. ${mention(m.a, profiles)}: Bye`,
-    ),
-  ]);
+    ...pairs.map((m, i) => `${i + 1}. ${mention(m.a, profiles)} vs ${mention(m.b, profiles)}`),
+  ];
+  if (resting.length) lines.push("", `Pihen: ${resting.map((m) => mention(m.a, profiles)).join(", ")}`);
+  return lines;
+}
+
+export async function notifyRoundOpened(round: Round, siteUrl: string) {
+  const matches = await getRoundMatches(round.id);
+  const profiles = await getProfilesByKarnyx(names(matches));
+  await postToDiscord(roundOpenedLines(round, matches, profiles, siteUrl));
 }
 
 /**
