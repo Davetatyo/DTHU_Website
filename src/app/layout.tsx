@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import Link from "next/link";
-import { LogoutIcon, UserIcon } from "@/components/icons";
+import { CalendarIcon, HomeIcon, LogoutIcon, UserIcon } from "@/components/icons";
 import { getCurrentProfile } from "@/lib/auth";
 import "./globals.css";
 
 const geistSans = Geist({ variable: "--font-sans", subsets: ["latin", "latin-ext"] });
 
 export const metadata: Metadata = {
-  title: "DT Meccsszervező",
+  title: "DTHUN Meccsszervező",
   description: "Dice Throne online verseny: ellenfél keresés és időpont egyeztetés",
 };
 
@@ -23,15 +23,30 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
       <body className={`${geistSans.variable} antialiased`}>
         <header className="border-b" style={{ borderColor: "var(--border)", background: "var(--surface)" }}>
           {/* Phone: brand + account on the first row, page buttons on the second. Wider: one row. */}
-          <nav className="mx-auto flex max-w-4xl flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3">
-            <Link href="/" className="truncate text-lg font-bold">
-              <span className="hidden sm:inline">DT Meccsszervező</span>
-              <span className="sm:hidden">DT Meccsek</span>
+          <nav className="mx-auto flex max-w-5xl flex-wrap items-center gap-x-3 gap-y-2 px-4 py-3">
+            <Link href="/" className="flex min-w-0 items-center gap-2 text-lg font-bold">
+              {/* eslint-disable-next-line @next/next/no-img-element -- small static logo, no optimisation needed */}
+              <img
+                src="/dthun-logo.jpg"
+                alt="Dice Throne Hungary"
+                width={78}
+                height={44}
+                className="h-11 w-auto shrink-0 rounded-md"
+                style={{ border: "1px solid var(--border)" }}
+              />
+              <span className="truncate">
+                DTHUN<span className="hidden lg:inline"> Meccsszervező</span>
+              </span>
             </Link>
 
-            <div className="order-last flex w-full gap-2 sm:order-none sm:w-auto">
-              <Link href="/menetrend" className="btn btn-sm btn-outline">
-                Menetrend
+            <div className="order-last flex w-full flex-wrap gap-2 sm:order-none sm:w-auto">
+              <Link href="/" className="btn btn-sm btn-secondary">
+                <HomeIcon />
+                Főoldal
+              </Link>
+              <Link href="/menetrend" className="btn btn-sm btn-schedule">
+                <CalendarIcon />
+                Közelgő meccsek
               </Link>
               {profile?.is_admin && (
                 <Link href="/admin" className="btn btn-sm btn-admin">

@@ -33,7 +33,7 @@ export default async function SchedulePage({ searchParams }: { searchParams: Pro
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
-        <h1 className="text-2xl font-bold">Menetrend</h1>
+        <h1 className="text-2xl font-bold">Közelgő meccsek</h1>
         <form className="flex gap-2">
           <select name="jatekos" defaultValue={jatekos ?? ""} className="input">
             <option value="">Minden játékos</option>

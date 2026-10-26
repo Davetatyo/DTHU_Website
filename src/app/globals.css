@@ -112,10 +112,10 @@ body {
     background: var(--admin);
     color: var(--admin-text);
   }
-  .btn-outline {
-    background: var(--surface-2);
-    color: var(--text);
-    border: 1.5px solid color-mix(in srgb, var(--text) 35%, transparent);
+  .btn-schedule {
+    background: var(--ok-bg);
+    color: var(--ok);
+    border: 2px solid var(--ok);
   }
   .btn-discord {
     background: var(--discord);
