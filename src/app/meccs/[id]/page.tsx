@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { CopyButton } from "@/components/CopyButton";
 import { SlotPicker } from "@/components/SlotPicker";
 import { StatusBadge } from "@/components/StatusBadge";
+import { SubmitButton } from "@/components/SubmitButton";
 import { getCurrentProfile, sameName } from "@/lib/auth";
 import { matchEvent } from "@/lib/calendar";
 import { getMatch, getProfilesByKarnyx, getProposals, isParticipant, profileFor } from "@/lib/data";
@@ -91,7 +92,7 @@ export default async function MatchPage({
   const playedForm = (label: string, className: string) => (
     <form action={markPlayed}>
       <input type="hidden" name="match_id" value={match.id} />
-      <button className={className}>{label}</button>
+      <SubmitButton className={className}>{label}</SubmitButton>
     </form>
   );
 
@@ -172,7 +173,7 @@ export default async function MatchPage({
                   <form action={acceptProposal}>
                     <input type="hidden" name="match_id" value={match.id} />
                     <input type="hidden" name="proposal_id" value={p.id} />
-                    <button className="btn btn-sm">Elfogadom</button>
+                    <SubmitButton className="btn btn-sm">Elfogadom</SubmitButton>
                   </form>
                 )}
               </li>
@@ -230,7 +231,7 @@ export default async function MatchPage({
               {match.status !== "played" && playedForm("Lejátszottnak jelölöm", "btn btn-secondary btn-sm")}
               <form action={adminResetMatch}>
                 <input type="hidden" name="match_id" value={match.id} />
-                <button className="btn btn-danger btn-sm">Visszaállítás (nincs időpont)</button>
+                <SubmitButton className="btn btn-danger btn-sm">Visszaállítás (nincs időpont)</SubmitButton>
               </form>
             </div>
           </div>

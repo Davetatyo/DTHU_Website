@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { PickerDay } from "@/lib/time";
+import { SubmitButton } from "./SubmitButton";
 
 // Pick a day from a calendar strip, then type the time. Selected slots are submitted
 // as hidden "slot" inputs in "YYYY-MM-DDTHH:mm" form (wall time in the viewer's zone).
@@ -147,9 +148,7 @@ export function SlotPicker({
         {selected.map((s) => (
           <input key={s} type="hidden" name="slot" value={s} />
         ))}
-        <button className="btn" disabled={selected.length === 0}>
-          {submitLabel}
-        </button>
+        <SubmitButton disabled={selected.length === 0}>{submitLabel}</SubmitButton>
       </div>
     </div>
   );

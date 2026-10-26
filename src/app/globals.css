@@ -41,6 +41,23 @@
   }
 }
 
+@keyframes hourglass-flip {
+  0%,
+  40% {
+    transform: rotate(0deg);
+  }
+  60%,
+  100% {
+    transform: rotate(180deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hourglass {
+    animation: none;
+  }
+}
+
 body {
   background: var(--bg);
   color: var(--text);
@@ -149,6 +166,34 @@ body {
     color: var(--ok);
     border-radius: 0.5rem;
     padding: 0.6rem 0.8rem;
+  }
+  .hourglass {
+    display: inline-block;
+    animation: hourglass-flip 1.2s ease-in-out infinite;
+  }
+  .busy-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: color-mix(in srgb, var(--bg) 45%, transparent);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    cursor: progress;
+  }
+  .busy-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1.25rem 1.75rem;
+    border-radius: 0.875rem;
+    border: 1px solid var(--accent);
+    background: var(--surface);
+    color: var(--text);
+    box-shadow: 0 10px 30px rgb(0 0 0 / 0.35);
   }
   .alert-info {
     background: var(--info-bg);

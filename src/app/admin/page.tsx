@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { MatchList } from "@/components/MatchList";
-import { ConfirmButton } from "@/components/ConfirmButton";
 import { MatchupGrid } from "@/components/MatchupGrid";
+import { SubmitButton } from "@/components/SubmitButton";
 import { getReminderTargets } from "@/lib/notify";
 import { requireAdmin } from "@/lib/auth";
 import { getActiveTournament, getOpenProposalCounts, getPlayers, getRoundMatches, getRounds } from "@/lib/data";
@@ -80,11 +80,12 @@ export default async function AdminPage({
           </div>
           <form action={sendReminder}>
             <input type="hidden" name="tournament_id" value={tournament.id} />
-            <ConfirmButton
-              label="⏰ Emlékeztető küldése"
+            <SubmitButton
               confirm={`Discord emlékeztető küldése ${reminderPlayerCount} játékosnak?`}
               disabled={!webhookConfigured || reminderPlayerCount === 0}
-            />
+            >
+              ⏰ Emlékeztető küldése
+            </SubmitButton>
           </form>
         </section>
       )}
@@ -102,7 +103,7 @@ export default async function AdminPage({
           <summary className="cursor-pointer text-sm font-semibold">Új verseny indítása</summary>
           <form action={createTournament} className="mt-3 flex flex-wrap gap-2">
             <input name="name" className="input max-w-sm" placeholder="pl. DT Online Liga 2026 ősz" required />
-            <button className="btn">Létrehozás</button>
+            <SubmitButton className="btn">Létrehozás</SubmitButton>
           </form>
           {tournament && <p className="muted mt-2 text-xs">Az új verseny lesz az aktív, a mostani archiválódik.</p>}
         </details>
@@ -124,11 +125,12 @@ export default async function AdminPage({
               </label>
               <div className="flex flex-wrap gap-2">
                 <input id="confirm_name" name="confirm_name" className="input max-w-sm" autoComplete="off" required />
-                <ConfirmButton
-                  label="Verseny törlése"
+                <SubmitButton
                   confirm={`Biztosan véglegesen törlöd a(z) „${tournament.name}” versenyt?`}
                   className="btn btn-danger"
-                />
+                >
+                  Verseny törlése
+                </SubmitButton>
               </div>
             </form>
           </details>
@@ -184,7 +186,7 @@ export default async function AdminPage({
                 required
               />
             </div>
-            <button className="btn btn-secondary">Módosítás</button>
+            <SubmitButton className="btn btn-secondary">Módosítás</SubmitButton>
           </form>
           {awaitingPlayed.length > 0 && (
             <div className="space-y-2 rounded-lg p-3" style={{ background: "var(--surface-2)" }}>
@@ -197,7 +199,7 @@ export default async function AdminPage({
                   </span>
                   <form action={adminMarkPlayed}>
                     <input type="hidden" name="match_id" value={m.id} />
-                    <button className="btn btn-sm">✓ Lejátszva</button>
+                    <SubmitButton className="btn btn-sm">✓ Lejátszva</SubmitButton>
                   </form>
                 </div>
               ))}
@@ -231,7 +233,7 @@ export default async function AdminPage({
                 <input type="checkbox" name="confirm" /> Biztosan törlöm a {round.number}. fordulót és minden
                 egyeztetését
               </label>
-              <button className="btn btn-danger btn-sm">Törlés</button>
+              <SubmitButton className="btn btn-danger btn-sm">Törlés</SubmitButton>
             </form>
           </details>
         </section>
@@ -249,7 +251,7 @@ export default async function AdminPage({
         <h2 className="text-lg font-bold">Felhasználók és adminok</h2>
         <form action={addAdmin} className="flex flex-wrap gap-2">
           <input name="query" className="input max-w-sm" placeholder="Discord vagy Karnyx név" required />
-          <button className="btn">Adminná teszem</button>
+          <SubmitButton className="btn">Adminná teszem</SubmitButton>
         </form>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -274,13 +276,13 @@ export default async function AdminPage({
                     {p.karnyx_name && (
                       <form action={releaseNickname}>
                         <input type="hidden" name="profile_id" value={p.id} />
-                        <button className="btn btn-secondary btn-sm">Név felszabadítása</button>
+                        <SubmitButton className="btn btn-secondary btn-sm">Név felszabadítása</SubmitButton>
                       </form>
                     )}
                     {p.is_admin && p.id !== me.id && (
                       <form action={removeAdmin}>
                         <input type="hidden" name="profile_id" value={p.id} />
-                        <button className="btn btn-danger btn-sm">Admin elvétele</button>
+                        <SubmitButton className="btn btn-danger btn-sm">Admin elvétele</SubmitButton>
                       </form>
                     )}
                   </td>
@@ -297,7 +299,7 @@ export default async function AdminPage({
           Webhook: {process.env.DISCORD_WEBHOOK_URL ? "beállítva ✓" : "nincs beállítva (DISCORD_WEBHOOK_URL)"}
         </p>
         <form action={testWebhook}>
-          <button className="btn btn-secondary btn-sm">Teszt üzenet küldése</button>
+          <SubmitButton className="btn btn-secondary btn-sm">Teszt üzenet küldése</SubmitButton>
         </form>
       </section>
     </div>

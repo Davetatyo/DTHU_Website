@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createSessionClient } from "@/lib/supabase/server";
 import { getSiteUrl } from "@/lib/site";
+import { SubmitButton } from "@/components/SubmitButton";
 
 async function signInWithDiscord() {
   "use server";
@@ -24,7 +25,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
       </p>
       {hiba && <p className="alert-error mt-4">A bejelentkezés nem sikerült, próbáld újra.</p>}
       <form action={signInWithDiscord} className="mt-6">
-        <button className="btn btn-discord w-full">Belépés Discorddal</button>
+        <SubmitButton className="btn btn-discord w-full">Belépés Discorddal</SubmitButton>
       </form>
     </div>
   );

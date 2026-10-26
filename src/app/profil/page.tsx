@@ -3,6 +3,7 @@ import { getActiveTournament, getPlayers } from "@/lib/data";
 import { createAdminClient } from "@/lib/supabase/server";
 import { DEFAULT_TIMEZONE } from "@/lib/time";
 import { saveProfile } from "./actions";
+import { SubmitButton } from "@/components/SubmitButton";
 
 const COMMON_ZONES = [DEFAULT_TIMEZONE, "Europe/London", "Europe/Berlin", "Europe/Bucharest", "America/New_York"];
 
@@ -72,7 +73,7 @@ export default async function ProfilePage({ searchParams }: { searchParams: Prom
             ))}
           </select>
         </div>
-        <button className="btn w-full">Mentés</button>
+        <SubmitButton className="btn w-full">Mentés</SubmitButton>
       </form>
     </div>
   );

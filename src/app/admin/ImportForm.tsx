@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { SubmitButton } from "@/components/SubmitButton";
 import { parseKarnyxPaste } from "@/lib/karnyx";
 import { importRound } from "./actions";
 
@@ -88,9 +89,9 @@ export function ImportForm({
           </label>
           <input id="deadline" type="datetime-local" name="deadline" className="input" defaultValue={defaultDeadline} required />
         </div>
-        <button className="btn" disabled={result.pairings.length === 0}>
+        <SubmitButton disabled={result.pairings.length === 0}>
           {nextRound}. forduló indítása ({result.pairings.length} meccs)
-        </button>
+        </SubmitButton>
       </div>
       <p className="muted text-xs">Az indítás lezárja az előző fordulót, és kiküldi a párosításokat Discordra.</p>
     </form>
