@@ -58,8 +58,9 @@ at `/admin` by Discord or Karnyx name.
 ### 5. Deploy to Vercel
 
 Push the repo to GitHub, import it in Vercel, add every variable from `.env.example` under
-**Settings → Environment Variables** (`NEXT_PUBLIC_SITE_URL` = the Vercel URL). A custom domain
-can be added later in Vercel; then update `NEXT_PUBLIC_SITE_URL` and the Supabase URL settings.
+**Settings → Environment Variables**. The app takes its own address from the domain visitors open,
+so `NEXT_PUBLIC_SITE_URL` is optional. A custom domain can be added later in Vercel; then add it to
+the Supabase URL settings (Site URL and `…/auth/callback` redirect).
 
 ### 6. Reminders
 
