@@ -1,8 +1,10 @@
 import Link from "next/link";
+import { sameName } from "@/lib/auth";
 import { formatDateTime } from "@/lib/time";
 import type { MatchView, Player } from "@/lib/types";
 
-// Admin overview: one card per match, coloured by how far the pair got with scheduling.
+// Round overview (home page and admin): one card per match, coloured by how far the pair got
+// with scheduling, showing both players' heroes.
 
 type CardState = "pending" | "proposed" | "confirmed" | "overdue" | "played" | "bye";
 
@@ -43,14 +45,18 @@ export function MatchupGrid({
   timeZone,
   registeredNames,
   openProposalCounts,
+  highlight,
 }: {
   matches: MatchView[];
   timeZone: string;
   registeredNames: Set<string>;
   openProposalCounts: Map<string, number>;
+  /** Karnyx name of the viewer: their own match gets an accent outline. */
+  highlight?: string | null;
 }) {
   const now = new Date();
   const registered = (p: Player) => registeredNames.has(p.karnyx_name.toLowerCase());
+  const isMine = (m: MatchView) => sameName(m.a.karnyx_name, highlight) || sameName(m.b?.karnyx_name, highlight);
 
   return (
     <div className="space-y-3">
@@ -77,10 +83,17 @@ export function MatchupGrid({
               key={m.id}
               href={`/meccs/${m.id}`}
               className="flex flex-col overflow-hidden rounded-xl border transition-transform hover:-translate-y-0.5"
-              style={{ borderColor: "var(--border)", background: "var(--surface)", opacity: faded ? 0.7 : 1 }}
+              style={{
+                borderColor: isMine(m) ? "var(--accent)" : "var(--border)",
+                boxShadow: isMine(m) ? "0 0 0 2px var(--accent)" : undefined,
+                background: "var(--surface)",
+                opacity: faded ? 0.7 : 1,
+              }}
             >
               <div className="flex items-center justify-between px-3 py-1.5 text-xs font-semibold" style={{ background: style.bg, color: style.color }}>
-                <span>{m.table_no}. asztal</span>
+                <span>
+                  {m.table_no}. asztal{isMine(m) ? " · a te meccsed" : ""}
+                </span>
                 <span>{style.label}</span>
               </div>
               <div className="flex-1 space-y-1.5 px-3 py-2.5" style={{ borderLeft: `4px solid ${style.color}` }}>

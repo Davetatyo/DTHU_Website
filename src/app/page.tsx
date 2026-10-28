@@ -1,13 +1,32 @@
+import { cookies } from "next/headers";
 import Link from "next/link";
 import { MatchList } from "@/components/MatchList";
+import { MatchupGrid } from "@/components/MatchupGrid";
 import { StatusBadge } from "@/components/StatusBadge";
+import { ViewToggle } from "@/components/ViewToggle";
 import { getCurrentProfile, sameName } from "@/lib/auth";
-import { getActiveTournament, getLatestRound, getRoundMatches, isParticipant } from "@/lib/data";
+import {
+  getActiveTournament,
+  getLatestRound,
+  getOpenProposalCounts,
+  getRegisteredKarnyxNames,
+  getRoundMatches,
+  isParticipant,
+} from "@/lib/data";
 import { isProfileComplete } from "@/lib/profile";
 import { DEFAULT_TIMEZONE, formatDateTime } from "@/lib/time";
+import { resolveView } from "@/lib/view";
 
-export default async function HomePage({ searchParams }: { searchParams: Promise<{ uzenet?: string }> }) {
-  const { uzenet } = await searchParams;
+// Players see the compact list by default; their choice is remembered in this cookie.
+const VIEW_COOKIE = "nezet";
+
+export default async function HomePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ uzenet?: string; nezet?: string }>;
+}) {
+  const { uzenet, nezet } = await searchParams;
+  const view = resolveView(nezet, (await cookies()).get(VIEW_COOKIE)?.value, "lista");
   const viewer = await getCurrentProfile();
   const tz = viewer?.timezone ?? DEFAULT_TIMEZONE;
   const tournament = await getActiveTournament();
@@ -83,8 +102,21 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
             {played}/{real.length} lejátszva · {confirmed} időpont megbeszélve
             {round.completed_at && " · A forduló befejeződött 🏁"}
           </p>
+          <div className="mt-3">
+            <ViewToggle current={view} path="/" cookie={VIEW_COOKIE} />
+          </div>
           <div className="mt-4">
-            <MatchList matches={matches} timeZone={tz} highlight={viewer?.karnyx_name} />
+            {view === "kartyak" ? (
+              <MatchupGrid
+                matches={matches}
+                timeZone={tz}
+                registeredNames={await getRegisteredKarnyxNames()}
+                openProposalCounts={await getOpenProposalCounts(matches.map((m) => m.id))}
+                highlight={viewer?.karnyx_name}
+              />
+            ) : (
+              <MatchList matches={matches} timeZone={tz} highlight={viewer?.karnyx_name} />
+            )}
           </div>
         </section>
       )}

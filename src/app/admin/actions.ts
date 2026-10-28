@@ -3,10 +3,11 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdmin, sameName } from "@/lib/auth";
-import { getPlayers, getRounds } from "@/lib/data";
+import { getActiveTournament, getPlayers, getRounds } from "@/lib/data";
 import { postToDiscord } from "@/lib/discord";
 import { byeWarnings, parseByeNames, parseKarnyxPaste } from "@/lib/karnyx";
 import { getReminderTargets, notifyReminder, notifyRoundOpened } from "@/lib/notify";
+import { resolveKarnyxChoice } from "@/lib/profile";
 import { setMatchPlayed } from "@/lib/rounds";
 import { getSiteUrl } from "@/lib/site";
 import { createAdminClient } from "@/lib/supabase/server";
@@ -180,6 +181,50 @@ export async function removeAdmin(formData: FormData) {
   if (id === me.id) done("hiba", "Saját magadtól nem veheted el az admin jogot.");
   await createAdminClient().from("profiles").update({ is_admin: false }).eq("id", id);
   done("uzenet", "Admin jog elvéve.");
+}
+
+/**
+ * Admin sets (or clears) another user's Karnyx name, e.g. when someone picked the wrong name
+ * or "Nem játszom" by mistake. Same choices as the profile form; names stay unique.
+ */
+export async function adminSetKarnyxName(formData: FormData) {
+  await requireAdmin();
+  const profileId = String(formData.get("profile_id"));
+  const editUrl = `/admin/felhasznalo/${profileId}`;
+  const fail = (msg: string): never => {
+    revalidatePath(editUrl);
+    redirect(`${editUrl}?hiba=${encodeURIComponent(msg)}`);
+  };
+
+  const db = createAdminClient();
+  const { data: target } = await db.from("profiles").select("*").eq("id", profileId).maybeSingle();
+  if (!target) done("hiba", "A felhasználó nem található.");
+
+  const tournament = await getActiveTournament();
+  const roster = tournament ? (await getPlayers(tournament.id)).map((p) => p.karnyx_name) : [];
+  const choice = resolveKarnyxChoice(
+    String(formData.get("karnyx_name") ?? ""),
+    roster,
+    String(formData.get("karnyx_custom") ?? ""),
+  );
+  if (!choice.ok) fail(choice.error);
+  const name = choice.ok ? choice.name : null;
+
+  // Names are unique: say who holds it instead of a bare database error.
+  if (name) {
+    const { data: holders } = await db.from("profiles").select("id, discord_username, display_name, karnyx_name");
+    const holder = ((holders ?? []) as Profile[]).find((p) => p.id !== profileId && sameName(p.karnyx_name, name));
+    if (holder) {
+      fail(
+        `A(z) „${name}” nevet már ez a felhasználó használja: ${holder.display_name ?? holder.discord_username}. Előbb szabadítsd fel nála.`,
+      );
+    }
+  }
+
+  const { error } = await db.from("profiles").update({ karnyx_name: name }).eq("id", profileId);
+  if (error) fail("Mentés sikertelen, próbáld újra.");
+  const who = (target as Profile).display_name ?? (target as Profile).discord_username;
+  done("uzenet", name ? `${who} Karnyx neve mostantól: ${name}.` : `${who} mostantól nem játszó felhasználó (nincs Karnyx neve).`);
 }
 
 export async function releaseNickname(formData: FormData) {

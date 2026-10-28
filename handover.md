@@ -127,7 +127,7 @@ and in Supabase → Authentication → URL Configuration (Site URL + `…/auth/c
 ```
 src/app/
   layout.tsx            header (logo, Főoldal, Közelgő meccsek, Admin felület, GYIK, profile, Kilépés), footer
-  page.tsx              home: "Következő meccsem" card + current round list
+  page.tsx              home: "Következő meccsem" card + current round as list (default) or cards
   login/page.tsx        Discord login
   auth/callback|signout route handlers
   profil/               profile form (roster name, "Egyedi" typed name or "Nem játszom";
@@ -137,12 +137,17 @@ src/app/
   menetrend/page.tsx    "Közelgő meccsek": confirmed upcoming matches + calendar subscribe
   gyik/page.tsx         FAQ (keep it in sync with behaviour!)
   admin/                admin page, ImportForm (Karnyx paste + Bye field + preview), actions
+  admin/felhasznalo/[id] admin-only: set or fix any user's Karnyx name
   api/calendar          .ics feed (all / ?player= / ?match=)
   api/cron/reminders    48h-before-deadline Discord warning (Bearer CRON_SECRET)
 src/components/
   SubmitButton          use for EVERY server-action submit: disables + hourglass + blurred overlay; `confirm` prop
   InfoTip               "?" help bubble: opens after 200 ms hover, tap toggles, keyboard focus opens
-  SlotPicker            day cards + typed time entry, up to N slots, posts hidden "slot" inputs
+  SlotPicker            day cards + typed time entry, posts hidden "slot" inputs. 1 slot (admin set
+                        time): the visible day+time IS the choice, live. Several slots: added chips,
+                        plus a typed-but-unadded time is sent too (dashed chip) with the current day
+  ViewToggle            Kártyák/Lista switch; choice kept in a cookie (`nezet` home, `admin_nezet`
+                        admin), resolved server-side by lib/view.ts (URL → cookie → page default)
   MatchupGrid, MatchList, StatusBadge, CopyButton, icons
 src/lib/
   karnyx.ts             parser for pasted Karnyx text + Bye names (pure, tested)
@@ -208,6 +213,9 @@ Profiles link to players **by Karnyx name**, not by id, so one claim works acros
   `src/lib/swap.ts` (`planSwap`, unit-tested).
 - **Making someone admin:** they log in once; an admin promotes them on the admin page by
   Discord or Karnyx name. Admins can't remove their own admin flag.
+- **Admins fix Karnyx names:** "Karnyx név szerkesztése" on the admin user list opens
+  `/admin/felhasznalo/[id]` with the same choices as the profile form. A name held by another
+  user is refused with who holds it ("Név felszabadítása" there first).
 
 ## 9. Discord messages (all in `src/lib/notify.ts` and the cron route)
 

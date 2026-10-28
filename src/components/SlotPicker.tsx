@@ -1,11 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 import type { PickerDay } from "@/lib/time";
 import { SubmitButton } from "./SubmitButton";
 
-// Pick a day from a calendar strip, then type the time. Selected slots are submitted
-// as hidden "slot" inputs in "YYYY-MM-DDTHH:mm" form (wall time in the viewer's zone).
+// Pick a day from a calendar strip, then type the time. Slots are submitted as hidden "slot"
+// inputs in "YYYY-MM-DDTHH:mm" form (wall time in the viewer's zone).
+//
+// The day + time currently on screen is the "draft". With one slot (admin "set time") the draft
+// IS the choice and follows every change. With several slots, added times become chips; a draft
+// the user typed but didn't add is still sent (shown as a dashed chip), using the day selected
+// at that moment, so changing the day after typing a time never leaves a stale date behind.
 
 const DEFAULT_TIME = "20:00";
 
@@ -22,29 +27,44 @@ export function SlotPicker({
   maxSlots: number;
   submitLabel: string;
 }) {
+  const single = maxSlots === 1;
+  const timeId = useId();
   const dayHasTimes = (key: string) => `${key}T23:59` >= min && (!max || `${key}T00:00` <= max);
   const firstDay = days.find((d) => dayHasTimes(d.key))?.key ?? null;
 
   const [dayKey, setDayKey] = useState<string | null>(firstDay);
   const [time, setTime] = useState(DEFAULT_TIME);
+  // Multi-slot only: the user typed a time that isn't added yet.
+  const [timeTouched, setTimeTouched] = useState(false);
   const [selected, setSelected] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const dayLabel = (key: string) => days.find((d) => d.key === key)?.label ?? key;
+  const slotLabel = (slot: string) => `${dayLabel(slot.slice(0, 10))} ${slot.slice(11)}`;
 
   // Earliest/latest time allowed on the chosen day, shown as a hint.
   const dayMin = dayKey && min.startsWith(dayKey) ? min.slice(11) : null;
   const dayMax = dayKey && max?.startsWith(dayKey) ? max.slice(11) : null;
-  const full = maxSlots > 1 && selected.length >= maxSlots;
+  const full = !single && selected.length >= maxSlots;
+
+  function problemWith(slot: string | null): string | null {
+    if (!slot || !/T\d{2}:\d{2}$/.test(slot)) return "Adj meg egy időpontot (óra:perc).";
+    if (slot < min) return "Ez az időpont már elmúlt.";
+    if (max && slot > max) return "Ez az időpont a forduló határideje után van.";
+    if (selected.includes(slot)) return "Ezt az időpontot már hozzáadtad.";
+    return null;
+  }
+
+  const draft = dayKey && time ? `${dayKey}T${time}` : null;
+  const draftProblem = problemWith(draft);
+  // What gets sent: one slot follows the draft; several slots = chips + an unadded typed draft.
+  const pendingDraft = !single && timeTouched && !full && !draftProblem ? draft : null;
+  const toSubmit = single ? (draftProblem ? [] : [draft!]) : [...selected, ...(pendingDraft ? [pendingDraft] : [])];
 
   function add() {
-    if (!dayKey) return;
-    if (!/^\d{2}:\d{2}$/.test(time)) return setError("Adj meg egy időpontot (óra:perc).");
-    const slot = `${dayKey}T${time}`;
-    if (slot < min) return setError("Ez az időpont már elmúlt.");
-    if (max && slot > max) return setError("Ez az időpont a forduló határideje után van.");
-    if (selected.includes(slot)) return setError("Ezt az időpontot már hozzáadtad.");
+    if (draftProblem) return setError(draftProblem);
     setError(null);
-    setSelected(maxSlots === 1 ? [slot] : [...selected, slot].sort());
+    setSelected([...selected, draft!].sort());
+    setTimeTouched(false);
   }
 
   if (!firstDay) return <p className="muted text-sm">Nincs már választható időpont a határidőig.</p>;
@@ -90,31 +110,34 @@ export function SlotPicker({
 
       {dayKey && (
         <div className="space-y-2">
-          <label className="block font-semibold first-letter:uppercase" htmlFor="slot-time">
+          <label className="block font-semibold first-letter:uppercase" htmlFor={timeId}>
             {dayLabel(dayKey)}
           </label>
           <div className="flex flex-wrap items-center gap-2">
             <input
-              id="slot-time"
+              id={timeId}
               type="time"
               step={300}
               value={time}
               onChange={(e) => {
                 setTime(e.target.value);
+                setTimeTouched(true);
                 setError(null);
               }}
               onKeyDown={(e) => {
-                // Enter adds the time instead of submitting the whole form.
-                if (e.key === "Enter") {
+                // Enter adds the time (multi-slot) instead of submitting the whole form.
+                if (e.key === "Enter" && !single) {
                   e.preventDefault();
                   add();
                 }
               }}
               className="input w-36 text-lg font-semibold"
             />
-            <button type="button" onClick={add} disabled={full} className="btn btn-secondary">
-              {maxSlots === 1 ? "Kiválasztom" : "+ Hozzáadás"}
-            </button>
+            {!single && (
+              <button type="button" onClick={add} disabled={full} className="btn btn-secondary">
+                + Hozzáadás
+              </button>
+            )}
           </div>
           {(dayMin || dayMax) && (
             <p className="muted text-xs">
@@ -124,31 +147,59 @@ export function SlotPicker({
             </p>
           )}
           {error && <p className="text-sm" style={{ color: "var(--danger)" }}>{error}</p>}
+          {single && draftProblem && <p className="text-sm" style={{ color: "var(--danger)" }}>{draftProblem}</p>}
+          {!single && timeTouched && !full && draftProblem && !error && (
+            <p className="text-sm" style={{ color: "var(--warn)" }}>
+              A beírt időpont nem küldhető: {draftProblem.charAt(0).toLowerCase() + draftProblem.slice(1)}
+            </p>
+          )}
           {full && <p className="muted text-xs">Elérted a {maxSlots} időpontot. Törölj egyet, ha cserélnéd.</p>}
         </div>
       )}
 
       <div className="space-y-2">
-        <div className="muted text-sm">
-          {maxSlots > 1 ? `Kiválasztva: ${selected.length} / ${maxSlots}` : selected.length ? "Kiválasztva:" : "Válassz egy időpontot."}
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {selected.map((s) => (
-            <button
-              key={s}
-              type="button"
-              onClick={() => setSelected(selected.filter((x) => x !== s))}
-              className="badge badge-confirmed text-sm first-letter:uppercase"
-              title="Eltávolítás"
-            >
-              {dayLabel(s.slice(0, 10))} {s.slice(11)} ✕
-            </button>
-          ))}
-        </div>
-        {selected.map((s) => (
+        {single ? (
+          <div className="text-sm">
+            <span className="muted">Kiválasztott időpont: </span>
+            {draftProblem ? (
+              <span className="muted">nincs</span>
+            ) : (
+              <strong className="first-letter:uppercase">{slotLabel(draft!)}</strong>
+            )}
+          </div>
+        ) : (
+          <>
+            <div className="muted text-sm">
+              Kiválasztva: {toSubmit.length} / {maxSlots}
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {selected.map((s) => (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => setSelected(selected.filter((x) => x !== s))}
+                  className="badge badge-confirmed text-sm first-letter:uppercase"
+                  title="Eltávolítás"
+                >
+                  {slotLabel(s)} ✕
+                </button>
+              ))}
+              {pendingDraft && (
+                <span
+                  className="badge text-sm first-letter:uppercase"
+                  style={{ border: "1px dashed var(--ok)", color: "var(--ok)" }}
+                  title="Még nincs hozzáadva, de küldéskor bekerül"
+                >
+                  + {slotLabel(pendingDraft)} (küldéskor bekerül)
+                </span>
+              )}
+            </div>
+          </>
+        )}
+        {toSubmit.map((s) => (
           <input key={s} type="hidden" name="slot" value={s} />
         ))}
-        <SubmitButton disabled={selected.length === 0}>{submitLabel}</SubmitButton>
+        <SubmitButton disabled={toSubmit.length === 0}>{submitLabel}</SubmitButton>
       </div>
     </div>
   );

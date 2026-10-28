@@ -21,7 +21,7 @@ const SECTIONS: Section[] = [
       },
       {
         q: "Nem találom a Karnyx nevemet a listában.",
-        a: "A lista az admin által beillesztett párosításokból készül, ezért csak akkor jelenik meg benne a neved, ha már szerepelsz egy fordulóban. Ha még nem szerepelsz (például később csatlakozol vagy cserejátékos vagy), válaszd az „Egyedi név” lehetőséget, és írd be a Karnyx nevedet pontosan úgy, ahogy a Karnyxban szerepel. Ha a neved a listában van, de nem választható, valószínűleg más foglalta le tévedésből: szólj egy adminnak, aki felszabadítja.",
+        a: "A lista az admin által beillesztett párosításokból készül, ezért csak akkor jelenik meg benne a neved, ha már szerepelsz egy fordulóban. Ha még nem szerepelsz (például később csatlakozol vagy cserejátékos vagy), válaszd az „Egyedi név” lehetőséget, és írd be a Karnyx nevedet pontosan úgy, ahogy a Karnyxban szerepel. Ha a neved a listában van, de nem választható, valószínűleg más foglalta le tévedésből: szólj egy adminnak, aki felszabadítja. Ha rossz nevet választottál, az admin is át tudja írni.",
       },
       {
         q: "Nem játszom, csak szervező vagy néző vagyok. Mit válasszak?",

@@ -1,6 +1,9 @@
+import { cookies } from "next/headers";
 import Link from "next/link";
 import { MatchList } from "@/components/MatchList";
 import { MatchupGrid } from "@/components/MatchupGrid";
+import { ViewToggle } from "@/components/ViewToggle";
+import { resolveView } from "@/lib/view";
 import { SubmitButton } from "@/components/SubmitButton";
 import { InfoTip } from "@/components/InfoTip";
 import { getReminderTargets } from "@/lib/notify";
@@ -31,7 +34,8 @@ export default async function AdminPage({
   searchParams: Promise<{ uzenet?: string; hiba?: string; nezet?: string }>;
 }) {
   const { uzenet, hiba, nezet } = await searchParams;
-  const listView = nezet === "lista";
+  // Admins see cards by default; their choice is remembered separately from the home page.
+  const listView = resolveView(nezet, (await cookies()).get("admin_nezet")?.value, "kartyak") === "lista";
   const me = await requireAdmin();
   const tz = me.timezone;
   const tournament = await getActiveTournament();
@@ -211,20 +215,8 @@ export default async function AdminPage({
               ))}
             </div>
           )}
-          <div className="flex gap-1 text-sm">
-            {[
-              { label: "Kártyák", href: "/admin", active: !listView },
-              { label: "Lista", href: "/admin?nezet=lista", active: listView },
-            ].map((v) => (
-              <Link
-                key={v.label}
-                href={v.href}
-                className={`btn btn-sm ${v.active ? "" : "btn-secondary"}`}
-                aria-current={v.active ? "page" : undefined}
-              >
-                {v.label}
-              </Link>
-            ))}
+          <div className="flex items-center gap-1">
+            <ViewToggle current={listView ? "lista" : "kartyak"} path="/admin" cookie="admin_nezet" />
             <InfoTip text="Kártyák: minden meccs egy kártya, a színe az állapotot mutatja, a zöld pötty regisztrált játékost jelöl. Lista: tömör nézet egy sorban meccsenként." />
           </div>
           {listView ? (
@@ -257,7 +249,7 @@ export default async function AdminPage({
       <section className="card space-y-3">
         <h2 className="text-lg font-bold">
           Felhasználók és adminok
-          <InfoTip text="Adminná csak olyat tehetsz, aki már belépett az oldalra: keresd Discord vagy Karnyx név alapján. A Név felszabadítása akkor kell, ha valaki rossz Karnyx nevet foglalt le." />
+          <InfoTip text="Adminná csak olyat tehetsz, aki már belépett az oldalra: keresd Discord vagy Karnyx név alapján. A Karnyx név szerkesztésével bármely felhasználó nevét beállíthatod vagy javíthatod (például ha tévedésből a „Nem játszom”-ot választotta). A Név felszabadítása egy rosszul lefoglalt nevet ad vissza a listába." />
         </h2>
         <form action={addAdmin} className="flex flex-wrap gap-2">
           <input name="query" className="input max-w-sm" placeholder="Discord vagy Karnyx név" required />
@@ -288,6 +280,9 @@ export default async function AdminPage({
                   <td className="py-1.5 pr-2">{p.facebook_name ?? "—"}</td>
                   <td className="py-1.5 pr-2">{p.discord_username ?? "—"}</td>
                   <td className="flex flex-wrap justify-end gap-1 py-1.5">
+                    <Link href={`/admin/felhasznalo/${p.id}`} className="btn btn-secondary btn-sm">
+                      Karnyx név szerkesztése
+                    </Link>
                     {p.karnyx_name && (
                       <form action={releaseNickname}>
                         <input type="hidden" name="profile_id" value={p.id} />

@@ -56,6 +56,12 @@ export async function getProposals(matchId: string): Promise<Proposal[]> {
   return (data ?? []) as Proposal[];
 }
 
+/** Lower-cased Karnyx names of users who logged in and claimed a name (green dot on the cards). */
+export async function getRegisteredKarnyxNames(): Promise<Set<string>> {
+  const { data } = await createAdminClient().from("profiles").select("karnyx_name").not("karnyx_name", "is", null);
+  return new Set((data ?? []).map((p) => String(p.karnyx_name).toLowerCase()));
+}
+
 /** Number of open (unanswered) proposals per match. */
 export async function getOpenProposalCounts(matchIds: string[]): Promise<Map<string, number>> {
   const counts = new Map<string, number>();
