@@ -1,7 +1,7 @@
 # Project state: DTHUN Meccsszervező
 
-**Current version: v1.0**, live at https://dthuonlinebajnoksag.vercel.app
-(commit `e527783` on `main`, 2026-10-26)
+**Current version: v1.1**, live at https://dthuonlinebajnoksag.vercel.app
+(commit `6c1a193` on `main`, 2026-10-28)
 
 Read [handover.md](handover.md) first for how the project works. This file is the running log:
 where things stand, what's next, and what each release changed.
@@ -36,26 +36,35 @@ Entry template:
 
 ---
 
-## Status (as of 2026-10-26)
+## Status (as of 2026-10-28)
 
 - **Live and in use.** Active tournament: *DTHU - Október - Online Bajnokság 2026*.
   Round 1 started 2026-10-26, deadline **2026-11-02 12:25** (Budapest); 11 matches
-  (10 pending, 1 confirmed).
-- **Registrations:** only 2 profiles so far (1 admin). Players still need to log in and
-  claim their Karnyx names before Discord pings reach them.
+  (8 confirmed, 1 played, 2 pending).
+- **Registrations:** 3 profiles (2 with a Karnyx name, 2 admins). Most players still need to
+  log in and claim their Karnyx names before Discord pings reach them.
 - Discord webhook is configured and tested; Discord login works on the live domain.
 - Scheduled job `dt-reminders` runs hourly in Supabase (pg_cron + pg_net, secret in Vault as
   `dt_cron_secret`); verified 2026-10-26 with `200 {"warnings":0}`. Round 1's 48h warning
   is due from about 2026-10-31 12:25.
-- Automated tests: 36 unit tests passing; lint and type check clean.
+- Automated tests: 44 unit tests passing; lint and type check clean.
 
 ## Next steps
 
 ### Needs the owner
-1. Ask players in the Facebook group to log in once and pick their Karnyx name.
-2. Optional: tag the release in git (`git tag v1.0 e527783 && git push origin v1.0`) and tag
-   future versions the same way.
-3. Around 2026-10-31 12:25, confirm the first automatic 48h warning appeared on Discord
+1. **Security:** `.env.local` had two lines without `NAME=` (they looked like the Discord app's
+   Client ID and Client Secret, which the app doesn't use). On 2026-10-28 an agent's shell
+   command printed them in its session log. Delete or comment out those lines, and reset the
+   Discord Client Secret (Developer Portal → OAuth2 → Reset Secret, then paste it into
+   Supabase → Authentication → Providers → Discord).
+2. **First real player swap:** the v1.1 swap's database writes have only been checked through
+   unit-tested rules, not run end to end (that would have changed live data). Watch the first real
+   swap: the match shows the new player with "Nincs időpont", a Bye was removed or added as
+   chosen, and Discord got the 🔁 post.
+3. Ask players in the Facebook group to log in once and pick their Karnyx name (or "Egyedi").
+4. Optional: tag releases in git (`git tag v1.0 e527783`, `git tag v1.1 6c1a193`, then
+   `git push origin --tags`) and tag future versions the same way.
+5. Around 2026-10-31 12:25, confirm the first automatic 48h warning appeared on Discord
    (or check `net._http_response` for `{"warnings":1}`).
 
 ### Ideas discussed, not decided (ask the owner before building)
@@ -81,6 +90,25 @@ None open.
 ---
 
 ## Changelog
+
+### v1.1 · 2026-10-28 · `6c1a193`
+**Changed:**
+- Admin player swap on the match page (Admin → "Játékos cseréje"): choose who drops out and
+  the new player (suggestions: Bye players, roster players without a match, Egyedi
+  registrations; or type any name). The new player's Bye in that round is removed; optional
+  tick box gives the dropout a Bye. Scheduling restarts; Discord pings the new pairing.
+  Rejected for played matches, Byes, closed rounds and players who already have a match.
+- Profile: "Egyedi név (nincs a listában)" lets players register with a Karnyx name that
+  isn't in the current round; a saved Egyedi name is preselected next time. Admin user list
+  shows an "egyedi" badge.
+- GYIK: answer about swaps; updated answer for players who can't find their name.
+- handover.md: swap and Egyedi rules, and a warning never to `source .env.local`.
+
+**Manual steps:** none (no database change).
+**Verified:** 44 unit tests (8 new: swap rules, Egyedi names, swap message), lint, types.
+Browser (as a temporary fake admin, nothing submitted): swap form and suggestions on a real
+match, Egyedi option shows the text box, saved Egyedi name preselected. Swap writes not run
+end to end (live database). Live check after deploy: new GYIK answer served, pages 200.
 
 ### Ops · 2026-10-26
 Owner set up the hourly Supabase job (`dt-reminders`, `0 * * * *`) calling
