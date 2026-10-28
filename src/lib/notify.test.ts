@@ -2,12 +2,24 @@ import { describe, expect, it, vi } from "vitest";
 import type { MatchView, Player, Profile, Round } from "./types";
 
 vi.mock("./supabase/server", () => ({ createAdminClient: vi.fn() }));
-const { confirmedLines, proposalLine, reminderLines, roundOpenedLines } = await import("./notify");
+const { confirmedLines, proposalLine, reminderLines, roundOpenedLines, swapLines } = await import("./notify");
 
 const player = (name: string): Player => ({ id: name, tournament_id: "t", karnyx_name: name, heroes: [] });
 const match = (a: string, b: string): MatchView => ({ a: player(a), b: player(b) }) as MatchView;
 const bye = (a: string): MatchView => ({ a: player(a), b: null }) as MatchView;
 const round = { number: 2, deadline: "2026-11-02T10:03:00Z" } as Round;
+
+describe("swapLines", () => {
+  it("pings the new pairing and names who left, with a Pihen line when they rest", () => {
+    const m = { ...match("Dave", "Moi"), id: "m1", round } as MatchView;
+    const profiles = new Map([["moi", { discord_id: "333" } as Profile]]);
+    const lines = swapLines(m, player("ZenBulldozer"), player("Moi"), player("Dave"), true, profiles, "https://dt.example");
+    expect(lines[0]).toBe(
+      "🔁 **Csere a 2. fordulóban:** **ZenBulldozer** helyett <@333> játszik **Dave** ellen. Egyeztessetek időpontot: https://dt.example/meccs/m1",
+    );
+    expect(lines[1]).toBe("Pihen: **ZenBulldozer**");
+  });
+});
 
 describe("proposalLine", () => {
   it("is one short line with the ping and the link", () => {

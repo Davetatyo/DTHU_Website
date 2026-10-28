@@ -16,11 +16,16 @@ export async function saveProfile(formData: FormData) {
   if (!facebookName) fail("Add meg a Facebook nevedet, hogy megtaláljanak a csoportban.");
   if (!isValidTimeZone(timezone)) fail("Érvénytelen időzóna.");
 
-  // Players pick their name from the roster (prevents typos); organisers and spectators
-  // choose "not playing" and save without a Karnyx name, so they claim nobody's name.
+  // Players pick their name from the roster (prevents typos) or type it with "Egyedi" when
+  // they aren't in a round yet; organisers and spectators choose "not playing" and save
+  // without a Karnyx name, so they claim nobody's name.
   const tournament = await getActiveTournament();
   const roster = tournament ? (await getPlayers(tournament.id)).map((p) => p.karnyx_name) : [];
-  const choice = resolveKarnyxChoice(String(formData.get("karnyx_name") ?? ""), roster);
+  const choice = resolveKarnyxChoice(
+    String(formData.get("karnyx_name") ?? ""),
+    roster,
+    String(formData.get("karnyx_custom") ?? ""),
+  );
   if (!choice.ok) fail(choice.error);
   const karnyxName = choice.ok ? choice.name : null;
 

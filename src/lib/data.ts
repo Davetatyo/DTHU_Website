@@ -112,6 +112,38 @@ export function isParticipant(match: MatchView, karnyxName: string | null): bool
   return sameName(match.a.karnyx_name, karnyxName) || sameName(match.b?.karnyx_name, karnyxName);
 }
 
+/**
+ * Names an admin can swap into a match: players free in this round. Bye players come first,
+ * then roster players without a match, then registered players not on the roster ("Egyedi").
+ */
+export async function getSwapSuggestions(match: MatchView): Promise<{ name: string; note: string }[]> {
+  const [roster, roundMatches, { data: profiles }] = await Promise.all([
+    getPlayers(match.round.tournament_id),
+    getRoundMatches(match.round_id),
+    createAdminClient().from("profiles").select("karnyx_name").not("karnyx_name", "is", null),
+  ]);
+  const playing = new Set(
+    roundMatches.filter((m) => m.b).flatMap((m) => [m.a.karnyx_name, m.b!.karnyx_name]).map((n) => n.toLowerCase()),
+  );
+  const resting = roundMatches.filter((m) => !m.b).map((m) => m.a.karnyx_name);
+  const onRoster = new Set(roster.map((p) => p.karnyx_name.toLowerCase()));
+
+  const out: { name: string; note: string }[] = [];
+  const seen = new Set<string>();
+  const add = (name: string, note: string) => {
+    const key = name.toLowerCase();
+    if (seen.has(key) || playing.has(key)) return;
+    seen.add(key);
+    out.push({ name, note });
+  };
+  resting.forEach((n) => add(n, "Bye ebben a fordulóban"));
+  roster.forEach((p) => add(p.karnyx_name, "Nincs meccse ebben a fordulóban"));
+  for (const p of (profiles ?? []) as { karnyx_name: string }[]) {
+    if (!onRoster.has(p.karnyx_name.toLowerCase())) add(p.karnyx_name, "Regisztrált, egyedi név");
+  }
+  return out;
+}
+
 /** The viewer's match in the latest round of the active tournament. */
 export async function getMyLatestMatch(profile: Profile): Promise<MatchView | null> {
   if (!profile.karnyx_name) return null;

@@ -7,12 +7,12 @@ import { SubmitButton } from "@/components/SubmitButton";
 import { InfoTip } from "@/components/InfoTip";
 import { getCurrentProfile, sameName } from "@/lib/auth";
 import { matchEvent } from "@/lib/calendar";
-import { getMatch, getProfilesByKarnyx, getProposals, isParticipant, profileFor } from "@/lib/data";
+import { getMatch, getProfilesByKarnyx, getProposals, getSwapSuggestions, isParticipant, profileFor } from "@/lib/data";
 import { googleCalendarUrl } from "@/lib/ics";
 import { getSiteUrl } from "@/lib/site";
 import { DEFAULT_TIMEZONE, formatDateTime, pickerDays, utcToWallTime } from "@/lib/time";
 import type { Player, Profile } from "@/lib/types";
-import { acceptProposal, adminResetMatch, adminSetTime, markPlayed, proposeTimes } from "./actions";
+import { acceptProposal, adminReplacePlayer, adminResetMatch, adminSetTime, markPlayed, proposeTimes } from "./actions";
 
 const WEEK_MS = 7 * 24 * 3600_000;
 
@@ -65,6 +65,8 @@ export default async function MatchPage({
 
   const isMine = !!viewer && isParticipant(match, viewer.karnyx_name);
   const isAdmin = !!viewer?.is_admin;
+  const canSwap = isAdmin && match.status !== "played" && match.status !== "bye" && !match.round.closed_at;
+  const swapSuggestions = canSwap ? await getSwapSuggestions(match) : [];
   const active = match.status !== "played" && match.status !== "bye";
   const canAct = (isMine || isAdmin) && active;
   const opponent = isMine ? (sameName(match.a.karnyx_name, viewer?.karnyx_name) ? match.b : match.a) : null;
@@ -243,6 +245,47 @@ export default async function MatchPage({
                 submitLabel="Időpont beállítása"
               />
             </form>
+            {canSwap && (
+              <form action={adminReplacePlayer} className="space-y-2">
+                <input type="hidden" name="match_id" value={match.id} />
+                <div className="text-sm font-semibold">
+                  Játékos cseréje
+                  <InfoTip text="Ha valaki kiesik, itt cserélheted egy másik játékosra. Ha az új játékos ebben a fordulóban Bye-on van, a Bye törlődik. A kieső játékos kérésre Bye-t kaphat. Az időpont egyeztetés újraindul, és Discordon megjelöljük az új párost." />
+                </div>
+                <fieldset className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
+                  <legend className="muted mb-1 text-xs">Ki esik ki?</legend>
+                  <label className="flex items-center gap-1.5">
+                    <input type="radio" name="slot" value="a" defaultChecked /> {match.a.karnyx_name}
+                  </label>
+                  <label className="flex items-center gap-1.5">
+                    <input type="radio" name="slot" value="b" /> {match.b?.karnyx_name}
+                  </label>
+                </fieldset>
+                <input
+                  name="new_player"
+                  list="swap-players"
+                  className="input max-w-sm"
+                  placeholder="Új játékos Karnyx neve"
+                  autoComplete="off"
+                  maxLength={40}
+                  required
+                />
+                <datalist id="swap-players">
+                  {swapSuggestions.map((s) => (
+                    <option key={s.name} value={s.name} label={s.note} />
+                  ))}
+                </datalist>
+                <label className="flex items-center gap-1.5 text-sm">
+                  <input type="checkbox" name="give_bye" /> A kieső játékos Bye-t kap (pihen ebben a fordulóban)
+                </label>
+                <SubmitButton
+                  className="btn btn-sm"
+                  confirm="Biztosan cseréled a játékost? Az időpont egyeztetés újraindul."
+                >
+                  Csere
+                </SubmitButton>
+              </form>
+            )}
             <div className="flex flex-wrap gap-2">
               <form action={adminResetMatch}>
                 <input type="hidden" name="match_id" value={match.id} />

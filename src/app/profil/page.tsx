@@ -1,7 +1,8 @@
 import { requireProfile, sameName } from "@/lib/auth";
 import { getActiveTournament, getPlayers } from "@/lib/data";
 import { createAdminClient } from "@/lib/supabase/server";
-import { isProfileComplete, NOT_PLAYING } from "@/lib/profile";
+import { CUSTOM_NAME, isProfileComplete, NOT_PLAYING } from "@/lib/profile";
+import { KarnyxNameField } from "./KarnyxNameField";
 import { DEFAULT_TIMEZONE } from "@/lib/time";
 import { saveProfile } from "./actions";
 import { SubmitButton } from "@/components/SubmitButton";
@@ -21,8 +22,14 @@ export default async function ProfilePage({ searchParams }: { searchParams: Prom
   );
   const available = players.filter((p) => !takenByOthers.has(p.karnyx_name.toLowerCase()));
   const zones = [...new Set([...COMMON_ZONES, ...Intl.supportedValuesOf("timeZone")])];
-  // A saved profile without a Karnyx name belongs to an organiser or spectator.
-  const karnyxDefault = profile.karnyx_name ?? (isProfileComplete(profile) ? NOT_PLAYING : "");
+  // Preselect the saved choice: a roster name, "Egyedi" for a name not on the roster,
+  // or "Nem játszom" for a saved profile without a Karnyx name (organiser or spectator).
+  const ownOnRoster = available.find((p) => sameName(p.karnyx_name, profile.karnyx_name));
+  const karnyxDefault = profile.karnyx_name
+    ? (ownOnRoster?.karnyx_name ?? CUSTOM_NAME)
+    : isProfileComplete(profile)
+      ? NOT_PLAYING
+      : "";
 
   return (
     <div className="card mx-auto max-w-lg">
@@ -42,28 +49,17 @@ export default async function ProfilePage({ searchParams }: { searchParams: Prom
         <div>
           <label className="label" htmlFor="karnyx_name">
             Karnyx név
-            <InfoTip text="A lista a verseny párosításaiból készül. Egy nevet csak egy felhasználó foglalhat le, így a bot a te meccseidnél téged jelöl meg. Ha nem játszol, válaszd a „Nem játszom” lehetőséget, így senki nevét nem foglalod le." />
+            <InfoTip text="A lista a verseny párosításaiból készül. Egy nevet csak egy felhasználó foglalhat le, így a bot a te meccseidnél téged jelöl meg. Ha még nem szerepelsz egy fordulóban, válaszd az „Egyedi” lehetőséget és írd be a Karnyx nevedet. Ha nem játszol, válaszd a „Nem játszom” lehetőséget." />
           </label>
-          {available.length > 0 ? (
-            <select id="karnyx_name" name="karnyx_name" className="input" defaultValue={karnyxDefault} required>
-              <option value="" disabled>
-                Válassz…
-              </option>
-              <option value={NOT_PLAYING}>Nem játszom ebben a versenyben (szervező / néző)</option>
-              {available.map((p) => (
-                <option key={p.id} value={p.karnyx_name}>
-                  {p.karnyx_name}
-                  {sameName(p.karnyx_name, profile.karnyx_name) ? " (te)" : ""}
-                </option>
-              ))}
-            </select>
-          ) : (
-            <input id="karnyx_name" name="karnyx_name" className="input" defaultValue={profile.karnyx_name ?? ""} />
-          )}
+          <KarnyxNameField
+            names={available.map((p) => p.karnyx_name)}
+            ownName={profile.karnyx_name}
+            defaultChoice={karnyxDefault}
+            defaultCustom={karnyxDefault === CUSTOM_NAME ? (profile.karnyx_name ?? "") : ""}
+          />
           <p className="muted mt-1 text-sm">
-            {available.length > 0
-              ? "Nem találod magad? Lehet, hogy más foglalta le, szólj az adminnak."
-              : "Ha nem játszol a versenyben, hagyd üresen."}
+            Nem vagy a listában? Válaszd az „Egyedi” lehetőséget, és írd be a Karnyx nevedet pontosan. Ha a neved
+            a listában van, de nem választható, más foglalta le: szólj az adminnak.
           </p>
         </div>
         <div>

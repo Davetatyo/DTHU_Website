@@ -3,8 +3,11 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireProfile, sameName } from "@/lib/auth";
-import { getMatch, isParticipant } from "@/lib/data";
-import { notifyConfirmed, notifyProposal } from "@/lib/notify";
+import { getMatch, getPlayers, isParticipant } from "@/lib/data";
+import { notifyConfirmed, notifyProposal, notifySwap } from "@/lib/notify";
+import { cleanKarnyxName } from "@/lib/profile";
+import { planSwap, type SwapMatch } from "@/lib/swap";
+import type { Player } from "@/lib/types";
 import { setMatchPlayed } from "@/lib/rounds";
 import { getSiteUrl } from "@/lib/site";
 import { createAdminClient } from "@/lib/supabase/server";
@@ -143,6 +146,79 @@ export async function adminSetTime(formData: FormData) {
     .eq("id", matchId);
   await notifyConfirmed(match, date, await getSiteUrl());
   back(matchId, "uzenet", "Időpont beállítva.");
+}
+
+/**
+ * Admin replaces one player of a match (e.g. a dropout). The new player's Bye in this round
+ * is removed; optionally the replaced player gets a Bye. Scheduling starts over because any
+ * proposals or agreed time were made with the old player.
+ */
+export async function adminReplacePlayer(formData: FormData) {
+  const matchId = String(formData.get("match_id"));
+  const { profile, match } = await authorize(matchId);
+  if (!profile.is_admin) back(matchId, "hiba", "Csak admin teheti meg.");
+  if (match.round.closed_at) back(matchId, "hiba", "Lezárt forduló meccsén nem lehet cserélni.");
+
+  const slot = formData.get("slot") === "b" ? "b" : "a";
+  const cleaned = cleanKarnyxName(String(formData.get("new_player") ?? ""));
+  if (!cleaned.ok) back(matchId, "hiba", cleaned.error);
+  const newName = cleaned.name;
+  const giveBye = formData.get("give_bye") === "on";
+
+  const db = createAdminClient();
+
+  // Find the new player on this tournament's roster, or add them (heroes unknown).
+  const roster = await getPlayers(match.round.tournament_id);
+  let newPlayer = roster.find((p) => sameName(p.karnyx_name, newName));
+  if (!newPlayer) {
+    const { data, error } = await db
+      .from("players")
+      .insert({ tournament_id: match.round.tournament_id, karnyx_name: newName, heroes: [] })
+      .select()
+      .single();
+    if (error || !data) back(matchId, "hiba", `Nem sikerült felvenni: ${newName}`);
+    newPlayer = data as Player;
+  }
+
+  const { data: roundMatches } = await db
+    .from("matches")
+    .select("id, table_no, player_a_id, player_b_id, status")
+    .eq("round_id", match.round_id);
+  const plan = planSwap((roundMatches ?? []) as SwapMatch[], matchId, slot, newPlayer.id, giveBye);
+  if (!plan.ok) back(matchId, "hiba", plan.error);
+
+  if (plan.removeByeMatchId) await db.from("matches").delete().eq("id", plan.removeByeMatchId);
+  await db.from("proposals").update({ status: "superseded" }).eq("match_id", matchId).eq("status", "open");
+  await db
+    .from("matches")
+    .update({
+      [slot === "a" ? "player_a_id" : "player_b_id"]: newPlayer.id,
+      status: "pending",
+      scheduled_at: null,
+      played_at: null,
+      reminder_sent: false,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", matchId);
+  if (plan.addByeFor) {
+    await db.from("matches").insert({
+      round_id: match.round_id,
+      table_no: plan.nextTableNo,
+      player_a_id: plan.addByeFor,
+      player_b_id: null,
+      status: "bye",
+    });
+  }
+
+  const replaced = slot === "a" ? match.a : match.b!;
+  const opponent = slot === "a" ? match.b : match.a;
+  await notifySwap(match, replaced, newPlayer, opponent, !!plan.addByeFor, await getSiteUrl());
+
+  const parts = [`${replaced.karnyx_name} helyett mostantól ${newPlayer.karnyx_name} játszik ebben a meccsben.`];
+  if (plan.removeByeMatchId) parts.push(`${newPlayer.karnyx_name} Bye-ja törölve.`);
+  if (plan.addByeFor) parts.push(`${replaced.karnyx_name} Bye-t kapott.`);
+  parts.push("Az időpont egyeztetés újraindult.");
+  back(matchId, "uzenet", parts.join(" "));
 }
 
 export async function adminResetMatch(formData: FormData) {

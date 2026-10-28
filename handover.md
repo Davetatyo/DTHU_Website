@@ -130,9 +130,10 @@ src/app/
   page.tsx              home: "Következő meccsem" card + current round list
   login/page.tsx        Discord login
   auth/callback|signout route handlers
-  profil/               profile form (Karnyx name or "Nem játszom", Facebook name, time zone)
+  profil/               profile form (roster name, "Egyedi" typed name or "Nem játszom";
+                        Facebook name; time zone), KarnyxNameField client picker
   meccs/[id]/           match page: action bar (Lejátszottuk, copy message), players,
-                        proposals, SlotPicker proposal form, admin tools
+                        proposals, SlotPicker proposal form, admin tools (set time, player swap, reset)
   menetrend/page.tsx    "Közelgő meccsek": confirmed upcoming matches + calendar subscribe
   gyik/page.tsx         FAQ (keep it in sync with behaviour!)
   admin/                admin page, ImportForm (Karnyx paste + Bye field + preview), actions
@@ -150,7 +151,8 @@ src/lib/
   data.ts               read helpers;  rounds.ts  played/round-complete logic
   time.ts               time zone conversion without libraries, Hungarian formatting, picker days
   ics.ts, calendar.ts   iCalendar + Google Calendar links
-  profile.ts            NOT_PLAYING, isProfileComplete, resolveKarnyxChoice
+  profile.ts            NOT_PLAYING, CUSTOM_NAME, isProfileComplete, cleanKarnyxName, resolveKarnyxChoice
+  swap.ts               planSwap: rules for the admin player swap (pure, tested)
   auth.ts, site.ts, labels.ts, types.ts, supabase/server.ts
 supabase/migrations/0001_init.sql   full schema + RLS (applied manually in the SQL editor)
 public/dthun-logo.jpg               header logo (320×180)
@@ -195,6 +197,15 @@ Profiles link to players **by Karnyx name**, not by id, so one claim works acros
 - **Played:** either player or an admin. Results still go into Karnyx.
 - **Non-players** (organisers, admins, spectators) save their profile with "Nem játszom"
   and never claim a Karnyx name. Admin rights come from `is_admin` only.
+- **"Egyedi" names:** a player not yet in any round picks "Egyedi név" and types their Karnyx
+  name (cleaned, max 40 chars; roster spelling wins if it matches). They're linked to matches
+  as soon as a pasted round or a swap uses the same name. Admins see an "egyedi" badge.
+- **Player swap (admin, match page):** replaces one player of a non-played match in an open
+  round. The new player may come from the roster, a registered Egyedi name or a new name
+  (added to the roster without heroes). Their Bye in that round is deleted; they must not have
+  a real match there. Optionally the dropout gets a Bye. Proposals and any agreed time are
+  cleared (status back to `pending`), and Discord pings the new pairing. Rules live in
+  `src/lib/swap.ts` (`planSwap`, unit-tested).
 - **Making someone admin:** they log in once; an admin promotes them on the admin page by
   Discord or Karnyx name. Admins can't remove their own admin flag.
 
@@ -205,6 +216,7 @@ Profiles link to players **by Karnyx name**, not by id, so one claim works acros
 | Round start: numbered pairs + `Pihen:` line | everyone registered |
 | Time proposed: one short line + link | only the player(s) who must answer; skipped if they're not registered |
 | Time confirmed | nobody (names in bold) |
+| Admin player swap: who left, new pairing (+ `Pihen:` if the dropout got a Bye) | the new player and their opponent |
 | Admin "Emlékeztető küldése" (asks for confirmation) | players with no proposal, and players who must answer one |
 | 48 h before deadline (scheduled job) | players whose match has no agreed time |
 
@@ -254,6 +266,9 @@ players appear as **bold names**; the webhook may only ping listed user IDs (no
 ## 12. Gotchas
 
 - One shared database for local and live (see §2).
+- Never `source .env.local` in a shell: any line that isn't `NAME=value` gets executed and its
+  value printed in the error. Read it with a parser instead (e.g. a small `node -e` script).
+  Keep `.env.local` strictly `NAME=value` lines and `#` comments.
 - `NEXT_PUBLIC_*` env values need a redeploy; `.env.local` needs a dev server restart.
 - Supabase only accepts login redirects listed in its URL Configuration; add every new domain.
 - Vercel Hobby cron only runs once a day, which is why reminders use Supabase `pg_cron`.

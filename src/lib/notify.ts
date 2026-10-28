@@ -66,6 +66,35 @@ export async function notifyConfirmed(match: MatchView, scheduledAt: Date, siteU
   await postToDiscord(confirmedLines(match, scheduledAt, siteUrl));
 }
 
+/** Announces an admin's player swap: pings the new pairing, names who left (and rests). */
+export function swapLines(
+  match: MatchView,
+  replaced: Player,
+  newPlayer: Player,
+  opponent: Player | null,
+  replacedRests: boolean,
+  profiles: Map<string, Profile>,
+  siteUrl: string,
+): string[] {
+  const lines = [
+    `🔁 **Csere a ${match.round.number}. fordulóban:** **${replaced.karnyx_name}** helyett ${mention(newPlayer, profiles)} játszik ${mention(opponent, profiles)} ellen. Egyeztessetek időpontot: ${siteUrl}/meccs/${match.id}`,
+  ];
+  if (replacedRests) lines.push(`Pihen: **${replaced.karnyx_name}**`);
+  return lines;
+}
+
+export async function notifySwap(
+  match: MatchView,
+  replaced: Player,
+  newPlayer: Player,
+  opponent: Player | null,
+  replacedRests: boolean,
+  siteUrl: string,
+) {
+  const profiles = await getProfilesByKarnyx([newPlayer.karnyx_name, opponent?.karnyx_name ?? ""]);
+  await postToDiscord(swapLines(match, replaced, newPlayer, opponent, replacedRests, profiles, siteUrl));
+}
+
 export type ReminderTargets = {
   /** Matches where nobody has suggested a time: both players are reminded. */
   unscheduled: MatchView[];

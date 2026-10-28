@@ -21,7 +21,7 @@ const SECTIONS: Section[] = [
       },
       {
         q: "Nem találom a Karnyx nevemet a listában.",
-        a: "A lista az admin által beillesztett párosításokból készül, ezért akkor jelenik meg, ha már szerepelsz egy fordulóban. Ha a neved mégsem szerepel, valószínűleg más foglalta le tévedésből: szólj egy adminnak, aki felszabadítja.",
+        a: "A lista az admin által beillesztett párosításokból készül, ezért csak akkor jelenik meg benne a neved, ha már szerepelsz egy fordulóban. Ha még nem szerepelsz (például később csatlakozol vagy cserejátékos vagy), válaszd az „Egyedi név” lehetőséget, és írd be a Karnyx nevedet pontosan úgy, ahogy a Karnyxban szerepel. Ha a neved a listában van, de nem választható, valószínűleg más foglalta le tévedésből: szólj egy adminnak, aki felszabadítja.",
       },
       {
         q: "Nem játszom, csak szervező vagy néző vagyok. Mit válasszak?",
@@ -72,6 +72,10 @@ const SECTIONS: Section[] = [
       {
         q: "Mi a határidő?",
         a: "Minden forduló legfeljebb egy hétig tart, a határidő a meccs oldalán látszik. Időpontot csak eddig lehet javasolni. Ha mindenki hamarabb végez, a következő forduló korábban indulhat.",
+      },
+      {
+        q: "Mi történik, ha valaki kiesik a fordulóból?",
+        a: "Az admin a meccs oldalán lecserélheti egy másik játékosra, például arra, aki ebben a fordulóban Bye-on van (ilyenkor a Bye-ja törlődik). A kieső játékos kérésre Bye-t kaphat. Csere után az időpont egyeztetés újraindul, és a bot Discordon megjelöli az új párost.",
       },
       {
         q: "Mit jelent a Bye?",

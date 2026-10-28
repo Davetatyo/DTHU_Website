@@ -43,6 +43,7 @@ export default async function AdminPage({
   const profiles = (data ?? []) as Profile[];
 
   const claimed = new Set(profiles.flatMap((p) => (p.karnyx_name ? [p.karnyx_name.toLowerCase()] : [])));
+  const rosterNames = new Set(players.map((p) => p.karnyx_name.toLowerCase()));
   const openProposals = listView ? new Map<string, number>() : await getOpenProposalCounts(matches.map((m) => m.id));
   const unregistered = players.filter((p) => !claimed.has(p.karnyx_name.toLowerCase()));
   const reminder = round && !round.closed_at ? await getReminderTargets(round.id) : null;
@@ -276,7 +277,12 @@ export default async function AdminPage({
               {profiles.map((p) => (
                 <tr key={p.id} className="border-t" style={{ borderColor: "var(--border)" }}>
                   <td className="py-1.5 pr-2 font-medium">
-                    {p.karnyx_name ?? <span className="muted">—</span>}
+                    {p.karnyx_name ?? <span className="muted">nem játszik</span>}
+                    {p.karnyx_name && rosterNames.size > 0 && !rosterNames.has(p.karnyx_name.toLowerCase()) && (
+                      <span className="badge badge-proposed ml-1" title="Egyedi név: még nem szerepel egy fordulóban sem">
+                        egyedi
+                      </span>
+                    )}
                     {p.is_admin && <span className="badge badge-confirmed ml-1">admin</span>}
                   </td>
                   <td className="py-1.5 pr-2">{p.facebook_name ?? "—"}</td>
