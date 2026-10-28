@@ -1,7 +1,7 @@
 # Project state: DTHUN Meccsszervező
 
-**Current version: v1.1**, live at https://dthuonlinebajnoksag.vercel.app
-(commit `6c1a193` on `main`, 2026-10-28)
+**Current version: v1.2**, live at https://dthuonlinebajnoksag.vercel.app
+(commit `a278e0a` on `main`, 2026-10-28)
 
 Read [handover.md](handover.md) first for how the project works. This file is the running log:
 where things stand, what's next, and what each release changed.
@@ -39,15 +39,17 @@ Entry template:
 ## Status (as of 2026-10-28)
 
 - **Live and in use.** Active tournament: *DTHU - Október - Online Bajnokság 2026*.
-  Round 1 started 2026-10-26, deadline **2026-11-02 12:25** (Budapest); 11 matches
-  (8 confirmed, 1 played, 2 pending).
-- **Registrations:** 3 profiles (2 with a Karnyx name, 2 admins). Most players still need to
-  log in and claim their Karnyx names before Discord pings reach them.
+  Round 1 started 2026-10-26, deadline **2026-11-02 12:25** (Budapest); 12 entries
+  (9 confirmed, 1 played, 1 pending, 1 Bye). The first real player swap happened on v1.1:
+  table 3 is now J0cz0ka vs RP and Burlogh got a Bye; the database changes landed correctly.
+- **Registrations:** 3 profiles (2 with a Karnyx name, 2 admins). RP (Discord `hobbo1219`)
+  is an admin profile without a Karnyx name, so he isn't linked to his table 3 match yet.
+  Most players still need to log in and claim their Karnyx names before Discord pings reach them.
 - Discord webhook is configured and tested; Discord login works on the live domain.
 - Scheduled job `dt-reminders` runs hourly in Supabase (pg_cron + pg_net, secret in Vault as
   `dt_cron_secret`); verified 2026-10-26 with `200 {"warnings":0}`. Round 1's 48h warning
   is due from about 2026-10-31 12:25.
-- Automated tests: 44 unit tests passing; lint and type check clean.
+- Automated tests: 46 unit tests passing; lint and type check clean.
 
 ## Next steps
 
@@ -57,14 +59,15 @@ Entry template:
    command printed them in its session log. Delete or comment out those lines, and reset the
    Discord Client Secret (Developer Portal → OAuth2 → Reset Secret, then paste it into
    Supabase → Authentication → Providers → Discord).
-2. **First real player swap:** the v1.1 swap's database writes have only been checked through
-   unit-tested rules, not run end to end (that would have changed live data). Watch the first real
-   swap: the match shows the new player with "Nincs időpont", a Bye was removed or added as
-   chosen, and Discord got the 🔁 post.
-3. Ask players in the Facebook group to log in once and pick their Karnyx name (or "Egyedi").
-4. Optional: tag releases in git (`git tag v1.0 e527783`, `git tag v1.1 6c1a193`, then
-   `git push origin --tags`) and tag future versions the same way.
-5. Around 2026-10-31 12:25, confirm the first automatic 48h warning appeared on Discord
+   (As of the v1.2 release the two unnamed lines were still in `.env.local`.)
+2. **Link RP to his match:** Admin felület → RP's row → "Karnyx név szerkesztése" → choose
+   "RP" → Mentés (new in v1.2).
+3. **Confirm the swap post:** the first swap's database changes are verified; check that its 🔁
+   post (pinging the new pairing) appeared on Discord.
+4. Ask players in the Facebook group to log in once and pick their Karnyx name (or "Egyedi").
+5. Optional: tag releases in git (`git tag v1.0 e527783`, `git tag v1.1 6c1a193`,
+   `git tag v1.2 a278e0a`, then `git push origin --tags`) and tag future versions the same way.
+6. Around 2026-10-31 12:25, confirm the first automatic 48h warning appeared on Discord
    (or check `net._http_response` for `{"warnings":1}`).
 
 ### Ideas discussed, not decided (ask the owner before building)
@@ -90,6 +93,27 @@ None open.
 ---
 
 ## Changelog
+
+### v1.2 · 2026-10-28 · `a278e0a`
+**Changed:**
+- Admins can set or fix any user's Karnyx name: "Karnyx név szerkesztése" on the admin user
+  list opens `/admin/felhasznalo/[id]` (roster name, Egyedi or Nem játszom). A name held by
+  someone else is refused with who holds it. Made for cases like RP, who chose "Nem játszom".
+- Time picker fix (owner-reported): changing the day after typing a time no longer leaves a
+  stale date. Admin "Időpont beállítása" follows the visible day + time live (no
+  "Kiválasztom" step); player suggestions send a typed-but-unadded time with the current day,
+  shown as a dashed "küldéskor bekerül" chip. Each picker has its own time-field id.
+- Home page: Kártyák/Lista switch (list default) with heroes on the cards and the viewer's own
+  match outlined; the choice is remembered in a cookie. Admin page uses the same switch
+  (cards default, remembered separately).
+- GYIK, admin tip and handover.md updated.
+
+**Manual steps:** none (no database change).
+**Verified:** 46 unit tests (2 new for the view choice), lint, types. Browser: admin edit page
+on RP's real profile (temporary fake admin, not saved); picker scenarios on a temporary page
+(typed 19:30 then switched day → sends the new day; admin picker follows day changes live);
+home page switch, remembered after reload, own match outlined (viewed as Dave). Live check
+after deploy: view switch served, pages 200, admin edit page redirects anonymous visitors.
 
 ### v1.1 · 2026-10-28 · `6c1a193`
 **Changed:**
