@@ -1,8 +1,11 @@
+import type { Metadata } from "next";
 import { routes } from "@/lib/routes";
 import { redirect } from "next/navigation";
 import { createSessionClient } from "@/lib/supabase/server";
 import { getSiteUrl } from "@/lib/site";
 import { SubmitButton } from "@/components/SubmitButton";
+
+export const metadata: Metadata = { title: "Bejelentkezés" };
 
 async function signInWithDiscord() {
   "use server";
@@ -18,8 +21,9 @@ async function signInWithDiscord() {
 export default async function LoginPage({ searchParams }: { searchParams: Promise<{ hiba?: string }> }) {
   const { hiba } = await searchParams;
   return (
-    <div className="card mx-auto max-w-md text-center">
-      <h1 className="text-2xl font-bold">Bejelentkezés</h1>
+    <div className="card mx-auto mt-6 max-w-md text-center">
+      <span className="brand-die mx-auto mb-3 block" style={{ width: 64, height: 64 }} aria-hidden />
+      <h1 className="text-2xl font-extrabold uppercase tracking-wide">Bejelentkezés</h1>
       <p className="muted mt-2">
         A Discord fiókoddal lépsz be, így az ellenfeled látja a Discord nevedet, és a bot meg tud jelölni a
         csatornában.

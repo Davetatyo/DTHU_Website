@@ -1,10 +1,14 @@
-import { routes } from "./routes";
 import { redirect } from "next/navigation";
+import { cache } from "react";
+import { routes } from "./routes";
 import { createAdminClient, createSessionClient } from "./supabase/server";
 import type { Profile } from "./types";
 
-/** The signed-in visitor's profile, or null for anonymous visitors. */
-export async function getCurrentProfile(): Promise<Profile | null> {
+/**
+ * The signed-in visitor's profile, or null for anonymous visitors.
+ * Cached per request: the layout, header and page can all ask without extra queries.
+ */
+export const getCurrentProfile = cache(async (): Promise<Profile | null> => {
   const supabase = await createSessionClient();
   const {
     data: { user },
@@ -12,7 +16,7 @@ export async function getCurrentProfile(): Promise<Profile | null> {
   if (!user) return null;
   const { data } = await createAdminClient().from("profiles").select("*").eq("id", user.id).maybeSingle();
   return (data as Profile | null) ?? null;
-}
+});
 
 export async function requireProfile(): Promise<Profile> {
   const profile = await getCurrentProfile();

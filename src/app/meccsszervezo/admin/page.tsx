@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { routes } from "@/lib/routes";
 import { cookies } from "next/headers";
 import Link from "next/link";
@@ -26,6 +27,8 @@ import {
   updateDeadline,
 } from "@/features/match-organizer/actions/admin";
 import { ImportForm } from "@/features/match-organizer/components/ImportForm";
+
+export const metadata: Metadata = { title: "Admin felület" };
 
 const WEEK_MS = 7 * 24 * 3600_000;
 
@@ -67,7 +70,9 @@ export default async function AdminPage({
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Admin</h1>
+      <div className="sec-h">
+        <h1>Admin felület</h1>
+      </div>
       {uzenet && <p className="alert-ok">{uzenet}</p>}
       {hiba && <p className="alert-error">{hiba}</p>}
 
@@ -257,18 +262,18 @@ export default async function AdminPage({
           <SubmitButton className="btn">Adminná teszem</SubmitButton>
         </form>
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="tbl">
             <thead>
-              <tr className="muted text-left">
-                <th className="py-1 pr-2">Karnyx</th>
-                <th className="py-1 pr-2">Facebook</th>
-                <th className="py-1 pr-2">Discord</th>
-                <th className="py-1" />
+              <tr>
+                <th>Karnyx</th>
+                <th>Facebook</th>
+                <th>Discord</th>
+                <th />
               </tr>
             </thead>
             <tbody>
               {profiles.map((p) => (
-                <tr key={p.id} className="border-t" style={{ borderColor: "var(--border)" }}>
+                <tr key={p.id}>
                   <td className="py-1.5 pr-2 font-medium">
                     {p.karnyx_name ?? <span className="muted">nem játszik</span>}
                     {p.karnyx_name && rosterNames.size > 0 && !rosterNames.has(p.karnyx_name.toLowerCase()) && (

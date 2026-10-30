@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatDateTime, pickerDays, utcToWallTime, wallTimeToUtc } from "./time";
+import { formatDateTime, formatShortDate, pickerDays, timeLeft, utcToWallTime, wallTimeToUtc } from "./time";
 
 describe("pickerDays", () => {
   it("lists every day from min to max, inclusive", () => {
@@ -44,5 +44,27 @@ describe("formatDateTime", () => {
     const text = formatDateTime("2026-10-28T19:00:00Z");
     expect(text).toContain("20:00");
     expect(text).toContain("okt");
+  });
+});
+
+describe("formatShortDate", () => {
+  it("shows month, day and weekday without the time", () => {
+    const text = formatShortDate("2026-10-30T18:15:00Z", "Europe/Budapest");
+    expect(text).toContain("okt");
+    expect(text).toContain("30");
+    expect(text).not.toContain(":");
+  });
+});
+
+describe("timeLeft", () => {
+  const now = new Date("2026-10-30T12:00:00Z");
+  it("counts days and hours", () => {
+    expect(timeLeft("2026-11-02T11:25:00Z", now)).toBe("2 nap 23 óra");
+  });
+  it("shows only hours on the last day", () => {
+    expect(timeLeft("2026-10-30T17:30:00Z", now)).toBe("5 óra");
+  });
+  it("says lejárt after the deadline", () => {
+    expect(timeLeft("2026-10-30T11:00:00Z", now)).toBe("lejárt");
   });
 });

@@ -1,8 +1,8 @@
-import { routes } from "@/lib/routes";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { routes } from "@/lib/routes";
 
-export const metadata: Metadata = { title: "GYIK · DTHUN Meccsszervező" };
+export const metadata: Metadata = { title: "GYIK" };
 
 type Item = { q: string; a: React.ReactNode };
 type Section = { title: string; items: Item[] };
@@ -45,7 +45,7 @@ const SECTIONS: Section[] = [
         q: "Hol látom, ki az ellenfelem?",
         a: (
           <>
-            A <Link href={routes.organizer} className="link">Főoldalon</Link>, a „Következő meccsem” kártyán. Rákattintva a meccs oldalára jutsz,
+            Az <Link href={routes.organizer} className="link">Áttekintés</Link> oldalon, a „Következő meccsem” dobozban (és a fenti „Saját meccsem” gombbal). Rákattintva a meccs oldalára jutsz,
             ahol az ellenfeled Facebook és Discord neve is látszik.
           </>
         ),
@@ -128,21 +128,20 @@ export default function FaqPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Gyakran ismételt kérdések</h1>
-        <p className="muted mt-1">
-          Nem találod a választ? Írj egy adminnak a Facebook csoportban vagy Discordon.
-        </p>
+        <div className="sec-h">
+          <h1>Gyakran ismételt kérdések</h1>
+        </div>
+        <p className="lead">Nem találod a választ? Írj egy adminnak a Facebook csoportban vagy Discordon.</p>
       </div>
       {SECTIONS.map((section) => (
-        <section key={section.title} className="space-y-2">
-          <h2 className="text-lg font-bold">{section.title}</h2>
+        <section key={section.title} className="faq max-w-3xl">
+          <div className="hh">
+            <h2>{section.title}</h2>
+          </div>
           {section.items.map((item) => (
-            <details key={item.q} className="card group py-3">
-              <summary className="cursor-pointer list-none font-semibold">
-                <span className="muted mr-2 inline-block transition-transform group-open:rotate-90">›</span>
-                {item.q}
-              </summary>
-              <div className="muted mt-2 pl-4 text-sm leading-relaxed">{item.a}</div>
+            <details key={item.q}>
+              <summary>{item.q}</summary>
+              <div className="text-sm leading-relaxed">{item.a}</div>
             </details>
           ))}
         </section>

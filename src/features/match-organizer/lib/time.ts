@@ -61,6 +61,20 @@ export function formatTime(value: string | Date, timeZone = DEFAULT_TIMEZONE): s
   return new Intl.DateTimeFormat("hu-HU", { timeZone, hour: "2-digit", minute: "2-digit" }).format(new Date(value));
 }
 
+/** "okt. 30., P" (date without time, for compact rows). */
+export function formatShortDate(value: string | Date, timeZone = DEFAULT_TIMEZONE): string {
+  return new Intl.DateTimeFormat("hu-HU", { timeZone, month: "short", day: "numeric", weekday: "short" }).format(new Date(value));
+}
+
+/** Time left until a deadline: "2 nap 21 óra", "5 óra", or "lejárt". */
+export function timeLeft(deadline: string | Date, now: Date = new Date()): string {
+  const ms = new Date(deadline).getTime() - now.getTime();
+  if (ms <= 0) return "lejárt";
+  const hours = Math.floor(ms / 3600_000);
+  const days = Math.floor(hours / 24);
+  return days > 0 ? `${days} nap ${hours % 24} óra` : `${hours} óra`;
+}
+
 export function dayKey(value: string | Date, timeZone = DEFAULT_TIMEZONE): string {
   return utcToWallTime(new Date(value), timeZone).slice(0, 10);
 }

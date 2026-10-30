@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { requireProfile, sameName } from "@/lib/auth";
 import { getActiveTournament, getPlayers } from "@/features/match-organizer/lib/data";
 import { createAdminClient } from "@/lib/supabase/server";
@@ -7,6 +8,8 @@ import { DEFAULT_TIMEZONE } from "@/features/match-organizer/lib/time";
 import { saveProfile } from "@/features/match-organizer/actions/profile";
 import { SubmitButton } from "@/components/SubmitButton";
 import { InfoTip } from "@/components/InfoTip";
+
+export const metadata: Metadata = { title: "Profilom" };
 
 const COMMON_ZONES = [DEFAULT_TIMEZONE, "Europe/London", "Europe/Berlin", "Europe/Bucharest", "America/New_York"];
 
@@ -32,8 +35,11 @@ export default async function ProfilePage({ searchParams }: { searchParams: Prom
       : "";
 
   return (
-    <div className="card mx-auto max-w-lg">
-      <h1 className="text-2xl font-bold">Profilom</h1>
+    <div className="mx-auto max-w-lg">
+      <div className="sec-h">
+        <h1>Profilom</h1>
+      </div>
+      <div className="card">
       <p className="muted mt-1">
         Discord: <strong>{profile.discord_username ?? "?"}</strong>
       </p>
@@ -84,6 +90,7 @@ export default async function ProfilePage({ searchParams }: { searchParams: Prom
         </div>
         <SubmitButton className="btn w-full">Mentés</SubmitButton>
       </form>
+      </div>
     </div>
   );
 }

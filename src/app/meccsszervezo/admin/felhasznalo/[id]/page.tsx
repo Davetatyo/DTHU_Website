@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { routes } from "@/lib/routes";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -10,6 +11,8 @@ import { CUSTOM_NAME, isProfileComplete, NOT_PLAYING } from "@/features/match-or
 import { createAdminClient } from "@/lib/supabase/server";
 import type { Profile } from "@/features/match-organizer/lib/types";
 import { adminSetKarnyxName } from "@/features/match-organizer/actions/admin";
+
+export const metadata: Metadata = { title: "Felhasználó szerkesztése" };
 
 // Admin-only: fix another user's Karnyx name (wrong pick, or "Nem játszom" by mistake).
 export default async function AdminUserPage({
@@ -49,9 +52,11 @@ export default async function AdminUserPage({
       <Link href={routes.admin} className="muted text-sm">
         ← Admin felület
       </Link>
+      <div className="sec-h">
+        <h1>Felhasználó szerkesztése</h1>
+      </div>
       <div className="card space-y-4">
         <div>
-          <h1 className="text-2xl font-bold">Felhasználó szerkesztése</h1>
           <dl className="mt-2 space-y-0.5 text-sm">
             <div>
               <dt className="muted inline">Megjelenő név: </dt>

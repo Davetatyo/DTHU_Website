@@ -4,8 +4,8 @@ import { useRouter } from "next/navigation";
 import type { ViewMode } from "@/features/match-organizer/lib/view";
 
 const OPTIONS: { value: ViewMode; label: string }[] = [
-  { value: "kartyak", label: "Kártyák" },
   { value: "lista", label: "Lista" },
+  { value: "kartyak", label: "Kártyák" },
 ];
 
 /**
@@ -21,15 +21,9 @@ export function ViewToggle({ current, path, cookie }: { current: ViewMode; path:
   }
 
   return (
-    <div className="flex gap-1 text-sm" role="group" aria-label="Nézet">
+    <div className="seg2" role="group" aria-label="Nézet">
       {OPTIONS.map((o) => (
-        <button
-          key={o.value}
-          type="button"
-          onClick={() => choose(o.value)}
-          className={`btn btn-sm ${o.value === current ? "" : "btn-secondary"}`}
-          aria-pressed={o.value === current}
-        >
+        <button key={o.value} type="button" onClick={() => choose(o.value)} aria-pressed={o.value === current}>
           {o.label}
         </button>
       ))}

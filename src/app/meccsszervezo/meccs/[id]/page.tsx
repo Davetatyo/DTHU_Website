@@ -1,9 +1,11 @@
+import type { Metadata } from "next";
 import { routes } from "@/lib/routes";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CopyButton } from "@/components/CopyButton";
 import { SlotPicker } from "@/features/match-organizer/components/SlotPicker";
 import { StatusBadge } from "@/features/match-organizer/components/StatusBadge";
+import { HeroAvatar } from "@/components/HeroAvatar";
 import { SubmitButton } from "@/components/SubmitButton";
 import { InfoTip } from "@/components/InfoTip";
 import { getCurrentProfile, sameName } from "@/lib/auth";
@@ -15,14 +17,21 @@ import { DEFAULT_TIMEZONE, formatDateTime, pickerDays, utcToWallTime } from "@/f
 import type { Player, Profile } from "@/features/match-organizer/lib/types";
 import { acceptProposal, adminReplacePlayer, adminResetMatch, adminSetTime, markPlayed, proposeTimes } from "@/features/match-organizer/actions/match";
 
+export const metadata: Metadata = { title: "Meccs" };
+
 const WEEK_MS = 7 * 24 * 3600_000;
 
 function PlayerCard({ player, profile, showContacts }: { player: Player | null; profile: Profile | null; showContacts: boolean }) {
   if (!player) return <div className="card muted">Bye, nincs ellenfél.</div>;
   return (
     <div className="card">
-      <div className="text-lg font-bold">{player.karnyx_name}</div>
-      {player.heroes.length > 0 && <div className="muted text-sm">{player.heroes.join(" · ")}</div>}
+      <div className="flex items-center gap-3">
+        <HeroAvatar name={player.karnyx_name} hero={player.heroes[0]} />
+        <div className="min-w-0">
+          <div className="text-lg font-bold">{player.karnyx_name}</div>
+          {player.heroes.length > 0 && <div className="muted text-sm">{player.heroes.join(" · ")}</div>}
+        </div>
+      </div>
       {showContacts && (
         <dl className="mt-3 space-y-1 text-sm">
           {profile ? (
@@ -102,16 +111,43 @@ export default async function MatchPage({
 
   return (
     <div className="space-y-5">
-      <div className="flex flex-wrap items-center gap-3">
-        <Link href={routes.organizer} className="muted text-sm">
-          ← Főoldal
-        </Link>
-        <h1 className="text-2xl font-bold">
-          {match.round.number}. forduló · {match.table_no}. asztal
-        </h1>
-        <StatusBadge status={match.status} />
-      </div>
-      <p className="muted">Határidő: {formatDateTime(deadline, tz)}</p>
+      <Link href={routes.organizer} className="muted text-sm hover:text-[var(--fg)]">
+        ← Áttekintés
+      </Link>
+      <section className="hero3 versus-hero">
+        <div className="img" />
+        <div className="in w-full max-w-none">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="livechip done">
+              {match.round.number}. forduló · {match.table_no}. asztal
+            </span>
+            <StatusBadge status={match.status} />
+          </div>
+          <div className="vsbox">
+            <div className="p">
+              <HeroAvatar name={match.a.karnyx_name} hero={match.a.heroes[0]} size="lg" />
+              <h1 className="text-xl font-extrabold sm:text-2xl">{match.a.karnyx_name}</h1>
+              <small>{match.a.heroes.join(" · ")}</small>
+            </div>
+            <span className="vsx text-4xl">VS</span>
+            <div className="p">
+              <HeroAvatar name={match.b?.karnyx_name ?? null} hero={match.b?.heroes[0]} size="lg" />
+              <h2 className="text-xl font-extrabold sm:text-2xl">{match.b?.karnyx_name ?? "Bye"}</h2>
+              <small>{match.b ? match.b.heroes.join(" · ") : "nincs ellenfél"}</small>
+            </div>
+          </div>
+          <div className="meta justify-center">
+            {match.scheduled_at && match.status !== "pending" && (
+              <span>
+                Időpont: <b className="first-letter:uppercase">{formatDateTime(match.scheduled_at, tz)}</b>
+              </span>
+            )}
+            <span>
+              Határidő: <b>{formatDateTime(deadline, tz)}</b>
+            </span>
+          </div>
+        </div>
+      </section>
 
       {uzenet && <p className="alert-ok">{uzenet}</p>}
       {hiba && <p className="alert-error">{hiba}</p>}
@@ -233,7 +269,7 @@ export default async function MatchPage({
 
       {isAdmin && match.status !== "bye" && (
         <details className="card">
-          <summary className="cursor-pointer font-bold">Admin</summary>
+          <summary className="cursor-pointer font-bold" style={{ color: "var(--red)" }}>Admin eszközök</summary>
           <div className="mt-4 space-y-5">
             <form action={adminSetTime} className="space-y-2">
               <input type="hidden" name="match_id" value={match.id} />

@@ -1,21 +1,25 @@
-import { routes } from "@/lib/routes";
 import Link from "next/link";
+import type { CSSProperties } from "react";
+import { HeroAvatar } from "@/components/HeroAvatar";
 import { sameName } from "@/lib/auth";
+import { heroColors } from "@/lib/heroes";
+import { routes } from "@/lib/routes";
 import { formatDateTime } from "@/features/match-organizer/lib/time";
 import type { MatchView, Player } from "@/features/match-organizer/lib/types";
 
-// Round overview (home page and admin): one card per match, coloured by how far the pair got
-// with scheduling, showing both players' heroes.
+// Round overview (home page and admin): one picture tile per match in the two players' hero
+// colours, with a chip showing how far the pair got with scheduling.
 
 type CardState = "pending" | "proposed" | "confirmed" | "overdue" | "played" | "bye";
 
-const STATE: Record<CardState, { label: string; color: string; bg: string }> = {
-  pending: { label: "Nincs időpont", color: "var(--danger)", bg: "var(--danger-bg)" },
-  proposed: { label: "Időpont javasolva", color: "var(--warn)", bg: "var(--warn-bg)" },
-  confirmed: { label: "Megerősítve", color: "var(--ok)", bg: "var(--ok-bg)" },
-  overdue: { label: "Elmúlt, lejátszásra vár", color: "var(--accent)", bg: "var(--surface-2)" },
-  played: { label: "Lejátszva", color: "var(--muted)", bg: "var(--surface-2)" },
-  bye: { label: "Bye", color: "var(--muted)", bg: "var(--surface-2)" },
+// Fixed colours: tiles are always dark, whatever the page theme.
+const STATE: Record<CardState, { label: string; color: string }> = {
+  pending: { label: "Nincs időpont", color: "#ff7a70" },
+  proposed: { label: "Időpont javasolva", color: "#e0a63a" },
+  confirmed: { label: "Megerősítve", color: "#3fbf6f" },
+  overdue: { label: "Elmúlt, lejátszásra vár", color: "#d4ab52" },
+  played: { label: "Lejátszva", color: "#b9b8c4" },
+  bye: { label: "Bye", color: "#b9b8c4" },
 };
 
 function cardState(match: MatchView, now: Date): CardState {
@@ -23,20 +27,29 @@ function cardState(match: MatchView, now: Date): CardState {
   return match.status;
 }
 
-function PlayerLine({ player, registered }: { player: Player | null; registered: (p: Player) => boolean }) {
-  if (!player) return <div className="muted italic">nincs ellenfél</div>;
+function Side({ player, registered }: { player: Player | null; registered: (p: Player) => boolean }) {
+  if (!player) {
+    return (
+      <div className="p">
+        <HeroAvatar name={null} size="md" />
+        <b>Pihenő</b>
+        <small>nincs ellenfél</small>
+      </div>
+    );
+  }
   const ok = registered(player);
   return (
-    <div className="min-w-0">
-      <div className="flex items-center gap-1.5">
+    <div className="p">
+      <HeroAvatar name={player.karnyx_name} hero={player.heroes[0]} size="md" />
+      <b>
         <span
-          className="inline-block h-2 w-2 shrink-0 rounded-full"
-          style={{ background: ok ? "var(--ok)" : "var(--border)" }}
+          className="mr-1 inline-block h-2 w-2 rounded-full align-middle"
+          style={{ background: ok ? "#3fbf6f" : "#55556a" }}
           title={ok ? "Regisztrált" : "Még nem regisztrált"}
         />
-        <span className="truncate font-semibold">{player.karnyx_name}</span>
-      </div>
-      {player.heroes.length > 0 && <div className="muted truncate pl-3.5 text-xs">{player.heroes.join(" · ")}</div>}
+        {player.karnyx_name}
+      </b>
+      {player.heroes.length > 0 && <small>{player.heroes[0]}</small>}
     </div>
   );
 }
@@ -52,7 +65,7 @@ export function MatchupGrid({
   timeZone: string;
   registeredNames: Set<string>;
   openProposalCounts: Map<string, number>;
-  /** Karnyx name of the viewer: their own match gets an accent outline. */
+  /** Karnyx name of the viewer: their own match gets a gold outline. */
   highlight?: string | null;
 }) {
   const now = new Date();
@@ -69,51 +82,48 @@ export function MatchupGrid({
           </span>
         ))}
         <span className="flex items-center gap-1">
-          <span className="inline-block h-2 w-2 rounded-full" style={{ background: "var(--ok)" }} /> regisztrált játékos
+          <span className="inline-block h-2 w-2 rounded-full" style={{ background: "#3fbf6f" }} /> regisztrált játékos
         </span>
       </div>
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="cards">
         {matches.map((m) => {
           const state = cardState(m, now);
-          const style = STATE[state];
           const proposals = openProposalCounts.get(m.id) ?? 0;
           const faded = state === "played" || state === "bye";
+          const [c1] = heroColors(m.a.heroes[0]);
+          const [c2] = heroColors(m.b?.heroes[0]);
           return (
-            <Link
-              key={m.id}
-              href={routes.match(m.id)}
-              className="flex flex-col overflow-hidden rounded-xl border transition-transform hover:-translate-y-0.5"
-              style={{
-                borderColor: isMine(m) ? "var(--accent)" : "var(--border)",
-                boxShadow: isMine(m) ? "0 0 0 2px var(--accent)" : undefined,
-                background: "var(--surface)",
-                opacity: faded ? 0.7 : 1,
-              }}
-            >
-              <div className="flex items-center justify-between px-3 py-1.5 text-xs font-semibold" style={{ background: style.bg, color: style.color }}>
-                <span>
-                  {m.table_no}. asztal{isMine(m) ? " · a te meccsed" : ""}
+            <Link key={m.id} href={routes.match(m.id)} className={`tile${isMine(m) ? " me" : ""}${faded ? " faded" : ""}`}>
+              <div className="img ph-art" style={{ "--c1": c1, "--c2": c2 } as CSSProperties} />
+              <span className="badge-tl tile-no">
+                #{m.table_no}
+                {isMine(m) ? " · a te meccsed" : ""}
+              </span>
+              <span className="badge-tr">
+                <span className="badge" style={{ color: STATE[state].color }}>
+                  {STATE[state].label}
                 </span>
-                <span>{style.label}</span>
-              </div>
-              <div className="flex-1 space-y-1.5 px-3 py-2.5" style={{ borderLeft: `4px solid ${style.color}` }}>
-                <PlayerLine player={m.a} registered={registered} />
-                <div className="muted pl-3.5 text-xs">vs</div>
-                <PlayerLine player={m.b} registered={registered} />
-              </div>
-              <div className="border-t px-3 py-1.5 text-sm" style={{ borderColor: "var(--border)", borderLeft: `4px solid ${style.color}` }}>
-                {m.scheduled_at && (state === "confirmed" || state === "overdue" || state === "played") ? (
-                  <span className="font-medium first-letter:uppercase">{formatDateTime(m.scheduled_at, timeZone)}</span>
-                ) : state === "proposed" ? (
-                  <span className="muted">{proposals} időpont vár válaszra</span>
-                ) : state === "played" ? (
-                  <span className="muted">Lejátszva, időpont egyeztetés nélkül</span>
-                ) : state === "bye" ? (
-                  <span className="muted">Nincs teendő</span>
-                ) : (
-                  <span className="muted">Még senki nem javasolt időpontot</span>
-                )}
+              </span>
+              <div className="in">
+                <div className="vsbox">
+                  <Side player={m.a} registered={registered} />
+                  <span className="vsx">VS</span>
+                  <Side player={m.b} registered={registered} />
+                </div>
+                <div className="foot">
+                  {m.scheduled_at && (state === "confirmed" || state === "overdue" || state === "played") ? (
+                    <span className="font-semibold first-letter:uppercase">{formatDateTime(m.scheduled_at, timeZone)}</span>
+                  ) : state === "proposed" ? (
+                    <span>{proposals} időpont vár válaszra</span>
+                  ) : state === "played" ? (
+                    <span>Lejátszva, időpont egyeztetés nélkül</span>
+                  ) : state === "bye" ? (
+                    <span>Nincs teendő</span>
+                  ) : (
+                    <span>Még senki nem javasolt időpontot</span>
+                  )}
+                </div>
               </div>
             </Link>
           );
