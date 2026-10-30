@@ -152,6 +152,20 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
 
+### 2026-10-30 (late night, 2) · bookmarklet fixed after the first live test
+
+- Owner's first run on the real Karnyx page copied a fake player "My Stats" (header: profile
+  link + strip of 19 hero icons) and every player twice (pairings, then a standings list).
+- Fix in `readKarnyxPlayers`: >3 avatars = not a player; prefer rows in two-player match boxes
+  (≥2 boxes on the page); else first appearance of each name. DOM tests with happy-dom
+  (dev dependency, 20.14.6) reproduce the page and run the generated bookmark; 86 tests.
+  `vitest.config.ts` → `.mts` (silences the ESM warning).
+- Owner must **re-drag the bookmark** from `/karnyx` (the old one holds the old code).
+- Watch: Karnyx shows "T.Laci" while our roster has "T. Laci" (from the round 1 import). The
+  import matches names exactly (case-insensitive), so round 2 would add "T.Laci" as a new
+  player and his profile wouldn't link. Check in the preview; fix the name in the paste or ask
+  the owner how to handle renamed Karnyx players.
+
 ### 2026-10-30 (late night) · Karnyx pairing bookmarklet
 
 - Owner pasted one player row of the Karnyx round page: hero avatars are
