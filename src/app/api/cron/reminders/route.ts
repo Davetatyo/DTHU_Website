@@ -1,10 +1,11 @@
+import { routes } from "@/lib/routes";
 import { NextResponse, type NextRequest } from "next/server";
-import { getProfilesByKarnyx, getRoundMatches } from "@/lib/data";
-import { mention, postToDiscord } from "@/lib/discord";
+import { getProfilesByKarnyx, getRoundMatches } from "@/features/match-organizer/lib/data";
+import { mention, postToDiscord } from "@/features/match-organizer/lib/discord";
 import { getSiteUrl } from "@/lib/site";
 import { createAdminClient } from "@/lib/supabase/server";
-import { formatDateTime } from "@/lib/time";
-import type { Round } from "@/lib/types";
+import { formatDateTime } from "@/features/match-organizer/lib/time";
+import type { Round } from "@/features/match-organizer/lib/types";
 
 // Called hourly by Supabase pg_cron (see README). Sends one warning per round 48 hours before
 // the deadline, pinging the players whose match still has no agreed time.
@@ -45,7 +46,7 @@ export async function GET(request: NextRequest) {
     await postToDiscord([
       `⚠️ **A ${round.number}. forduló határideje: ${formatDateTime(round.deadline)}.** Ezeknek a meccseknek még nincs időpontja:`,
       ...unscheduled.map((m) => `• ${mention(m.a, profiles)} vs ${mention(m.b, profiles)}`),
-      `Egyeztessetek itt: ${site}`,
+      `Egyeztessetek itt: ${site}${routes.organizer}`,
     ]);
     warnings++;
   }

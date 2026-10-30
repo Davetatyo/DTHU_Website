@@ -1,3 +1,4 @@
+import { routes } from "./routes";
 import { redirect } from "next/navigation";
 import { createAdminClient, createSessionClient } from "./supabase/server";
 import type { Profile } from "./types";
@@ -15,13 +16,13 @@ export async function getCurrentProfile(): Promise<Profile | null> {
 
 export async function requireProfile(): Promise<Profile> {
   const profile = await getCurrentProfile();
-  if (!profile) redirect("/login");
+  if (!profile) redirect(routes.login);
   return profile;
 }
 
 export async function requireAdmin(): Promise<Profile> {
   const profile = await requireProfile();
-  if (!profile.is_admin) redirect("/");
+  if (!profile.is_admin) redirect(routes.organizer);
   return profile;
 }
 

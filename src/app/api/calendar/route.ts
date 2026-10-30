@@ -1,8 +1,8 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { sameName } from "@/lib/auth";
-import { matchEvent } from "@/lib/calendar";
-import { getActiveTournament, getMatch, getScheduledMatches } from "@/lib/data";
-import { buildCalendar } from "@/lib/ics";
+import { matchEvent } from "@/features/match-organizer/lib/calendar";
+import { getActiveTournament, getMatch, getScheduledMatches } from "@/features/match-organizer/lib/data";
+import { buildCalendar } from "@/features/match-organizer/lib/ics";
 import { getSiteUrl } from "@/lib/site";
 
 // GET /api/calendar               → every scheduled match of the active tournament (subscribable feed)

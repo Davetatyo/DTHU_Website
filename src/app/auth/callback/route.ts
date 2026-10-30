@@ -1,17 +1,18 @@
+import { routes } from "@/lib/routes";
 import { NextResponse, type NextRequest } from "next/server";
 import { isBootstrapAdmin } from "@/lib/auth";
-import { isProfileComplete } from "@/lib/profile";
+import { isProfileComplete } from "@/features/match-organizer/lib/profile";
 import { createAdminClient, createSessionClient } from "@/lib/supabase/server";
 import { getSiteUrl } from "@/lib/site";
 
 export async function GET(request: NextRequest) {
   const site = await getSiteUrl();
   const code = request.nextUrl.searchParams.get("code");
-  if (!code) return NextResponse.redirect(`${site}/login?hiba=1`);
+  if (!code) return NextResponse.redirect(`${site}${routes.login}?hiba=1`);
 
   const supabase = await createSessionClient();
   const { data, error } = await supabase.auth.exchangeCodeForSession(code);
-  if (error || !data.user) return NextResponse.redirect(`${site}/login?hiba=1`);
+  if (error || !data.user) return NextResponse.redirect(`${site}${routes.login}?hiba=1`);
 
   // Discord identity data from Supabase: provider_id = Discord user ID, name = username.
   const meta = data.user.user_metadata ?? {};
@@ -31,5 +32,5 @@ export async function GET(request: NextRequest) {
   });
 
   // Only unfinished profiles go to the profile page; organisers without a Karnyx name are fine.
-  return NextResponse.redirect(existing && isProfileComplete(existing) ? `${site}/` : `${site}/profil`);
+  return NextResponse.redirect(existing && isProfileComplete(existing) ? `${site}${routes.organizer}` : `${site}${routes.profile}`);
 }
