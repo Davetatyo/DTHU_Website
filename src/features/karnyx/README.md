@@ -23,7 +23,11 @@ get a new round's pairings into the Meccsszervező without copy-paste.
   Tested: the text round-trips through `parseKarnyxPaste` (unit test); the generated bookmark
   ran on a page built from a real Karnyx row (2026-10-30: 4 players → 2 pairings, a stray
   header player link ignored) and its output gave the right preview in the import form.
-  **Not yet tried on the live Karnyx page.**
+  First live test (2026-10-30) found two extra things on the real page: a "My Stats" link in
+  the header next to a strip of 19 hero icons, and a second list (standings) repeating all
+  players. The reader now skips rows with more than 3 avatars, takes only rows in two-player
+  match boxes when there are such boxes, and otherwise keeps each player's first appearance.
+  DOM tests (`bookmarklet.dom.test.ts`, happy-dom) model that page and run the bookmark itself.
 
 ## Why not an embedded frame
 
