@@ -19,6 +19,7 @@ Supabase pg_cron for reminders.
 | [STATE.md](STATE.md) | Where things stand: version, launch plan, features, owner tasks, issues, changelog |
 | [docs/match-organizer.md](docs/match-organizer.md) | The Meccsszervező: architecture, data model, domain rules |
 | [docs/setup.md](docs/setup.md) | Services, environment variables, Supabase / Discord / cron setup |
+| [docs/vercel.md](docs/vercel.md) | Moving dthu.hu to this repository: new Vercel project, tests, domain switch |
 | [reference/](reference/README.md) | The design prototype the site follows |
 
 ## Quick start

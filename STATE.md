@@ -53,19 +53,18 @@ The code is on GitHub (github.com/Davetatyo/DTHU_Website, `main` + `feature/*`, 
 2026-10-30); nothing is deployed from it yet. To go live:
 
 1. ~~Push to github.com/Davetatyo/DTHU_Website~~ done 2026-10-30.
-2. Before switching production: open a **Vercel preview** of this repo with the production env
-   vars and test what couldn't be tested locally, logged in as a real player and an admin:
-   login → profile → match page → propose (on a test match or with the owner) → Discord post
-   links point to `/meccsszervezo/meccs/…`, old `/meccs/<id>` links redirect, `/api/calendar`
-   feed still works. Add the preview domain to Supabase Redirect URLs for the login test.
-3. **Switch at a quiet moment, ideally between rounds** (round 1 deadline: 2026-11-02 12:25).
-   Vercel → project `dthuonlinebajnoksag` (serves dthu.hu) → Settings → Git → connect
-   `Davetatyo/DTHU_Website`, branch `main` (env vars stay). Or import the repo as a new
-   project, copy the env vars, and move the `dthu.hu` domain to it.
-4. Nothing changes in Supabase: `/auth/callback` and `/api/cron/reminders` keep their URLs.
-5. Live check: `/` → `/meccsszervezo`, `/meccs/<id>` → `/meccsszervezo/meccs/<id>`, login,
-   a calendar subscription refresh, the next hourly `dt-reminders` run returns 200.
-6. Afterwards: archive DT_Match_Organizer on GitHub (read-only) with a pointer to this repo.
+2. **Vercel: follow [docs/vercel.md](docs/vercel.md).** In short: import DTHU_Website as a
+   *new* Vercel project (env vars copied, `DISCORD_WEBHOOK_URL` left out while testing), add its
+   `*.vercel.app/auth/callback` to Supabase Redirect URLs, test login as admin and as a player
+   on that address, then move the `dthu.hu` domain from the old project (`dthuonlinebajnoksag`)
+   to the new one **between rounds** (round 1 deadline: 2026-11-02 12:25). Rollback = move the
+   domain back.
+3. Nothing changes in Supabase besides that redirect URL: `/auth/callback` and
+   `/api/cron/reminders` keep their paths.
+4. **Write tests use the real tournament** (one database): setting a match time changes that
+   match; starting a new round closes round 1 and pings everyone. See docs/vercel.md §3 before
+   testing writes.
+5. Afterwards: record the release here, archive DT_Match_Organizer on GitHub (read-only).
 
 **Phase 2: the full site.** When the features below have real data (owner decides which are
 needed for launch): set `NEXT_PUBLIC_FULL_SITE=1` in Vercel and redeploy. Everyone then sees
@@ -93,8 +92,8 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 
 ## Needs the owner
 
-1. **Follow the Launch plan** from step 2: Vercel preview of DTHU_Website with the production
-   env vars, test logged in as admin and as a player, then switch dthu.hu between rounds.
+1. **Follow [docs/vercel.md](docs/vercel.md)**: new Vercel project for DTHU_Website, test on its
+   address (admin + player login), then move dthu.hu over between rounds.
 2. Carried over from DT_Match_Organizer `state.md` (2026-10-30), status unknown here, please
    confirm or close:
    - Domain move to dthu.hu: Supabase Site URL `https://dthu.hu` + redirect
@@ -151,6 +150,18 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 ## Handover log
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
+
+### 2026-10-30 (evening) · non-admin view checked, Vercel prepared
+
+- Owner asked: non-admins (logged in or not) must see only the Meccsszervező, no other tabs.
+  Already the case; checked with the TEMP-PREVIEW profile (reverted): non-admin → one tab row
+  (Áttekintés, Közelgő meccsek, GYIK), logo → `/meccsszervezo`, no preview strip; admin → site
+  menu + Meccsszervező tabs + strip. Middleware redirects non-admins from every other page.
+- `npm run build` passes; `next start` checks: `/`, `/bolt` → 307 `/meccsszervezo`; `/gyik` →
+  307 `/meccsszervezo/gyik`; `/meccs/x`, `/menetrend` → 308; `/api/calendar` 200.
+- `package.json` pins Node 22.x for Vercel. New guide **docs/vercel.md** (new project, env
+  vars, Supabase redirect URL, test checklist with write-test warnings, domain switch, rollback).
+- Gotcha: two `next dev` servers in this folder share `.next/` and serve random 404s; run one.
 
 ### 2026-10-30 (push) · everything on GitHub
 

@@ -85,7 +85,8 @@ src/middleware.ts            phase-1 gate + Supabase session refresh
 supabase/migrations/         schema, applied by the owner in the Supabase SQL editor
 reference/artifact/          the design prototype (not built): source for the look and for
                              the content of features still to build
-docs/                        match-organizer.md (feature guide), setup.md (services, env, cron)
+docs/                        match-organizer.md (feature guide), setup.md (services, env, cron),
+                             vercel.md (deployment and the dthu.hu domain switch)
 ```
 
 **Dependency direction:** `app/` → `features/` → `components/`, `lib/`. A feature may use
@@ -134,7 +135,8 @@ the flag in `.env.local` to see the hidden pages without logging in.
 - `npx tsc --noEmit`, `npm run lint`, `npm test` before every commit. Put logic in pure
   functions in a feature's `lib/` and unit-test it next to the file (`*.test.ts`).
 - Browser checks: start the dev server from a shell (`npx next dev -p <port>`); the desktop
-  app's preview launcher can't start it in this folder. Login only works on port 3000.
+  app's preview launcher can't start it in this folder. Login only works on port 3000. Run only
+  **one** dev server at a time here: two share `.next/` and serve random 404s.
 - **Logged-in pages without logging in:** temporarily make `getCurrentProfile()` in
   `src/lib/auth.ts` return a fake profile when there's no user, marked `// TEMP-PREVIEW`. Look
   only (real database!), revert immediately, and check `grep -rn TEMP-PREVIEW src` prints
