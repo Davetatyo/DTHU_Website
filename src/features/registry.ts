@@ -32,6 +32,7 @@ export const FEATURES: Feature[] = [
   { id: "rulebook", label: "Szabálytár", route: "/szabalytar", status: "preview" },
   { id: "faq", label: "GYIK", route: "/gyik", status: "preview" },
   { id: "links", label: "Linkek", route: "/linkek", status: "preview" },
+  { id: "karnyx", label: "Karnyx", route: "/karnyx", status: "preview", adminOnly: true },
   { id: "alchemist", label: "Alkimista", route: "/alkimista", status: "preview" },
 ];
 
