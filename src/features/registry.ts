@@ -29,7 +29,7 @@ export const FEATURES: Feature[] = [
   { id: "shop", label: "Bolt", route: "/bolt", status: "preview", badge: "ÚJ" },
   { id: "rulebook", label: "Szabálytár", route: "/szabalytar", status: "planned" },
   { id: "faq", label: "GYIK", route: "/gyik", status: "preview" },
-  { id: "links", label: "Linkek", route: "/linkek", status: "planned" },
+  { id: "links", label: "Linkek", route: "/linkek", status: "preview" },
   { id: "alchemist", label: "Alkimista", route: "/alkimista", status: "planned" },
 ];
 
