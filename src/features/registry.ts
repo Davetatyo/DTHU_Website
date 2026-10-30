@@ -27,7 +27,7 @@ export const FEATURES: Feature[] = [
   { id: "timetables", label: "Versenynaptár", route: "/versenynaptar", status: "preview" },
   { id: "tickets", label: "Jegyek", route: "/jegyek", status: "preview", badge: "ÚJ" },
   { id: "shop", label: "Bolt", route: "/bolt", status: "preview", badge: "ÚJ" },
-  { id: "rulebook", label: "Szabálytár", route: "/szabalytar", status: "planned" },
+  { id: "rulebook", label: "Szabálytár", route: "/szabalytar", status: "preview" },
   { id: "faq", label: "GYIK", route: "/gyik", status: "preview" },
   { id: "links", label: "Linkek", route: "/linkek", status: "preview" },
   { id: "alchemist", label: "Alkimista", route: "/alkimista", status: "planned" },
