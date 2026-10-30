@@ -49,11 +49,10 @@ feature table, owner tasks and known issues current (see CLAUDE.md → "End of e
 **Phase 1: the Meccsszervező in public, the rest as an admin preview.** Every page of the
 prototype is built (see Features). Anonymous visitors and non-admins are redirected to the
 Meccsszervező; admins see the full menu with a "fejlesztői előnézet" strip, on dthu.hu too.
-The repository is ready locally (v2.0, see the Handover log); nothing is pushed or deployed yet.
-To go live:
+The code is on GitHub (github.com/Davetatyo/DTHU_Website, `main` + `feature/*`, pushed
+2026-10-30); nothing is deployed from it yet. To go live:
 
-1. Owner reviews the v2.0 commits and screenshots; agent pushes `main` and the feature
-   branches to github.com/Davetatyo/DTHU_Website (owner's go-ahead).
+1. ~~Push to github.com/Davetatyo/DTHU_Website~~ done 2026-10-30.
 2. Before switching production: open a **Vercel preview** of this repo with the production env
    vars and test what couldn't be tested locally, logged in as a real player and an admin:
    login → profile → match page → propose (on a test match or with the owner) → Discord post
@@ -94,9 +93,8 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 
 ## Needs the owner
 
-1. **Review v2.0** (Meccsszervező restructure + new design, and the full site as an admin
-   preview) and give the go-ahead to push to github.com/Davetatyo/DTHU_Website. Then follow
-   the Launch plan.
+1. **Follow the Launch plan** from step 2: Vercel preview of DTHU_Website with the production
+   env vars, test logged in as admin and as a player, then switch dthu.hu between rounds.
 2. Carried over from DT_Match_Organizer `state.md` (2026-10-30), status unknown here, please
    confirm or close:
    - Domain move to dthu.hu: Supabase Site URL `https://dthu.hu` + redirect
@@ -154,7 +152,16 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
 
-### 2026-10-30 (later) · the whole prototype site built as an admin preview (not pushed)
+### 2026-10-30 (push) · everything on GitHub
+
+Pushed `main` and all `feature/*` branches to github.com/Davetatyo/DTHU_Website (owner's
+go-ahead; old DT_Match_Organizer repo and Vercel untouched). The first push of everything at
+once got `Internal Server Error` from GitHub twice; pushing `main` in two steps
+(`b7b9739`, then the rest) and then the feature branches worked. Locally the `organizer`
+remote has its push URL disabled (`no-push-old-repo`) so nothing can go to the old repo.
+Next: Launch plan step 2 (Vercel preview).
+
+### 2026-10-30 (later) · the whole prototype site built as an admin preview
 
 **Owner's direction:** build the whole website from the artifact, with the Meccsszervező under
 its menu tab; only that tab is public, the rest stays hidden but usable by the owner.
