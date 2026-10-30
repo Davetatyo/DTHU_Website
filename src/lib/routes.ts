@@ -19,8 +19,6 @@ export const routes = {
   faq: "/gyik",
   links: "/linkek",
   alchemist: "/alkimista",
-  /** Admin-only Karnyx tool (lib/site-mode.ts → ADMIN_ONLY_PREFIXES). */
-  karnyx: "/karnyx",
 
   organizer: MO,
   match: (id: string) => `${MO}/meccs/${id}`,
