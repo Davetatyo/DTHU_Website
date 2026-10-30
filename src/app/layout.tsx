@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Open_Sans, VT323 } from "next/font/google";
+import { IconSprite } from "@/components/site/IconSprite";
 import "./globals.css";
 
 const openSans = Open_Sans({ variable: "--font-open-sans", subsets: ["latin", "latin-ext"], weight: ["400", "500", "600", "700", "800"] });
@@ -22,7 +23,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
-      <body className={`${openSans.variable} ${vt323.variable} antialiased`}>{children}</body>
+      <body className={`${openSans.variable} ${vt323.variable} antialiased`}>
+        <IconSprite />
+        {children}
+      </body>
     </html>
   );
 }

@@ -5,8 +5,20 @@
 const MO = "/meccsszervezo";
 
 export const routes = {
-  /** Site home. Until the full site opens (NEXT_PUBLIC_FULL_SITE), middleware sends it to the Meccsszervező. */
+  /** Site home ("Hírek"). Phase 1: admins only, everyone else is sent to the Meccsszervező. */
   home: "/",
+
+  // Full-site pages (phase 1: admins only, see lib/site-mode.ts)
+  rankings: "/ranglista",
+  timetables: "/versenynaptar",
+  tickets: "/jegyek",
+  shop: "/bolt",
+  rulebook: "/szabalytar",
+  rule: (id: string) => `/szabalytar/${id}`,
+  rulebookTab: (tab: string) => `/szabalytar?tab=${tab}`,
+  faq: "/gyik",
+  links: "/linkek",
+  alchemist: "/alkimista",
 
   organizer: MO,
   match: (id: string) => `${MO}/meccs/${id}`,

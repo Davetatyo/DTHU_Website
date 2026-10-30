@@ -302,6 +302,47 @@ a:hover { color: inherit; }
   .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
   .cards > .tile { min-height: 210px; }
 
+  /* ---------- picture tiles: content (from the prototype's V2 layer) ---------- */
+  .tile h3 { font-size: 20px; font-weight: 700; color: #fff; text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6); line-height: 1.2; }
+  .tile .k { font-family: var(--font-px); font-size: 16px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold); }
+  .tile .sub { font-size: 14px; color: #cfc6b4; }
+  button.tile { font: inherit; text-align: left; cursor: pointer; padding: 0; width: 100%; }
+  button.tile:hover { border-color: var(--gold); }
+  @media (prefers-reduced-motion: no-preference) { button.tile:hover > .img { transform: scale(1.05); } }
+  .ph { background:
+    radial-gradient(circle at var(--x, 70%) var(--y, 30%), color-mix(in srgb, var(--c1) 85%, #fff 15%) 0, transparent 42%),
+    radial-gradient(circle at 15% 85%, color-mix(in srgb, var(--c2) 70%, transparent) 0, transparent 55%),
+    repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.035) 0 2px, transparent 2px 14px),
+    linear-gradient(160deg, color-mix(in srgb, var(--c1) 45%, #0d0b12), #0d0b12 75%); }
+  .ph .glyph { position: absolute; width: 46%; max-width: 180px; aspect-ratio: 1; right: 6%; top: 8%; color: rgba(255, 255, 255, 0.18); transform: rotate(-12deg); }
+  .phtag { position: absolute; left: 50%; top: 10px; transform: translateX(-50%); opacity: 0; transition: opacity 0.2s; z-index: 3; white-space: nowrap; font-family: var(--font-px); font-size: 12px; color: rgba(255, 255, 255, 0.55); background: rgba(0, 0, 0, 0.35); padding: 0 5px; border-radius: 4px; pointer-events: none; }
+  .tile:hover .phtag { opacity: 1; }
+  .datebadge { background: var(--gold); color: var(--on-gold); border-radius: 8px; text-align: center; padding: 4px 8px; line-height: 1; font-weight: 800; box-shadow: 0 3px 0 rgba(0, 0, 0, 0.35); }
+  .datebadge b { display: block; font-size: 22px; }
+  .datebadge small { font-family: var(--font-px); font-size: 14px; font-weight: normal; text-transform: uppercase; }
+  .cards.tall > .tile { min-height: 280px; }
+  .cards.sm > .tile { min-height: 150px; }
+  .rowh { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin: 6px 0 10px; }
+  .rowh h2, .rowh h3 { font-size: 24px; font-weight: 700; color: var(--gold); }
+
+  /* prototype / preview strip */
+  .proto { font-family: var(--font-px); font-size: 15px; line-height: 1.35; text-align: center; color: var(--on-gold); background: var(--gold); padding: 3px 10px; border-radius: 4px; }
+
+  /* chips with the prototype's names (ok / warn / info / mut) */
+  .chip { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.05rem 0.5rem; border: 1px solid currentColor; border-radius: 4px; white-space: nowrap; }
+  .chip::before { content: ""; width: 6px; height: 6px; background: currentColor; border-radius: 1px; }
+  .chip.ok { color: var(--ok); } .chip.warn { color: var(--warn); } .chip.info { color: var(--info); } .chip.mut { color: var(--muted); }
+  .tile .chip { background: rgba(10, 8, 14, 0.7); }
+  .tile .chip.ok { color: #3fbf6f; } .tile .chip.warn { color: #e0a63a; } .tile .chip.info { color: #8db4f5; } .tile .chip.mut { color: #b9b8c4; }
+  .tok { width: 18px; height: 18px; flex: none; color: var(--gold); }
+
+  /* modal dialog */
+  .dlg { border: 1px solid var(--gold-dim); border-radius: 10px; background: var(--panel); color: var(--fg); padding: 0; width: min(560px, calc(100vw - 32px)); }
+  .dlg::backdrop { background: rgba(0, 0, 0, 0.6); }
+  .dlg .dh { display: flex; justify-content: space-between; align-items: center; background: linear-gradient(90deg, var(--red-dk), var(--red)); color: #f3e6c8; padding: 4px 12px; font-family: var(--font-px); font-size: 19px; }
+  .dlg .dh button { cursor: pointer; font-family: var(--font-px); font-size: 20px; padding: 0 4px; }
+  .dlg .db { padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+
   /* ---------- FAQ ---------- */
   .faq details { border: 1px solid var(--line); background: var(--panel); border-radius: 8px; margin-bottom: 6px; }
   .faq summary { cursor: pointer; padding: 10px 14px; font-weight: 700; }

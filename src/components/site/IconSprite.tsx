@@ -1,0 +1,18 @@
+// The site's line icons (from reference/artifact), defined once and used via <Icon id="…" />.
+const SYMBOLS = `
+<symbol id="i-die" viewBox="0 0 32 32"><rect x="3" y="3" width="26" height="26" rx="5" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="10" cy="10" r="2.4" fill="currentColor"/><circle cx="22" cy="10" r="2.4" fill="currentColor"/><circle cx="16" cy="16" r="2.4" fill="currentColor"/><circle cx="10" cy="22" r="2.4" fill="currentColor"/><circle cx="22" cy="22" r="2.4" fill="currentColor"/></symbol>
+<symbol id="i-swords" viewBox="0 0 32 32"><path d="M5 5l14 14M27 5L13 19" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M15 21l-4 4M17 21l4 4M9 23l-3 3M23 23l3 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></symbol>
+<symbol id="i-cal" viewBox="0 0 32 32"><rect x="4" y="6" width="24" height="22" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M4 12h24M10 3v6M22 3v6" stroke="currentColor" stroke-width="2.2"/><rect x="9" y="16" width="4" height="4" fill="currentColor"/><rect x="19" y="21" width="4" height="4" fill="currentColor"/></symbol>
+<symbol id="i-trophy" viewBox="0 0 32 32"><path d="M10 4h12v8a6 6 0 0 1-12 0z" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M10 7H5c0 5 3 7 5 7M22 7h5c0 5-3 7-5 7M16 18v5M10 28h12M12 23h8v5h-8z" fill="none" stroke="currentColor" stroke-width="2.2"/></symbol>
+<symbol id="i-scroll" viewBox="0 0 32 32"><path d="M8 5h17v20a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3v-2h16v2a3 3 0 0 0 3 3" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M12 11h9M12 16h9" stroke="currentColor" stroke-width="2"/></symbol>
+<symbol id="i-ticket" viewBox="0 0 32 32"><path d="M3 9h26v4a3 3 0 0 0 0 6v4H3v-4a3 3 0 0 0 0-6z" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M20 9v14" stroke="currentColor" stroke-width="2" stroke-dasharray="2 2"/><path d="M11 13l1.3 2.6 2.7.4-2 1.9.5 2.7-2.5-1.3-2.5 1.3.5-2.7-2-1.9 2.7-.4z" fill="currentColor"/></symbol>
+<symbol id="i-chest" viewBox="0 0 32 32"><path d="M4 14h24v13H4zM4 14v-3a6 6 0 0 1 6-6h12a6 6 0 0 1 6 6v3" fill="none" stroke="currentColor" stroke-width="2.2"/><rect x="13" y="12" width="6" height="7" fill="currentColor"/></symbol>
+<symbol id="i-q" viewBox="0 0 32 32"><circle cx="16" cy="16" r="12" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M12 12.5a4 4 0 1 1 5.5 3.7c-1 .5-1.5 1.2-1.5 2.3v1" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><circle cx="16" cy="23.5" r="1.6" fill="currentColor"/></symbol>
+<symbol id="i-link" viewBox="0 0 32 32"><path d="M14 18a5 5 0 0 0 7 0l5-5a5 5 0 0 0-7-7l-2 2M18 14a5 5 0 0 0-7 0l-5 5a5 5 0 0 0 7 7l2-2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></symbol>
+<symbol id="i-book" viewBox="0 0 32 32"><path d="M16 8c-3-2.5-7-3-11-2.5v19c4-.5 8 0 11 2.5 3-2.5 7-3 11-2.5v-19c-4-.5-8 0-11 2.5zM16 8v19" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="M8.5 11.5c1.8 0 3.5.4 4.5 1M8.5 16c1.8 0 3.5.4 4.5 1M19 12.5c1-.6 2.7-1 4.5-1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+<symbol id="i-gem" viewBox="0 0 32 32"><path d="M16 3l11 9-11 17L5 12z" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M5 12h22M11 12l5 17 5-17-5-9z" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+`;
+
+export function IconSprite() {
+  return <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden dangerouslySetInnerHTML={{ __html: `<defs>${SYMBOLS}</defs>` }} />;
+}

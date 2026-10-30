@@ -2,7 +2,7 @@ import Link from "next/link";
 import { LogoutIcon, UserIcon } from "@/components/icons";
 import { getCurrentProfile } from "@/lib/auth";
 import { routes } from "@/lib/routes";
-import { FULL_SITE } from "@/lib/site-mode";
+import { seesFullSite } from "@/lib/site-mode";
 import { NavTabs, type NavItem } from "./NavTabs";
 import { ThemeToggle } from "./ThemeToggle";
 
@@ -17,7 +17,7 @@ export async function SiteHeader({ tabs, subTabs, section }: { tabs: NavItem[]; 
   return (
     <header className="topbar">
       <div className="tb-row r1">
-        <Link href={FULL_SITE ? routes.home : routes.organizer} className="brand" aria-label="DTHU – Dice Throne Hungary, főoldal">
+        <Link href={seesFullSite(profile) ? routes.home : routes.organizer} className="brand" aria-label="DTHU – Dice Throne Hungary, főoldal">
           <span className="brand-die" aria-hidden />
           <span>
             <b>DTHU</b>

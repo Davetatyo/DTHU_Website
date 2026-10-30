@@ -1,11 +1,12 @@
 // The site's features, in menu order. One entry per folder in src/features/ and per
-// feature branch (feature/<id>). The site menu shows features whose status is not "planned".
+// feature branch (feature/<id>). The site menu shows features whose status is not "planned"
+// (in phase 1 only admins see that menu, see lib/site-mode.ts).
 // When you start or finish a feature, update its status here and in STATE.md.
 
 export type FeatureStatus =
-  | "live" //        built and public (or public once the full site opens)
-  | "in-progress" // route exists, being built on its feature branch
-  | "planned"; //    only a README and the design in reference/artifact
+  | "live" //    public now (phase 1)
+  | "preview" // built from the prototype; admins only until the full site opens
+  | "planned"; // only a README and the design in reference/artifact
 
 export type Feature = {
   /** Folder name in src/features/ and branch name feature/<id>. */
@@ -20,7 +21,7 @@ export type Feature = {
 };
 
 export const FEATURES: Feature[] = [
-  { id: "landing-page", label: "Hírek", route: "/", status: "in-progress" },
+  { id: "landing-page", label: "Hírek", route: "/", status: "preview" },
   { id: "match-organizer", label: "Meccsszervező", route: "/meccsszervezo", status: "live" },
   { id: "rankings", label: "Ranglista", route: "/ranglista", status: "planned" },
   { id: "timetables", label: "Versenynaptár", route: "/versenynaptar", status: "planned" },
