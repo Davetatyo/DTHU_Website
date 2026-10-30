@@ -14,16 +14,7 @@ get a new round's pairings into the Meccsszervező without copy-paste.
 
 ## What's built
 
-- `/karnyx` page with a launcher: opens Karnyx in a separate window (or a new tab).
-- **"DTHU párosítás-másoló" bookmarklet** (`lib/bookmarklet.ts`, `components/KarnyxBookmarklet`):
-  the admin drags it to the bookmarks bar once; on the Karnyx round page it reads every player
-  row (the `/players/` link + the `<img alt="<Hero> Avatar">` images in that row, in page order)
-  and copies the text the Admin felület import expects. If the clipboard is blocked it shows
-  the text in a box. Nothing is sent anywhere; it runs only in the admin's own Karnyx tab.
-  Tested: the text round-trips through `parseKarnyxPaste` (unit test); the generated bookmark
-  ran on a page built from a real Karnyx row (2026-10-30: 4 players → 2 pairings, a stray
-  header player link ignored) and its output gave the right preview in the import form.
-  **Not yet tried on the live Karnyx page.**
+`/karnyx` page with a launcher: opens Karnyx in a separate window (or a new tab).
 
 ## Why not an embedded frame
 
@@ -34,7 +25,7 @@ get a new round's pairings into the Meccsszervező without copy-paste.
 - Proxying Karnyx through our server to get around this would mean handling admins' Karnyx
   logins on our server: not acceptable.
 
-## Import experiment: background
+## Import experiment (next)
 
 A script can only read the tournament page when it runs **on karnyx.app**, in the admin's own
 logged-in browser tab. Candidates, in order of effort:
