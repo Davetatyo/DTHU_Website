@@ -13,61 +13,25 @@ export type KarnyxPlayer = { name: string; heroes: string[] };
 /**
  * Karnyx round page (checked 2026-10-30): each player row holds the hero avatars as
  * <img alt="Santa Avatar"> and the player link <a href="https://karnyx.app/players/…">Name</a>.
- * The row is the closest ancestor of the link that contains avatars.
- *
- * The page has more than the pairings (owner's first live test): the header has a "My Stats"
- * player link next to a strip of hero icons, and a second list (standings) repeats every player
- * with the heroes in another order. So:
- * 1. rows with more than 3 avatars are not players (the header strip);
- * 2. a pairing is a box holding exactly two player rows: when the page has at least two such
- *    boxes, only their rows count (a Bye's one-player box and long lists are left out);
- * 3. otherwise the first appearance of each player wins (the pairings come first on the page).
+ * The row is the closest ancestor of the link that contains avatars; page order = pairing order.
  */
 export function readKarnyxPlayers(root: ParentNode): KarnyxPlayer[] {
-  const AVATAR = 'img[alt$=" Avatar"]';
-  const PLAYER_LINK = 'a[href*="/players/"]';
-  const links = root.querySelectorAll(PLAYER_LINK);
-  const found: { row: Element; player: KarnyxPlayer }[] = [];
+  const links = root.querySelectorAll('a[href*="/players/"]');
+  const rows: Element[] = [];
+  const players: KarnyxPlayer[] = [];
   for (let i = 0; i < links.length; i++) {
     const link = links[i];
     let row = link.parentElement;
-    while (row && !row.querySelector(AVATAR)) row = row.parentElement;
-    if (!row) continue;
-    let seen = false;
-    for (let k = 0; k < found.length; k++) if (found[k].row === row) seen = true;
-    if (seen) continue;
-    // Climbed past the player's own row (e.g. a list of several players): not a player row.
-    if (row.querySelectorAll(PLAYER_LINK).length !== 1) continue;
-    const imgs = row.querySelectorAll(AVATAR);
-    if (imgs.length > 3) continue;
+    while (row && !row.querySelector('img[alt$=" Avatar"]')) row = row.parentElement;
+    if (!row || rows.indexOf(row) >= 0) continue;
+    // Climbed past the player's own row (e.g. a list of several players): not a pairing row.
+    if (row.querySelectorAll('a[href*="/players/"]').length !== 1) continue;
+    rows.push(row);
+    const imgs = row.querySelectorAll('img[alt$=" Avatar"]');
     const heroes: string[] = [];
     for (let j = 0; j < imgs.length; j++) heroes.push((imgs[j].getAttribute("alt") || "").trim());
     const name = (link.textContent || "").replace(/\s+/g, " ").trim();
-    if (name) found.push({ row: row, player: { name: name, heroes: heroes } });
-  }
-
-  // Rows whose smallest surrounding box with 2+ player rows holds exactly two: match boxes.
-  const paired: { row: Element; player: KarnyxPlayer }[] = [];
-  for (let i = 0; i < found.length; i++) {
-    let box = found[i].row.parentElement;
-    let count = 0;
-    while (box) {
-      count = 0;
-      for (let k = 0; k < found.length; k++) if (box.contains(found[k].row)) count++;
-      if (count >= 2) break;
-      box = box.parentElement;
-    }
-    if (count === 2) paired.push(found[i]);
-  }
-  const chosen = paired.length >= 4 ? paired : found;
-
-  const players: KarnyxPlayer[] = [];
-  const names: string[] = [];
-  for (let i = 0; i < chosen.length; i++) {
-    const key = chosen[i].player.name.toLowerCase();
-    if (names.indexOf(key) >= 0) continue;
-    names.push(key);
-    players.push(chosen[i].player);
+    if (name) players.push({ name: name, heroes: heroes });
   }
   return players;
 }
