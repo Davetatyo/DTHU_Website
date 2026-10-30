@@ -162,8 +162,8 @@ Newest first. Each session adds an entry (see CLAUDE.md → "End of every sessio
 - Also removed the admin-only page mechanism that existed only for `/karnyx` (registry
   `adminOnly`, `isAdminOnly` in site-mode, middleware check). The admin button and the
   Admin/Játékos view switch (feature/admin-view) stay.
-- The entries below about the Karnyx tab and bookmarklet are history; the `feature/karnyx`
-  branch still exists on GitHub with that work.
+- The entries below about the Karnyx tab and bookmarklet are history. The `feature/karnyx`
+  branch was deleted locally and on GitHub (its commits remain in `main`'s history).
 - Verified: types, lint, 78 tests, production build, menus (see below).
 
 ### 2026-10-30 (late night) · Karnyx pairing bookmarklet
