@@ -1,6 +1,7 @@
 import { DevPreviewBanner } from "@/components/site/DevPreviewBanner";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
+import { HelpVial } from "@/features/alchemist/components/HelpVial";
 import { SeasonPhases } from "@/features/timetables/components/SeasonPhases";
 import { getCurrentProfile } from "@/lib/auth";
 import { siteMenu } from "@/lib/navigation";
@@ -19,6 +20,7 @@ export default async function SiteLayout({ children }: Readonly<{ children: Reac
       </div>
       <main className="wrap page-fade">{children}</main>
       <SiteFooter />
+      <HelpVial />
     </>
   );
 }

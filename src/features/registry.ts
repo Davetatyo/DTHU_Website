@@ -30,7 +30,7 @@ export const FEATURES: Feature[] = [
   { id: "rulebook", label: "Szabálytár", route: "/szabalytar", status: "preview" },
   { id: "faq", label: "GYIK", route: "/gyik", status: "preview" },
   { id: "links", label: "Linkek", route: "/linkek", status: "preview" },
-  { id: "alchemist", label: "Alkimista", route: "/alkimista", status: "planned" },
+  { id: "alchemist", label: "Alkimista", route: "/alkimista", status: "preview" },
 ];
 
 /** Features that appear in the full-site menu (the Alchemist opens from its help vial instead). */
