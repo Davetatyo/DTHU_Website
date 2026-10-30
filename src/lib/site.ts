@@ -1,7 +1,7 @@
 import { headers } from "next/headers";
 
 /**
- * Public base URL of the current request, e.g. https://dthuonlinebajnoksag.vercel.app (no trailing slash).
+ * Public base URL of the current request, e.g. https://dthu.hu (no trailing slash).
  *
  * Taken from the domain the visitor actually opened, so login redirects and links are right on
  * Vercel, on a custom domain and on localhost without any configuration. NEXT_PUBLIC_SITE_URL is

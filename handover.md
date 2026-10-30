@@ -32,7 +32,7 @@ The app does **not** record results or standings. Those stay in Karnyx.
 
 | What | Where | Notes |
 |---|---|---|
-| Live site | https://dthuonlinebajnoksag.vercel.app | Vercel project `dthuonlinebajnoksag` |
+| Live site | https://dthu.hu | Vercel project `dthuonlinebajnoksag`; the old https://dthuonlinebajnoksag.vercel.app redirects here |
 | Code | https://github.com/Davetatyo/DT_Match_Organizer | branch `main` |
 | Hosting | Vercel (Hobby) | **Every push to `main` deploys to production automatically** (~30–70 s) |
 | Database + login | Supabase (Postgres, Auth with Discord provider) | project URL is in `.env.local` |
@@ -119,8 +119,11 @@ Supabase's allowed redirect URLs.
 
 `getSiteUrl()` (`src/lib/site.ts`) builds the public URL from `x-forwarded-host`/`host`, so
 login redirects, Discord links and calendar links are correct on any domain.
-`NEXT_PUBLIC_SITE_URL` is only a fallback. A new custom domain only needs adding in Vercel
-and in Supabase → Authentication → URL Configuration (Site URL + `…/auth/callback`).
+`NEXT_PUBLIC_SITE_URL` is only a fallback. A domain change needs no code change, but three
+settings outside the code: the domain in Vercel; Supabase → Authentication → URL Configuration
+(Site URL + `https://<domain>/auth/callback` in Redirect URLs, otherwise Discord login silently
+lands on the Site URL and fails); and the `dt-reminders` job URL (README §6), because the
+old domain's redirect drops the `Authorization` header.
 
 ## 6. Code map
 

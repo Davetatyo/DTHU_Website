@@ -41,8 +41,10 @@ Discord channel webhook · Supabase pg_cron for reminders.
    `https://<your-project>.supabase.co/auth/v1/callback`.
 3. Supabase → **Authentication → Sign In / Providers → Discord** → enable, paste ID and secret.
 4. Supabase → **Authentication → URL Configuration**: Site URL = your app URL; add
-   `http://localhost:3000/auth/callback` and `https://<your-app>.vercel.app/auth/callback`
-   to Redirect URLs.
+   `http://localhost:3000/auth/callback` and `https://<your-domain>/auth/callback`
+   to Redirect URLs (live: Site URL `https://dthu.hu`, redirect `https://dthu.hu/auth/callback`).
+   If a domain's callback is missing here, Supabase silently sends people to the Site URL
+   instead and the login never completes.
 
 ### 3. Discord channel webhook
 
@@ -64,7 +66,8 @@ at `/admin` by Discord or Karnyx name.
 Push the repo to GitHub, import it in Vercel, add every variable from `.env.example` under
 **Settings → Environment Variables**. The app takes its own address from the domain visitors open,
 so `NEXT_PUBLIC_SITE_URL` is optional. A custom domain can be added later in Vercel; then add it to
-the Supabase URL settings (Site URL and `…/auth/callback` redirect).
+the Supabase URL settings (Site URL and `…/auth/callback` redirect) and update the reminder
+job's URL (§6), since a redirect from the old domain drops the job's `Authorization` header.
 
 ### 6. Reminders
 
@@ -85,7 +88,7 @@ select cron.schedule(
   '0 * * * *',
   $$
   select net.http_get(
-    url := 'https://dthuonlinebajnoksag.vercel.app/api/cron/reminders',
+    url := 'https://dthu.hu/api/cron/reminders',
     headers := jsonb_build_object(
       'Authorization',
       'Bearer ' || (select decrypted_secret from vault.decrypted_secrets where name = 'dt_cron_secret')

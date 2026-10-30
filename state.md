@@ -1,6 +1,6 @@
 # Project state: DTHUN Meccsszervező
 
-**Current version: v1.2**, live at https://dthuonlinebajnoksag.vercel.app
+**Current version: v1.2**, live at https://dthu.hu (the old https://dthuonlinebajnoksag.vercel.app redirects there)
 (commit `a278e0a` on `main`, 2026-10-28)
 
 Read [handover.md](handover.md) first for how the project works. This file is the running log:
@@ -54,6 +54,13 @@ Entry template:
 ## Next steps
 
 ### Needs the owner
+0. **Domain move to dthu.hu (2026-10-30), finish the settings outside the code:**
+   - Supabase → Authentication → URL Configuration: Site URL `https://dthu.hu`, and add
+     `https://dthu.hu/auth/callback` to Redirect URLs (keep the localhost one). Until this is
+     done, Discord login on dthu.hu fails.
+   - Supabase SQL Editor: point the `dt-reminders` job at `https://dthu.hu/api/cron/reminders`
+     (re-run the `cron.schedule` SQL in README §6; the same job name replaces the old one), then check `net._http_response` shows `200`.
+   - Vercel: set `NEXT_PUBLIC_SITE_URL` to `https://dthu.hu` (fallback only, optional).
 1. **Security:** `.env.local` had two lines without `NAME=` (they looked like the Discord app's
    Client ID and Client Secret, which the app doesn't use). On 2026-10-28 an agent's shell
    command printed them in its session log. Delete or comment out those lines, and reset the
@@ -93,6 +100,12 @@ None open.
 ---
 
 ## Changelog
+
+### Ops · 2026-10-30
+Owner moved the live site to **dthu.hu**; the Vercel domain now redirects there. No code change
+needed (the app takes its address from the visited domain). Discord login failed afterwards
+because Supabase's allowed redirect list didn't include dthu.hu. Docs (README, handover.md,
+this file) now name dthu.hu and list the three settings a domain move needs. Still v1.2.
 
 ### v1.2 · 2026-10-28 · `a278e0a`
 **Changed:**
