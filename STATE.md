@@ -88,6 +88,7 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 | `rulebook` Szabálytár | `/szabalytar` | preview | content is final text from the prototype | credit/permission wording for Rulepop |
 | `faq` GYIK (site-wide) | `/gyik` | preview | content from the prototype | review texts |
 | `links` Linkek | `/linkek` | preview | real links | — |
+| `karnyx` Karnyx (admin tool) | `/karnyx` | preview, **admin-only always** | opens karnyx.app in a window (it can't be embedded) | import experiment: bookmarklet on karnyx.app (see its README) |
 | `alchemist` Alkimista | `/alkimista` + help vial | preview | knowledge base from the prototype; unanswered questions only in the browser | admin inbox for unanswered questions |
 
 ## Needs the owner
@@ -150,6 +151,23 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 ## Handover log
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
+
+### 2026-10-30 (night) · admin button + view switch, Karnyx tab
+
+- `feature/admin-view` (merged): "Admin felület" is a red header button next to the profile
+  name on every page (real admins); beside it the switch "Admin nézet / Játékos nézet"
+  (cookie `nezet_mint=jatekos`). Player view = exactly what a non-admin sees (menus, preview
+  strip, hidden-page redirects in middleware, match-page admin tools); permissions unchanged.
+- `feature/karnyx` (merged): admin-only "Karnyx" tab (red, after Linkek) and `/karnyx`,
+  blocked for non-admins in every phase. karnyx.app sends `X-Frame-Options: SAMEORIGIN`, so it
+  opens in a separate window instead of a frame.
+- Verified: anonymous `/karnyx` → 307; with TEMP-PREVIEW fake admin (reverted): admin view
+  shows button, switch, Karnyx tab and page; switching to player view lands on
+  `/meccsszervezo` with only its 3 tabs, `/karnyx` redirects, match admin tools hidden;
+  switching back restores them. 79 tests, types, lint.
+- **Next (owner's plan):** the Karnyx import experiment. A script on dthu.hu can't read
+  Karnyx (no framing, same-origin policy); it has to run on karnyx.app in the admin's tab
+  (bookmarklet). Owner opens the tournament page so we can see how the pairings are delivered.
 
 ### 2026-10-30 (evening) · non-admin view checked, Vercel prepared
 

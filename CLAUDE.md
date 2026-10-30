@@ -115,7 +115,10 @@ registry).
 `src/lib/site-mode.ts`. **Phase 1** (now): the public sees only `/meccsszervezo` (plus `/auth`,
 `/api`), whose tabs are its main menu; every other page redirects there. **Signed-in admins**
 see the whole site as a developer preview: site menu on top, Meccsszervező tabs as a second
-row, a "fejlesztői előnézet" strip (middleware checks `profiles.is_admin`). **Phase 2**:
+row, a "fejlesztői előnézet" strip (middleware checks `profiles.is_admin`). Admins have an
+"Admin felület" button and an "Admin nézet / Játékos nézet" switch in the header
+(`lib/view-as.ts`): UI decisions use `getAdminView()`, permissions always `requireAdmin()`.
+Features with `adminOnly` in the registry (e.g. `/karnyx`) are admin-only in every phase. **Phase 2**:
 `NEXT_PUBLIC_FULL_SITE=1` in Vercel + redeploy opens the full site to everyone. Locally, set
 the flag in `.env.local` to see the hidden pages without logging in.
 
