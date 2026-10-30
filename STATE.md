@@ -2,7 +2,8 @@
 
 **Current version: v2.0 (in development, not deployed).** Live: https://dthu.hu still runs
 **v1.2** from the old repository github.com/Davetatyo/DT_Match_Organizer (commit `a278e0a`).
-**Launch phase: 1** (only the Meccsszervező is public), see "Launch plan".
+**Launch phase: 1**: the public sees only the Meccsszervező; the whole site from the prototype
+is built and visible to **signed-in admins** as a developer preview. See "Launch plan".
 
 Read [CLAUDE.md](CLAUDE.md) first for how the project works. This file is the running log:
 where things stand, what's next, what each release changed, and the handover between agents.
@@ -45,8 +46,11 @@ feature table, owner tasks and known issues current (see CLAUDE.md → "End of e
 
 ## Launch plan
 
-**Phase 1: the Meccsszervező in the new design, alone.** The repository is ready locally
-(v2.0, see the Handover log); nothing is pushed or deployed yet. To go live:
+**Phase 1: the Meccsszervező in public, the rest as an admin preview.** Every page of the
+prototype is built (see Features). Anonymous visitors and non-admins are redirected to the
+Meccsszervező; admins see the full menu with a "fejlesztői előnézet" strip, on dthu.hu too.
+The repository is ready locally (v2.0, see the Handover log); nothing is pushed or deployed yet.
+To go live:
 
 1. Owner reviews the v2.0 commits and screenshots; agent pushes `main` and the feature
    branches to github.com/Davetatyo/DTHU_Website (owner's go-ahead).
@@ -64,10 +68,10 @@ feature table, owner tasks and known issues current (see CLAUDE.md → "End of e
    a calendar subscription refresh, the next hourly `dt-reminders` run returns 200.
 6. Afterwards: archive DT_Match_Organizer on GitHub (read-only) with a pointer to this repo.
 
-**Phase 2: the full site.** When the features below are ready (owner decides which are needed
-for launch): set `NEXT_PUBLIC_FULL_SITE=1` in Vercel and redeploy. The home page becomes
-"Hírek", the site menu appears, `/gyik` becomes the site FAQ (its phase-1 redirect to the
-Meccsszervező FAQ is temporary on purpose). Decide before then whether login and profile move
+**Phase 2: the full site.** When the features below have real data (owner decides which are
+needed for launch): set `NEXT_PUBLIC_FULL_SITE=1` in Vercel and redeploy. Everyone then sees
+the site menu, "Hírek" as the home page and `/gyik` as the site FAQ (in phase 1 the public is
+sent to the Meccsszervező FAQ by a temporary redirect, on purpose). Decide before then whether login and profile move
 to site-level URLs (they're under `/meccsszervezo` now) and add redirects if they do.
 
 ## Features
@@ -75,23 +79,24 @@ to site-level URLs (they're under `/meccsszervezo` now) and add redirects if the
 Status values match `src/features/registry.ts`. Design and sample content for every feature is
 in `reference/artifact` (open `reference/artifact/index.html`).
 
-| Feature (folder / branch `feature/<id>`) | Route | Status | Notes |
-|---|---|---|---|
-| `match-organizer` Meccsszervező | `/meccsszervezo` | **live** (v1.2 old design on dthu.hu; v2.0 new design ready) | the production feature, see docs/match-organizer.md |
-| `landing-page` Hírek (home) | `/` | in-progress | placeholder page only; needs news source (DB table or Discord/Facebook import?) |
-| `rankings` Ranglista / Power Ranking | `/ranglista` | planned | needs results: Karnyx has no API, so manual entry or import format to agree |
-| `timetables` Versenynaptár | `/versenynaptar` | planned | events (online rounds, live days); could reuse tournaments/rounds tables |
-| `tickets` Jegyek | `/jegyek` | planned | reward points per match/event; needs a ledger table and rules sign-off |
-| `shop` Bolt | `/bolt` | planned | spend tickets; wishlist first ("Érdekel"), real redeeming later |
-| `rulebook` Szabálytár | `/szabalytar` | planned | rules content exists in the prototype (Rulepop HU fan translation, summarised) |
-| `faq` GYIK (site-wide) | `/gyik` | planned | general FAQ; the Meccsszervező keeps its own |
-| `links` Linkek | `/linkek` | planned | static page |
-| `alchemist` Alkimista (help chat) | `/alkimista` | planned | rule-based Q&A (no AI) + floating help vial; content in the prototype |
+| Feature (folder / branch `feature/<id>`) | Route | Status | Real data / still sample | Next step |
+|---|---|---|---|---|
+| `match-organizer` Meccsszervező | `/meccsszervezo` | **live** (v1.2 old design on dthu.hu; v2.0 ready) | all real | Launch plan |
+| `landing-page` Hírek (home) | `/` | preview | banner + upcoming matches real; news sample | decide the news source (table + admin page?) |
+| `rankings` Ranglista | `/ranglista` | preview | names/heroes real; points, records, movement sample | results source (Karnyx copy-paste? results on "Lejátszottuk"?) |
+| `timetables` Versenynaptár | `/versenynaptar` | preview | confirmed matches real; events + season plan sample | events table, rounds from the Meccsszervező |
+| `tickets` Jegyek | `/jegyek` | preview | balance sample (from sample ranking) | ticket ledger table + earning rules sign-off |
+| `shop` Bolt | `/bolt` | preview | items sample; wishlist only in the browser | shared wishlist, then redeeming (needs tickets) |
+| `rulebook` Szabálytár | `/szabalytar` | preview | content is final text from the prototype | credit/permission wording for Rulepop |
+| `faq` GYIK (site-wide) | `/gyik` | preview | content from the prototype | review texts |
+| `links` Linkek | `/linkek` | preview | real links | — |
+| `alchemist` Alkimista | `/alkimista` + help vial | preview | knowledge base from the prototype; unanswered questions only in the browser | admin inbox for unanswered questions |
 
 ## Needs the owner
 
-1. **Review v2.0** (restructure + new design) and give the go-ahead to push to
-   github.com/Davetatyo/DTHU_Website. Then follow the Launch plan.
+1. **Review v2.0** (Meccsszervező restructure + new design, and the full site as an admin
+   preview) and give the go-ahead to push to github.com/Davetatyo/DTHU_Website. Then follow
+   the Launch plan.
 2. Carried over from DT_Match_Organizer `state.md` (2026-10-30), status unknown here, please
    confirm or close:
    - Domain move to dthu.hu: Supabase Site URL `https://dthu.hu` + redirect
@@ -123,8 +128,10 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 - v2.0 is not yet tested end to end with a real login and write actions: locally only read-only
   checks and the TEMP-PREVIEW fake profile were used. Do the preview test (Launch plan step 2)
   before switching production.
-- In full-site mode `/gyik` and the planned features' routes return 404 until those features
-  exist (expected; phase 2 is off).
+- The admin preview gate (middleware reads `profiles.is_admin` with the visitor's session) is
+  tested only for anonymous visitors so far; check it logged in as an admin and as a
+  non-admin on the Vercel preview (Launch plan step 2).
+- Most full-site pages show sample data (see Features); the prototype strip says so.
 - Discord login works locally only on port 3000 (Supabase redirect allow-list).
 
 ## Technical debt
@@ -146,6 +153,34 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 ## Handover log
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
+
+### 2026-10-30 (later) · the whole prototype site built as an admin preview (not pushed)
+
+**Owner's direction:** build the whole website from the artifact, with the Meccsszervező under
+its menu tab; only that tab is public, the rest stays hidden but usable by the owner.
+
+**Done** (local commits on `main`; each feature committed on `feature/<id>` and merged with
+`--no-ff`, so `git log --first-parent main` reads one line per feature):
+- `567898b` site shell: admins see the full site in phase 1 (middleware checks
+  `profiles.is_admin`), `DevPreviewBanner`, icon sprite, `Art` tiles, shared prototype styles,
+  site routes; `/gyik` fallback moved from next.config into the middleware.
+- Features: rankings, timetables, landing-page, tickets, shop, faq, links, rulebook,
+  alchemist (see the Features table for what's real and what's sample). Content (rules,
+  FAQ, Alchemist answers, sample news/shop/events) extracted unchanged from
+  `reference/artifact`.
+- Feature READMEs updated with "What's built".
+
+**Verified:** 78 unit tests (new: Alchemist matcher and replies, rulebook search/index and rule
+links, sample ranking, phase-1 fallback); types and lint; every first-parent commit on `main`
+type-checks and passes tests on its own. Browser (dev server with `NEXT_PUBLIC_FULL_SITE=1`,
+port 3101, production data read-only): every page renders; month calendar shows the real
+confirmed matches; event dialog, rulebook tabs/search, rule pages with tables, Alchemist answer
+with rule link, help vial popping up on the rulebook; phone width on the home page. Phase-1
+server (port 3100), anonymous: `/`, `/bolt`, `/szabalytar/…` → 307 `/meccsszervezo`, `/gyik` →
+307 `/meccsszervezo/gyik`.
+
+**Not verified:** the admin preview while logged in (needs login on port 3000 or the Vercel
+preview). **Next:** owner review → push → Vercel preview test (Launch plan).
 
 ### 2026-10-30 · v2.0 restructure and redesign (not pushed)
 

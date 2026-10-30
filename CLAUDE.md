@@ -100,8 +100,9 @@ registry).
 - Branches: `main` is production. Build a feature on `feature/<id>` (branched from `main`,
   merge `main` into it regularly). Small fixes to live code: `fix/<short-name>` from `main`.
   Merge into `main` only with the owner's OK (a pull request on GitHub is the norm).
-- A feature can be merged before it's public: keep its status `planned`/`in-progress` and it
-  stays out of the menu; the phase-1 gate hides every page outside `/meccsszervezo` anyway.
+- A feature can be merged before it's public: in phase 1 the gate shows every page outside
+  `/meccsszervezo` to admins only. Status `planned` keeps it out of the menu, `preview` shows
+  it to admins, `live` means the public uses it.
 - Starting a feature: copy `src/features/_template/`, fill its README (scope, route, data,
   open questions), add the registry entry and route constant, build pages under
   `src/app/(site)/<route>/`. The prototype's version of the feature is in `reference/artifact`.
@@ -110,11 +111,12 @@ registry).
 
 ## Launch phases
 
-`src/lib/site-mode.ts`. **Phase 1** (now): only `/meccsszervezo`, `/auth` and `/api` are
-public; everything else redirects to the Meccsszervező, whose tabs are the main menu.
-**Phase 2**: `NEXT_PUBLIC_FULL_SITE=1` in Vercel + redeploy opens the full site; the site menu
-appears on top and the Meccsszervező tabs become its second row. Locally, set the flag in
-`.env.local` to work on hidden pages.
+`src/lib/site-mode.ts`. **Phase 1** (now): the public sees only `/meccsszervezo` (plus `/auth`,
+`/api`), whose tabs are its main menu; every other page redirects there. **Signed-in admins**
+see the whole site as a developer preview: site menu on top, Meccsszervező tabs as a second
+row, a "fejlesztői előnézet" strip (middleware checks `profiles.is_admin`). **Phase 2**:
+`NEXT_PUBLIC_FULL_SITE=1` in Vercel + redeploy opens the full site to everyone. Locally, set
+the flag in `.env.local` to see the hidden pages without logging in.
 
 ## UI conventions
 
