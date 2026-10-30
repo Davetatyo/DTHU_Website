@@ -25,7 +25,7 @@ export const FEATURES: Feature[] = [
   { id: "match-organizer", label: "Meccsszervező", route: "/meccsszervezo", status: "live" },
   { id: "rankings", label: "Ranglista", route: "/ranglista", status: "preview" },
   { id: "timetables", label: "Versenynaptár", route: "/versenynaptar", status: "preview" },
-  { id: "tickets", label: "Jegyek", route: "/jegyek", status: "planned", badge: "ÚJ" },
+  { id: "tickets", label: "Jegyek", route: "/jegyek", status: "preview", badge: "ÚJ" },
   { id: "shop", label: "Bolt", route: "/bolt", status: "planned", badge: "ÚJ" },
   { id: "rulebook", label: "Szabálytár", route: "/szabalytar", status: "planned" },
   { id: "faq", label: "GYIK", route: "/gyik", status: "planned" },

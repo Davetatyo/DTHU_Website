@@ -1,0 +1,4 @@
+.wallettile { min-height: 220px; }
+.wallettile .big { font-weight: 800; font-size: 72px; color: var(--gold); line-height: 1; text-shadow: 0 3px 0 #000; }
+.earn { min-height: 140px; }
+.earn .plus { font-weight: 800; font-size: 34px; color: #e0b24a; line-height: 1; }
