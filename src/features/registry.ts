@@ -28,7 +28,7 @@ export const FEATURES: Feature[] = [
   { id: "tickets", label: "Jegyek", route: "/jegyek", status: "preview", badge: "ÚJ" },
   { id: "shop", label: "Bolt", route: "/bolt", status: "preview", badge: "ÚJ" },
   { id: "rulebook", label: "Szabálytár", route: "/szabalytar", status: "planned" },
-  { id: "faq", label: "GYIK", route: "/gyik", status: "planned" },
+  { id: "faq", label: "GYIK", route: "/gyik", status: "preview" },
   { id: "links", label: "Linkek", route: "/linkek", status: "planned" },
   { id: "alchemist", label: "Alkimista", route: "/alkimista", status: "planned" },
 ];
