@@ -1,0 +1,16 @@
+/* Month calendar (prototype V1 "Naptár" view). */
+.calhead { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+.calhead h2 { font-size: 22px; font-weight: 700; color: var(--gold); text-transform: capitalize; }
+.cal { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); border-top: 1px solid var(--line); border-left: 1px solid var(--line); background: var(--panel); border-radius: 8px; overflow: hidden; }
+.cal .wd { font-family: var(--font-px); font-size: 17px; color: var(--muted); text-align: center; background: var(--bg2); border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 2px 0; }
+.cal .day { min-height: 92px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 3px; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.cal .day.out { background: var(--bg); opacity: 0.55; }
+.cal .day .dn { font-family: var(--font-px); font-size: 18px; color: var(--muted); line-height: 1; }
+.cal .day.today { outline: 2px solid var(--gold); outline-offset: -2px; }
+.cal .day.today .dn { color: var(--gold); }
+.cal .evl { font-size: 12px; font-weight: 700; line-height: 1.2; padding: 1px 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-left: 3px solid currentColor; background: color-mix(in srgb, currentColor 14%, transparent); cursor: pointer; text-align: left; }
+.cal .evl.online { color: var(--info); } .cal .evl.live { color: var(--warn); } .cal .evl.idea { color: var(--muted); }
+.cal .mt { font-family: var(--font-px); font-size: 14px; color: var(--fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.1; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 8px; font-size: 14px; color: var(--muted); }
+.legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; margin-right: 5px; background: currentColor; vertical-align: -1px; }
+@media (max-width: 560px) { .cal .day { min-height: 58px; } .cal .evl { font-size: 0; height: 6px; padding: 0; } .cal .mt { display: none; } .cal .mdot::after { content: "•"; color: var(--gold); } }
