@@ -8,7 +8,7 @@ import { StatusBadge } from "@/features/match-organizer/components/StatusBadge";
 import { HeroAvatar } from "@/components/HeroAvatar";
 import { SubmitButton } from "@/components/SubmitButton";
 import { InfoTip } from "@/components/InfoTip";
-import { getCurrentProfile, sameName } from "@/lib/auth";
+import { getAdminView, getCurrentProfile, sameName } from "@/lib/auth";
 import { matchEvent } from "@/features/match-organizer/lib/calendar";
 import { getMatch, getProfilesByKarnyx, getProposals, getSwapSuggestions, isParticipant, profileFor } from "@/features/match-organizer/lib/data";
 import { googleCalendarUrl } from "@/features/match-organizer/lib/ics";
@@ -74,7 +74,8 @@ export default async function MatchPage({
   const open = proposals.filter((p) => p.status === "open");
 
   const isMine = !!viewer && isParticipant(match, viewer.karnyx_name);
-  const isAdmin = !!viewer?.is_admin;
+  // Admin tools follow the header switch: in the player view the page looks as a player sees it.
+  const isAdmin = await getAdminView();
   const canSwap = isAdmin && match.status !== "played" && match.status !== "bye" && !match.round.closed_at;
   const swapSuggestions = canSwap ? await getSwapSuggestions(match) : [];
   const active = match.status !== "played" && match.status !== "bye";

@@ -18,6 +18,8 @@ export type Feature = {
   status: FeatureStatus;
   /** Shown as a small badge in the menu, e.g. "ÚJ". */
   badge?: string;
+  /** Only admins see the tab and may open the page, in every phase (see lib/site-mode.ts). */
+  adminOnly?: boolean;
 };
 
 export const FEATURES: Feature[] = [

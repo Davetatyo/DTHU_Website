@@ -20,12 +20,19 @@ export function phase1Fallback(pathname: string): string {
   return pathname === "/gyik" ? "/meccsszervezo/gyik" : "/meccsszervezo";
 }
 
-/** Whether this visitor sees the full site: everyone in phase 2, only admins in phase 1. */
-export function seesFullSite(profile: { is_admin: boolean } | null | undefined): boolean {
-  return FULL_SITE || !!profile?.is_admin;
+/** Pages only admins may open, in every phase (e.g. the Karnyx tool). */
+export const ADMIN_ONLY_PREFIXES = ["/karnyx"];
+
+export function isAdminOnly(pathname: string): boolean {
+  return ADMIN_ONLY_PREFIXES.some((p) => pathname === p || pathname.startsWith(`${p}/`));
 }
 
-/** True when the full site is shown to this visitor only because they are an admin (phase 1). */
-export function isDevPreview(profile: { is_admin: boolean } | null | undefined): boolean {
-  return !FULL_SITE && !!profile?.is_admin;
+/** Whether this visitor sees the full site: everyone in phase 2, only the admin view in phase 1. */
+export function seesFullSite(adminView: boolean): boolean {
+  return FULL_SITE || adminView;
+}
+
+/** True when the full site is shown only because of the admin view (phase 1). */
+export function isDevPreview(adminView: boolean): boolean {
+  return !FULL_SITE && adminView;
 }

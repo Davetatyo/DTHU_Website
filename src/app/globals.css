@@ -110,6 +110,15 @@ a:hover { color: inherit; }
   .tb-btn.icon { width: 32px; padding: 0; justify-content: center; color: var(--gold); }
   .tb-btn.gold { background: var(--gold); border-color: var(--gold); color: var(--on-gold); }
   .tb-btn.discord { background: var(--discord); border-color: var(--discord); color: #fff; }
+  .tb-btn.admin { background: var(--red); border-color: var(--red); color: #fff; }
+  .tb-btn.admin:hover { filter: brightness(1.1); color: #fff; }
+  .view-switch { display: inline-flex; align-items: center; gap: 7px; height: 32px; padding: 0 10px 0 6px; border-radius: 99px; border: 1px solid #2c2c36; background: #15151b; color: var(--topbar-fg); font-size: 12px; font-weight: 700; letter-spacing: 0.04em; cursor: pointer; }
+  .view-switch:hover { border-color: var(--gold-dim); }
+  .view-switch .knob { position: relative; width: 30px; height: 16px; border-radius: 99px; background: var(--red); flex: none; transition: background 0.15s; }
+  .view-switch .knob::after { content: ""; position: absolute; top: 2px; left: 16px; width: 12px; height: 12px; border-radius: 50%; background: #fff; transition: left 0.15s; }
+  .view-switch.player .knob { background: #3a3a46; }
+  .view-switch.player .knob::after { left: 2px; }
+  @media (max-width: 520px) { .view-switch .lbl { display: none; } }
   .tb-user { display: inline-flex; align-items: center; gap: 8px; max-width: 13rem; height: 32px; padding: 0 12px 0 4px; border-radius: 99px; border: 1px solid #2c2c36; color: var(--topbar-fg); font-size: 14px; font-weight: 600; }
   .tb-user:hover { border-color: var(--gold-dim); color: #fff; }
   .tb-user .ini { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; background: #23232c; color: var(--gold); flex: none; }
