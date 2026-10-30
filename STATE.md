@@ -88,7 +88,7 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 | `rulebook` Szabálytár | `/szabalytar` | preview | content is final text from the prototype | credit/permission wording for Rulepop |
 | `faq` GYIK (site-wide) | `/gyik` | preview | content from the prototype | review texts |
 | `links` Linkek | `/linkek` | preview | real links | — |
-| `karnyx` Karnyx (admin tool) | `/karnyx` | preview, **admin-only always** | opens karnyx.app in a window (it can't be embedded) | import experiment: bookmarklet on karnyx.app (see its README) |
+| `karnyx` Karnyx (admin tool) | `/karnyx` | preview, **admin-only always** | opens karnyx.app in a window (it can't be embedded); "DTHU párosítás-másoló" bookmarklet copies a round's pairings in the import format | owner tries the bookmarklet on the real Karnyx round page |
 | `alchemist` Alkimista | `/alkimista` + help vial | preview | knowledge base from the prototype; unanswered questions only in the browser | admin inbox for unanswered questions |
 
 ## Needs the owner
@@ -151,6 +151,20 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 ## Handover log
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
+
+### 2026-10-30 (late night) · Karnyx pairing bookmarklet
+
+- Owner pasted one player row of the Karnyx round page: hero avatars are
+  `<img alt="Santa Avatar">`, the name is `<a href="https://karnyx.app/players/…">`, then the
+  round score. That is exactly what copy-paste turns into the import text today.
+- `feature/karnyx`: bookmarklet "DTHU párosítás-másoló" on `/karnyx` (drag to bookmarks bar);
+  on the Karnyx round page it copies the pairings in the import format (fallback: a box with
+  the text). Pure functions in `features/karnyx/lib/bookmarklet.ts`, unit-tested against the
+  real parser; the generated bookmark was run on a page built from the pasted row and its
+  output gave the correct preview in the Admin felület import form (nothing submitted).
+- **Next:** owner tries it on the real Karnyx round page (Bye players still typed by hand). If
+  the real page has more player links with avatars (e.g. a standings table), the preview will
+  show extra players or duplicates: send the HTML of that part and narrow the selector.
 
 ### 2026-10-30 (night) · admin button + view switch, Karnyx tab
 
