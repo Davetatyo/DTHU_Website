@@ -1,0 +1,25 @@
+/* Power ranking rows (prototype V3). */
+.pr-row { display: grid; grid-template-columns: 30px 22px 34px minmax(0, 1fr) auto; gap: 8px; align-items: center; padding: 9px 12px; border-bottom: 1px solid var(--line); color: var(--fg); }
+.pr-row:last-child { border-bottom: 0; }
+.pr-row:hover { color: var(--fg); background: color-mix(in srgb, var(--gold) 6%, transparent); }
+.pr-row .n { font-weight: 800; font-size: 16px; color: var(--muted); text-align: right; }
+.pr-row:first-child .n { color: var(--gold); }
+.pr-row .mv { font-size: 11px; font-weight: 800; text-align: center; }
+.mv.up { color: #3fbf6f; } .mv.dn { color: var(--red); } .mv.eq { color: var(--muted); }
+.pr-row .av { width: 34px; height: 34px; }
+.pr-row b { font-size: 14px; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pr-row small { font-size: 12px; color: var(--muted); }
+.pr-row .p { font-weight: 800; font-variant-numeric: tabular-nums; }
+.pr-row.me, .pr-big.me { background: color-mix(in srgb, var(--gold) 12%, transparent); }
+.pr-big { display: grid; grid-template-columns: 50px 26px 46px minmax(0, 1fr) 90px 70px; gap: 10px; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+.pr-big:last-child { border-bottom: 0; }
+.pr-big .av { width: 46px; height: 46px; }
+.pr-big .n { font-size: 22px; font-weight: 800; color: var(--muted); text-align: right; }
+.pr-big.top .n { color: var(--gold); }
+.pr-big b { font-size: 16px; }
+.pr-big .mv { font-size: 12px; font-weight: 800; text-align: center; }
+.pr-big .rec, .pr-big .p { text-align: right; font-variant-numeric: tabular-nums; }
+.pr-big .p { font-size: 18px; font-weight: 800; }
+.pr-head { font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); background: var(--bg2); border-radius: 8px 8px 0 0; }
+.pr-head .p { font-size: 11px; }
+@media (max-width: 560px) { .pr-big { grid-template-columns: 30px 20px 36px minmax(0, 1fr) 46px; } .pr-big .rec { display: none; } .pr-big .av { width: 36px; height: 36px; } }

@@ -23,7 +23,7 @@ export type Feature = {
 export const FEATURES: Feature[] = [
   { id: "landing-page", label: "Hírek", route: "/", status: "preview" },
   { id: "match-organizer", label: "Meccsszervező", route: "/meccsszervezo", status: "live" },
-  { id: "rankings", label: "Ranglista", route: "/ranglista", status: "planned" },
+  { id: "rankings", label: "Ranglista", route: "/ranglista", status: "preview" },
   { id: "timetables", label: "Versenynaptár", route: "/versenynaptar", status: "planned" },
   { id: "tickets", label: "Jegyek", route: "/jegyek", status: "planned", badge: "ÚJ" },
   { id: "shop", label: "Bolt", route: "/bolt", status: "planned", badge: "ÚJ" },
