@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { isAdminOnly, isPublicInPhase1, phase1Fallback } from "./site-mode";
+import { isPublicInPhase1, phase1Fallback } from "./site-mode";
 
 describe("isPublicInPhase1", () => {
   it("keeps the Meccsszervező, auth and API public", () => {
@@ -22,11 +22,3 @@ describe("phase1Fallback", () => {
   });
 });
 
-describe("isAdminOnly", () => {
-  it("covers the Karnyx tool and nothing public", () => {
-    expect(isAdminOnly("/karnyx")).toBe(true);
-    expect(isAdminOnly("/karnyx/import")).toBe(true);
-    expect(isAdminOnly("/meccsszervezo")).toBe(false);
-    expect(isAdminOnly("/karnyxx")).toBe(false);
-  });
-});

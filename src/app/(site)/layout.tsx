@@ -13,7 +13,7 @@ export default async function SiteLayout({ children }: Readonly<{ children: Reac
   const adminView = await getAdminView();
   return (
     <>
-      <SiteHeader tabs={siteMenu(adminView)} />
+      <SiteHeader tabs={siteMenu} />
       <div className="wrap space-y-3 pb-0">
         {isDevPreview(adminView) && <DevPreviewBanner />}
         <SeasonPhases />

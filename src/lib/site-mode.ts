@@ -20,13 +20,6 @@ export function phase1Fallback(pathname: string): string {
   return pathname === "/gyik" ? "/meccsszervezo/gyik" : "/meccsszervezo";
 }
 
-/** Pages only admins may open, in every phase (e.g. the Karnyx tool). */
-export const ADMIN_ONLY_PREFIXES = ["/karnyx"];
-
-export function isAdminOnly(pathname: string): boolean {
-  return ADMIN_ONLY_PREFIXES.some((p) => pathname === p || pathname.startsWith(`${p}/`));
-}
-
 /** Whether this visitor sees the full site: everyone in phase 2, only the admin view in phase 1. */
 export function seesFullSite(adminView: boolean): boolean {
   return FULL_SITE || adminView;

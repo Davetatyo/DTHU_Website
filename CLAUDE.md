@@ -118,7 +118,7 @@ see the whole site as a developer preview: site menu on top, Meccsszervező tabs
 row, a "fejlesztői előnézet" strip (middleware checks `profiles.is_admin`). Admins have an
 "Admin felület" button and an "Admin nézet / Játékos nézet" switch in the header
 (`lib/view-as.ts`): UI decisions use `getAdminView()`, permissions always `requireAdmin()`.
-Features with `adminOnly` in the registry (e.g. `/karnyx`) are admin-only in every phase. **Phase 2**:
+**Phase 2**:
 `NEXT_PUBLIC_FULL_SITE=1` in Vercel + redeploy opens the full site to everyone. Locally, set
 the flag in `.env.local` to see the hidden pages without logging in.
 

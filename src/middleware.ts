@@ -1,6 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-import { FULL_SITE, isAdminOnly, isPublicInPhase1, phase1Fallback } from "@/lib/site-mode";
+import { FULL_SITE, isPublicInPhase1, phase1Fallback } from "@/lib/site-mode";
 import { VIEW_AS_COOKIE, wantsPlayerView } from "@/lib/view-as";
 
 export async function middleware(request: NextRequest) {
@@ -27,11 +27,10 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Who may open which page (lib/site-mode.ts): admin-only pages need the admin view in every
-  // phase; in phase 1 every page outside the Meccsszervező does. The admin view is a real admin
+  // Phase 1 (lib/site-mode.ts): pages outside the Meccsszervező need the admin view: a real admin
   // who hasn't switched to the player view (lib/view-as.ts). Others get a temporary redirect.
   const path = request.nextUrl.pathname;
-  if (isAdminOnly(path) || (!FULL_SITE && !isPublicInPhase1(path))) {
+  if (!FULL_SITE && !isPublicInPhase1(path)) {
     let adminView = false;
     if (user && !wantsPlayerView(request.cookies.get(VIEW_AS_COOKIE)?.value)) {
       // Signed-in users may read profiles (RLS), so the session client can check the flag.

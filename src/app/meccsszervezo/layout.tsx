@@ -20,7 +20,7 @@ export default async function OrganizerLayout({ children }: Readonly<{ children:
 
   return (
     <>
-      <SiteHeader tabs={full ? siteMenu(adminView) : organizerTabs} subTabs={full ? organizerTabs : undefined} section="Meccsszervező" />
+      <SiteHeader tabs={full ? siteMenu : organizerTabs} subTabs={full ? organizerTabs : undefined} section="Meccsszervező" />
       <main className="wrap page-fade">
         {isDevPreview(adminView) && (
           <div className="mb-4">

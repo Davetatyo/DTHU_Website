@@ -88,7 +88,6 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 | `rulebook` Szabálytár | `/szabalytar` | preview | content is final text from the prototype | credit/permission wording for Rulepop |
 | `faq` GYIK (site-wide) | `/gyik` | preview | content from the prototype | review texts |
 | `links` Linkek | `/linkek` | preview | real links | — |
-| `karnyx` Karnyx (admin tool) | `/karnyx` | preview, **admin-only always** | opens karnyx.app in a window (it can't be embedded); "DTHU párosítás-másoló" bookmarklet copies a round's pairings in the import format | owner tries the bookmarklet on the real Karnyx round page |
 | `alchemist` Alkimista | `/alkimista` + help vial | preview | knowledge base from the prototype; unanswered questions only in the browser | admin inbox for unanswered questions |
 
 ## Needs the owner
@@ -117,6 +116,8 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 - Drop the "Megerősítve" (confirmed) Discord posts entirely if the channel gets noisy.
 - Split Discord posts into two channels (second webhook), or DMs via a real bot.
 - Ask the Karnyx developers for a public share link or API to import pairings automatically.
+  (A bookmarklet that read the Karnyx round page was tried and removed on 2026-10-30: the
+  page mixes pairings with other player lists; the owner keeps the manual copy-paste.)
 - Hero-colour accents (the prototype's hidden "Válassz hőst" theme menu).
 - More hero artwork: only Barbarian, Paladin and Alchemist have images
   (`public/images`, listed in `src/lib/heroes.ts`); others get a gradient in their colours.
@@ -151,6 +152,19 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 ## Handover log
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
+
+### 2026-10-31 · Karnyx tab and bookmarklet removed
+
+- Owner decision after the live test: the bookmarklet won't do; keep the manual copy-paste
+  into "Új forduló párosítása" (unchanged throughout). Reverted the three Karnyx merges
+  (`git revert -m 1` of `c7ab510`, `b69103e`, `d143d10`): no Karnyx tab, no `/karnyx` page, no
+  bookmarklet, `happy-dom` dev dependency gone, `vitest.config.ts` back.
+- Also removed the admin-only page mechanism that existed only for `/karnyx` (registry
+  `adminOnly`, `isAdminOnly` in site-mode, middleware check). The admin button and the
+  Admin/Játékos view switch (feature/admin-view) stay.
+- The entries below about the Karnyx tab and bookmarklet are history; the `feature/karnyx`
+  branch still exists on GitHub with that work.
+- Verified: types, lint, 78 tests, production build, menus (see below).
 
 ### 2026-10-30 (late night) · Karnyx pairing bookmarklet
 
