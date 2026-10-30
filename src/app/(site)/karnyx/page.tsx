@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Art } from "@/components/Art";
+import { KarnyxBookmarklet } from "@/features/karnyx/components/KarnyxBookmarklet";
 import { KarnyxLauncher } from "@/features/karnyx/components/KarnyxLauncher";
 import { requireAdmin } from "@/lib/auth";
 
@@ -26,14 +27,22 @@ export default async function KarnyxPage() {
         </div>
       </div>
 
+      <section className="card space-y-3">
+        <h2 className="text-lg font-bold">
+          Párosítások átvétele <span className="chip warn ml-1">kísérlet</span>
+        </h2>
+        <p className="muted text-sm">
+          Másolás-beillesztés helyett: egy könyvjelző a Karnyx oldalán kiolvassa a forduló párosításait (hősökkel együtt),
+          pontosan abban a formában, amit az Admin felület vár. Csak a te böngésződben fut, a Karnyx belépésed nem kerül
+          sehova.
+        </p>
+        <KarnyxBookmarklet />
+      </section>
+
       <div className="card space-y-2 text-sm">
         <p>
           <b>Miért nem itt jelenik meg?</b> A Karnyx nem engedi, hogy más oldal beágyazza (a böngésző letiltja), ezért
           külön ablakban nyílik. A beágyazott oldal tartalmát egyébként sem olvashatná ki a mi oldalunk.
-        </p>
-        <p className="muted">
-          Következő lépés: a forduló párosításainak átvétele másolás-beillesztés nélkül, egy, a Karnyx oldalán futó
-          gombbal (fejlesztés alatt).
         </p>
       </div>
     </div>
