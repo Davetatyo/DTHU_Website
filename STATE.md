@@ -108,9 +108,13 @@ in `reference/artifact` (open `reference/artifact/index.html`).
    - Confirm the first swap's 🔁 Discord post appeared; ask players to log in and claim their
      Karnyx names; around 2026-10-31 12:25 confirm the automatic 48h warning appeared.
    - Optional: tag releases (`v1.0 e527783`, `v1.1 6c1a193`, `v1.2 a278e0a`) and push tags.
-3. Decide the scope and order of the phase-2 features (table above).
+3. Decide the scope and order of the phase-2 features (table above) and of the future
+   features in [Features_Roadmap.md](Features_Roadmap.md) (R1–R5: open questions per item).
 
 ## Ideas discussed, not decided (ask the owner before building)
+
+Bigger future features (tutorial, news/event admin, profile avatars, XP, admin area) are in
+[Features_Roadmap.md](Features_Roadmap.md). Smaller ideas:
 
 - Crop the logo to just the glowing dice for a clearer small icon, and use it as favicon.
 - Drop the "Megerősítve" (confirmed) Discord posts entirely if the channel gets noisy.
@@ -152,6 +156,16 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 ## Handover log
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
+
+### 2026-10-31 (evening) · Features roadmap
+
+- New [Features_Roadmap.md](Features_Roadmap.md): the owner's living list of future features
+  (R1 tutorial, R2 news/event admin with sub pages and image upload, R3 avatar upload + badge
+  ring, R4 XP and levels with an admin XP page, R5 dedicated admin area). Every item is
+  **Idea**: each has open questions for the owner. Shared foundations and a suggested order
+  (R5 → R2 → R3 → R4 → R1) are noted there.
+- CLAUDE.md takeover step 2 and the handover step now point agents at it; README links it.
+- Docs only, no code change.
 
 ### 2026-10-31 (later) · Meccsszervező renamed to "Időpontfoglaló" for visitors
 
