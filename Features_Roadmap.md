@@ -46,14 +46,17 @@ whichever item needs it first.
 
 | Foundation | Needed by | Notes |
 |---|---|---|
-| **Admin area**: a dedicated admin page with its own menu | R2, R4, R5 | That page is item R5. Every admin tool below plugs into its menu. |
+| **Admin area**: a dedicated admin page with its own menu | R2, R4, R5, R7 | That page is item R5. Every admin tool below plugs into its menu. |
 | **Image upload**: Supabase Storage bucket, resize and compress before saving | R2, R3 | One shared helper: resize to a max size and compress, keeping quality reasonable (e.g. WebP), on the client before upload. Size limits and allowed types are enforced by the bucket policy. |
 | **Separate dev Supabase project** | all items with new tables | STATE.md → Technical debt. Local development uses the live database today. New tables and uploads should be tried on a dev project first. |
-| **Activity events**: one place where "something happened" is recorded | R4, later tickets/shop | XP (and later tickets) are awarded from events such as a played match, a sign-up or a finished tutorial. Design this together with the XP system. |
+| **Activity events**: one place where "something happened" is recorded | R4, R7, later tickets/shop | XP (and later tickets) are awarded from events such as a played match, a sign-up or a finished tutorial. Design this together with the XP system. |
+| **Once-a-day / first-login prompts**: show something once per user per day or until done | R1, R7 | The tutorial starting after the first login and the Daily Quiz popping up on the first login of the day should use one mechanism, so they don't pile up on top of each other. |
 
 Suggested order, based on what depends on what (the owner decides the real order):
-**R5 Admin area → R2 News & events → R3 Profile → R4 XP → R1 Tutorial.**
-The tutorial goes last because it walks users through the other features and awards XP.
+**R5 Admin area → R2 News & events → R3 Profile → R4 XP → R6 Games → R7 Quiz → R1 Tutorial.**
+The tutorial goes last because it walks users through the other features and awards XP. The
+Games hub (R6) is cheap and could come earlier, but its first game (R7) needs XP and admin
+question management.
 
 ---
 
@@ -181,6 +184,67 @@ every page and action, whatever the view switch shows.
   that redirect would change), or keep it under `/meccsszervezo/admin`?
 - A dashboard home (open matches, deadline, unconfirmed players, webhook status), or straight
   into the first tool?
+
+### R6 · Games section (Játékok)
+
+**Status:** Idea · **Feature id (proposed):** `games` · **Depends on:** nothing to start (a
+page of cards). Games that award XP need R4.
+
+A new site section that keeps users engaged and coming back. It introduces games one by one.
+
+- **Hub page** (e.g. `/jatekok`): one **card per game**, with a picture, a name, a short
+  description and a status such as "Új", "Hamarosan" or the user's progress.
+- Each game is its own feature with its own sub page. Games can be added or retired without
+  touching the others (a small registry, like `src/features/registry.ts`).
+- The first game is the Quiz (R7). Others get added here as new **R#** items when the owner
+  thinks of them.
+
+**Open questions:**
+- Is the hub a top-level menu item (next to Ranglista, Versenynaptár…) or under another one?
+- Do signed-out visitors see the games, or only logged-in users? Do they play without saving
+  progress or XP?
+- Show leaderboards per game (e.g. quiz points this week), or keep it personal?
+
+### R7 · Quiz (Kvíz)
+
+**Status:** Idea · **Feature id (proposed):** `quiz` (a game inside R6) · **Depends on:** R6
+hub, R4 XP (for rewards), R5 Admin area (for managing questions)
+
+Quizzes on the website in **increasing difficulty**. Users learn the game and earn XP.
+
+- **Categories (quiz types):**
+  - Szabályok: rules
+  - Karakterek: characters and heroes
+  - Helyzetmegoldás: deep situational problem solving
+  - Sebzésszámítás: damage calculation
+  - Szórakoztató: fun questions
+  - Detektív rejtvények: detective-style riddles
+  - …more later
+- **Difficulty:** levels within each category, from easy to hard. Harder levels unlock as
+  easier ones are completed and give more XP.
+- **Daily Quiz (Napi kvíz):** a random question from the pool **pops up the first time a user
+  logs in each day**. Answering it gives a small XP reward. It shows once a day, and can be
+  dismissed.
+- **Learning:** after each answer, show the right answer with a short explanation, and link to
+  the rule in the Szabálytár where it fits.
+- **Question pool:** admins add and edit questions on the admin area (R5). Each question has a
+  category, difficulty, question text (optionally a picture, e.g. a dice roll or board
+  situation), answer options, the correct answer and an explanation.
+
+**Data (draft):** `quiz_questions` (category, difficulty, body, image path, options, correct
+answer, explanation, active), `quiz_attempts` (user, question or quiz, correct, answered_at),
+`daily_quiz` (date → question, or one random pick per user per day). XP goes through the
+`xp_events` of R4, unique per question/day so it can't be farmed.
+
+**Open questions:**
+- Answer formats: multiple choice only, or also number input (good for damage calculation)
+  and free text (good for riddles)?
+- Can a quiz be retaken? Does XP come only the first time, or only for a perfect score?
+- Time limits per question, or untimed?
+- Daily Quiz: the same question for everyone each day (comparable, can be discussed on
+  Discord), or a different random one per user? Does a streak bonus for consecutive days fit?
+- Who writes the first question pool, and how many questions per category to launch with?
+  Can players suggest questions for admins to approve?
 
 ---
 
