@@ -31,6 +31,7 @@ reshaped, built or dropped as the site grows. It is the owner's wish list, not a
 | Status | Meaning |
 |---|---|
 | Idea | Written down. Scope not agreed yet. |
+| In discussion | The owner has written draft decisions; they are being finalised with the other admins. |
 | Ready to plan | The owner wants it. The next step is a plan to discuss with them. |
 | Planned | Plan agreed. Branch, migration and screens are known. |
 | In progress | Being built on its branch (named in the item). |
@@ -48,6 +49,7 @@ whichever item needs it first.
 |---|---|---|
 | **Admin area**: a dedicated admin page with its own menu | R2, R4, R5, R7 | That page is item R5. Every admin tool below plugs into its menu. |
 | **Image upload**: Supabase Storage bucket, resize and compress before saving | R2, R3 | One shared helper: resize to a max size and compress, keeping quality reasonable (e.g. WebP), on the client before upload. Size limits and allowed types are enforced by the bucket policy. |
+| **Cosmetics catalogue**: one list of every badge ring, title, rank and emote, what each player owns and what they wear | R3, R4, later the shop | Defined in R3. XP levels (R4), events and the shop only *grant* items from it; the profile settings page is where players choose what to wear. |
 | **Separate dev Supabase project** | all items with new tables | STATE.md → Technical debt. Local development uses the live database today. New tables and uploads should be tried on a dev project first. |
 | **Activity events**: one place where "something happened" is recorded | R4, R7, later tickets/shop | XP (and later tickets) are awarded from events such as a played match, a sign-up or a finished tutorial. Design this together with the XP system. |
 | **Once-a-day / first-login prompts**: show something once per user per day or until done | R1, R7 | The tutorial starting after the first login and the Daily Quiz popping up on the first login of the day should use one mechanism, so they don't pile up on top of each other. |
@@ -112,53 +114,160 @@ pinned, published flag, author, timestamps). Events also get a start/end, a plac
 - Online rounds: should they come from the Meccsszervező rounds table, so they aren't typed in
   twice (see `src/features/timetables/README.md`)?
 
-### R3 · Profile page upgrade (Profil)
+### R3 · Profile page upgrade and settings (Profil, Profilbeállítások)
 
-**Status:** Idea · **Feature id (proposed):** `profile` (today the profile page lives in the
-Meccsszervező at `/meccsszervezo/profil`) · **Depends on:** the image upload foundation
+**Status:** In discussion (draft 2026-10-31, to finalise with the admins together with R4) ·
+**Feature id (proposed):** `profile` (today the profile page lives in the Meccsszervező at
+`/meccsszervezo/profil`) · **Depends on:** the image upload foundation, the cosmetics
+catalogue foundation; R4 is what fills the collection
 
+**Avatar**
 - Users can upload a small picture as their **avatar**. It is resized and compressed
-  automatically and shown as a circle across the site (header pill, match rows, rankings).
-- **Badges around the avatar:** prepare a frame or ring around the circle that badges can fill
-  later, earned as rewards (R4) or bought in the Bolt. **No badge by default.** For now, build
-  only the data and the display slot; earning badges comes later.
+  automatically, then shown as a circle across the site: header pill, match rows, rankings.
 
-**Data (draft):** `profiles.avatar_path`, and `profiles.badge_id` (nullable) or a `badges` +
-`user_badges` table if users can own several and pick one.
+**Cosmetics collection (Gyűjtemény), on the profile settings page**
+- Players see **every cosmetic they've earned**: badge rings around the avatar, titles,
+  rank, emotes, and later shop items.
+- They choose what to **wear** and can switch to any earned item at any time, or wear
+  nothing.
+- **One item per slot:** one badge ring, one title, one rank display. The number of emote
+  slots is still open.
+- **Nothing is worn by default.** No badge ring around the avatar until the player picks one.
+- Newly earned items are marked "Új" until the player has looked at them. A level-up can
+  also suggest wearing the new item, but never equips it on its own.
+- **Locked items:** show the ones not yet earned greyed out, with how to get them (e.g. "Érd
+  el a 10. szintet")? Or keep them hidden as a surprise? (Open question.)
+- **What others see:** only the worn cosmetics, next to the player's name and avatar. Never
+  their XP or level (R4).
+- **The player's own XP:** a level and XP progress block on the profile. The small track next
+  to the profile icon is in R4.
+
+**Data (draft):**
+- `profiles.avatar_path`.
+- `cosmetics` (the catalogue): type (badge ring / title / rank / emote / …), name, image,
+  where it comes from (level, milestone, season top level, event, shop), active.
+- `user_cosmetics` (what a player owns): user, cosmetic, earned_at, source, seen.
+- `user_equipped` (what a player wears): user, slot, cosmetic. One row per slot, so new slots
+  can be added later without schema changes.
 
 **Open questions:**
 - Fall back to the Discord avatar when there's no upload, or to the hero-coloured initials
   used today?
-- Moderation: can admins remove an avatar?
-- Can a user own many badges and choose the one shown, or only one at a time?
+- Moderation: can admins remove an avatar? Can they take away a cosmetic?
+- Show locked cosmetics (and how to earn them), or keep them hidden?
+- Emotes: what are they and where do they show (next to the name, on match pages, as
+  reactions)? How many can be worn at once?
 - Move the profile out of `/meccsszervezo` into a site-level account area now (see STATE.md
   → Technical debt)?
 
 ### R4 · XP and levels (Tapasztalati pontok)
 
-**Status:** Idea · **Feature id (proposed):** `xp` · **Depends on:** R5 Admin area, the
-activity events foundation
+**Status:** In discussion (draft decisions from the owner, 2026-10-31; to finalise with the
+other admins before building) · **Feature id (proposed):** `xp` · **Depends on:** R5 Admin
+area (XP management page), R3 Profile (cosmetics collection, badge ring). The automatic
+sources need R1 Tutorial and R7 Quiz.
 
-Users earn XP through activities and **level up** at set XP milestones.
+Users earn XP for activities and level up at rising milestones, in the style of Duolingo.
 
-- **Example sources:** signing up for the Online Bajnokság, played matches, finishing the site
-  tutorial (R1). More will be added over time.
-- **XP Management page (Tapasztalat kezelés), admins only:** set how much XP each activity
-  gives, edit the level thresholds, give or take XP by hand (with a reason), and see a user's
-  XP history.
-- Users see their level and XP progress on their profile (R3), maybe on the Ranglista too.
+**What XP is**
+- XP is **never spent**. It only raises the level.
+- Levels give **cosmetic rewards**: badges, titles, rank, emotes, and later unlocked shop
+  items. Players collect them and choose what to wear in their profile settings (R3).
+- A separate digital currency for the website comes later and has nothing to do with XP.
+- XP is **lifetime** and never resets.
+- Everyone starts from **zero** at launch. Nothing is backfilled.
 
-**Data (draft):** `xp_rules` (activity key, amount, active), `xp_events` (user, activity,
-amount, source reference, created_at, unique per source so nothing is awarded twice),
-`levels` (level, min XP). The total is the sum of a user's events, so history and corrections
-stay traceable.
+**How XP is earned (first list, will keep growing)**
 
-**Open questions:**
-- How do XP, Jegyek (tickets) and the Bolt relate? Separate currencies (XP = progress,
-  tickets = spendable), or does levelling up give tickets or badges?
-- Does a "played match" award XP when either player marks it played, or only once both
-  confirm? (Note: the Meccsszervező doesn't store match results.)
-- Award XP for past activity (round 1 matches) when the system starts?
+| Activity | How it's given | How often | Starting XP (adjustable) |
+|---|---|---|---|
+| Finishing the site tutorial after the first sign-in (R1) | automatic | once | 50 |
+| First match played in a tournament | admin | once per tournament | 20 |
+| Tournament placement: 1st / 2nd / 3rd / everyone else | admin | once per tournament | 150 / 100 / 75 / 30 |
+| Daily Quiz (R7) | automatic | once a day | 10 |
+| Quiz level completed (R7) | automatic | once per level, only with 100% correct answers | 15–40, rising with difficulty |
+| Attending a live event | admin | once per event | 50 |
+
+The values are a starting point modelled on Duolingo (about 10 XP for a daily task). Admins
+fine-tune them on the XP management page.
+
+**Built-in limits (no separate cap needed)**
+- Every source is **one-time, once a day or occasional**. Nothing can be repeated endlessly
+  for XP.
+- Quiz **retakes give no XP**. **Random mode gives no XP**. A quiz level gives XP only when
+  it's completed **100% correctly**.
+- These limits are written into the code. Admins can't switch them off by accident.
+
+**Levels and seasons**
+- Each level needs more XP than the last. Starting curve: going from level *n* to *n*+1 costs
+  **20 + 10·(n−1) XP**.
+  - That puts level 2 at 20 XP, level 5 at 140, level 10 at 540 and level 20 at 2,090.
+  - A very active player (daily quiz, quiz levels, one tournament and an event) reaches about
+    level 20 by the end of the season.
+- **Season 1 has 20 levels.** A season lasts **3 months**. Admins can adjust the curve.
+- Levels have **no names**, except the season's **top level**. Admins name it after the
+  current Dice Throne season.
+- Reaching the top level earns a **special badge ring** around the profile picture.
+
+**Rewards**
+- Every level-up gives a **small cosmetic upgrade**.
+- **Milestone levels** (e.g. 5, 10, 15, 20) give **badges and titles**. Later they also unlock
+  shop items.
+- Admins decide which reward belongs to which level.
+- Rewards land in the player's **cosmetics collection** (R3), marked "Új". The player decides
+  whether to wear them; nothing is equipped automatically.
+- **Double XP periods:** an admin sets a start and an end, and the automatic sources give
+  2× XP during that time.
+
+**Visibility**
+- **No XP leaderboard.**
+- A player sees their own XP and level on their **profile**, plus a **small progress track
+  next to their profile icon** in the header.
+- Other players never see someone's XP or level. They only see the cosmetics that player
+  chose to wear.
+
+**Admin controls (XP kezelés page, admins only)**
+- Change the XP value of each activity, turn activities on and off, and edit the level curve
+  and the season's top-level name.
+- Set the rewards per level, start and stop double XP periods, and give or take XP by hand
+  with a reason.
+- View any user's XP history.
+- **New kinds of activity need code first.** Each one has a fixed key in the code and a row in
+  the activities list. A release adds the key; admins then set its value and switch it on.
+  Every admin change is logged: who, when, old and new value.
+- **Changes apply from then on only.** XP already earned is never recalculated.
+
+**Data (draft):**
+- `xp_activities`: key, name, XP amount, how often, automatic or admin, active.
+- `xp_events`: user, activity, amount, multiplier, source reference, reason, given by, time.
+  A unique key stops double awards, e.g. the same activity + user + day/tournament/quiz level.
+- `xp_levels`: level, XP needed, season, name.
+- `xp_rewards`: level → cosmetic from the R3 catalogue. Reaching the level adds the item to
+  `user_cosmetics`.
+- `xp_boosts`: start, end, multiplier.
+- `xp_admin_log`.
+- A user's total is the sum of their `xp_events` rows. This needs a separate test Supabase
+  project before building.
+
+**Suggested build order:**
+1. The admin-given sources and the XP management page (works without the tutorial or the
+   quiz).
+2. The profile XP track, the cosmetics catalogue and the collection page (R3).
+3. The automatic sources, as R1 and R7 are built.
+
+**Open questions (to settle with the admins):**
+- **XP past the season's top level:** XP is lifetime, but season 1 stops at level 20.
+  Proposal: the level cap rises each season (season 2 opens levels 21–40, and so on). XP
+  earned at the cap
+  - (a) keeps counting and is applied when the next season opens (proposed); or
+  - (b) is not earned until then.
+- **First match played:** once per tournament (proposed), or once ever?
+- **Daily Quiz:** XP only for a correct answer (proposed, in line with the 100% rule), or for
+  answering at all?
+- **Double XP:** only the automatic sources (proposed), or the admin-given ones too?
+- **Level number:** hidden from other players too (proposed), or visible without the XP?
+- **Starting values and curve:** OK as a placeholder?
+- **Rewards:** which cosmetic for each level and milestone?
 
 ### R5 · Admin area upgrade (Admin felület)
 
@@ -220,11 +329,16 @@ Quizzes on the website in **increasing difficulty**. Users learn the game and ea
   - Szórakoztató: fun questions
   - Detektív rejtvények: detective-style riddles
   - …more later
-- **Difficulty:** levels within each category, from easy to hard. Harder levels unlock as
-  easier ones are completed and give more XP.
+- **Difficulty:** quizzes are **not random**. Each category has fixed levels, from easy to
+  hard. Harder levels unlock as easier ones are completed and give more XP.
+- **XP rules (owner decisions, 2026-10-31; details in R4):**
+  - A quiz level gives XP **only when completed 100% correctly**, and **only once**. Retakes
+    give no XP.
+  - A **random mode** (questions from the whole pool) is just for practice and **gives no
+    XP**.
 - **Daily Quiz (Napi kvíz):** a random question from the pool **pops up the first time a user
-  logs in each day**. Answering it gives a small XP reward. It shows once a day, and can be
-  dismissed.
+  logs in each day**. It gives a small XP reward (only for a correct answer, proposed in R4).
+  It shows once a day, and can be dismissed.
 - **Learning:** after each answer, show the right answer with a short explanation, and link to
   the rule in the Szabálytár where it fits.
 - **Question pool:** admins add and edit questions on the admin area (R5). Each question has a
@@ -239,10 +353,10 @@ answer, explanation, active), `quiz_attempts` (user, question or quiz, correct, 
 **Open questions:**
 - Answer formats: multiple choice only, or also number input (good for damage calculation)
   and free text (good for riddles)?
-- Can a quiz be retaken? Does XP come only the first time, or only for a perfect score?
 - Time limits per question, or untimed?
 - Daily Quiz: the same question for everyone each day (comparable, can be discussed on
-  Discord), or a different random one per user? Does a streak bonus for consecutive days fit?
+  Discord), or a different random one per user? (No streaks: the owner decided against a
+  streak system, see R4.)
 - Who writes the first question pool, and how many questions per category to launch with?
   Can players suggest questions for admins to approve?
 

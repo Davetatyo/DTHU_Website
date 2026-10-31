@@ -158,6 +158,25 @@ quiz) are in
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
 
+### 2026-10-31 (night) · XP system drafted in the roadmap
+
+- The owner answered the XP questions. [Features_Roadmap.md](Features_Roadmap.md) R4 now holds
+  the draft decisions:
+  - XP is lifetime and never spent; it gives cosmetic rewards only;
+  - six starting XP sources, three of them given by admins;
+  - built-in limits (one-time / daily / occasional; quiz XP only at 100%, no retakes, random
+    mode gives none);
+  - rising level curve, 20 levels per 3-month season, a named top level with a badge ring;
+  - admin-set double XP periods; no leaderboard, no streaks; start from zero;
+  - an admin XP management page with a change log.
+- R3 now includes the profile settings **cosmetics collection**: players see what they've
+  earned and choose what to wear, one per slot, nothing worn by default.
+- R7 now has the quiz XP rules.
+- R3 and R4 are **In discussion**: the owner is finalising them with the other admins. The
+  open questions are at the end of R4 (XP past the season cap, first-match frequency, Daily
+  Quiz XP, double XP scope, level visibility, starting values, rewards per level).
+- Docs only.
+
 ### 2026-10-31 (evening) · Features roadmap
 
 - New [Features_Roadmap.md](Features_Roadmap.md): the owner's living list of future features
