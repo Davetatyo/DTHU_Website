@@ -153,6 +153,19 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
 
+### 2026-10-31 (later) · Meccsszervező renamed to "Időpontfoglaló" for visitors
+
+- Collaborator Arpad-Zolyomi pushed `4c45253` straight to `main`: the menu label in
+  `src/features/registry.ts` is now "Időpontfoglaló".
+- Owner asked to rename it everywhere a visitor sees it: page titles and header section of
+  `/meccsszervezo`, the site GYIK link, the preview strip, the Alkimista answers and links, the
+  news sample text, the site description and the Discord "Teszt üzenet". Hungarian articles
+  adjusted ("az Időpontfoglaló…").
+- Unchanged on purpose: the URL `/meccsszervezo` (old links), the feature id
+  `match-organizer`, code comments and docs (they keep "Meccsszervező" as the internal name),
+  calendar PRODID/UIDs.
+- Verified: types, lint, 78 tests, production build.
+
 ### 2026-10-31 · Karnyx tab and bookmarklet removed
 
 - Owner decision after the live test: the bookmarklet won't do; keep the manual copy-paste
@@ -291,6 +304,8 @@ of the DTHU website, in a new repository and a new design.
   banner with countdown, matches as rows grouped by day (or hero-coloured cards), player
   avatars in their hero's colours, versus banner on the match page.
 - Phase-1 gate: every page outside the Meccsszervező redirects to it until the full site opens.
+- Visitors see the Meccsszervező under the name **"Időpontfoglaló"** (menu, titles, texts;
+  2026-10-31). The address stays `/meccsszervezo`.
 **Manual steps:** connect Vercel to the new repository (see Launch plan). No database change.
 **Verified:** see the Handover log entry of 2026-10-30.
 

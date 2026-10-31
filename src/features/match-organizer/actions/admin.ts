@@ -265,6 +265,6 @@ export async function sendReminder(formData: FormData) {
 
 export async function testWebhook() {
   await requireAdmin();
-  const ok = await postToDiscord(["🔧 Teszt üzenet a DT Meccsszervezőből. Ha ezt látod, a Discord értesítések működnek."]);
+  const ok = await postToDiscord(["🔧 Teszt üzenet a DT Időpontfoglalóból. Ha ezt látod, a Discord értesítések működnek."]);
   done(ok ? "uzenet" : "hiba", ok ? "Teszt üzenet elküldve Discordra." : "A Discord üzenet nem ment el. Ellenőrizd a DISCORD_WEBHOOK_URL beállítást.");
 }

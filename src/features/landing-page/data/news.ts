@@ -4,7 +4,7 @@ import type { ArtSpec } from "@/components/Art";
 export type NewsItem = { d: string; t: string; p: string; i: "die" | "swords" | "ticket" | "cal" };
 
 export const NEWS: NewsItem[] = [
-  {d:'2026.10.30', t:'Elkészült az új közösségi oldal prototípusa', p:'Meccsszervező, menetrend, ranglista és versenynaptár egy helyen. Hamarosan jön a jegyrendszer és a bolt. Minden visszajelzést szívesen fogadunk.', i:'die'},
+  {d:'2026.10.30', t:'Elkészült az új közösségi oldal prototípusa', p:'Időpontfoglaló, menetrend, ranglista és versenynaptár egy helyen. Hamarosan jön a jegyrendszer és a bolt. Minden visszajelzést szívesen fogadunk.', i:'die'},
   {d:'2026.10.26', t:'Elindult az októberi bajnokság 1. fordulója', p:'22 játékos, 11 meccs és egy pihenő. A határidő hétfő (11.02.) 12:25. Lépj be Discorddal, és egyeztess időpontot az ellenfeleddel.', i:'swords'},
   {d:'2026.10.20', t:'Jön a jegyrendszer', p:'Minden lejátszott meccs, győzelem és élő esemény jegyet ér. A jegyeket később a boltban költheted el rangokra, kedvezményekre és nyereményekre.', i:'ticket'},
   {d:'2026.10.12', t:'Feliratkozható versenynaptár', p:'A megerősített meccsek automatikusan bekerülnek a Google, Apple vagy Outlook naptáradba.', i:'cal'}
