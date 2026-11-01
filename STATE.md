@@ -159,9 +159,20 @@ quiz) are in
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
 
+### 2026-11-02 · Registration page merged to main, login flow fixes
+
+- **Merged** `feature/register-page` into `main` (`ff34109`). The feature is now live.
+- **Login gate fix** (`f9fab0f`): `/meccsszervezo/login` was excluded from the login-gate
+  redirect so the Discord OAuth flow works from the registration wizard. Without this, clicking
+  "Belépés Discorddal" on `/regisztracio` bounced back to `/regisztracio` in a loop.
+- **Logout redirect fix** (`fc584da`): signing out now sends users to `/meccsszervezo/login`
+  instead of `/meccsszervezo` (which the middleware would redirect to `/regisztracio`). Existing
+  users who log out land on the login page, not the registration guide.
+- **Verified:** types, lint, 80 tests. Browser: login flow from `/regisztracio` wizard works,
+  logout lands on the login page.
+
 ### 2026-11-01 · Registration landing page, step wizard, login gate
 
-- **Branch:** `feature/register-page` (from `main`, not merged).
 - New feature `src/features/register-page/` with a top-level registration guide page at
   `/regisztracio`. The route is public in phase 1 (added to `PHASE1_PUBLIC_PREFIXES`).
   It has its own minimal layout (brand + theme toggle, no tabs exposing `/meccsszervezo`).
@@ -176,17 +187,6 @@ Newest first. Each session adds an entry (see CLAUDE.md → "End of every sessio
 - **Onboarding overlay** (`OnboardingOverlay`): client component on the Meccsszervező overview
   page. First-time logged-in visitors see a 6-step modal walkthrough explaining the UI.
   Dismissed state stored in `localStorage` (`dthu_onboarding_done`). Shows only once.
-- **Files created:** `register-page/README.md`, `lib/steps.ts`, `components/StepCard.tsx`,
-  `components/StepWizard.tsx`, `components/HowItWorksCard.tsx`, `components/OnboardingOverlay.tsx`,
-  `register.css`, `app/regisztracio/layout.tsx`, `app/regisztracio/page.tsx`.
-- **Files modified:** `lib/routes.ts` (added `register`), `lib/site-mode.ts` (split public vs
-  login-gated prefixes, new `isLoginGatedInPhase1`), `middleware.ts` (redirect anonymous users
-  to `/regisztracio`), `app/meccsszervezo/page.tsx` (onboarding overlay, stripped login UI),
-  `app/meccsszervezo/login/page.tsx` (guide link), `lib/site-mode.test.ts` (updated for new
-  prefix split + new `isLoginGatedInPhase1` tests).
-- **Verified:** types, lint, 80 tests (2 new for login gate). No browser check (needs `.env.local`).
-- **Next:** owner reviews Hungarian texts, visual check on the dev server or Vercel preview.
-  Dev server was running on port 3002 (ports 3000/3001 occupied).
 
 ### 2026-10-31 (night) · XP system drafted in the roadmap
 
