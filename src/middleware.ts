@@ -33,7 +33,7 @@ export async function middleware(request: NextRequest) {
   if (!FULL_SITE) {
     // Login-gated pages (e.g. /meccsszervezo): any logged-in user can see them;
     // anonymous visitors go to the registration guide.
-    if (isLoginGatedInPhase1(path) && !user) {
+    if (isLoginGatedInPhase1(path) && path !== routes.login && !user) {
       const url = request.nextUrl.clone();
       url.pathname = routes.register;
       url.search = "";
