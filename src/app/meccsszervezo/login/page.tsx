@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { routes } from "@/lib/routes";
 import { redirect } from "next/navigation";
 import { createSessionClient } from "@/lib/supabase/server";
@@ -32,6 +33,12 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
       <form action={signInWithDiscord} className="mt-6">
         <SubmitButton className="btn btn-discord w-full">Belépés Discorddal</SubmitButton>
       </form>
+      <p className="muted mt-4 text-sm">
+        Először jársz itt?{" "}
+        <Link href={routes.register} className="link">
+          Nézd meg a regisztrációs útmutatót ›
+        </Link>
+      </p>
     </div>
   );
 }

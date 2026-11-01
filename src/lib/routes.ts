@@ -24,6 +24,7 @@ export const routes = {
   match: (id: string) => `${MO}/meccs/${id}`,
   schedule: `${MO}/menetrend`,
   organizerFaq: `${MO}/gyik`,
+  register: "/regisztracio",
   admin: `${MO}/admin`,
   adminUser: (id: string) => `${MO}/admin/felhasznalo/${id}`,
 

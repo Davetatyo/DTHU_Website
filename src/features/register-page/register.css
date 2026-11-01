@@ -1,0 +1,310 @@
+@layer components {
+  /* ---------- registration page ---------- */
+  .reg-steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+  }
+
+  .reg-step {
+    position: relative;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 24px 20px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: border-color 0.2s;
+  }
+  .reg-step:hover {
+    border-color: var(--gold-dim);
+  }
+
+  .reg-step .step-num {
+    position: absolute;
+    top: -14px;
+    left: 16px;
+    width: 28px;
+    height: 28px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--gold);
+    color: var(--on-gold);
+    font-weight: 800;
+    font-size: 14px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  .reg-step .step-icon {
+    width: 40px;
+    height: 40px;
+    color: var(--gold);
+    margin-bottom: 2px;
+  }
+
+  .reg-step h3 {
+    font-size: 18px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--fg);
+  }
+
+  .reg-step p {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .reg-step .step-detail {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.55;
+    border-top: 1px solid var(--line);
+    padding-top: 10px;
+    margin-top: auto;
+  }
+
+  /* ---------- how it works ---------- */
+  .hiw-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+
+  .hiw-card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 20px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+  .hiw-card:hover {
+    border-color: var(--gold-dim);
+  }
+
+  .hiw-card .hiw-icon {
+    width: 36px;
+    height: 36px;
+    flex: none;
+    color: var(--teal);
+  }
+
+  .hiw-card h3 {
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--fg);
+    margin-bottom: 4px;
+  }
+
+  .hiw-card p {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.55;
+  }
+
+  /* ---------- onboarding overlay ---------- */
+  .onboard-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(2px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+
+  .onboard-card {
+    background: var(--panel);
+    border: 1px solid var(--gold);
+    border-radius: 12px;
+    max-width: 440px;
+    width: 100%;
+    padding: 0;
+    overflow: hidden;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+    animation: fade-in 0.3s ease-out;
+  }
+
+  .onboard-header {
+    background: linear-gradient(90deg, var(--red-dk), var(--red));
+    color: #f3e6c8;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: var(--font-px);
+    font-size: 18px;
+    letter-spacing: 0.06em;
+  }
+
+  .onboard-body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    color: var(--fg);
+  }
+
+  .onboard-body h3 {
+    font-size: 18px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .onboard-body p {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.55;
+  }
+
+  .onboard-body .step-indicator {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    padding-top: 4px;
+  }
+
+  .onboard-body .step-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--line);
+    transition: background 0.2s;
+  }
+  .onboard-body .step-dot.active {
+    background: var(--gold);
+  }
+
+  .onboard-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px 16px;
+    gap: 8px;
+  }
+
+  /* ---------- step wizard ---------- */
+  .wiz-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .wiz-card {
+    position: relative;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 32px 28px 28px;
+    max-width: 480px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    text-align: center;
+    animation: fade-in 0.25s ease-out;
+  }
+
+  .wiz-card .wiz-num {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    font-family: var(--font-px);
+    font-size: 15px;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+  }
+
+  .wiz-card .step-icon {
+    width: 48px;
+    height: 48px;
+    color: var(--gold);
+  }
+
+  .wiz-card h3 {
+    font-size: 22px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--fg);
+  }
+
+  .wiz-card .wiz-desc {
+    font-size: 15px;
+    color: var(--fg);
+    font-weight: 600;
+  }
+
+  .wiz-card .wiz-detail {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+    border-top: 1px solid var(--line);
+    padding-top: 12px;
+    margin-top: 4px;
+  }
+
+  .wiz-final {
+    border-color: var(--gold);
+    box-shadow: 0 4px 24px rgba(200, 155, 60, 0.15);
+  }
+
+  .wiz-final h3 {
+    color: var(--gold);
+  }
+
+  .wiz-final p {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.55;
+    max-width: 38ch;
+  }
+
+  .wiz-login-btn {
+    margin-top: 4px;
+    width: 100%;
+    justify-content: center;
+    padding: 0.7rem 1.4rem;
+    font-size: 1.05rem;
+  }
+
+  .wiz-dots {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+  }
+
+  .wiz-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--line);
+    transition: background 0.2s, transform 0.2s;
+  }
+  .wiz-dot.active {
+    background: var(--gold);
+    transform: scale(1.25);
+  }
+  .wiz-dot.done {
+    background: var(--gold-dim);
+  }
+
+  .wiz-nav {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 480px;
+  }
+}
