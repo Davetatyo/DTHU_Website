@@ -109,9 +109,14 @@ in `reference/artifact` (open `reference/artifact/index.html`).
    - Confirm the first swap's 🔁 Discord post appeared; ask players to log in and claim their
      Karnyx names; around 2026-10-31 12:25 confirm the automatic 48h warning appeared.
    - Optional: tag releases (`v1.0 e527783`, `v1.1 6c1a193`, `v1.2 a278e0a`) and push tags.
-3. Decide the scope and order of the phase-2 features (table above).
+3. Decide the scope and order of the phase-2 features (table above) and of the future
+   features in [Features_Roadmap.md](Features_Roadmap.md) (R1–R7: open questions per item).
 
 ## Ideas discussed, not decided (ask the owner before building)
+
+Bigger future features (tutorial, news/event admin, profile avatars, XP, admin area, games and
+quiz) are in
+[Features_Roadmap.md](Features_Roadmap.md). Smaller ideas:
 
 - Crop the logo to just the glowing dice for a clearer small icon, and use it as favicon.
 - Drop the "Megerősítve" (confirmed) Discord posts entirely if the channel gets noisy.
@@ -182,6 +187,50 @@ Newest first. Each session adds an entry (see CLAUDE.md → "End of every sessio
 - **Verified:** types, lint, 80 tests (2 new for login gate). No browser check (needs `.env.local`).
 - **Next:** owner reviews Hungarian texts, visual check on the dev server or Vercel preview.
   Dev server was running on port 3002 (ports 3000/3001 occupied).
+
+### 2026-10-31 (night) · XP system drafted in the roadmap
+
+- The owner answered the XP questions. [Features_Roadmap.md](Features_Roadmap.md) R4 now holds
+  the draft decisions:
+  - XP is lifetime and never spent; it gives cosmetic rewards only;
+  - six starting XP sources, three of them given by admins;
+  - built-in limits (one-time / daily / occasional; quiz XP only at 100%, no retakes, random
+    mode gives none);
+  - rising level curve, 20 levels per 3-month season, a named top level with a badge ring;
+  - admin-set double XP periods; no leaderboard, no streaks; start from zero;
+  - an admin XP management page with a change log.
+- R3 now includes the profile settings **cosmetics collection**: players see what they've
+  earned and choose what to wear, one per slot, nothing worn by default.
+- R7 now has the quiz XP rules.
+- R3 and R4 are **In discussion**: the owner is finalising them with the other admins. The
+  open questions are at the end of R4 (XP past the season cap, first-match frequency, Daily
+  Quiz XP, double XP scope, level visibility, starting values, rewards per level).
+- Docs only.
+
+### 2026-10-31 (evening) · Features roadmap
+
+- New [Features_Roadmap.md](Features_Roadmap.md): the owner's living list of future features
+  (R1 tutorial, R2 news/event admin with sub pages and image upload, R3 avatar upload + badge
+  ring, R4 XP and levels with an admin XP page, R5 dedicated admin area). Every item is
+  **Idea**: each has open questions for the owner. Shared foundations and a suggested order
+  (R5 → R2 → R3 → R4 → R1) are noted there.
+- Later the same evening: added R6 Games section (Játékok, a hub of game cards) and R7 Quiz
+  (Kvíz: categories, increasing difficulty, XP, a Daily Quiz on the first login of the day).
+- CLAUDE.md takeover step 2 and the handover step now point agents at it; README links it.
+- Docs only, no code change.
+
+### 2026-10-31 (later) · Meccsszervező renamed to "Időpontfoglaló" for visitors
+
+- Collaborator Arpad-Zolyomi pushed `4c45253` straight to `main`: the menu label in
+  `src/features/registry.ts` is now "Időpontfoglaló".
+- Owner asked to rename it everywhere a visitor sees it: page titles and header section of
+  `/meccsszervezo`, the site GYIK link, the preview strip, the Alkimista answers and links, the
+  news sample text, the site description and the Discord "Teszt üzenet". Hungarian articles
+  adjusted ("az Időpontfoglaló…").
+- Unchanged on purpose: the URL `/meccsszervezo` (old links), the feature id
+  `match-organizer`, code comments and docs (they keep "Meccsszervező" as the internal name),
+  calendar PRODID/UIDs.
+- Verified: types, lint, 78 tests, production build.
 
 ### 2026-10-31 · Karnyx tab and bookmarklet removed
 
@@ -321,6 +370,8 @@ of the DTHU website, in a new repository and a new design.
   banner with countdown, matches as rows grouped by day (or hero-coloured cards), player
   avatars in their hero's colours, versus banner on the match page.
 - Phase-1 gate: every page outside the Meccsszervező redirects to it until the full site opens.
+- Visitors see the Meccsszervező under the name **"Időpontfoglaló"** (menu, titles, texts;
+  2026-10-31). The address stays `/meccsszervezo`.
 **Manual steps:** connect Vercel to the new repository (see Launch plan). No database change.
 **Verified:** see the Handover log entry of 2026-10-30.
 

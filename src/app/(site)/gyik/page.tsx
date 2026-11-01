@@ -13,9 +13,9 @@ export default function FaqPage() {
           <h1>GYIK</h1>
         </div>
         <p className="lead">
-          Gyakran ismételt kérdések a versenyekről, az egyeztetésről és a jegyekről. A Meccsszervező részletes kérdései:{" "}
+          Gyakran ismételt kérdések a versenyekről, az egyeztetésről és a jegyekről. Az Időpontfoglaló részletes kérdései:{" "}
           <Link href={routes.organizerFaq} className="link">
-            Meccsszervező GYIK
+            Időpontfoglaló GYIK
           </Link>
           .
         </p>
