@@ -2,7 +2,7 @@
 export function DevPreviewBanner() {
   return (
     <div className="proto">
-      FEJLESZTŐI ELŐNÉZET · a teljes oldalt most csak adminok látják, a nyilvánosság csak a Meccsszervezőt ·
+      FEJLESZTŐI ELŐNÉZET · a teljes oldalt most csak adminok látják, a nyilvánosság csak az Időpontfoglalót ·
       a ranglista, jegyek, hírek és bolt adatai példák · a mintás képek AI-képek helyőrzői
     </div>
   );

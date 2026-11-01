@@ -11,12 +11,15 @@ He reviews in small iterations, in English, and decides what ships.
 
 1. Read [STATE.md](STATE.md) top to bottom: version, launch phase, what each feature's status
    is, open owner tasks, known issues, and the **Handover log** (the last session's notes).
-2. Check the branch and working tree: `git status`, `git log --oneline -5`. Work on the
+2. Read [Features_Roadmap.md](Features_Roadmap.md): the owner's living list of future
+   features. Note items marked "Ready to plan" or whose dependencies are now built, and
+   suggest them as pickup points. Don't start one without the owner's OK.
+3. Check the branch and working tree: `git status`, `git log --oneline -5`. Work on the
    feature branch for what you're asked to do (see "Branches" below), never directly on `main`
    unless it's an agreed fix.
-3. If you touch the Meccsszervező, read [docs/match-organizer.md](docs/match-organizer.md)
+4. If you touch the Meccsszervező, read [docs/match-organizer.md](docs/match-organizer.md)
    (domain rules agreed with the owner). For services and env setup: [docs/setup.md](docs/setup.md).
-4. Run `npm test`, `npx tsc --noEmit`, `npm run lint` once to know the baseline.
+5. Run `npm test`, `npx tsc --noEmit`, `npm run lint` once to know the baseline.
 
 ## End of every session (handover)
 
@@ -25,7 +28,8 @@ Before you stop, even if the work is unfinished:
 1. Update [STATE.md](STATE.md): the feature table, "Needs the owner", "Known issues",
    "Technical debt", and add a dated entry at the top of the **Handover log**: what you did,
    what's half-done (branch + files), what you verified and how, what the next agent should do
-   first. Write it so someone with no memory of this session can continue.
+   first. Write it so someone with no memory of this session can continue. If you worked on
+   a roadmap item, or the owner changed one, update [Features_Roadmap.md](Features_Roadmap.md) too.
 2. If you shipped to production: bump the version and add a changelog entry (rules in STATE.md).
 3. Commit your work on its branch (only when the owner agreed to commits) with STATE.md in the
    same or the following commit. Never leave the owner's database or Discord in a state you
