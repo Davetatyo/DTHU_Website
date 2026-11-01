@@ -18,7 +18,9 @@ import {
 import { isProfileComplete } from "@/features/match-organizer/lib/profile";
 import { DEFAULT_TIMEZONE, formatDateTime, timeLeft } from "@/features/match-organizer/lib/time";
 import { resolveView } from "@/features/match-organizer/lib/view";
+import { OnboardingOverlay } from "@/features/register-page/components/OnboardingOverlay";
 import { routes } from "@/lib/routes";
+import "@/features/register-page/register.css";
 
 // Players see the compact list by default; their choice is remembered in this cookie.
 const VIEW_COOKIE = "nezet";
@@ -93,15 +95,11 @@ export default async function OrganizerHomePage({
                 </span>
               </div>
               <div className="flex flex-wrap gap-2">
-                {myMatch ? (
+                {myMatch && (
                   <Link href={routes.match(myMatch.id)} className="btn">
                     Saját meccsem
                   </Link>
-                ) : !viewer ? (
-                  <Link href={routes.login} className="btn btn-discord">
-                    Belépés Discorddal
-                  </Link>
-                ) : null}
+                )}
                 <Link href={routes.schedule} className="btn btn-secondary">
                   Közelgő meccsek
                 </Link>
@@ -165,15 +163,6 @@ export default async function OrganizerHomePage({
                 </div>
               )}
 
-              {!viewer && (
-                <div className="panel3 space-y-3 p-4">
-                  <p className="text-sm">Lépj be Discorddal, és rögtön látod, ki az ellenfeled, és egyeztethetitek az időpontot.</p>
-                  <Link href={routes.login} className="btn btn-discord w-full">
-                    Belépés Discorddal
-                  </Link>
-                </div>
-              )}
-
               <div>
                 <div className="hh">
                   <h2>A forduló állása</h2>
@@ -204,6 +193,7 @@ export default async function OrganizerHomePage({
           </div>
         </>
       )}
+      <OnboardingOverlay />
     </div>
   );
 }

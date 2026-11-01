@@ -89,6 +89,7 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 | `faq` GYIK (site-wide) | `/gyik` | preview | content from the prototype | review texts |
 | `links` Linkek | `/linkek` | preview | real links | — |
 | `alchemist` Alkimista | `/alkimista` + help vial | preview | knowledge base from the prototype; unanswered questions only in the browser | admin inbox for unanswered questions |
+| `register-page` Regisztráció | `/regisztracio` | **live** | static guide content; tournament banner real | owner review of Hungarian texts |
 
 ## Needs the owner
 
@@ -152,6 +153,35 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 ## Handover log
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
+
+### 2026-11-01 · Registration landing page, step wizard, login gate
+
+- **Branch:** `feature/register-page` (from `main`, not merged).
+- New feature `src/features/register-page/` with a top-level registration guide page at
+  `/regisztracio`. The route is public in phase 1 (added to `PHASE1_PUBLIC_PREFIXES`).
+  It has its own minimal layout (brand + theme toggle, no tabs exposing `/meccsszervezo`).
+- **Step wizard:** anonymous users on `/regisztracio` see a 4-step wizard (one card at a time:
+  Discord account → login → profile → match scheduling). They must click through all steps
+  before the Discord login button appears on the final card. Dot indicators + prev/next nav.
+- **Login gate:** `/meccsszervezo` now requires login (moved from `PHASE1_PUBLIC_PREFIXES` to
+  new `PHASE1_LOGIN_PREFIXES` in `site-mode.ts`). Anonymous users hitting `/meccsszervezo`
+  are redirected to `/regisztracio` (307) by the middleware. All login/register buttons removed
+  from the Meccsszervező overview page (hero banner, sidebar card) — dead code since `viewer`
+  is always non-null there now.
+- **Onboarding overlay** (`OnboardingOverlay`): client component on the Meccsszervező overview
+  page. First-time logged-in visitors see a 6-step modal walkthrough explaining the UI.
+  Dismissed state stored in `localStorage` (`dthu_onboarding_done`). Shows only once.
+- **Files created:** `register-page/README.md`, `lib/steps.ts`, `components/StepCard.tsx`,
+  `components/StepWizard.tsx`, `components/HowItWorksCard.tsx`, `components/OnboardingOverlay.tsx`,
+  `register.css`, `app/regisztracio/layout.tsx`, `app/regisztracio/page.tsx`.
+- **Files modified:** `lib/routes.ts` (added `register`), `lib/site-mode.ts` (split public vs
+  login-gated prefixes, new `isLoginGatedInPhase1`), `middleware.ts` (redirect anonymous users
+  to `/regisztracio`), `app/meccsszervezo/page.tsx` (onboarding overlay, stripped login UI),
+  `app/meccsszervezo/login/page.tsx` (guide link), `lib/site-mode.test.ts` (updated for new
+  prefix split + new `isLoginGatedInPhase1` tests).
+- **Verified:** types, lint, 80 tests (2 new for login gate). No browser check (needs `.env.local`).
+- **Next:** owner reviews Hungarian texts, visual check on the dev server or Vercel preview.
+  Dev server was running on port 3002 (ports 3000/3001 occupied).
 
 ### 2026-10-31 · Karnyx tab and bookmarklet removed
 
