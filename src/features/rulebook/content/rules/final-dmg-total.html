@@ -1,0 +1,63 @@
+<h2 slot="header">Végső sebzés összege</h2>
+				<aside>
+					<p>Ez a rész a haladó játékosoknak és a versenyjátékhoz készült. A játék hétköznapi játszásához az alábbi ismeretek nem szükségesek.</p>
+				</aside>
+				<p>Esetenként a végső sebzés összegének kiszámítása (az a mennyiség, amellyel csökkented az <a href="#health">életerő-tárcsádat</a> a <a href="#roll-phase">dobási fázis</a> végén) összetetté válhat, ha a támadás <a href="#damage-types">bejövő sebzését</a> a <a href="#defensive-ability">védekező képességed</a>, valamint a te és az ellenfeled által kijátszott <a href="#hero-cards">kártyák</a> és <a href="#status-effects">állapotjelzők</a> befolyásolják.</p>
+				<p>Szerencsére könnyen kiszámíthatod a végső sebzést az alábbi lépéseket követve, a bemutatott sorrendben, miután mindkét játékos teljesen befejezte az akcióit:</p>
+				<ol class="num-key">
+					<li>
+						<p><b>Határozd meg a bejövő sebzést</b></p>
+						<p>A bejövő sebzés (Incoming Damage) az a sebzésmennyiség, amely arra vár, hogy kiosztásra kerüljön neked a játék bármely pontján. Leggyakrabban ez a sebzés a <a href="#offensive-ability">támadó</a> és <a href="#defensive-ability">védekező képességekből</a> származik, de a bejövő sebzés olyan <a href="#status-effects">állapotjelzőkből</a> is adódhat, mint a <a href="#hero/pyromancer">Pyromancer</a> <a href="#token/burn">Burn (Égés) <svg class="◊" viewbox="0 0 500 500"><use href="#se-burn"/></svg></a> vagy a <a href="#hero/shadow-thief">Shadow Thief</a> <a href="#token/poison">Poison (Méreg) <svg class="◊" viewbox="0 0 500 500"><use href="#se-poison"/></svg></a> jelzője.</p>
+					</li>
+					<li>
+						<p><b>Összeadás és kivonás (részösszeg)</b></p>
+						<p>Most alkalmazunk mindent, ami összeadással vagy kivonással befolyásolja a bejövő sebzést. Azok a <a href="#defensive-ability">védekező képességek</a>, <a href="#status-effects">állapotjelzők</a> vagy <a href="#action-cards">kártyák</a>, amelyek kivonnának (megelőznének) vagy hozzáadnának egy <strong>konkrét</strong> sebzésmennyiséget, ebben a lépésben kerülnek alkalmazásra a bejövő sebzésre. Az eredményt bejövő sebzés részösszegének (Incoming Damage Subtotal) nevezzük.</p>
+					</li>
+					<li>
+						<p><b>Szorzás és osztás (Végső összeg)</b></p>
+						<p>Végül számíts ki mindent, ami szorzással vagy osztással befolyásolja a bejövő sebzést. Minden osztás és szorzás <strong>a legvégén kerül alkalmazásra</strong>, függetlenül attól, hogy a kártyákat, állapotjelzőket vagy védekező képességeket milyen sorrendben aktiválták.</p>
+						<p>Emellett, ha egynél több szorzót kell kiszámítanod, mindegyik szorzót függetlenül kell kiszámítani a 2. lépésben meghatározott eredeti bejövő sebzés részösszeg alapján.</p>
+						<p>Minden egyéb, ami a bejövő sebzést használja egy szorzási vagy osztási számítás részeként (pl. a <a href="#hero/paladin">Paladin</a> <a href="#token/retribution">Retribution (Megtorlás) <svg class="◊" viewbox="0 0 500 500"><use href="#se-retribution"/></svg></a> állapotjelzője), szintén ekkor kerül kiszámításra.</p>
+					</li>
+				</ol>
+				<h3>Barbár vs Paladin példa</h3>
+				<p>Az alábbiakban egy példa látható a <a href="#hero/barbarian">Barbár</a> (támadó) és a <a href="#hero/paladin">Paladin</a> (védő) közötti <a href="#offensive-roll-phase">Támadó</a> és <a href="#defensive-roll-phase">Védekező dobási fázis</a> során történő eseményekről.</p>
+				<ol>
+					<li><p>A Barbár aktiválja az Overpower támadó képességét, amely <svg class="◊" viewbox="0 0 500 500"><use href="#i-dmg-18"/></svg> sebzést okoz a Paladinnak.</p></li>
+					<li><p>A Paladin elkölti a <a href="#token/retribution">Retribution <svg class="◊" viewbox="0 0 500 500"><use href="#se-retribution"/></svg></a> állapotjelzőjét, ami a bejövő sebzés felét visszaosztja a Barbárnak.</p></li>
+					<li><p>A Paladin elkölti a <a href="#token/protect">Protect <svg class="◊" viewbox="0 0 500 500"><use href="#se-protect"/></svg></a> állapotjelzőjét, ami megelőzi a bejövő sebzés <svg class="◊" viewbox="0 0 412 500"><use href="#i-shield-half"/></svg> részét.</p></li>
+					<li><p>A Paladin aktiválja a Divine Defense III képességét, ami megelőz <svg class="◊" viewbox="0 0 412 500"><use href="#i-shield-3"/></svg> sebzést. Kap egy másik <a href="#token/protect">Protect <svg class="◊" viewbox="0 0 500 500"><use href="#se-protect"/></svg></a>-et is.</p></li>
+					<li><p>A Barbár kijátssza a Get Some <a href="#attack-modifiers">támadásmódosító</a> kártyáját, amely <a href="#token/concussion">Concussion <svg class="◊" viewbox="0 0 500 500"><use href="#se-concussion"/></svg></a> állapotjelzőt oszt ki, és <svg class="◊" viewbox="0 0 500 500"><use href="#i-dmg-plus5"/></svg> sebzést ad hozzá.</p></li>
+					<li><p>A Paladin kijátssza az Absolution kártyát, ami megelőz <svg class="◊" viewbox="0 0 412 500"><use href="#i-shield-3"/></svg> sebzést.</p></li>
+					<li><p>A Paladin elkölti a másik <a href="#token/protect">Protect <svg class="◊" viewbox="0 0 500 500"><use href="#se-protect"/></svg></a> állapotjelzőjét, ami ismét megelőzi a bejövő sebzés <svg class="◊" viewbox="0 0 412 500"><use href="#i-shield-half"/></svg> részét.</p>
+					</li>
+				</ol>
+				<p>Sok minden történt egyszerre. Számoljuk ki a sebzést:</p>
+				<ol class="num-key">
+					<li>
+						<p><b>Határozd meg a bejövő sebzést</b></p>
+						<p><svg class="◊" viewbox="0 0 500 500"><use href="#i-dmg-18"/></svg> bejövő sebzés a Barbár Overpower képességéből (fenti 1. esemény).</p>
+					</li>
+					<li>
+						<p><b>Összeadás és kivonás (részösszeg)</b></p>
+						<div class="formula">
+							<div class="neg-space"><svg class="◊" viewbox="0 0 500 500"><use href="#i-dmg-18"/></svg> Bejövő sebzés (1. esemény - Overpower)</div>
+							<div>−<svg class="◊" viewbox="0 0 412 500"><use href="#i-shield-3"/></svg> sebzés (4. esemény - Divine Defense III)</div>
+							<div class="neg-space"><svg class="◊" viewbox="0 0 500 500"><use href="#i-dmg-plus5"/></svg> sebzés (5. esemény - Get Some)</div>
+							<div>−<svg class="◊" viewbox="0 0 412 500"><use href="#i-shield-3"/></svg> sebzés (6. esemény - Absolution)</div>
+							<hr>
+							<div class="neg-space"><svg class="◊" viewbox="0 0 500 500"><use href="#i-dmg-17"/></svg> Bejövő sebzés (Részösszeg)</div>
+						</div>
+					</li>
+					<li>
+						<p><b>Szorzás és osztás (Végső összeg)</b></p>
+						<p>Határozd meg az egyes szorzók értékét egyszerre és egymástól függetlenül (<i>Megjegyzés:</i> a Dice Throne-ban minden osztás eredménye felfelé kerekítődik):</p>
+						<p>2. esemény (<a href="#token/retribution">Retribution <svg class="◊" viewbox="0 0 500 500"><use href="#se-retribution"/></svg></a>) = <svg class="◊" viewbox="0 0 500 500"><use href="#i-dmg-17"/></svg> (Részösszeg) ÷ 2 = <svg class="◊" viewbox="0 0 500 500"><use href="#i-dmg-9"/></svg> sebzés<br>
+							3. esemény (<a href="#token/protect">Protect <svg class="◊" viewbox="0 0 500 500"><use href="#se-protect"/></svg></a>) = <svg class="◊" viewbox="0 0 500 500"><use href="#i-dmg-17"/></svg> (Részösszeg) ÷ 2 = <svg class="◊" viewbox="0 0 412 500"><use href="#i-shield-9"/></svg><br>
+							7. esemény (<a href="#token/protect">Protect <svg class="◊" viewbox="0 0 500 500"><use href="#se-protect"/></svg></a>) = <svg class="◊" viewbox="0 0 500 500"><use href="#i-dmg-17"/></svg> (Részösszeg) ÷ 2 = <svg class="◊" viewbox="0 0 412 500"><use href="#i-shield-9"/></svg></p>
+						<p>Ezután alkalmazd mindezt a részösszegre:</p>
+						<p><svg class="◊" viewbox="0 0 500 500"><use href="#i-dmg-17"/></svg> Bejövő sebzés −<svg class="◊" viewbox="0 0 412 500"><use href="#i-shield-9"/></svg>−<svg class="◊" viewbox="0 0 412 500"><use href="#i-shield-9"/></svg> = −1 Bejövő sebzés</p>
+					</li>
+				</ol>
+				<p>A <a href="#token/protect">Protect <svg class="◊" viewbox="0 0 500 500"><use href="#se-protect"/></svg></a> kétszeri elköltésével a Paladin minden sebzést megelőz, ami azt jelenti, hogy a Paladin által elszenvedett végső sebzés összege <svg class="◊" viewbox="0 0 500 500"><use href="#i-dmg-0"/></svg>.</p>
+				<p>Ezenkívül a Barbár cserébe <svg class="◊" viewbox="0 0 500 500"><use href="#i-dmg-9"/></svg> sebzést kap, mivel a Paladin elköltötte a Retribution <svg class="◊" viewbox="0 0 500 500"><use href="#se-retribution"/></svg> jelzőjét (2. esemény).</p>

@@ -1,0 +1,46 @@
+<h2 slot="header">Hadvezér</h2>
+<ul slot="header" class="see-also">
+	<li><a href="#heroes">Hősök</a></li></ul>
+<div class="hero-basics float-right">
+	<img class="portrait" src="/szabalytar/img/heroes/tactician.webp" alt="Hadvezér" width="300" height="300">
+	<img class="complexity" src="/szabalytar/img/heroes/complexity-5.webp" alt="Bonyolultság 5" width="213" height="72">
+</div>
+<p class="bio">A Hadvezér magabiztosan és nyugodtan méri fel a csatateret, biztos abban, hogy nincs nála nagyobb ellenfél. A magaslatról arat győzelmet azáltal, hogy abszolút ellenőrzést gyakorol minden felett, amit lát.</p>
+<p><dfn>Választott fegyver:</dfn> Szablya</p>
+<h3>Tokenek</h3>
+<ul class="grid tokens">
+	<li><a href="#token/tactical-advantage"><svg viewbox="0 0 500 500"><use href="#se-tactical-advantage"/></svg> Tactical Advantage (Taktikai előny)</a></li>
+	<li><a href="#token/constrict"><svg viewbox="0 0 500 500"><use href="#se-constrict"/></svg> Constrict (Bebörtönzés)</a></li>
+	<li><a href="#token/targeted"><svg viewbox="0 0 500 500"><use href="#se-targeted"/></svg> Targeted (Célpont)</a></li>
+	<li><a href="#token/protect"><svg viewbox="0 0 500 500"><use href="#se-protect"/></svg> Protect (Védelem)</a></li>
+</ul>
+<h3>Szabálytisztázások</h3>
+<details>
+	<summary>Tactical Advantage (Taktikai előny) <svg class="◊" viewbox="0 0 500 500"><use href="#se-tactical-advantage"/></svg></summary>
+	<div>
+		<p>Nincs korlátozva, hogy hány különböző hatás használható egy körben. Ezeket abban a körben is fel lehet használni, amelyben megszerezted.</p>
+		<p>Ha a <a href="#status-effects">Halmozási Limiten</a> felül szeretnél további Tactical Advantage <svg class="◊" viewbox="0 0 500 500"><use href="#se-tactical-advantage"/></svg> jelzőket szerezni, elölhetsz néhányat, hogy helyet csinálj a bejövő Taktikai előnynek (mivel a jelzők elköltése <a href="#action-cards">Azonnali Akciónak</a> minősül).</p>
+		<p>Amikor Tactical Advantage <svg class="◊" viewbox="0 0 500 500"><use href="#se-tactical-advantage"/></svg> jelzőt szerzel, azokat egyszerre kapod meg, és azonnal helyet kell biztosítanod az összesnek, különben elveszíted a felesleget (pl. ha 4-et kapnál, nem választhatod azt, hogy csak 2-t kapsz meg, elköltesz 3-at, és végül kapsz még 2-t).</p>
+		<p>Amikor a Tactical Advantage <svg class="◊" viewbox="0 0 500 500"><use href="#se-tactical-advantage"/></svg> <a href="#status-effects">Halmozási Limitje</a> megnövekszik, az a játék hátralévő részére érvényes marad. Javasoljuk, hogy a halmozási limiteden felüli plusz jelzőket tartsd a műanyag tartóban, hogy könnyen követhesd a limitet.</p>
+		<p>Amikor az ellenfél megpróbálja elmozdítani vagy eltávolítani a Tactical Advantage <svg class="◊" viewbox="0 0 500 500"><use href="#se-tactical-advantage"/></svg> jelződet, elölheted azt az eltávolítás előtt az <a href="#timing">időzítési szabályok</a> követésével.</p>
+	</div>
+</details>
+<details>
+	<summary>Targeted (Célpont) <svg class="◊" viewbox="0 0 500 500"><use href="#se-targeted"/></svg></summary>
+	<div>
+		<p>A <a href="#token/targeted">Targeted <svg class="◊" viewbox="0 0 500 500"><use href="#se-targeted"/></svg></a> növeli a <a href="#attack">Támadásból</a> származó sebzést, de nem növeli a <a href="#damage-types">tiszta</a> vagy <a href="#damage-types">járulékos</a> sebzést. Minden sebzés <a href="#final-dmg-total">egyidejűleg</a> kerül kiszámításra a <a href="#roll-phase">Dobási fázis</a> végén.</p>
+	</div>
+</details>
+<details>
+	<summary>Protect (Védelem) <svg class="◊" viewbox="0 0 500 500"><use href="#se-protect"/></svg></summary>
+	<div>
+		<p>Ha a <a href="#defensive-roll-phase">védekezésed</a> során szerezted, a <a href="#token/protect">Protect <svg class="◊" viewbox="0 0 500 500"><use href="#se-protect"/></svg></a> azonnal felhasználható.</p>
+		<p>Ha 2 Protect <svg class="◊" viewbox="0 0 500 500"><use href="#se-protect"/></svg> jelzőt költesz el ugyanazon <a href="#attack">Támadás</a> ellen, mindkettő egymástól függetlenül kerül kiszámításra, kétszer felezve a sebzést, így nem kapsz sebzést, mivel minden sebzés <a href="#final-dmg-total">egyidejűleg</a> történik.</p>
+	</div>
+</details>
+<details>
+	<summary>Profiteer (Nyerészkedő)</summary>
+	<div>
+		<p>Ha aktiválod a <i>Profiteer</i> képességet és 6-ost dobsz, ez úgy tekintendő, mintha lezárnád az első <a href="#offensive-roll-phase">Támadó Dobási Fázisodat</a>, majd elkezdenél egy új, második Támadó Dobási Fázist. Minden olyan <a href="#status-effects">állapotjelzőt</a> el kell távolítani, amely normál esetben a Támadó Dobási Fázis végén kerülne eltávolításra. Ez azt is jelenti, hogy nincs <a href="#defensive-roll-phase">Védekező Dobási Fázis</a>, ha 6-ost dobsz.</p>
+	</div>
+</details>

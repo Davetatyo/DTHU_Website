@@ -1,0 +1,64 @@
+<h2 slot="header">Nekromanta</h2>
+<ul slot="header" class="see-also">
+	<li><a href="#heroes">Hősök</a></li>
+</ul>
+<div class="hero-basics float-right">
+	<img class="portrait" src="/szabalytar/img/heroes/necromancer.webp" alt="Nekromanta" width="300" height="300">
+	<img class="complexity" src="/szabalytar/img/heroes/complexity-6.webp" alt="Bonyolultság 6" width="213" height="72">
+</div>
+<p class="bio">Kinek van szüksége barátok keresésére, amikor saját magad is készíthetsz!? A Nekromanta az élőholtak ceremóniamestere! A Csontgóllemek cimborája! A legfelsőbb csontváz-őrmester! És éppen amikor a parti kezdi elveszíteni a lendületét, ki az, aki feltámasztja azt, hogy ne állhasson meg, ne álljon meg a Holtak Bulija!?!</p>
+<p><dfn>Választott fegyver:</dfn> Élőholt hadsereg</p>
+<h3>Tokenek</h3>
+<ul class="grid tokens">
+	<li><a href="#token/corpse"><img src="/szabalytar/img/components/token-corpse.webp" alt="Corpse" width="200" height="200"> Corpse (Hulla)</a></li>
+	<li><a href="#token/unearth"><img src="/szabalytar/img/components/card-unearth.webp" alt="Unearth" width="128" height="200"> UNEARTH (Kiásás)</a></li>
+	<li><a href="#token/decrep-ify"><svg viewBox="0 0 500 500"><use href="#se-decrep-ify"/></svg> Decrep-ify (Elgyengítés)</a></li>
+	<li><a href="#token/resurrect"><img src="/szabalytar/img/components/token-resurrect.webp" alt="Resurrect" width="189" height="200"> Resurrect (Feltámasztás)</a></li>
+	<li><a href="#token/undead"><img src="/szabalytar/img/components/tokens-undead.webp" alt="Undead" width="200" height="128"> Undead (Élőholt)</a></li>
+</ul>
+<h3>Hős Előkészület</h3>
+<p>Takard le a fekete lepel képességedet a <a href="#token/unearth">Unearth</a> kártyáddal. Állítsd a <a href="#token/corpse">Hulla Tárcsádat</a> 0-ra.</p>
+<h3>Szabálytisztázások</h3>
+<details>
+	<summary><i>Élőholt</i> aktiválása</summary>
+	<div>
+		<p>Ezeket a kockákat egyszerre kell dobnod. Bármelyik <a href="#token/undead"><i>Élőholtat</i></a> eltávolíthatod, ha <svg class="◊" viewbox="0 0 420 500"><use href="#i-bones" /></svg> szimbólumot dobsz, még akkor is, ha nem a választott <i>Élőholtat</i> távolítod el. Az <i>Élőholt</i> képesség akkor is aktiválódik, ha dobtál és eltávolítottad az aktivált <i>Élőholtat</i>.</p>
+		<p>Az <i>Élőholt</i> hatások bármikor felhasználhatók egy <a href="#attack"><i>Támadás</i></a> aktiválása után. Például aktiválhatod 2 <a href="#token/undead"><i>Csontváz Harcos</i></a> Csontlándzsa képességét még azelőtt, hogy az ellenfeled dobná a <a href="#defensive-roll-phase">Védekező Dobási Fázisát</a>, majd aktiválhatod a <a href="#token/undead"><i>Csontgólem</i></a> Csonttüske képességét, és egy harmadik Csontlándzsát a védekező dobásuk után.</p>
+	</div>
+</details>
+<details>
+	<summary><i>Csontgólem</i></summary>
+	<div>
+		<p>Aktiválhatod a <a href="#token/undead">Csonttüskéket</a> egy <a href="#attack"><i>Támadásból</i></a> származó <a href="#damage-types"><i>kivédhetetlen</i></a> vagy <a href="#damage-types"><i>tiszta</i></a> sebzés ellen, de nem egy <a href="#ultimate-ability"><i>Végső képesség</i></a> ellen.</p>
+	</div>
+</details>
+<details>
+	<summary>Unearth (Kiásás) kártya / <i>Passzív Képesség</i></summary>
+	<div>
+		<p>Ha a képesség, amelyen a <a href="#token/unearth">Unearth</a> kártya éppen elhelyezkedik, fejlesztésre kerül, a fejlesztés a Unearth kártya alá kerül, és továbbra sem aktiválható. Nem kapsz további <a href="#token/corpse"><i>Hulla</i> <img class="◊" src="/szabalytar/img/components/token-corpse.webp" alt="Corpse" width="200" height="200"></a> jelzőt, ha a jobb felső <i>Hulla</i> érték növekedett.</p>
+		<p>A Unearth aktiválása soha nem blokkolható vagy akadályozható meg.</p>
+		<p>Ha egy <a href="#hero-cards">Hős Fejlesztés</a> kártya le van takarva, a rajta lévő többi megnevezett <a href="#ability"><i>képességet</i></a> sem tudod aktiválni.</p>
+		<p>A <a href="#ultimate-ability"><i>Végső képességed</i></a> nem takarható le.</p>
+	</div>
+</details>
+<details>
+	<summary><i>Decrep-ify</i> (Elgyengítés) <svg class="◊" viewbox="0 0 500 500"><use href="#se-decrep-ify" /></svg></summary>
+	<div>
+		<p>A <a href="#token/decrep-ify"><i>Decrep-ify</i> <svg class="◊" viewbox="0 0 500 500"><use href="#se-decrep-ify" /></svg></a> nem csökkenti a <i>Végső képesség</i> által okozott sebzést.</p>
+	</div>
+</details>
+<details>
+	<summary><i>Resurrect</i> (Feltámasztás) <img class="◊" src="/szabalytar/img/components/token-resurrect.webp" alt="Resurrect" width="189" height="200"></summary>
+	<div>
+		<p>Az <a href="#health">Életerőd</a> továbbra is <svg class="◊" viewbox="0 0 19 20"><use href="#i-health-5" /></svg>-re áll be még akkor is, ha egy ellenfél aktiválja a <a href="#ultimate-ability"><i>Végső képességét</i></a>, és <svg class="◊" viewbox="0 0 19 20"><use href="#i-health-0" /></svg>-ra csökkenti az Életerődet. Ez az <a href="#status-effects">állapotjelző</a> nem gátolja meg és nem csökkenti a <i>Végső képességből</i> származó sebzést (egyszerűen visszahoz a halálból a sebzésszámítás után).</p>
+		<p>A <i>Feltámasztás</i> után a <svg class="◊" viewbox="0 0 465 500"><use href="#i-cp" /></svg> CP nem költhető el a <a href="#token/knockdown"><i>Knockdown</i> <svg class="◊" viewbox="0 0 500 500"><use href="#se-knockdown" /></svg></a> eltávolítására.</p>
+		<p>Egyetlen játék során többször is végrehajthatsz <a href="#token/resurrect"><i>Feltámasztást</i> <img class="◊" src="/szabalytar/img/components/token-resurrect.webp" alt="Resurrect" width="189" height="200"></a>.</p>
+	</div>
+</details>
+<details>
+	<summary>Életerő lopása</summary>
+	<div>
+		<p>Mivel ez nem számít „sebzés okozásának”, nem gátolható meg vagy csökkenthető, és nem számít bele a sebzésszámításokba.</p>
+		<p>Ha a Lopás hatás az ellenfél <a href="#health">Életerejét</a> <svg class="◊" viewbox="0 0 19 20"><use href="#i-health-0" /></svg>-ra csökkentené, az ellenfél még a szokásos <a href="#final-dmg-total">egyidejű sebzésszámítások</a> előtt vereséget szenved.</p>
+	</div>
+</details>

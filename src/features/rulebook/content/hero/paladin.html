@@ -1,0 +1,53 @@
+<h2 slot="header">Paladin</h2>
+<ul slot="header" class="see-also">
+	<li><a href="#heroes">Hősök</a></li></ul>
+<div class="hero-basics float-right">
+	<img class="portrait" src="/szabalytar/img/heroes/paladin.webp" alt="Paladin" width="300" height="300">
+	<img class="complexity" src="/szabalytar/img/heroes/complexity-5.webp" alt="Bonyolultság 5" width="213" height="72">
+</div>
+<p class="bio">A Paladin igazságos kardja keményen és pontosan csap le. Hűséges áhítata révén képes a mennyei védekezésre. A Paladin azzal a meggyőződéssel vág bele a csatába, hogy a Hatalom vele van, és a győzelem az ő uralkodói joga.</p>
+<p><dfn>Választott fegyver:</dfn> Kard</p>
+<h3>Tokenek</h3>
+<ul class="grid tokens">
+	<li><a href="#token/retribution"><svg viewbox="0 0 500 500"><use href="#se-retribution"/></svg> Retribution (Megtorlás)</a></li>
+	<li><a href="#token/crit"><svg viewbox="0 0 500 500"><use href="#se-crit"/></svg> Crit (Kritikus csapás)</a></li>
+	<li><a href="#token/protect"><svg viewbox="0 0 500 500"><use href="#se-protect"/></svg> Protect (Védelem)</a></li>
+	<li><a href="#token/accuracy"><span><svg viewbox="0 0 500 500"><use href="#se-accuracy"/></svg></span> Accuracy (Pontosság)</a></li>
+	<li><a href="#token/blessing-of-divinity"><svg viewbox="0 0 500 458"><use href="#se-blessing-of-divinity"/></svg> Blessing of Divinity (Isteni áldás)</a></li>
+</ul>
+<h3>Szabálytisztázások</h3>
+<details>
+	<summary>Protect (Védelem) <svg class="◊" viewbox="0 0 500 500"><use href="#se-protect"/></svg></summary>
+	<div>
+		<p>Ha a védekezésed során szerezted, a <a href="#token/protect">Protect <svg class="◊" viewbox="0 0 500 500"><use href="#se-protect"/></svg></a> azonnal elkölthető.</p>
+		<p>Ha 2 Protect <svg class="◊" viewbox="0 0 500 500"><use href="#se-protect"/></svg> jelzőt költesz el ugyanazon <a href="#attack">Támadás</a> ellen, mindkettő egymástól függetlenül kerül kiszámításra, kétszer felezve a sebzést, így nem kapsz sebzést, mivel minden sebzés <a href="#final-dmg-total">egyidejűleg</a> történik.</p>
+	</div>
+</details>
+<details>
+	<summary>Retribution (Megtorlás) <svg class="◊" viewbox="0 0 500 500"><use href="#se-retribution"/></svg></summary>
+	<div>
+		<p>A <a href="#token/retribution">Retribution <svg class="◊" viewbox="0 0 500 500"><use href="#se-retribution"/></svg></a> a bejövő sebzés felét visszahárítja az ellenfeledre, a sebzést érintő esetleges növelések/megakadályozások kiszámítása után.</p>
+		<p>Ha ugyanazon <a href="#attack">Támadás</a> ellen a <a href="#token/protect">Protect <svg class="◊" viewbox="0 0 500 500"><use href="#se-protect"/></svg></a> jelzővel együtt kerül elköltésre, mindkét érték egymástól függetlenül kerül kiszámításra (miután az összes többi, nem felező jellegű növelés/megakadályozás feloldásra került).</p>
+	</div>
+</details>
+<details>
+	<summary>Crit (Kritikus csapás) <svg class="◊" viewbox="0 0 500 500"><use href="#se-crit"/></svg></summary>
+	<div>
+		<p>A <a href="#token/crit">Crit <svg class="◊" viewbox="0 0 500 500"><use href="#se-crit"/></svg></a> csak akkor költhető el, ha az aktivált <a href="#offensive-ability">Támadó Képesség</a> legalább <svg class="◊" viewBox="0 0 500 500"><use href="#i-dmg-5"/></svg> vagy több sebzést okoz a <a href="#attack-modifiers">Támadásmódosítók</a> előtt.</p>
+		<p>Bármikor elkölthető a <a href="#attack">Támadás</a> aktiválása után (beleértve a <a href="#defensive-roll-phase">védekező dobás</a> előtt vagy után is), de el kell költeni a sebzés kiosztása előtt.</p>
+		<p>A <i>Righteous Prayer</i> <a href="#offensive-ability">Támadó Képesség</a> aktiválásából kapott Crit <svg class="◊" viewbox="0 0 500 500"><use href="#se-crit"/></svg> nem használható fel az éppen kiosztott sebzésre (a „then” (ezután) szó miatt).</p>
+	</div>
+</details>
+<details>
+	<summary>Tithe II</summary>
+	<div>
+		<p>Az <svg class="◊" viewbox="0 0 465 500"><use href="#i-cp-1"/></svg> CP megszerzése akkor aktiválódik, ha egy <img class="◊" src="/szabalytar/img/icons/die-prayer.webp" alt="Prayer" width="33" height="39"> szimbólumot használsz a <i>Holy Attack</i> <a href="#offensive-ability">Támadó Képességedhez</a> (pl. 3-4-5-6), de nem aktiválódik, ha a többi képességed (pl. <i>Righteous Combat</i>) plusz hatásaihoz dobsz <img class="◊" src="/szabalytar/img/icons/die-prayer.webp" alt="Prayer" width="33" height="39"> szimbólumot.</p>
+	</div>
+</details>
+<details>
+	<summary>Blessing of Divinity (Isteni áldás) <svg class="◊" viewbox="0 0 500 458"><use href="#se-blessing-of-divinity"/></svg></summary>
+	<div>
+		<p>A <a href="#token/blessing-of-divinity">Blessing of Divinity <svg class="◊" viewbox="0 0 500 458"><use href="#se-blessing-of-divinity"/></svg></a> nem csökkenti és nem akadályozza meg az ellenfél <a href="#ultimate-ability">Végső képességéből</a> származó sebzést. Ha a Végső képesség <svg class="◊" viewbox="0 0 465 500"><use href="#i-health-0"/></svg>-ra csökkentené az Életerődet, az Életerőd ehelyett <svg class="◊" viewbox="0 0 465 500"><use href="#i-health-1"/></svg>-re áll be.</p>
+		<p>Ha a Blessing of Divinity <svg class="◊" viewbox="0 0 500 458"><use href="#se-blessing-of-divinity"/></svg> akkor aktiválódik, amikor <a href="#token/poison">Poison <svg class="◊" viewbox="0 0 500 500"><use href="#se-poison"/></svg></a> (Méreg) állapotjelzővel vagy sújtva, túléled a sebzést. Azonban a következő <a href="#upkeep-phase">Állapot fázisod</a> során sebzést kapsz a Poison <svg class="◊" viewbox="0 0 500 500"><use href="#se-poison"/></svg> jelzőtől, és az Életerőd ekkor csökken <svg class="◊" viewbox="0 0 465 500"><use href="#i-health-0"/></svg>-ra.</p>
+	</div>
+</details>

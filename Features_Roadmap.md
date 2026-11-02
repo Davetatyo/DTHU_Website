@@ -441,6 +441,33 @@ four former links; pictures in the `link-images` bucket (migration 0006).
 
 ---
 
+### R10 · Szabálytár: the Hungarian RulePop on the site (Szabálytár)
+
+**Status:** In progress: phase 1 built and live for admins (v2.8, 2026-11-03).
+· **Feature id:** `rulebook` · **Depends on:** nothing
+
+The owner's Hungarian RulePop (dice-throne-rulepop-hu.vercel.app, his translation of
+dice-throne.rulepop.com) moves under the Szabálytár tab: "not a revamped copy but more of the
+same fitted into the new design", with everything it has.
+
+Owner decisions (2026-11-03):
+- Popups like RulePop (instant), and every rule, hero and token has its own link.
+- Before going public, update to the latest rulepop.com: the agent drafts the missing parts in
+  the style and vocabulary of the existing Hungarian pages; the owner reviews.
+- Adventures and Marvel co-op are out (not imported, and not to be added).
+- No Visszajelzés, no admin editing (edits in the repository), no download/app install.
+- The old RulePop HU site stays online after the Szabálytár goes public.
+
+Phases: 1 import + start page + popups/pages (heroes and tokens included) ✅ · 3 search and
+Tárgymutató · 4 hero filter settings · 5 missing content (5 heroes: Druid, Duelist,
+Forgemaster, Mystic Brawler, Sun Elf; 13 tokens; ~20 core pages such as Ability, Activate,
+Sell, Small/Large Straight; a few changed pages) · 6 update checker against rulepop.com, final
+checks. Details: `src/features/rulebook/README.md`.
+
+**Open questions:** none.
+
+---
+
 ## Built
 
 Format: `R# · name · version · date · one line`. (Built items keep their full entry above

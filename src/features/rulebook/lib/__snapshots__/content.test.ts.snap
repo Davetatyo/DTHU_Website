@@ -1,0 +1,22 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Szabálytár content > lists the links still waiting for a page (to translate) 1`] = `
+[
+  "ability",
+  "activate",
+  "activation-requirement",
+  "active-player",
+  "boss",
+  "defender",
+  "find",
+  "gain",
+  "history-nav",
+  "inflict",
+  "isolated-damage",
+  "roll-attempt",
+  "roll-phase",
+  "sell",
+  "settings",
+  "spent-spend",
+]
+`;

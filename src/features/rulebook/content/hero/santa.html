@@ -1,0 +1,50 @@
+<h2 slot="header">Mikulás</h2>
+<ul slot="header" class="see-also">
+	<li><a href="#heroes">Hősök</a></li></ul>
+<div class="hero-basics float-right">
+	<img class="portrait" src="/szabalytar/img/heroes/santa.webp" alt="Mikulás" width="300" height="300">
+	<img class="complexity" src="/szabalytar/img/heroes/complexity-2.webp" alt="Bonyolultság 2" width="213" height="72">
+</div>
+<p class="bio">Ne hagyd, hogy az ünnepi jókedve, a vidám mosolya és a tojáslikőrrel teli bögréi hamis biztonságérzetbe ringassanak. Akik a rossz gyerekek listáján szerepelnek, azok jobban teszik, ha vigyáznak. Jobb, ha nem duzzognak. Mikulás azért jön, hogy odacsapjon!</p>
+<p><dfn>Választott fegyver:</dfn> Ünnepi jókedv</p>
+<h3>Tokenek</h3>
+<ul class="grid tokens">
+	<li><a href="#token/cheer"><img src="/szabalytar/img/components/token-cheer.webp" alt="Cheer" width="200" height="200"> Cheer (Jókedv)</a></li>
+	<li><a href="#token/egg-nog"><img src="/szabalytar/img/components/token-egg-nog.webp" alt="Egg Nog" width="200" height="200"> Egg Nog (Tojáslikőr)</a></li>
+</ul>
+<h3>Szabálytisztázások</h3>
+<details>
+	<summary>Egg Nog (Tojáslikőr) <img class="◊" src="/szabalytar/img/components/token-egg-nog.webp" alt="Egg Nog" width="200" height="200"></summary>
+	<div>
+		<p>Az <a href="#token/egg-nog">Egg Nog <img class="◊" src="/szabalytar/img/components/token-egg-nog.webp" alt="Egg Nog" width="200" height="200"></a> használható abban a körben, amelyben megszerezted.</p>
+		<p>Ha a <a href="#status-effects">Halmozási Limiten</a> felül szereznék további Egg Nog <img class="◊" src="/szabalytar/img/components/token-egg-nog.webp" alt="Egg Nog" width="200" height="200"> jelzőket, elölhetsz néhányat, hogy helyet csinálj a bejövő jelzőknek, mivel a jelzők elköltése <a href="#action-cards">Azonnali Akciónak</a> minősül.</p>
+		<p>Amikor Egg Nog <img class="◊" src="/szabalytar/img/components/token-egg-nog.webp" alt="Egg Nog" width="200" height="200"> jelzőt szerzel, azokat egyszerre kapod meg, és azonnal helyet kell biztosítanod az összesnek, különben elveszíted a felesleget (pl. ha 5-öt kapnál, nem választhatod azt, hogy csak 2-t kapsz meg, elköltesz 3-at, és végül kapsz még 3-at).</p>
+		<p>Amikor az ellenfél megpróbálja elmozdítani vagy eltávolítani az Egg Nog <img class="◊" src="/szabalytar/img/components/token-egg-nog.webp" alt="Egg Nog" width="200" height="200"> jelződet, elölhetsz 3 jelzőt az elmozdítás előtt az <a href="#timing">időzítési szabályok</a> követésével.</p>
+	</div>
+</details>
+<details>
+	<summary>Egg Nog (Tojáslikőr) jelzőből származó sebzés</summary>
+	<div>
+		<p>A különálló sebzés azonnal kiosztásra kerül, és független sebzésforrásnak számít, függetlenül az ugyanazon fázisban kiosztott bármely más sebzéstől.</p>
+	</div>
+</details>
+<details>
+	<summary>Cheer (Jókedv) <img class="◊" src="/szabalytar/img/components/token-cheer.webp" alt="Cheer" width="200" height="200"></summary>
+	<div>
+		<p>Ha egy ellenfél <a href="#token/cheer">Cheer <img class="◊" src="/szabalytar/img/components/token-cheer.webp" alt="Cheer" width="200" height="200"></a> jelzőt kap, az a saját Cheer jelzőjének számít, és felhasználhatja a saját kockái egyikének újradobására. Továbbá, ha 3 Cheer jelzőt szerez, megváltoztathatja a saját kockáját 6-osra.</p>
+		<p>Amikor egy képesség vagy kártya azt mondja, hogy „Okozz <svg class="◊" viewbox="0 0 500 500"><use href="#i-dmg-1"/></svg> sebzést minden Cheer <img class="◊" src="/szabalytar/img/components/token-cheer.webp" alt="Cheer" width="200" height="200"> után”, ez a plusz sebzés csak a Mikulás saját Hős Tábláján lévő Cheer jelzők után számít.</p>
+		<p>If an ability reads “opponent gains Cheer <img class="◊" src="/szabalytar/img/components/token-cheer.webp" alt="Cheer" width="200" height="200">”, this is not optional.</p>
+	</div>
+</details>
+<details>
+	<summary>Végső képesség</summary>
+	<div>
+		<p>If your opponent is defeated, the additional <a href="#roll-phase">Dobási fázis</a> is forfeit.</p>
+	</div>
+</details>
+<details>
+	<summary>Festivities</summary>
+	<div>
+		<p>Santa does count as a “player” when activating his Festivities ability.</p>
+	</div>
+</details>

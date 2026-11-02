@@ -1,0 +1,56 @@
+<h2 slot="header">Psylocke</h2>
+<ul slot="header" class="see-also">
+	<li><a href="#heroes">Hősök</a></li>
+</ul>
+<div class="hero-basics float-right">
+	<img class="portrait" src="/szabalytar/img/heroes/psylocke.webp" alt="Psylocke" width="300" height="300">
+	<img class="complexity" src="/szabalytar/img/heroes/complexity-3.webp" alt="Bonyolultság 3" width="213" height="72">
+</div>
+<p class="bio">Betsy Braddock telekinetikus erővel fegyvereket formázva pszichikai irányítását erőteljes fegyverek, például tőrök formájában nyilvánítja meg. Fürge manőverei megbénítják az ellenfeleit, elméje pedig képes mélyen behatolni az ellenségébe, hogy összezavarja még a legjobban eltervezett védekezésüket is.</p>
+<p><dfn>Választott fegyver:</dfn> Pszichikai tőrök</p>
+<h3>Tokenek</h3>
+<ul class="grid tokens">
+	<li><a href="#token/manifest-die"><img src="/szabalytar/img/components/manifest-die.webp" alt="Manifest Die" width="200" height="186"> Manifest Die (Megnyilvánulás kocka)</a></li>
+	<li><a href="#token/paralyze"><svg viewBox="0 0 500 500"><use href="#se-paralyze"/></svg> Paralyze (Bénítás)</a></li>
+	<li><a href="#token/agility"><svg viewBox="0 0 500 500"><use href="#se-agility"/></svg> Agility (Fürgeség)</a></li>
+	<li><a href="#token/infiltration"><svg viewBox="0 0 500 500"><use href="#se-infiltration"/></svg> Infiltration (Infiltráció)</a></li>
+</ul>
+<h3>Rules Clarifications</h3>
+<details>
+	<summary>Manifest die (Megnyilvánulás kocka) <img class="◊" src="/szabalytar/img/components/manifest-die.webp" alt="Manifest Die" width="200" height="186"></summary>
+	<div>
+		<p>Soha nem növelheted a Támadásod sebzését a felével és cserélhetsz ki egy kockát ugyanabban a körben.</p>
+	</div>
+</details>
+<details>
+	<summary>Paralyze (Bénítás) <svg class="◊" viewBox="0 0 500 500"><use href="#se-paralyze"/></svg></summary>
+	<div>
+		<p>A <a href="#token/paralyze">Paralyze <svg class="◊" viewBox="0 0 500 500"><use href="#se-paralyze"/></svg></a> csak a normál <a href="#offensive-ability">Támadó Képességekre</a> van hatással (nincs hatással a <a href="#ultimate-ability">Végső képességekre</a>, a <a href="#passive-ability">Passzív Képességekre</a>, a <a href="#hero-cards">kártyákra</a>, a <a href="#attack-modifiers">Támadásmódosítókra</a> vagy más <a href="#status-effects">állapotjelzőkre</a>).</p>
+		<p>Ez a jelző a <a href="#roll-phase">Dobási fázis</a> végén mindig eltávolításra kerül (akkor is, ha nem volt hatása).</p>
+	</div>
+</details>
+<details>
+	<summary>Infiltration (Infiltráció) <svg class="◊" viewBox="0 0 500 500"><use href="#se-infiltration"/></svg></summary>
+	<div>
+		<p>Az <a href="#token/infiltration">Infiltration <svg class="◊" viewBox="0 0 500 500"><use href="#se-infiltration"/></svg></a> nem használható a Védekező Dobási Fázis során a dobási kísérleten kívüli egyéb kockadobásokra (pl. <a href="#token/agility">Agility <svg class="◊" viewBox="0 0 500 500"><use href="#se-agility"/></svg></a>, <a href="#token/skyward">Skyward <svg class="◊" viewBox="0 0 500 500"><use href="#se-skyward"/></svg></a> stb. esetén).</p>
+	</div>
+</details>
+<details>
+	<summary>Védekező Képesség dobása</summary>
+	<div>
+		<p>Ha <svg class="◊" viewBox="0 0 420 500"><use href="#i-blade"/></svg><svg class="◊" viewBox="0 0 420 500"><use href="#i-mind"/></svg>-ot vagy <svg class="◊" viewBox="0 0 420 500"><use href="#i-blade"/></svg><svg class="◊" viewBox="0 0 420 500"><use href="#i-starlight"/></svg>-ot dobsz, <svg class="◊ dmg-spcl" viewBox="0 0 500 500"><use href="#i-dmg-1"/></svg> sebzést okozol minden dobott <svg class="◊" viewBox="0 0 420 500"><use href="#i-blade"/></svg> után, és húzol egy <svg class="◊" viewBox="0 0 360 500"><use href="#i-cards-1"/></svg> lapot, vagy kapsz egy <a href="#token/agility">Agility <svg class="◊" viewBox="0 0 500 500"><use href="#se-agility"/></svg></a> jelzőt (mivel a védekező dobás mindkét <a href="#activation-requirement">aktiválási követelményének</a> megfeleltél).</p>
+	</div>
+</details>
+<details>
+	<summary>Agility (Fürgeség) <svg class="◊" viewBox="0 0 500 500"><use href="#se-agility"/></svg> elköltése</summary>
+	<div>
+		<p>Az <a href="#token/agility">Agility <svg class="◊" viewBox="0 0 500 500"><use href="#se-agility"/></svg></a> jelzőt bármikor elköltheted bármilyen <a href="#damage-types">sebzéstípus</a> ellen, kivéve az Ultimate sebzést. Ha a <a href="#defensive-roll-phase">védekezésed</a> során szerezted meg, azonnal elkölthető.</p>
+	</div>
+</details>
+<details>
+	<summary>Sebzés meggátolása Agility (Fürgeség) <svg class="◊" viewBox="0 0 500 500"><use href="#se-agility"/></svg> jelzővel</summary>
+	<div>
+		<p><a href="#token/agility">Agility <svg class="◊" viewBox="0 0 500 500"><use href="#se-agility"/></svg></a> — Ha a <a href="#damage-types">bejövő sebzés</a> <svg class="◊" viewbox="0 0 412 500"><use href="#i-shield-half"/></svg>-ét kétszer gátolod meg, a sebzés 100%-át megakadályozod. Ez azért van, mert minden sebzés és megakadályozás <a href="#final-dmg-total">egyidejűleg kerül kiszámításra</a> a fázis lezárásakor.</p>
+	</div>
+</details>
+<p>© MARVEL</p>
