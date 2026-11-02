@@ -4,7 +4,8 @@
 // others less likely (not impossible: a player may answer one question wrong). He asks the
 // question that splits the remaining likelihood closest to half and half, and guesses when
 // one hero is likely enough, or when his questions run out. Owner rules (2026-11-03): at most
-// 10 questions and 3 guesses, answers are only yes or no.
+// 10 answered questions and 3 guesses; answers are yes or no, or "Nem tudom", which tells him
+// nothing and doesn't use up one of the 10.
 
 import type { Trait } from "./tactician-traits";
 
@@ -18,8 +19,8 @@ const SURE = 0.7;
 export type GameState = {
   /** Hero id → likelihood (sums to 1 over heroes not yet guessed). */
   weights: Record<string, number>;
-  /** Questions asked, with the answers. */
-  asked: { trait: string; yes: boolean }[];
+  /** Questions asked, with the answers (null: "Nem tudom"). */
+  asked: { trait: string; yes: boolean | null }[];
   /** Heroes guessed wrong. */
   wrong: string[];
 };
@@ -35,8 +36,12 @@ function normalise(w: Record<string, number>): Record<string, number> {
   return sum > 0 ? Object.fromEntries(Object.entries(w).map(([k, v]) => [k, v / sum])) : w;
 }
 
-/** The state after a yes/no answer to a trait. */
-export function answer(state: GameState, trait: Trait, yes: boolean): GameState {
+/** Questions answered with yes or no (these count towards the 10). */
+export const answered = (state: GameState) => state.asked.filter((a) => a.yes !== null).length;
+
+/** The state after an answer to a trait: yes, no, or null for "Nem tudom" (no change). */
+export function answer(state: GameState, trait: Trait, yes: boolean | null): GameState {
+  if (yes === null) return { ...state, asked: [...state.asked, { trait: trait.id, yes: null }] };
   const yesSet = new Set(trait.yes);
   const weights = Object.fromEntries(
     Object.entries(state.weights).map(([id, w]) => [id, w * (yesSet.has(id) === yes ? 1 - MISTAKE : MISTAKE)]),
@@ -65,7 +70,7 @@ export const confidence = (state: GameState) => ranking(state)[0]?.[1] ?? 0;
 export function nextMove(state: GameState, traits: Trait[], rand: () => number = Math.random): Move {
   const [top] = ranking(state);
   if (!top || state.wrong.length >= MAX_GUESSES) return { kind: "give-up" };
-  const questionsLeft = MAX_QUESTIONS - state.asked.length;
+  const questionsLeft = MAX_QUESTIONS - answered(state);
   if (top[1] >= SURE || questionsLeft <= 0) return { kind: "guess", hero: top[0] };
 
   const asked = new Set(state.asked.map((a) => a.trait));

@@ -479,10 +479,12 @@ The Hadvezér (Tactician) guesses which Dice Throne hero the player thinks of, f
 answers. Opens with his portrait and the line "Azt hiszed lehetnek titkaid előttem? Minden
 eshetőségre felkészültem! Készen állsz?", then he moves into the background (second picture).
 Owner decisions (2026-11-03): at most 10 questions and 3 guesses; yes/no only; logged-in
-players; no saved games or XP for now (XP later with R4).
+players; no saved games or XP for now (XP later with R4). Later (v2.12): a "Nem tudom" button
+(doesn't count towards the 10), no Season questions, no single-hero questions, the game is
+centred on the screen when opened.
 
 **Open questions:** the owner reviews the hero facts table (`lib/tactician-traits.ts`),
-especially "nő", "első/második évad", "sötét teremtmény" and "varázslat".
+especially "nő", "sötét teremtmény" and "varázslat".
 
 ---
 

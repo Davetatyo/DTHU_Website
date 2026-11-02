@@ -1,6 +1,6 @@
 # Project state: DTHU website
 
-**Current version: v2.11** (2026-11-03). Live: https://dthu.hu builds from this repository's
+**Current version: v2.12** (2026-11-03). Live: https://dthu.hu builds from this repository's
 `main` (the owner moved Vercel over around 2026-11-01; checked live 2026-11-02). Every push to
 `main` deploys within a minute.
 **Launch phase: 1**: the public sees only the Meccsszervező; the whole site from the prototype
@@ -175,6 +175,22 @@ quiz) are in
 ## Handover log
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
+
+### 2026-11-03 (late night) · Taktikai Előny feedback (feature/games, v2.12)
+
+- Owner: centre the game when opened; add "Nem tudom" (top right) for questions like
+  complexity; drop the Season questions; drop single-answer questions (web, hammer, cards,
+  horse).
+- `lib/tactician.ts`: answers can be null ("Nem tudom"): no change in likelihoods, not asked
+  again, not counted (`answered()`). `lib/tactician-data.ts` filters questions with fewer than
+  two "yes" heroes; `TOKEN_ALIASES` makes Ninja's Delayed Poison count as poison. New
+  questions: crafter, stealth, explosives, axe, honor, japan (every two heroes still differ on
+  at least two questions; average 6.4 questions).
+- `components/TacticianGame.tsx`: stage height = screen minus the sticky top bar; `center()`
+  scrolls it to the middle on open (after 450 ms, when the page has settled) and on start,
+  with a jump fallback if smooth scrolling is cut short.
+- Verified: types, lint, tests; browser with TEMP-PREVIEW (reverted): stage exactly fills the
+  view on desktop (top bar 105 px) and 375 px (147 px), Nem tudom works.
 
 ### 2026-11-03 (night) · Játékok tab and Taktikai Előny (feature/games, v2.11)
 
@@ -625,6 +641,15 @@ webhook, no cron secret), so nothing local can post to Discord.
 ---
 
 ## Changelog
+
+### v2.12 · 2026-11-03 · merge of `feature/games`
+**Changed (admins only, phase 1):** Taktikai Előny: the game is centred on the screen when the
+page opens and when a game starts; "Nem tudom" button on the question card (doesn't count
+towards the 10 questions); Season questions and single-hero questions (web, hammer, cards,
+horse) removed, six new questions keep every hero distinguishable.
+**Players:** nothing changes in the Időpontfoglaló.
+**Manual steps:** none.
+**Verified:** types, lint, tests (new: Nem tudom), browser desktop + 375 px.
 
 ### v2.11 · 2026-11-03 · merge of `feature/games`
 **Changed (admins only, phase 1):** the Jegyek tab is gone (`/jegyek` redirects to `/bolt`, the

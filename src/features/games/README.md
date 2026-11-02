@@ -13,8 +13,11 @@ The Játékok menu tab (after Bolt): a hub with one card per game (`lib/hub.ts`)
 
 - **Taktikai Előny** (live for admins): the Hadvezér (Tactician) guesses the Dice Throne hero
   the player thinks of, from yes/no answers. Owner decisions (2026-11-03): at most 10
-  questions and 3 guesses; yes/no only; logged-in players only; no saved games and no XP yet
-  (XP later, with R4).
+  questions and 3 guesses; yes/no, plus a "Nem tudom" button (top right of the question card;
+  tells him nothing and doesn't count towards the 10); logged-in players only; no saved games
+  and no XP yet (XP later, with R4). No Season questions and no question that fits a single
+  hero (those are filtered out in `lib/tactician-data.ts`). The stage is sized to the screen
+  below the top bar and scrolled to the middle when the page opens and when a game starts.
 - **Kvíz**: parked, shown as "Hamarosan".
 
 ## Taktikai Előny

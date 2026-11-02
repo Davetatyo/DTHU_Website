@@ -1,4 +1,5 @@
 // Taktikai Előny: the yes/no questions the Hadvezér can ask, and which heroes are a "yes".
+// Owner (2026-11-03): no Season questions, and no question that fits a single hero.
 // Hero ids are the Szabálytár's (content/hero/<id>.html). Token questions are filled from the
 // Szabálytár (lib/tactician-data.ts); the rest is written by hand. The owner reviews this
 // table: one wrong cell makes the Hadvezér guess wrong (the game tolerates a single wrong
@@ -28,16 +29,6 @@ export const TRAITS: Trait[] = [
     id: "woman",
     q: "A hősöd nő?",
     yes: ["black-widow", "captain-marvel", "huntress", "jean-grey", "moon-elf", "pale-lady", "psylocke", "raveness", "rogue", "scarlet-witch", "seraph", "storm", "sun-elf"],
-  },
-  {
-    id: "season-1",
-    q: "Az első évad (Season One) eredeti nyolc hősének egyike?",
-    yes: ["barbarian", "monk", "moon-elf", "ninja", "paladin", "pyromancer", "shadow-thief", "treant"],
-  },
-  {
-    id: "season-2",
-    q: "A második évad (Season Two) hőseinek egyike?",
-    yes: ["artificer", "cursed-pirate", "gunslinger", "huntress", "samurai", "seraph", "tactician", "vampire-lord"],
   },
   {
     id: "holiday",
@@ -120,6 +111,36 @@ export const TRAITS: Trait[] = [
     yes: ["forgemaster", "paladin"],
   },
   {
+    id: "crafter",
+    q: "Maga készíti a fegyvereit: főz, kovácsol vagy szerel?",
+    yes: ["alchemist", "artificer", "forgemaster"],
+  },
+  {
+    id: "stealth",
+    q: "Lopakodik, az árnyékból csap le?",
+    yes: ["black-widow", "ninja", "shadow-thief"],
+  },
+  {
+    id: "explosives",
+    q: "Lőfegyvert vagy robbanószert használ?",
+    yes: ["cursed-pirate", "deadpool", "gunslinger", "pyromancer"],
+  },
+  {
+    id: "axe",
+    q: "Fejszét vagy csákányt forgat?",
+    yes: ["forgemaster", "headless-horseman"],
+  },
+  {
+    id: "honor",
+    q: "A becsület és az igazság vezérli?",
+    yes: ["paladin", "samurai"],
+  },
+  {
+    id: "japan",
+    q: "Japán harcos?",
+    yes: ["ninja", "samurai"],
+  },
+  {
     id: "royal",
     q: "Uralkodó, király, herceg vagy úr?",
     yes: ["black-panther", "loki", "thor", "vampire-lord"],
@@ -138,26 +159,6 @@ export const TRAITS: Trait[] = [
     id: "jokester",
     q: "Laza, viccelődő figura?",
     yes: ["deadpool", "iceman", "spider-man"],
-  },
-  {
-    id: "horse",
-    q: "Lóháton jár?",
-    yes: ["headless-horseman"],
-  },
-  {
-    id: "cards",
-    q: "Kártyákkal harcol?",
-    yes: ["gambit"],
-  },
-  {
-    id: "web",
-    q: "Hálót lő?",
-    yes: ["spider-man"],
-  },
-  {
-    id: "hammer",
-    q: "Pörölyt forgat?",
-    yes: ["thor"],
   },
 ];
 
@@ -180,6 +181,9 @@ export const TOKEN_TRAITS: Record<string, string> = {
   "guard-break": "Át tudja törni az ellenfél védelmét (Guard Break)?",
   "blessing-of-divinity": "Isteni áldás (Blessing of Divinity) óvja?",
 };
+
+/** Tokens that count as the same for a token question (Ninja's Delayed Poison is poison too). */
+export const TOKEN_ALIASES: Record<string, string[]> = { poison: ["delayed-poison"] };
 
 /** Complexity questions (from the Szabálytár's hero pages). */
 export const COMPLEXITY_TRAITS: { id: string; q: string; test: (c: number) => boolean }[] = [
