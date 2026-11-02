@@ -176,7 +176,7 @@ Newest first. Each session adds an entry (see CLAUDE.md → "End of every sessio
 ### 2026-11-03 (end) · Linkek kezelése (feature/links)
 
 - Owner asked for admin-managed links ("same logic, simple"), editor under the Eseménynaptár
-  card. Built on `feature/links` (fast-forwarded to `main`), committed, not merged.
+  card. Built on `feature/links` (fast-forwarded to `main`); merged and pushed as v2.7.
 - Migration `0006_links.sql`: `links` table seeded with the four links the page had, and the
   `link-images` bucket. `lib/links.ts` (+ tests: form, ordering), `lib/links-data.ts`,
   `actions/links.ts` (create, save, delete, move ↑/↓, picture upload/remove),
@@ -535,6 +535,15 @@ webhook, no cron secret), so nothing local can post to Discord.
 ---
 
 ## Changelog
+
+### v2.7 · 2026-11-03 · merge of `feature/links`
+**Changed (admins only, phase 1):** Linkek from the database: Admin felület → Linkek kezelése
+(new link, picture with crop, "Látható" switch, ↑ / ↓ order, delete). The four former links
+are carried over (without pictures).
+**Players:** nothing changes in the Időpontfoglaló.
+**Manual steps:** `supabase/migrations/0006_links.sql`.
+**Verified:** types, lint, 139 tests, production build, screenshots with sample links (desktop
+dark, 375 px light). Real saving: owner tests live.
 
 ### v2.6 · 2026-11-03 · merge of `feature/landing-page`
 **Changed (admins only, phase 1):** Szavazás in news articles: "+ Szavazás indítása" (single or

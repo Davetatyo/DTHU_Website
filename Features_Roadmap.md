@@ -426,7 +426,7 @@ DTHU before (e.g. after Kilépés, or on a new browser).
 
 ### R9 · Linkek managed by admins (Linkek kezelése)
 
-**Status:** Built on `feature/links` (2026-11-03, not merged yet; see
+**Status:** Built and live for admins (v2.7, 2026-11-03; see
 `src/features/links/README.md`). · **Feature id:** `links` · **Depends on:** nothing
 
 Admins add, edit, reorder, hide and delete the Linkek page's links, with or without a
@@ -448,6 +448,7 @@ while their docs point there.)
 
 - R2 · Events (Eseménynaptár) · v2.3–v2.4 · 2026-11-03 · real events, admin editor, event pages.
 - R2 · News (Hírek) + Szavazás · v2.5–v2.6 · 2026-11-03 · news admin, rich articles, polls.
+- R9 · Linkek kezelése · v2.7 · 2026-11-03 · admin-managed links with pictures and order.
 
 ## Dropped
 
