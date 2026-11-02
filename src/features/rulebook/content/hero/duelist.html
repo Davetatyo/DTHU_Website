@@ -1,0 +1,48 @@
+<h2 slot="header">Párbajhős</h2>
+<ul slot="header" class="see-also">
+	<li><a href="#heroes">Hősök</a></li></ul>
+<div class="hero-basics float-right">
+	<img class="portrait" src="/szabalytar/img/heroes/duelist.webp" alt="Párbajhős" width="300" height="300">
+	<img class="complexity" src="/szabalytar/img/heroes/complexity-3.webp" alt="Bonyolultság 3" width="213" height="72">
+</div>
+<p class="bio">A táncoló, daliás Párbajhős vakmerően szökken, és lefegyverzi aljas ellenfeleit. Hol hetyke lábmunkával lendül előre, hol elegánsan, mégis vadul hátrál. Sosem tudhatod, honnan csap le: olyan kecses és rezzenéstelen, mint egy magányos szál rózsa.</p>
+<p><dfn>Választott fegyver:</dfn> Penge</p>
+<h3>Tokenek</h3>
+<ul class="grid tokens">
+	<li><a href="#token/footwork"><img src="/szabalytar/img/components/token-footwork.webp" alt="Footwork" width="200" height="200"> Footwork (Lábmunka)</a></li>
+	<li><a href="#token/guard-break"><svg viewBox="0 0 500 500"><use href="#se-guard-break"/></svg> Guard Break (Őrtörés)</a></li>
+	<li><a href="#token/disarm"><img src="/szabalytar/img/components/token-disarm.webp" alt="Disarm" width="200" height="200"> Disarm (Lefegyverzés)</a></li>
+</ul>
+<h3>Hős Előkészület</h3>
+<p>Kezdd a játékot úgy, hogy a Footwork (Lábmunka) jelző a Lábmunka-sáv (Footwork Track) <i>Semleges pozícióján</i> (Neutral Position) áll.</p>
+<h3>Szabálytisztázások</h3>
+<details>
+	<summary>Lábmunka-sáv: Támadó / Védekező Bónusz</summary>
+	<div>
+		<p>A <a href="#token/footwork">Lábmunka-sáv</a> felső két mezője <strong>Támadó Bónuszt</strong> (Offensive Bonus) ad. A Lábmunka-sáv alsó két mezője <strong>Védekező Bónuszt</strong> (Defensive Bonus) ad.</p>
+		<p>Ezeket a Bónusz hatásokat a <a href="#defensive-roll-phase">Védekező dobási fázis</a> során kapod meg, közvetlenül azelőtt, hogy a <a href="#roll-phase">Dobási fázis</a> végén kiszámolnák a végső sebzés összegét.</p>
+		<p>Ha a húzz <svg class="◊" viewBox="0 0 360 500"><use href="#i-cards-1"/></svg> Védekező Bónuszt kapod, a húzott lapot ki is játszhatod, ha lehetséges (pl. a <i>Not This Time!</i> kártyával megakadályozhatsz <svg class="◊" viewBox="0 0 412 500"><use href="#i-shield-6"/></svg> bejövő sebzést).</p>
+		<p>Ha a húzott kártya hatása megengedné, hogy hátralépj, a megakadályozz <svg class="◊" viewBox="0 0 412 500"><use href="#i-shield-3"/></svg> sebzést Védekező Bónuszt már nem használhatod (mivel körönként csak egy Bónusz hatás oldható meg).</p>
+	</div>
+</details>
+<details>
+	<summary>Lépések megtétele</summary>
+	<div>
+		<p>Ha egy képesség azt írja, hogy „legfeljebb 2 Lépést tehetsz” (you may take up to 2 Steps), dönthetsz úgy, hogy 0, 1 vagy 2 Lépést teszel bármelyik irányba a <a href="#token/footwork">Lábmunka-sávon</a>.</p>
+		<p>Amikor a „1 vagy 2 Lépést kell tenned” (you must take 1 or 2 Steps) feliratú <a href="#passive-ability">Passzív Képességedet</a> oldod meg, nem léphetsz felfelé, ha már a Lábmunka-sáv legfelső pozícióján állsz (és lefelé sem, ha már a legalsó pozíción állsz).</p>
+		<p>A <a href="#defensive-ability">Védekező Képességed</a> megoldásakor hátra kell lépned, kivéve, ha eléred a Lábmunka-sáv legalsó pozícióját.</p>
+	</div>
+</details>
+<details>
+	<summary>Reposition</summary>
+	<div>
+		<p>A <a href="#token/footwork">Lábmunka-sávon</a> való hátralépéssel csak akkor szerzel <a href="#token/guard-break">Guard Break</a> <svg class="◊" viewBox="0 0 500 500"><use href="#se-guard-break"/></svg> jelzőt, ha ezt a <a href="#passive-ability">Passzív Képességet</a> aktiválod (például akkor nem, ha a <a href="#defensive-ability">Védekező Képességed</a> hatásainak megoldása közben lépsz hátra).</p>
+		<p>Ha 2 Lépést teszel hátra, akkor sem szerzel 2 <a href="#token/guard-break">Guard Break</a> <svg class="◊" viewBox="0 0 500 500"><use href="#se-guard-break"/></svg> jelzőt.</p>
+	</div>
+</details>
+<details>
+	<summary>Guard Break (Őrtörés) <svg class="◊" viewBox="0 0 500 500"><use href="#se-guard-break"/></svg> elköltése</summary>
+	<div>
+		<p>Egy körben több jelző is elkölthető. Ha azonban már 2 jelződ van, és szerzel még egyet, nem költhetsz el egyet az új megszerzése előtt (mivel a jelző csak a <a href="#offensive-roll-phase">Támadó dobási fázisod</a> végén költhető el).</p>
+	</div>
+</details>

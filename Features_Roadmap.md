@@ -443,7 +443,8 @@ four former links; pictures in the `link-images` bucket (migration 0006).
 
 ### R10 · Szabálytár: the Hungarian RulePop on the site (Szabálytár)
 
-**Status:** In progress: phase 1 built and live for admins (v2.8, 2026-11-03).
+**Status:** In progress: phase 1 live for admins (v2.8); the 5 newer heroes and their tokens
+translated (v2.9, 2026-11-03).
 · **Feature id:** `rulebook` · **Depends on:** nothing
 
 The owner's Hungarian RulePop (dice-throne-rulepop-hu.vercel.app, his translation of

@@ -52,7 +52,10 @@ link is broken, and lists (snapshot) the link targets still without a page.
 3. Search and Tárgymutató (index).
 4. Settings: hero filter (RulePop's "Szűrő beállítások"), remembered on the device.
 5. Missing content from the current rulepop.com, translated in the style of the existing
-   pages: 5 heroes, 13 tokens, ~20 core pages (the snapshot in `lib/content.test.ts`).
+   pages. ✅ The 5 newer heroes (Druida, Párbajhős, Kovácsmester, Misztikus Bunyós, Nap-tündér)
+   and their 13 tokens, with their icons (added to `sprites.svg`) and pictures; names and
+   wording to be reviewed by the owner. Still to do: ~20 core pages (the snapshot in
+   `lib/content.test.ts`) and a few changed pages.
 6. Update checker (diff against a stored copy of rulepop.com), final checks.
 
 ## Known gaps
