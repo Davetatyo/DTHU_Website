@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import { fitImageBlob } from "@/lib/image-crop";
 import { publicStorageUrl } from "@/lib/storage-url";
-import { BLOCK_LABELS, parseVideoUrl, type BlockType, type ContentBlock, type ContentImageResult, type VideoRef } from "@/lib/content-blocks";
+import { BLOCK_LABELS, parseVideoUrl, type BlockType, type ContentBlock, type ContentImageResult, type PollSetup, type VideoRef } from "@/lib/content-blocks";
 import "./content.css";
 
 const IMAGE_MAX_SIDE = 1600;
@@ -13,6 +13,85 @@ const IMAGE_MAX_BYTES = 850 * 1024;
 type Draft = { t: BlockType; _k: number; [field: string]: unknown };
 
 export type EventOption = { id: string; label: string };
+
+/** "YYYY-MM-DDTHH:mm" in this browser's time zone, for datetime-local inputs. */
+const toLocalInput = (iso: string) => {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "";
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+};
+
+const newOptionId = (taken: { id: string }[]) => {
+  for (;;) {
+    const id = Math.random().toString(36).slice(2, 7);
+    if (!taken.some((o) => o.id === id)) return id;
+  }
+};
+
+/** A new poll: two empty options, closing in a week at 20:00 (this browser's time). */
+function newPoll(): PollSetup {
+  const closes = new Date();
+  closes.setDate(closes.getDate() + 7);
+  closes.setHours(20, 0, 0, 0);
+  return { id: crypto.randomUUID(), question: "", options: [{ id: "a", label: "" }, { id: "b", label: "" }], multi: false, other: false, closes_at: closes.toISOString() };
+}
+
+/** Sets up a poll: question, options, single or multiple choice, "Egyéb", closing time. */
+function PollEditor({ poll, onChange }: { poll: PollSetup; onChange: (p: PollSetup) => void }) {
+  const set = (patch: Partial<PollSetup>) => onChange({ ...poll, ...patch });
+  const setOption = (id: string, label: string) => set({ options: poll.options.map((o) => (o.id === id ? { ...o, label } : o)) });
+  return (
+    <div className="space-y-3">
+      <input className="input" value={poll.question} maxLength={300} placeholder="A kérdés, pl. Melyik hőssel játszol a legszívesebben?" onChange={(e) => set({ question: e.target.value })} />
+      <div className="space-y-2">
+        {poll.options.map((o, i) => (
+          <div key={o.id} className="flex gap-2">
+            <input className="input" value={o.label} maxLength={200} placeholder={`${i + 1}. lehetőség`} onChange={(e) => setOption(o.id, e.target.value)} />
+            <button
+              type="button"
+              className="btn btn-secondary btn-sm"
+              aria-label="Lehetőség törlése"
+              disabled={poll.options.length <= 2}
+              onClick={() => set({ options: poll.options.filter((x) => x.id !== o.id) })}
+            >
+              ✕
+            </button>
+          </div>
+        ))}
+        {poll.options.length < 20 && (
+          <button type="button" className="btn btn-secondary btn-sm" onClick={() => set({ options: [...poll.options, { id: newOptionId(poll.options), label: "" }] })}>
+            + Lehetőség
+          </button>
+        )}
+      </div>
+      <div className="flex flex-wrap gap-4 text-sm">
+        <label className="flex items-center gap-2">
+          <input type="radio" checked={!poll.multi} onChange={() => set({ multi: false })} />
+          Egy választás
+        </label>
+        <label className="flex items-center gap-2">
+          <input type="radio" checked={poll.multi} onChange={() => set({ multi: true })} />
+          Több választás
+        </label>
+        <label className="flex items-center gap-2">
+          <input type="checkbox" checked={poll.other} onChange={(e) => set({ other: e.target.checked })} />
+          „Egyéb” lehetőség szövegmezővel
+        </label>
+      </div>
+      <label className="block text-sm">
+        <span className="muted">Lezárul (a te idődben)</span>
+        <input
+          type="datetime-local"
+          className="input"
+          value={toLocalInput(poll.closes_at)}
+          onChange={(e) => e.target.value && set({ closes_at: new Date(e.target.value).toISOString() })}
+        />
+      </label>
+      <p className="muted text-sm">Csak bejelentkezett felhasználók szavazhatnak, fiókonként egyszer; a szavazatot zárásig módosíthatják. Az eredményt szavazás után látják.</p>
+    </div>
+  );
+}
 
 const videoUrl = (v: VideoRef) =>
   v.provider === "youtube" ? `https://youtu.be/${v.id}` : `https://www.twitch.tv/${v.kind === "video" ? `videos/${v.id}` : v.id}`;
@@ -75,6 +154,7 @@ export function BlocksEditor({
   allowed,
   upload,
   events = [],
+  polls = [],
 }: {
   ownerField: string;
   ownerId: string;
@@ -83,6 +163,8 @@ export function BlocksEditor({
   allowed: BlockType[];
   upload: (formData: FormData) => Promise<ContentImageResult>;
   events?: EventOption[];
+  /** Polls for the "Szavazás eredménye" block. */
+  polls?: EventOption[];
 }) {
   const nextKey = useRef(initial.length);
   const [blocks, setBlocks] = useState<Draft[]>(() => initial.map(toDraft));
@@ -93,7 +175,11 @@ export function BlocksEditor({
 
   const add = (b: Omit<Draft, "_k">) => setBlocks((list) => [...list, { ...b, _k: nextKey.current++ } as Draft]);
   const update = (k: number, patch: Record<string, unknown>) => setBlocks((list) => list.map((b) => (b._k === k ? { ...b, ...patch } : b)));
-  const removeBlock = (k: number) => setBlocks((list) => list.filter((b) => b._k !== k));
+  const removeBlock = (k: number) => {
+    const block = blocks.find((b) => b._k === k);
+    if (block?.t === "poll" && !window.confirm("Törlöd a szavazást? Mentéskor a leadott szavazatok is törlődnek.")) return;
+    setBlocks((list) => list.filter((b) => b._k !== k));
+  };
   const move = (k: number, dir: -1 | 1) =>
     setBlocks((list) => {
       const i = list.findIndex((b) => b._k === k);
@@ -168,6 +254,8 @@ export function BlocksEditor({
     ["video", () => add({ t: "video", url: "" })],
     ["link", () => add({ t: "link", url: "" })],
     ["event", () => add({ t: "event", id: events[0]?.id ?? "" })],
+    ["poll", () => add({ t: "poll", poll: newPoll() })],
+    ["pollresult", () => add({ t: "pollresult", id: polls[0]?.id ?? "" })],
     ["hr", () => add({ t: "hr" })],
   ];
 
@@ -284,6 +372,19 @@ export function BlocksEditor({
               ) : (
                 <p className="muted text-sm">Még nincs esemény az Eseménynaptárban.</p>
               ))}
+            {b.t === "poll" && <PollEditor poll={b.poll as PollSetup} onChange={(poll) => update(b._k, { poll })} />}
+            {b.t === "pollresult" &&
+              (polls.length ? (
+                <select className="input" value={str("id")} onChange={(e) => update(b._k, { id: e.target.value })}>
+                  {polls.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.label}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <p className="muted text-sm">Még nincs elmentett szavazás.</p>
+              ))}
             {b.t === "hr" && <hr className="ce-hr" />}
           </div>
         );
@@ -294,7 +395,7 @@ export function BlocksEditor({
           .filter(([t]) => allowed.includes(t))
           .map(([t, onClick]) => (
             <button key={t} type="button" className="btn btn-secondary btn-sm" onClick={onClick} disabled={busy && (t === "img" || t === "gallery")}>
-              + {BLOCK_LABELS[t]}
+              {t === "poll" ? "+ Szavazás indítása" : `+ ${BLOCK_LABELS[t]}`}
             </button>
           ))}
         {busy && <span className="muted self-center text-sm">Képek feltöltése…</span>}

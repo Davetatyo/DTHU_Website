@@ -129,6 +129,10 @@ What news adds (owner decisions, 2026-11-03):
 - **Pinning:** pinned until an admin unpins it (no end date).
 - **Share previews** (Open Graph: cover, title, lead) for Facebook and Discord links; they
   start working once the site is public.
+- **Szavazás (polls)** in articles (added 2026-11-03, built): single/multi choice, optional
+  "Egyéb", closing time; logged-in voters, one changeable vote; results after voting; a
+  results block and "Új hír az eredményből" for follow-up articles. Voting could earn XP
+  later (R4).
 - **No user reactions or comments for now**, but keep the article page open for it: a later
   idea is a "read it" confirmation with an emoji that earns XP (see R4).
 - **Later:** automatic Discord/Facebook announcement through a separate webhook (same as

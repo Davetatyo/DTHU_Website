@@ -1,6 +1,6 @@
 # Project state: DTHU website
 
-**Current version: v2.5** (2026-11-03). Live: https://dthu.hu builds from this repository's
+**Current version: v2.6** (2026-11-03). Live: https://dthu.hu builds from this repository's
 `main` (the owner moved Vercel over around 2026-11-01; checked live 2026-11-02). Every push to
 `main` deploys within a minute.
 **Launch phase: 1**: the public sees only the Meccsszervező; the whole site from the prototype
@@ -95,6 +95,11 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 
 ## Needs the owner
 
+0. **Szavazás (v2.6, on `main`):** run `supabase/migrations/0005_polls.sql` in the Supabase SQL
+   Editor if not done yet (tables `polls`, `poll_votes`; only adds things; without it saving a
+   poll shows an error). Then on dthu.hu: a news article → "+
+   Szavazás indítása" → publish → vote, change the vote, check live results (a second admin
+   account helps), "Új hír az eredményből".
 0. **Hírek (v2.5, migration 0004 run by the owner):** on dthu.hu as admin: Admin felület → Hírek kezelése → Új hír → card picture, blocks
    (try formatting, list, gallery, a YouTube link, an event card) → publish now / scheduled →
    check `/`, `/hirek` and the article; delete test articles afterwards.
@@ -163,6 +168,24 @@ quiz) are in
 ## Handover log
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
+
+### 2026-11-03 (late night) · Szavazás (polls) in news (feature/landing-page)
+
+- Owner asked for polls in news; decisions via questions: logged-in voters only (one vote per
+  account, changeable until closing), Hírek stays admin-only for now, results after voting
+  (everyone after closing, admins always), votes anonymous, "Egyéb" answers public without
+  names.
+- Migration `0005_polls.sql` (`polls`, `poll_votes`). Shared blocks gained `poll` (setup stored
+  in the article body and synced to `polls` on save) and `pollresult`; editor "+ Szavazás
+  indítása" (options, single/multi, Egyéb, closing time) and "+ Szavazás eredménye".
+  `lib/polls.ts` (+ tests), `lib/polls-data.ts`, `actions/polls.ts`, `components/PollCard.tsx`
+  (vote, change vote, live refresh every 10 s, admin "Új hír az eredményből" → draft with a
+  results block and a link to the original).
+- Verified: types, lint, 134 tests, production build (temporary copy); screenshots with
+  TEMP-PREVIEW sample polls (reverted, grep clean): open poll with the Egyéb box, a voted
+  multi-choice poll with live results and the admin button, a closed result block with Egyéb
+  answers (desktop dark), the poll editor (375 px light). **Not verified:** real voting and the
+  live refresh against the database (needs migration 0005).
 
 ### 2026-11-03 (night) · Hírek built (feature/landing-page)
 
@@ -491,6 +514,16 @@ webhook, no cron secret), so nothing local can post to Discord.
 ---
 
 ## Changelog
+
+### v2.6 · 2026-11-03 · merge of `feature/landing-page`
+**Changed (admins only, phase 1):** Szavazás in news articles: "+ Szavazás indítása" (single or
+multiple choice, optional Egyéb, closing time), voting for logged-in users with a changeable
+vote, results after voting refreshed every 10 s, "+ Szavazás eredménye" block and the admin
+button "Új hír az eredményből".
+**Players:** nothing changes in the Időpontfoglaló.
+**Manual steps:** `supabase/migrations/0005_polls.sql`.
+**Verified:** types, lint, 134 tests, production build, screenshots with sample polls. Real
+voting: owner tests live.
 
 ### v2.5 · 2026-11-03 · merge of `feature/landing-page`
 **Changed (admins only, phase 1):**
