@@ -30,6 +30,22 @@ export async function middleware(request: NextRequest) {
 
   const path = request.nextUrl.pathname;
 
+  // The visitor's profile, read once (select * so it works before and after migration 0002).
+  const profile: { is_admin?: boolean; banned_at?: string | null } | null = user
+    ? (await supabase.from("profiles").select("*").eq("id", user.id).maybeSingle()).data
+    : null;
+
+  // Banned users (features/profile): end their session and show the login page with a notice.
+  if (profile?.banned_at) {
+    await supabase.auth.signOut();
+    const url = request.nextUrl.clone();
+    url.pathname = routes.login;
+    url.search = "?hiba=tiltva";
+    const redir = NextResponse.redirect(url, 307);
+    response.cookies.getAll().forEach((c) => redir.cookies.set(c));
+    return redir;
+  }
+
   if (!FULL_SITE) {
     // Login-gated pages (e.g. /meccsszervezo): any logged-in user can see them;
     // anonymous visitors go to the registration guide.
@@ -44,11 +60,7 @@ export async function middleware(request: NextRequest) {
 
     // Everything else outside public and login-gated paths needs the admin view.
     if (!isPublicInPhase1(path) && !isLoginGatedInPhase1(path)) {
-      let adminView = false;
-      if (user && !wantsPlayerView(request.cookies.get(VIEW_AS_COOKIE)?.value)) {
-        const { data } = await supabase.from("profiles").select("is_admin").eq("id", user.id).maybeSingle();
-        adminView = !!data?.is_admin;
-      }
+      const adminView = !!profile?.is_admin && !wantsPlayerView(request.cookies.get(VIEW_AS_COOKIE)?.value);
       if (!adminView) {
         const url = request.nextUrl.clone();
         url.pathname = phase1Fallback(path);

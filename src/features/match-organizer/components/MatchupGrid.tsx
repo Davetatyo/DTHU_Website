@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { CSSProperties } from "react";
-import { HeroAvatar } from "@/components/HeroAvatar";
+import { PlayerAvatar } from "@/features/profile/components/PlayerAvatar";
 import { sameName } from "@/lib/auth";
 import { heroColors } from "@/lib/heroes";
 import { routes } from "@/lib/routes";
@@ -31,7 +31,7 @@ function Side({ player, registered }: { player: Player | null; registered: (p: P
   if (!player) {
     return (
       <div className="p">
-        <HeroAvatar name={null} size="md" />
+        <PlayerAvatar name={null} size="md" />
         <b>Pihenő</b>
         <small>nincs ellenfél</small>
       </div>
@@ -40,7 +40,7 @@ function Side({ player, registered }: { player: Player | null; registered: (p: P
   const ok = registered(player);
   return (
     <div className="p">
-      <HeroAvatar name={player.karnyx_name} hero={player.heroes[0]} size="md" />
+      <PlayerAvatar name={player.karnyx_name} hero={player.heroes[0]} size="md" />
       <b>
         <span
           className="mr-1 inline-block h-2 w-2 rounded-full align-middle"

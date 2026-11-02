@@ -102,6 +102,12 @@ export function pickerDays(minWall: string, maxWall: string): PickerDay[] {
   return days;
 }
 
+/** Time zones for the profile forms: the common ones first, then every zone the runtime knows. */
+export function timeZoneOptions(): string[] {
+  const common = [DEFAULT_TIMEZONE, "Europe/London", "Europe/Berlin", "Europe/Bucharest", "America/New_York"];
+  return [...new Set([...common, ...Intl.supportedValuesOf("timeZone")])];
+}
+
 export function isValidTimeZone(timeZone: string): boolean {
   try {
     new Intl.DateTimeFormat("en-US", { timeZone });

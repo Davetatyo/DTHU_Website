@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Art } from "@/components/Art";
-import { HeroAvatar } from "@/components/HeroAvatar";
+import { PlayerAvatar } from "@/features/profile/components/PlayerAvatar";
 import { MatchList } from "@/features/match-organizer/components/MatchList";
 import { StatusBadge } from "@/features/match-organizer/components/StatusBadge";
 import { getActiveTournament, getLatestRound, getRoundMatches, isParticipant } from "@/features/match-organizer/lib/data";
@@ -116,12 +116,12 @@ export default async function NewsPage() {
               <Link href={routes.match(myMatch.id)} className="panel3 block p-4">
                 <div className="vsbox">
                   <div className="p">
-                    <HeroAvatar name={meSide?.karnyx_name ?? null} hero={meSide?.heroes[0]} size="md" />
+                    <PlayerAvatar name={meSide?.karnyx_name ?? null} hero={meSide?.heroes[0]} size="md" />
                     <b>{meSide?.karnyx_name}</b>
                   </div>
                   <span className="vsx">VS</span>
                   <div className="p">
-                    <HeroAvatar name={opp?.karnyx_name ?? null} hero={opp?.heroes[0]} size="md" />
+                    <PlayerAvatar name={opp?.karnyx_name ?? null} hero={opp?.heroes[0]} size="md" />
                     <b>{opp?.karnyx_name ?? "Bye"}</b>
                   </div>
                 </div>

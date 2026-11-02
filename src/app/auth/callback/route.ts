@@ -12,6 +12,8 @@ export async function GET(request: NextRequest) {
 
   const supabase = await createSessionClient();
   const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+  // Supabase Auth refuses accounts an admin banned (features/profile/actions/ban.ts).
+  if (error && /banned/i.test(error.message)) return NextResponse.redirect(`${site}${routes.login}?hiba=tiltva`);
   if (error || !data.user) return NextResponse.redirect(`${site}${routes.login}?hiba=1`);
 
   // Discord identity data from Supabase: provider_id = Discord user ID, name = username.
@@ -21,7 +23,11 @@ export async function GET(request: NextRequest) {
   const displayName: string | null = meta.custom_claims?.global_name ?? meta.full_name ?? discordUsername;
 
   const admin = createAdminClient();
-  const { data: existing } = await admin.from("profiles").select("id, is_admin, facebook_name").eq("id", data.user.id).maybeSingle();
+  const { data: existing } = await admin.from("profiles").select("*").eq("id", data.user.id).maybeSingle();
+  if (existing?.banned_at) {
+    await supabase.auth.signOut();
+    return NextResponse.redirect(`${site}${routes.login}?hiba=tiltva`);
+  }
 
   await admin.from("profiles").upsert({
     id: data.user.id,

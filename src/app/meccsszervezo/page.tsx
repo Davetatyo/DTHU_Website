@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import Link from "next/link";
-import { HeroAvatar } from "@/components/HeroAvatar";
+import { PlayerAvatar } from "@/features/profile/components/PlayerAvatar";
 import { MatchList } from "@/features/match-organizer/components/MatchList";
 import { MatchupGrid } from "@/features/match-organizer/components/MatchupGrid";
 import { RoundTimeline } from "@/features/match-organizer/components/RoundTimeline";
@@ -137,13 +137,13 @@ export default async function OrganizerHomePage({
                   <Link href={routes.match(myMatch.id)} className="panel3 block p-4 hover:border-[var(--gold-dim)]">
                     <div className="vsbox">
                       <div className="p">
-                        <HeroAvatar name={me?.karnyx_name ?? null} hero={me?.heroes[0]} size="md" />
+                        <PlayerAvatar name={me?.karnyx_name ?? null} hero={me?.heroes[0]} size="md" />
                         <b>{me?.karnyx_name}</b>
                         <small>{me?.heroes[0]}</small>
                       </div>
                       <span className="vsx">VS</span>
                       <div className="p">
-                        <HeroAvatar name={opponent?.karnyx_name ?? null} hero={opponent?.heroes[0]} size="md" />
+                        <PlayerAvatar name={opponent?.karnyx_name ?? null} hero={opponent?.heroes[0]} size="md" />
                         <b>{opponent?.karnyx_name ?? "Bye"}</b>
                         <small>{opponent?.heroes[0] ?? "nincs ellenfél"}</small>
                       </div>

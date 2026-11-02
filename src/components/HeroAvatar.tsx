@@ -1,17 +1,24 @@
 import { heroColors, heroImage } from "@/lib/heroes";
 
-/** Round avatar for a player: their hero's artwork, or a gradient in the hero's colours with initials. */
+/**
+ * Round avatar for a player: their uploaded profile picture (`photo`), else their hero's
+ * artwork, else a gradient in the hero's colours with initials. Pages pass `photo` through
+ * features/profile's PlayerAvatar, which looks it up by Karnyx name.
+ */
 export function HeroAvatar({
   name,
   hero,
   size,
+  photo,
 }: {
   name: string | null;
   hero?: string | null;
   size?: "md" | "lg";
+  photo?: string | null;
 }) {
   const cls = `av${size ? ` ${size}` : ""}`;
   if (!name) return <span className={cls} style={{ background: "#2a2533" }} aria-hidden />;
+  if (photo) return <span className={cls} style={{ backgroundImage: `url(${photo})`, backgroundPosition: "center" }} title={name} aria-hidden />;
   const img = heroImage(hero);
   if (img) return <span className={cls} style={{ backgroundImage: `url(${img})` }} title={hero ?? undefined} aria-hidden />;
   const [c1, c2] = heroColors(hero);

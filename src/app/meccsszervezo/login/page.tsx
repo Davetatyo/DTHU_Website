@@ -29,7 +29,11 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
         A Discord fiókoddal lépsz be, így az ellenfeled látja a Discord nevedet, és a bot meg tud jelölni a
         csatornában.
       </p>
-      {hiba && <p className="alert-error mt-4">A bejelentkezés nem sikerült, próbáld újra.</p>}
+      {hiba === "tiltva" ? (
+        <p className="alert-error mt-4">Ki vagy tiltva az oldalról, ezért nem tudsz belépni. Ha szerinted ez tévedés, írj egy adminnak.</p>
+      ) : (
+        hiba && <p className="alert-error mt-4">A bejelentkezés nem sikerült, próbáld újra.</p>
+      )}
       <form action={signInWithDiscord} className="mt-6">
         <SubmitButton className="btn btn-discord w-full">Belépés Discorddal</SubmitButton>
       </form>
