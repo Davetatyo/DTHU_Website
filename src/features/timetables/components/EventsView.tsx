@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { Art, type ArtSpec } from "@/components/Art";
 import { Icon } from "@/components/Icon";
-import { KIND_LABELS, TENTATIVE_LABEL, type CalendarItem, type EventKind } from "../lib/events";
+import { KIND_LABELS, KIND_SHORT_LABELS, TENTATIVE_LABEL, type CalendarItem, type EventKind } from "../lib/events";
 import "../timetables.css";
 
 /** A confirmed Időpontfoglaló match, shown in the month view. */
@@ -26,9 +26,9 @@ const KIND_ART: Record<EventKind, ArtSpec> = {
 function statusChip(e: CalendarItem): [string, string] {
   if (e.past) return ["mut", "Lezajlott"];
   if (e.ongoing) return ["ok", "Folyamatban"];
-  if (e.tentative) return ["mut", TENTATIVE_LABEL];
+  if (e.tentative) return ["mut", "Tervezett"];
   if (e.pinned) return ["warn", "Kiemelt"];
-  return ["info", KIND_LABELS[e.kind]];
+  return ["info", KIND_SHORT_LABELS[e.kind]];
 }
 
 function EventDialog({ ev, onClose }: { ev: CalendarItem | null; onClose: () => void }) {
@@ -106,8 +106,10 @@ function Tile({ ev, onPick }: { ev: CalendarItem; onPick: (e: CalendarItem) => v
         <b>{+d}</b>
         <small>{MON[+m]}</small>
       </span>
-      <span className="badge-tr">
-        <span className={`chip ${chipClass}`}>{chipLabel}</span>
+      <span className="badge-tr ev-tag">
+        <span className={`chip ${chipClass}`} title={chipLabel}>
+          {chipLabel}
+        </span>
       </span>
       <div className="in">
         <h3>

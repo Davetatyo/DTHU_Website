@@ -17,6 +17,14 @@ export const KIND_LABELS: Record<EventKind, string> = {
 };
 export const TENTATIVE_LABEL = "Ötlet / tervezett";
 
+/** Short kind labels for the small tag on calendar cards, so it never reaches the date badge. */
+export const KIND_SHORT_LABELS: Record<EventKind, string> = {
+  online: "Online",
+  live: "Élő verseny",
+  community: "Közösségi játék",
+  other: "Egyéb",
+};
+
 export function isEventKind(value: unknown): value is EventKind {
   return typeof value === "string" && (EVENT_KINDS as readonly string[]).includes(value);
 }

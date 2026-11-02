@@ -16,6 +16,11 @@
 .legend .lg-match { color: var(--gold); }
 .cal .evl { display: block; width: 100%; }
 .cal .evl.tentative { border-left-style: dashed; font-style: italic; }
+/* The tag in the card's top-right corner stays clear of the date badge (top-left, ~50 px)
+   however narrow the card gets; a label that's still too long is cut with "…". */
+.tile .ev-tag { max-width: calc(100% - 76px); display: flex; justify-content: flex-end; }
+.tile .ev-tag .chip { max-width: 100%; overflow: hidden; text-overflow: ellipsis; display: inline-block; }
+.tile .ev-tag .chip::before { display: inline-block; margin-right: 5px; vertical-align: 1px; }
 /* "Ötlet / tervezett" events: dashed frame on the tile. */
 .tile.tentative { border-style: dashed; }
 /* Past events stay visible and clickable, greyed out, under the tiles. */
