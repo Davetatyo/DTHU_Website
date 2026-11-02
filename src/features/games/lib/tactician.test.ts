@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { tacticianData } from "./tactician-data";
-import { answer, MAX_GUESSES, MAX_QUESTIONS, newGame, nextMove, wrongGuess, type GameState } from "./tactician";
+import { answer, answered, MAX_GUESSES, MAX_QUESTIONS, newGame, nextMove, wrongGuess, type GameState } from "./tactician";
 import type { Trait } from "./tactician-traits";
 
 const { heroes, traits } = tacticianData();
@@ -28,6 +28,11 @@ describe("Taktikai Előny data", () => {
   it("has every hero of the Szabálytár and only known heroes in the table", () => {
     expect(heroes.length).toBeGreaterThanOrEqual(45);
     for (const t of traits) for (const id of t.yes) expect(ids, `${t.id}: ${id}`).toContain(id);
+  });
+
+  it("asks no question that fits a single hero, and no Season questions", () => {
+    for (const t of traits) expect(t.yes.length, t.id).toBeGreaterThanOrEqual(2);
+    expect(traits.some((t) => /season|évad/i.test(t.id + t.q))).toBe(false);
   });
 
   it("tells every two heroes apart by at least two questions", () => {
@@ -84,5 +89,37 @@ describe("game length", () => {
     const avg = qs.reduce((a, b) => a + b, 0) / qs.length;
     console.log(`average questions: ${avg.toFixed(1)}, max: ${Math.max(...qs)}`);
     expect(avg).toBeLessThan(9);
+  });
+});
+
+describe("Nem tudom", () => {
+  it("tells him nothing, isn't asked again and doesn't use up a question", () => {
+    const start = newGame(ids);
+    const move = nextMove(start, traits, () => 0);
+    if (move.kind !== "ask") throw new Error("expected a question");
+    const s = answer(start, move.trait, null);
+    expect(s.weights).toEqual(start.weights);
+    expect(answered(s)).toBe(0);
+    const next = nextMove(s, traits, () => 0);
+    expect(next.kind === "ask" && next.trait.id).not.toBe(move.trait.id);
+  });
+
+  it("still finds the hero when the player doesn't know two answers", () => {
+    for (const id of ids) {
+      let state: GameState = newGame(ids);
+      let unknown = 0;
+      let won = false;
+      for (let step = 0; step < 60 && !won; step++) {
+        const move = nextMove(state, traits, () => 0);
+        if (move.kind === "give-up") break;
+        if (move.kind === "guess") {
+          if (move.hero === id) won = true;
+          else state = wrongGuess(state, move.hero);
+          continue;
+        }
+        state = answer(state, move.trait, unknown < 2 ? (unknown++, null) : move.trait.yes.includes(id));
+      }
+      expect(won, id).toBe(true);
+    }
   });
 });

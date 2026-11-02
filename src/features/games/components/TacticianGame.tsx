@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { answer, confidence, MAX_QUESTIONS, newGame, nextMove, wrongGuess, type GameState } from "../lib/tactician";
+import { answer, answered, confidence, MAX_QUESTIONS, newGame, nextMove, wrongGuess, type GameState } from "../lib/tactician";
 import type { GameHero, TacticianData } from "../lib/tactician-data";
 import type { Trait } from "../lib/tactician-traits";
 import "../tactician.css";
@@ -18,6 +18,7 @@ const REMARKS = [
   "Pontosan erre számítottam.",
   "Hmm…",
 ];
+const UNSURE = ["Nem baj. Másképp közelítem meg.", "Akkor más irányból támadok.", "Egy kérdés kevesebb… nem számít."];
 const THINK_MS = 600;
 
 type Phase =
@@ -66,6 +67,34 @@ export function TacticianGame({ data }: { data: TacticianData }) {
   const [rounds, setRounds] = useState(0);
   const timer = useRef<number | null>(null);
   const stage = useRef<HTMLDivElement>(null);
+  const [topbar, setTopbar] = useState(120);
+
+  /** Scrolls so the whole stage sits in the middle of the screen, below the sticky top bar. */
+  const center = useCallback(
+    (smooth: boolean) => {
+      const el = stage.current;
+      if (!el) return;
+      const top = (document.querySelector(".topbar") as HTMLElement | null)?.offsetHeight ?? 0;
+      const r = el.getBoundingClientRect();
+      const y = Math.max(0, window.scrollY + r.top - top - Math.max(0, (window.innerHeight - top - r.height) / 2));
+      window.scrollTo({ top: y, behavior: smooth && !reduced ? "smooth" : "auto" });
+      // If the smooth scroll was cut short (or the browser skipped it), jump into place.
+      window.setTimeout(() => {
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        if (Math.abs(window.scrollY - Math.min(y, max)) > 4) window.scrollTo({ top: y });
+      }, 700);
+    },
+    [reduced],
+  );
+
+  // The stage fills the screen below the top bar; centred as soon as the page opens.
+  useEffect(() => {
+    setTopbar((document.querySelector(".topbar") as HTMLElement | null)?.offsetHeight ?? 120);
+    // After the page has settled (Next restores the scroll position after navigating, and the
+    // portrait loads), so the scroll isn't undone.
+    const t = window.setTimeout(() => center(true), 450);
+    return () => window.clearTimeout(t);
+  }, [center]);
 
   useEffect(() => () => void (timer.current && window.clearTimeout(timer.current)), []);
 
@@ -99,18 +128,17 @@ export function TacticianGame({ data }: { data: TacticianData }) {
     setState(fresh);
     setStarted(true);
     setRounds((r) => r + 1);
-    // Bring the whole stage (and the answer buttons) into view.
-    stage.current?.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "end" });
+    center(true);
     // The first time, his portrait melts into the background before the first question.
     advance(fresh, "Akkor kezdjük.", rounds ? THINK_MS : 1300);
   }
 
-  function reply(yes: boolean) {
+  function reply(yes: boolean | null) {
     if (phase.kind !== "ask" || thinking) return;
     buzz(8);
     const s = answer(state, phase.trait, yes);
     setState(s);
-    advance(s, pick(REMARKS));
+    advance(s, pick(yes === null ? UNSURE : REMARKS));
   }
 
   function judge(right: boolean) {
@@ -125,11 +153,16 @@ export function TacticianGame({ data }: { data: TacticianData }) {
     advance(s, "Egy rejtett tartalék… Folytassuk.");
   }
 
-  const asked = state.asked.length;
+  const asked = answered(state);
   const sure = Math.round(confidence(state) * 100);
 
   return (
-    <div ref={stage} className={`ta${started ? " started" : ""}${thinking ? " thinking" : ""}`} data-phase={phase.kind}>
+    <div
+      ref={stage}
+      className={`ta${started ? " started" : ""}${thinking ? " thinking" : ""}`}
+      data-phase={phase.kind}
+      style={{ "--ta-top": `${topbar}px` } as React.CSSProperties}
+    >
       <div className="ta-bg" aria-hidden>
         {/* eslint-disable-next-line @next/next/no-img-element -- decorative, full-bleed art */}
         <img src="/jatekok/hadvezer-alak.jpg" alt="" />
@@ -172,9 +205,11 @@ export function TacticianGame({ data }: { data: TacticianData }) {
             <div className="ta-card">
               <div className="ta-meta">
                 <span>
-                  {asked + 1}. kérdés / {MAX_QUESTIONS}
+                  {asked + 1}. kérdés / {MAX_QUESTIONS} · Bizonyosság {sure}%
                 </span>
-                <span>Bizonyosság {sure}%</span>
+                <button type="button" className="ta-unsure" onClick={() => reply(null)} disabled={thinking}>
+                  Nem tudom
+                </button>
               </div>
               <div className="ta-sure" aria-hidden>
                 <span style={{ width: `${sure}%` }} />
