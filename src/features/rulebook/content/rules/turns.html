@@ -1,0 +1,41 @@
+<h2 slot="header">Körök fázisai</h2>
+				<fieldset class="rp-controls" data-relevance="g-vs" style="margin-top:-.5em">
+					<legend><a href="#game-modes">Játékmod</a></legend>
+					<ul data-relevance-set>
+						<li><label><input name="dice-throne-game-mode" type="radio" value="m-1v1" checked><span>1v1</span></label></li>
+						<li><label><input name="dice-throne-game-mode" type="radio" value="m-2v2"><span>2v2</span></label></li>
+						<li><label><input name="dice-throne-game-mode" type="radio" value="m-3v3"><span>3v3</span></label></li>
+						<li><label><input name="dice-throne-game-mode" type="radio" value="m-2v2v2"><span>2v2v2</span></label></li>
+						<li><label><input name="dice-throne-game-mode" type="radio" value="m-koh"><span>King of the Hill</span></label></li>
+					</ul>
+				</fieldset>
+				<ol>
+					<li><p><dfn><a href="#upkeep-phase">Állapot fázis</a></dfn>: Oldd meg az <i>Állapot fázis</i> fenntartásait (ezek általában <a href="#status-effects">állapotjelzőkből</a> vagy <a href="#passive-ability"><i>passzív képességekből</i></a> fakadnak).</p></li>
+					<li><p><dfn><a href="#income-phase">Bevételi fázis</a></dfn>: Kapj <a href="#combat-points"><svg class="◊" viewbox="0 0 465 500"><use href="#i-cp-1"/></svg></a> pontot és húzz <a href="#hero-cards"><svg class="◊" viewbox="0 0 360 500"><use href="#i-cards-1"/></svg> kártyát</a> a paklidból. A <a href="#setup">kezdőjátékos</a> kihagyja az első <i>Bevételi fázisát</i>.</p></li>
+					<li><p><dfn><a href="#main-phase"><svg class="◊" viewBox="0 0 450 500"><use href="#i-main-phase"></use></svg> Erősítő fázis</a> (1)</dfn>: Költs <a href="#combat-points"><svg class="◊" viewbox="0 0 465 500"><use href="#i-cp"/></svg></a> pontot <i>Hősfejlesztés</i> kártyák vagy <i>Erősítő fázis akciókártyák</i> kijátszására. <a href="#sell">Add el</a> a nem kívánt kártyákat, hogy mindegyikért <svg class="◊" viewbox="0 0 465 500"><use href="#i-cp-1"/></svg> pontot kapj.</p></li>
+					<li><p><dfn><a href="#offensive-roll-phase"><svg class="◊ roll-phase" viewbox="0 0 458 500"><use href="#i-die"/></svg> Támadó dobási fázis</a></dfn>: Legfeljebb 3-szor <a href="#roll-attempt">dobhatsz a kockáiddal</a> (minden alkalommal tetszőleges számú kockát újradobva), hogy elérj egy olyan <a href="#final-dice-result">Végső dobás eredményt</a>, amely megfelel egyetlen <a href="#offensive-ability"><i>támadó képesség</i></a> <a href="#activation-requirement">aktiválási feltételének</a>.</p></li>
+					<li data-relevance="m-2v2 || m-3v3 || m-2v2v2 || m-koh">
+						<p><dfn><a href="#targeting-roll-phase"><svg class="◊ roll-phase" viewbox="0 0 458 500"><use href="#i-die"/></svg> Célzó dobási fázis</a></dfn>:
+							<span data-relevance="m-2v2 || m-3v3 || m-2v2v2">Dobj 1 kockával…</span>
+							<span data-relevance="m-koh">Célozz meg bármelyik játékost. Viszont kapsz egy bónusz <a href="#hero-cards">kártyát</a>, ha <a href="#attack">megtámadod</a> a <a href="#game-modes">Vezetőt</a>.</span></p>
+						<dl class="grid" data-relevance="m-2v2">
+							<dt>1–2</dt><dd>Célozd meg a balodon ülő ellenfelet.</dd>
+							<dt>3–4</dt><dd>Célozd meg a jobbodon ülő ellenfelet.</dd>
+							<dt>5</dt><dd>Az ellenfeleid választják ki, hogy melyiküket célozd meg.</dd>
+							<dt>6</dt><dd>Válassz bármelyik ellenfelet célpontként.</dd>
+						</dl>
+						<dl class="grid" data-relevance="m-3v3">
+							<dt>1–2</dt><dd>Célozd meg a bal oldali ellenfelet.</dd>
+							<dt>3–4</dt><dd>Célozd meg a középső ellenfelet.</dd>
+							<dt>5–6</dt><dd>Célozd meg a jobb oldali ellenfelet.</dd>
+						</dl>
+						<dl class="grid" data-relevance="m-2v2v2">
+							<dt>1–4</dt><dd>Számolj körbe az asztalnál az óramutató járásával megegyező irányban, a balodon lévő legközelebbi ellenféllel kezdve.</dd>
+							<dt>5–6</dt><dd>Válassz egy ellenfelet célpontként.</dd>
+						</dl>
+						<p data-relevance="m-2v2 || m-3v3 || m-2v2v2 || m-koh">Bármelyik játékos kijátszhat <a href="#action-cards">Dobási fázis akciókártyákat</a>.</p>
+					</li>
+					<li><p><dfn><a href="#defensive-roll-phase"><svg class="◊ roll-phase" viewbox="0 0 458 500"><use href="#i-die"/></svg> Védekező dobási fázis</a></dfn>: Ha <a href="#attack"><i>támadást</i></a> aktiváltál a <a href="#offensive-roll-phase"><i>Támadó dobási fázisod</i></a> során, az ellenfeled egyetlen <a href="#roll-attempt"><i>dobási próbálkozással</i></a> aktiválhatja a <a href="#defensive-ability"><i>védekező képességét</i></a>.</p></li>
+					<li><p><dfn><a href="#main-phase"><svg class="◊" viewBox="0 0 450 500"><use href="#i-main-phase"></use></svg> Erősítő fázis</a> (2)</dfn>: Megegyezik az <i>Erősítő fázis (1)</i>-gyel.</p></li>
+					<li><p><dfn><a href="#discard-phase">Eldobási fázis</a></dfn>: <a href="#sell">Adj el</a> <a href="#hero-cards">kártyákat</a> <a href="#combat-points"><svg class="◊" viewbox="0 0 465 500"><use href="#i-cp-1"/></svg></a> pontért darabonként, amíg legfeljebb <svg class="◊" viewbox="0 0 360 500"><use href="#i-cards-6"/></svg> vagy kevesebb kártya nem marad a kezedben.</p></li>
+				</ol>

@@ -1,4 +1,5 @@
-// Content from reference/artifact (the prototype), unchanged unless noted.
+// Content from reference/artifact (the prototype). Only the Alchemist uses it now (its answers
+// and keywords); the Szabálytár itself shows content/ (the RulePop import).
 // Summary of the Dice Throne Rulepop Hungarian fan translation, in our own words.
 
 /** Link to another rule inside a rule's HTML. */

@@ -1,26 +1,15 @@
 import type { Metadata } from "next";
-import { Rulebook } from "@/features/rulebook/components/Rulebook";
+import { redirect } from "next/navigation";
+import { RulebookHome } from "@/features/rulebook/components/RulebookHome";
+import { LEGACY_TABS, RULEBOOK_PATH } from "@/features/rulebook/lib/pages";
 
-export const metadata: Metadata = { title: "Szabálytár" };
+export const metadata: Metadata = {
+  title: "Szabálytár",
+  description: "A Dice Throne szabályai magyarul: körök, hősök, tokenek, sebzés, GYIK. Minden szabálynak saját linkje van.",
+};
 
 export default async function RulebookPage({ searchParams }: { searchParams: Promise<{ tab?: string }> }) {
   const { tab } = await searchParams;
-  return (
-    <div className="space-y-4">
-      <div>
-        <div className="sec-h">
-          <h1>Szabálytár</h1>
-        </div>
-        <p className="lead">A Dice Throne szabályai magyarul, gyors kereséssel. Minden szabálynak saját linkje van.</p>
-      </div>
-      <Rulebook initialTab={tab ?? "gyors"} />
-      <p className="muted border-t border-dashed pt-2 text-sm" style={{ borderColor: "var(--line)" }}>
-        Forrás: a{" "}
-        <a href="https://dice-throne-rulepop-hu.vercel.app/" target="_blank" rel="noopener noreferrer" className="link">
-          Dice Throne Rulepop magyar rajongói fordítása
-        </a>
-        , saját szavakkal összefoglalva. Nem hivatalos tartalom; a Dice Throne a Roxley Games védjegye.
-      </p>
-    </div>
-  );
+  if (tab && LEGACY_TABS[tab]) redirect(`${RULEBOOK_PATH}/${LEGACY_TABS[tab]}`);
+  return <RulebookHome />;
 }

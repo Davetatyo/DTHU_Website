@@ -1,0 +1,54 @@
+<h2 slot="header">Sebzéstáblázat</h2>
+    <ul slot="header" class="see-also">
+      <li><a href="#damage-types">Sebzéstípusok</a></li>
+      <li><a href="#final-dmg-total">Végső sebzés összege</a></li>
+    </ul>
+    <table class="damage-types">
+      <thead>
+        <tr>
+          <td></td>
+          <th><div><div>Kivédhető</div></div></th>
+          <th><div><div>Elkerülhető</div></div></th>
+          <th><div><div>Módosítható</div></div></th>
+          <th><div><div>Különleges célzás</div></div></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>Sima<span> sebzés</span></th>
+          <td class="yes">Igen</td>
+          <td class="yes">Igen</td>
+          <td class="yes">Igen</td>
+          <td class="no">Nem</td>
+        </tr>
+        <tr>
+          <th>Kivédhetetlen<span> sebzés</span></th>
+          <td class="no">Nem</td>
+          <td class="yes">Igen</td>
+          <td class="yes">Igen</td>
+          <td class="no">Nem</td>
+        </tr>
+        <tr>
+          <th>Tiszta<span> sebzés</span></th>
+          <td class="no">Nem</td>
+          <td class="yes">Igen</td>
+          <td class="no">Nem</td>
+          <td class="no">Nem</td>
+        </tr>
+        <tr>
+          <th>Járulékos<span> sebzés</span></th>
+          <td class="no">Nem</td>
+          <td class="yes">Igen</td>
+          <td class="no">Nem</td>
+          <td class="yes">Igen</td>
+        </tr>
+        <tr>
+          <th>Ultimate<span> sebzés</span></th>
+          <td class="no">Nem</td>
+          <td class="no">Nem</td>
+          <td class="yes">Igen</td>
+          <td class="no">Nem</td>
+        </tr>
+      </tbody>
+    </table>
+    <p><strong>Megjegyzés:</strong> A <em>támadáson kívül</em> bekövetkező sebzésnek (pl. <a href="#status-effects">állapotjelzők</a> vagy <a href="#defensive-ability">Védekező képesség</a> révén) nincs sebzéstípusa. Ez a sebzés elkerülhető, de nem használható rá <a href="#attack-modifiers">Támadásmódosító</a> a növelésére, és nem használható ellene Védekező képesség sem.</p>

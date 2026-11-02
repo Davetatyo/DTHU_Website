@@ -1,0 +1,275 @@
+<h2 slot="header">Gyakran Ismételt Kérdések</h2>
+				<p><b>Megjegyzés</b>: Minden <a href="#heroes">Hősnek</a> vannak további szabálytisztázásai.</p>
+				<fieldset class="rp-controls">
+					<legend>Kategória</legend>
+					<ul data-relevance-set>
+						<li><label><input name="dice-throne-faq" type="radio" value="faq-general" checked><span>Általános</span></label></li>
+						<li><label><input name="dice-throne-faq" type="radio" value="faq-ultimate"><span>Ultimate képesség</span></label></li>
+						<li><label><input name="dice-throne-faq" type="radio" value="faq-cards"><span>Kártyák</span></label></li>
+
+					</ul>
+				</fieldset>
+				<div data-relevance="faq-general">
+					<details>
+						<summary>Mi az a „Komplexitási szint” az egyes Hősökön?</summary>
+						<div>
+							<p>A „Komplexitási szint” egy szám, amely azt jelzi, hogy milyen nehéz elsajátítani egy hős játékát. Minél alacsonyabb ez az érték, annál egyszerűbb és könnyebben használható a hős. Ez nem a hős erejét vagy hatékonyságát jelzi, hanem egyszerűen a használatának egyszerűségét. A magasabb komplexitású hősök jobb játékához a szabályok és a játékmechanizmusok mélyebb ismerete szükséges.</p>
+						</div>
+					</details>
+					<details>
+						<summary>Mit jelent a „Választott játékos” (Chosen Player)?</summary>
+						<div>
+							<p>Azt jelenti, hogy te választod ki a személyt, ami magában foglalhat téged, egy csapattársadat vagy egy ellenfeledet.</p>
+						</div>
+					</details>
+					<details>
+						<summary>Mit jelent a „Választott ellenfél” (Chosen Opponent)?</summary>
+						<div>
+							<p>Bármely olyan játékost jelent, aki nem te vagy és nincs a te csapatodban.</p>
+						</div>
+					</details>
+					<details>
+						<summary>Megszakíthatok egy Erősítő fázis kártyát vagy Dobási fázis kártyát egy állapotjelző elköltésével vagy egy Azonnali akciókártya kijátszásával?</summary>
+						<div>
+							<p>Igen. Az <a href="#status-effects">állapotjelzők</a> Azonnali akciónak (Instant Action) minősülnek.</p>
+						</div>
+					</details>
+					<details>
+						<summary>Megszakíthatok egy Azonnali akciókártyát vagy elölthető állapotjelzőt egy állapotjelző elköltésével vagy egy Azonnali akciókártya kijátszásával?</summary>
+						<div>
+							<p>Nem. Ha egy állapotjelzőt <a href="#spent-spend">elöltenek</a>, annak hatásai nem <a href="#timing">szakíthatók meg</a>.</p>
+						</div>
+					</details>
+					<details>
+						<summary>Ha egy képességnek változó hatásai/sebzése van, amelyet egy vagy több kocka határoz meg, használhatok Dobási fázis kártyákat a kockák befolyásolására vagy megváltoztatására?</summary>
+						<div>
+							<p>Igen.</p>
+						</div>
+					</details>
+					<details>
+						<summary>Van maximuma a <svg class="◊" viewbox="0 0 465 500"><use href="#i-cp"/></svg>-nek?</summary>
+						<div>
+							<p>Igen, 15.</p>
+						</div>
+					</details>
+					<details>
+						<summary>Gyógyulhatok a kezdő életerőm fölé?</summary>
+						<div>
+							<p>Igen, legfeljebb 10-zel a kezdő <a href="#health">életerő</a> fölé.</p>
+						</div>
+					</details>
+					<details>
+						<summary>Minden fejlesztőkártyának van 3. szintje?</summary>
+						<div>
+							<p>Nem.</p>
+						</div>
+					</details>
+					<details>
+						<summary>Fejleszthetek egy képességet közvetlenül 1. szintről 3. szintre?</summary>
+						<div>
+							<p>Igen. Ha így teszel, a 3. szintű <a href="#hero-upgrades">fejlesztés</a> teljes költségét kifizeted. Ha 2. szintről fejlesztesz 3. szintre, csak a fejlesztések közötti költségkülönbséget kell kifizetned.</p>
+						</div>
+					</details>
+					<details>
+						<summary>Ha egy kártya azt írja, hogy „Távolíts el egy állapotjelzőt”, akkor egy jelzőt vagy egy típus összes jelzőjét távolítod el?</summary>
+						<div>
+							<p>Csak egy jelzőt. Minden jelző az általa képviselt <a href="#status-effects">állapotjelző</a> saját különálló példányaként kezelendő.</p>
+						</div>
+					</details>
+					<details>
+						<summary>Ha egy kártya azt írja, hogy „Távolíts el minden állapotjelzőt”, akkor csak a negatívakat távolítom el?</summary>
+						<div>
+							<p>A mind az összeset jelenti, legyen az jó vagy rossz.</p>
+						</div>
+					</details>
+					<details>
+						<summary>Mi az a „Halmozási limit” (Stack limit)?</summary>
+						<div>
+							<p>A halmozási limit az <a href="#status-effects">állapotjelző</a> jelzőinek azon maximális száma, amellyel egy játékos egy adott időben rendelkezhet. Pl. az 1-es halmozási limit azt jelenti, hogy egy játékoson legfeljebb 1 darab lehet az adott állapotjelzőből.</p>
+						</div>
+					</details>
+					<details>
+						<summary>Ha egy ellenfél megpróbál ellopni vagy eltávolítani egy elölthető állapotjelzőt, elölthetem azt, mielőtt eltűnik?</summary>
+						<div>
+							<p>Igen. Mindaddig, amíg az áthelyezés/eltávolítás forrása nem egy <a href="#action-cards">Azonnali akció</a> kártya vagy maga egy <a href="#status-effects">elölthető állapotjelző</a>. Lásd a konkrét <a href="#heroes">Hősök</a> GYIK-jeit bizonyos állapotjelzőkkel kapcsolatban.</p>
+						</div>
+					</details>
+					<details>
+						<summary>Ha az ellenfél képessége nem okoz sebzést, de más hatásai vannak, kapok védekező dobást?</summary>
+						<div>
+							<p>Nem. A <a href="#defensive-ability">védekező képességed</a> aktiválásához legalább 1 pontnyi védhető sebzéssel járó <a href="#attack">támadást</a> kell elszenvedned.</p>
+						</div>
+					</details>
+					<details>
+						<summary>Csökkenthetem vagy elkerülhetem a kivédhetetlen sebzést kártyákkal és állapotjelzőkkel?</summary>
+						<div>
+							<p>Igen. A <a href="#damage-types">kivédhetetlen sebzés</a> csak a hős <a href="#defensive-ability">védekező képességének</a> aktiválását zárja ki. A <a href="#damage">sebzéstáblázat</a> nagyszerű hivatkozási alap.</p>
+						</div>
+					</details>
+					<details>
+						<summary>Ha kivédhetetlen támadást hajtok végre, és támadásmódosítót használok, a hozzáadott sebzés védhető vagy sem?</summary>
+						<div>
+							<p>A <a href="#attack-modifiers">támadásmódosítók</a> által hozzáadott sebzés típusa megegyezik az alapsebzés <a href="#damage-types">típusával</a>.</p>
+						</div>
+					</details>
+					<details>
+						<summary>Játszhatok ki támadásmódosítókat az ellenfelem védekező dobása után?</summary>
+						<div>
+							<p>Kijátszhatod őket a <a href="#defensive-roll-phase">védekező dobás</a> előtt vagy után is.</p>
+						</div>
+					</details>
+					<details>
+						<summary>Használhatok támadásmódosítót olyan képességen, amely nem okoz sebzést (mint a Barbár Fortitude képessége)?</summary>
+						<div>
+							<p>Nem. A <a href="#attack-modifiers">támadásmódosítók</a> használatához a képességnek olyan <a href="#attack">támadásnak</a> kell lennie, amely legalább 1 sebzést okoz.</p>
+						</div>
+					</details>
+					<details>
+						<summary>A járulékos sebzés automatikusan mindenkit eltalál?</summary>
+						<div>
+							<p>Nem. A <a href="#damage-types">járulékos sebzés</a> olyan kivédhetetlen sebzés, amely nem növelhető. Különleges célzási szabályai vannak. Nem számít <a href="#attack">támadásnak</a>.</p>
+						</div>
+					</details>
+					<details>
+						<summary>Csapatos játékokban, ha egy támadás azt írja, hogy minden ellenfelet sebez, akkor minden hőst külön-külön sebzek, vagy a közös életerőt?</summary>
+						<div>
+							<p>A csapattársak a csapatos játékokban egyetlen közös <a href="#health">Életerő-tárcsát</a> használnak. A minden ellenfélnek okozott sebzés minden bajnokot egyénileg sebez (pl. egy 2v2 játékban a minden ellenfélnek okozott 2 sebzés összesen 4 sebzést jelent az ellenfél közös Életerő-tárcsáján).</p>
+						</div>
+					</details>
+					<details>
+						<summary>Aktiválhatok több képességet is, ha a megfelelő szimbólumokat dobom ki?</summary>
+						<div>
+							<p>Nem. Csak egyetlen <a href="#ability">képességet</a> választhatsz ki <a href="#activate">aktiválásra</a>.</p>
+						</div>
+					</details>
+					<details>
+						<summary>Kötelező aktiválnom egy képességet a Támadó dobási fázisom során?</summary>
+						<div>
+							<p>Nem. Néha az a legjobb stratégia, ha úgy döntesz, nem <a href="#activate">aktiválsz</a> egyetlen képességet sem.</p>
+						</div>
+					</details>
+					<details>
+						<summary>Ha dobok egyszer, úgy döntök, megtartok egy vagy több kockát, és a többivel újra dobok, a 3. dobásomnál újra dobhatok az 1. dobásból megtartott kockákkal is?</summary>
+						<div>
+							<p>Igen. A kockáid nincsenek lezárva.</p>
+						</div>
+					</details>
+					<details>
+						<summary>Ha nem használom fel az összes dobási próbálkozásomat, és úgy döntök, abbahagyom a dobást egy képesség aktiválásához, de az ellenfelem megváltoztatja a kockáimat vagy újradobásra kényszerít, használhatom a megmaradt dobási próbálkozásaimat?</summary>
+						<div>
+							<p>Igen. Mindig 3 <a href="#roll-attempt">dobási próbálkozásod</a> van, kivéve, ha egy játékbeli hatás csökkenti a próbálkozásaid számát.</p>
+						</div>
+					</details>
+					<details>
+						<summary>A védekező dobásomnál mindent aktiválok, amit dobok, vagy kockákat kell költenem a különböző részek aktiválásához?</summary>
+						<div>
+							<p>Mindent végrehajtasz. A kockáid soha nem „használódnak el”, így egy kockát akár több kombinációban is használhatsz egy védekező dobás során.</p>
+						</div>
+					</details>
+					<details>
+						<summary>Hogyan határozzuk meg, ki kap előbb sebzést, ha mindkét játékos sebzi egymást? A sebzés a gyógyulás előtt történik?</summary>
+						<div>
+							<p>A gyógyulási hatások aktiváláskor azonnal végrehajtódnak. Minden sebzés és megelőzés felhalmozódik, és a fázis végén <a href="#final-dmg-total">egyszerre oldódik meg</a> mindkét játékoson.</p>
+						</div>
+					</details>
+					<details>
+						<summary>Mi történik, ha a védekező sebzés vagy az állapotjelzők miatt mindketten egyszerre érjük el a 0 életerőt?</summary>
+						<div>
+							<p>Mindketten egyszerre haltok meg. Döntetlen.</p>
+						</div>
+					</details>
+					<details>
+						<summary>Egy King of the Hill játékban megváltoztathatom az ellenfelem támadó dobását kártyával azután, hogy eldöntötte, kit vesz célba?</summary>
+						<div>
+							<p>Nem. Ha módosítani szeretnéd az ellenfeled kockáit (például megpróbálod megakadályozni az Ultimate képességet), azt a <a href="#offensive-roll-phase">Támadó dobási fázisában</a> kell megtenned, mielőtt <a href="#activate">aktiválná</a> a képességet, és a <a href="#targeting-roll-phase">célpont kijelölése</a> előtt.</p>
+						</div>
+					</details>
+					<details>
+						<summary>Mi az a tiszta sebzés?</summary>
+						<div>
+							<p>Olyan kivédhetetlen sebzés, amely <a href="#attack">támadásnak</a> minősül, nem módosítható, de megelőzhető.</p>
+						</div>
+					</details>
+				</div>
+				<div data-relevance="faq-ultimate">
+					<details>
+						<summary>A Blind <svg class="◊" viewbox="0 0 500 500"><use href="#se-blind"/></svg>, Shadows <svg class="◊" viewbox="0 0 500 500"><use href="#se-shadows"/></svg>, Wither <svg class="◊" viewbox="0 0 500 500"><use href="#se-wither"/></svg> vagy bármely más állapotjelző vagy kártya csökkentheti vagy megelőzheti az Ultimate sebzését vagy egyéb hatásait?</summary>
+						<div>
+							<p>Nem. Semmilyen <a href="#status-effects">állapotjelző</a> vagy <a href="#hero-cards">kártya</a> nem állíthat meg egy Ultimate-et. Sőt, még csak nem is reagálhatsz rá. Nincs <a href="#token/heal-bot">Gyógyrobot</a>, nincsenek azonnali kártyák, semmilyen módon nem blokkolható a sebzés vagy a hatás, nincs <a href="#token/back-strike">Back Strike</a> <svg class="◊" viewbox="0 0 500 500"><use href="#se-back-strike"/></svg> vagy <a href="#token/retribution">Retribution</a> <svg class="◊" viewbox="0 0 500 500"><use href="#se-retribution"/></svg>. Ha egy Ultimate aktiválódik, tedd le a kártyáidat, fogd meg az Életerő-tárcsádat, és kérdezd meg: „mennyi a sebzés?”</p>
+						</div>
+					</details>
+					<details>
+						<summary>Hogyan állíthatok meg egy Ultimate-et?</summary>
+						<div>
+							<p>Módosítsd az ellenfeled kockáit a <a href="#offensive-roll-phase">Támadó dobási fázisa</a> során, még mielőtt a képesség <a href="#activate">aktiválódna</a>.</p>
+						</div>
+					</details>
+					<details>
+						<summary>Használhatok támadásmódosítókat a saját Ultimate képességem sebzésének növelésére?</summary>
+						<div>
+							<p>Igen. Az Ultimate módosítható.</p>
+						</div>
+					</details>
+					<details>
+						<summary>2v2 játékban az ellenfelem megváltoztathatja a Célzó dobásomat, ha Ultimate-et dobok ki?</summary>
+						<div>
+							<p>Nem. De ha aktiválsz egy Ultimate-et, te megváltoztathatod a <a href="#targeting-roll-phase">Célzó dobás</a> eredményét kártyákkal vagy hatásokkal.</p>
+						</div>
+					</details>
+				</div>
+				<div data-relevance="faq-cards">
+					<details>
+						<summary>Használhatom a „Not this Time” kártyát egy Ultimate sebzésének megelőzésére?</summary>
+						<div>
+							<p>Nem.</p>
+						</div>
+					</details>
+					<details>
+						<summary>Játszhatok ki Six-it vagy Samesies kártyát az ellenfelem kockáira?</summary>
+						<div>
+							<p>Nem. Mindkét kártya kimondja, hogy a saját kockáid közül változtathatod meg az egyik értékét.</p>
+						</div>
+					</details>
+					<details>
+						<summary>Mi történik, ha kifogynak a kártyák a paklimból?</summary>
+						<div>
+							<p>A szabálykönyv kimondja, hogy ha kártyát kell húznod, de a paklid üres, először keverd meg a dobópaklidat egy új pakli létrehozásához.</p>
+						</div>
+					</details>
+					<details>
+						<summary>Minden típusú összes jelzőt eltávolítok, amikor a „What Status Effects” kártyát játsszák ki?</summary>
+						<div>
+							<p>Igen.</p>
+						</div>
+					</details>
+					<details>
+						<summary>Használhatom a „One More Time” kártyát arra, hogy az ellenfelemet egy extra dobási próbálkozásra kényszerítsem a Támadó dobási fázisa során?</summary>
+						<div>
+							<p>Nem. A kártya azt írja: „Egy választott játékos végrehajthat egy további dobási próbálkozást…” Nem kötelező neki.</p>
+						</div>
+					</details>
+					<details>
+						<summary>Használhatom a „Better D” kártyát arra, hogy az ellenfelemet egy extra dobási próbálkozásra kényszerítsem a Védekező dobási fázisa során?</summary>
+						<div>
+							<p>Nem. A kártya azt írja: „Egy választott játékos végrehajthat egy további dobási próbálkozást…” Nem kötelező neki.</p>
+						</div>
+					</details>
+					<details>
+						<summary>Használhatom a „Try, try again” kártyát arra, hogy az ellenfelemet legfeljebb két kocka újradobására kényszerítsem?</summary>
+						<div>
+							<p>Nem. Nem játszhatod ki ellenfélre. A kártya azt írja: „te vagy egy választott csapattársad…”</p>
+						</div>
+					</details>
+					<details>
+						<summary>Játszhatok ki „Double up”-ot vagy „Triple up”-ot az ellenfelem köre alatt, ha ezzel túllépem a 6 kártyás limitet?</summary>
+						<div>
+							<p>Igen. A kezedben legfeljebb 6 kártya maradhat az Eldobási fázisod végén.</p>
+						</div>
+					</details>
+					<details>
+						<summary>Amikor eladok egy kártyát, mennyi <svg class="◊" viewbox="0 0 465 500"><use href="#i-cp"/></svg>-t kapok?</summary>
+						<div>
+							<p>A szabálykönyv kimondja, hogy eladott kártyánként <svg class="◊" viewbox="0 0 465 500"><use href="#i-cp-1"/></svg>-t kapsz. Nem a kártya <svg class="◊" viewbox="0 0 465 500"><use href="#i-cp"/></svg> értékét.</p>
+						</div>
+					</details>
+				</div>

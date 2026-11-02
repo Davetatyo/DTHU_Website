@@ -1,0 +1,52 @@
+<h2 slot="header">Alkimista</h2>
+<ul slot="header" class="see-also">
+	<li><a href="#heroes">Hősök</a></li></ul>
+<div class="hero-basics float-right">
+	<img class="portrait" src="/szabalytar/img/heroes/alchemist.webp" alt="Alkimista" width="300" height="300">
+	<img class="complexity" src="/szabalytar/img/heroes/complexity-5.webp" alt="Bonyolultság 5" width="213" height="72">
+</div>
+<p class="bio">Szükséged van egy főzetre minden helyzetre? Vagy egy elixírre a tiszta szórakozásért? Vagy esetleg egy lombikra a következő csatádhoz? Különleges ajánlatunk van a számodra! Tekintsetek rá mindannyian és csodálkozzatok! A makromolekuláris közegek keverője! A világ hetedik csodája, az ügyes Alkimisták Megdöbbentően Gazdag Elegyítője!</p>
+<p><dfn>Választott fegyver:</dfn> Potions (Főzetek)</p>
+<h3>Tokenek</h3>
+<ul class="grid tokens">
+	<li><a href="#token/potions"><svg viewbox="0 0 500 500"><use href="#potions"/></svg> Potions (Főzetek)</a></li>
+	<li><a href="#token/poison"><svg viewbox="0 0 500 500"><use href="#se-poison"/></svg> Poison (Méreg)</a></li>
+</ul>
+<h3>Szabálytisztázások</h3>
+<details>
+	<summary>A labor</summary>
+	<div>
+		<p>Az újradobás hatását többször is végrehajthatod (mindaddig, amíg van eltávolítható <a href="#token/potions">Potion</a> <svg class="◊" viewbox="0 0 500 500"><use href="#i-potion"/></svg>).</p>
+	</div>
+</details>
+<details>
+	<summary><i>Potions</i> (Főzetek) <svg class="◊" viewbox="0 0 500 500"><use href="#i-potion"/></svg> csatolása</summary>
+	<div>
+		<p>Nem kötelező a <a href="#token/potions">Potion</a> <svg class="◊" viewbox="0 0 500 500"><use href="#i-potion"/></svg> bájitalt ugyanahhoz a <a href="#ability">képességhez</a> csatolnod, amely éppen aktiválásra kerül.</p>
+		<p>Amikor egyszerre több <a href="#token/potions">Potion</a> <svg class="◊" viewbox="0 0 500 500"><use href="#i-potion"/></svg> bájitalt csatolsz, választhatsz különböző típusokat is, hacsak nincs másképp jelezve (például a Hermetika aktiválásakor csatolhatsz egy <i>Punchify</i>-t, egy <i>Bolsterate</i>-et és egy <i>Cleansitude</i>-ot a különböző képességeidhez).</p>
+		<p>Egy „elfogadható képességre” példa: a <i>Punchify</i> csak <a href="#offensive-ability">Támadó Képességhez</a> csatolható. Nem elfogadható, ha egy <a href="#defensive-ability">Védekező Képességhez</a> csatolod.</p>
+		<p>A <a href="#token/potions">Potion</a> <svg class="◊" viewbox="0 0 500 500"><use href="#i-potion"/></svg> bájital csatolása nem egyezik meg egy <a href="#status-effects">állapotjelző</a> megszerzésével.</p>
+	</div>
+</details>
+<details>
+	<summary><i>Potions</i> (Főzetek) <svg class="◊" viewbox="0 0 500 500"><use href="#i-potion"/></svg> elköltése</summary>
+	<div>
+		<p>Egy csatolt <a href="#token/potions">Potion</a> <svg class="◊" viewbox="0 0 500 500"><use href="#i-potion"/></svg> bájitalt csak a <a href="#offensive-roll-phase">Támadó Dobási Fázis</a> végén költhetsz el. Ez azt jelenti, hogy egy már csatolt <a href="#token/potions">Potion</a> <svg class="◊" viewbox="0 0 500 500"><use href="#i-potion"/></svg> bájitalt nem költhetsz el egy új <a href="#token/potions">Potion</a> <svg class="◊" viewbox="0 0 500 500"><use href="#i-potion"/></svg> csatolása előtt.</p>
+		<p>Ugyanabban a körben is csatolhatsz és elkölthetsz egy <a href="#token/potions">Potion</a> <svg class="◊" viewbox="0 0 500 500"><use href="#i-potion"/></svg> bájitalt (de csak akkor, ha a Bájitalhely üres volt a Támadó Dobási Fázis kezdetén).</p>
+	</div>
+</details>
+<details>
+	<summary>Védekező képesség</summary>
+	<div>
+		<p>Aktiválnod kell a <a href="#defensive-ability">Védekező Képességedet</a> ahhoz, hogy elölthesd a csatolt <a href="#token/potions">Potions</a> <svg class="◊" viewbox="0 0 500 500"><use href="#i-potion"/></svg> bájitalokat.</p>
+		<p>A védekezésedből kapott csatolt <a href="#token/potions">Potions</a> <svg class="◊" viewbox="0 0 500 500"><use href="#i-potion"/></svg> bájitalokat elköltheted ugyanabban a körben. Ugyanakkor, ha már voltak csatolt <a href="#token/potions">Potions</a> <svg class="◊" viewbox="0 0 500 500"><use href="#i-potion"/></svg> bájitalaid a védekezéseden, ezeket nem költheted el azelőtt, hogy új <a href="#token/potions">Potions</a> <svg class="◊" viewbox="0 0 500 500"><use href="#i-potion"/></svg> bájitalokat csatolnál a védekezésedhez.</p>
+	</div>
+</details>
+<details>
+	<summary>Cleansitude <svg class="◊" viewbox="0 0 500 500"><use href="#se-cleansitude"/></svg></summary>
+	<div>
+		<p>Amikor a <a href="#token/potions">Cleansitude</a>-ot <svg class="◊" viewbox="0 0 500 500"><use href="#se-cleansitude"/></svg> az egyik <a href="#attack">Támadásod</a> során költöd el, az állapotjelző a <a href="#offensive-roll-phase">Támadó Dobási Fázis</a> végén kerül eltávolításra.</p>
+		<p>Amikor a védekezésed során költöd el, az állapotjelző a sebzés kiszámítása előtt, a <a href="#defensive-roll-phase">Védekező Dobási Fázis</a> végén kerül eltávolításra. Eltávolíthatsz egy bejövő <a href="#status-effects">állapotjelző</a> jelzőt (mivel ezek a Védekező Dobási Fázis kezdetén kerülnek kiosztásra). Ha az Alkimista már rendelkezett ugyanazzal az állapotjelzővel (például <a href="#token/blinding-light">Blinding Light</a> <svg class="◊" viewbox="0 0 500 500"><use href="#se-blinding-light"/></svg>), a második példány nem került volna sikeresen kiosztásra, így a <a href="#token/potions">Cleansitude</a> <svg class="◊" viewbox="0 0 500 500"><use href="#se-cleansitude"/></svg> továbbra is az eredetit távolítaná el (ami azt jelenti, hogy a <a href="#token/blinding-light">Blinding Light</a> <svg class="◊" viewbox="0 0 500 500"><use href="#se-blinding-light"/></svg> egyáltalán nem kerül kiosztásra).</p>
+		<p>Tükörjátékban a <a href="#token/potions">Cleansitude</a>-ot <svg class="◊" viewbox="0 0 500 500"><use href="#se-cleansitude"/></svg> elköltő Alkimista választja ki a hatást.</p>
+	</div>
+</details>

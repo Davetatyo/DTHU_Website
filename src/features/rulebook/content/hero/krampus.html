@@ -1,0 +1,52 @@
+<h2 slot="header">Krampusz</h2>
+<ul slot="header" class="see-also">
+	<li><a href="#heroes">Hősök</a></li></ul>
+<div class="hero-basics float-right">
+	<img class="portrait" src="/szabalytar/img/heroes/krampus.webp" alt="Krampusz" width="300" height="300">
+	<img class="complexity" src="/szabalytar/img/heroes/complexity-4.webp" alt="Bonyolultság 4" width="213" height="72">
+</div>
+<p class="bio">Ebben az ünnepi szezonban a Krampusz rossz híreket és szenet hoz mindazoknak, akik rosszul viselkedtek. És ha önmagában még nem lett volna elég gonosz, elhagyatott ajándékokat is átkutatott, és életre keltett egy minionokból álló sereget. Ezek a Selejtek (Rejects) imádnak segíteni a Krampusznak abban, hogy nagy kellemetlenséget és fájdalmat okozzanak!</p>
+<p><dfn>Választott fegyver:</dfn> Rejects (Selejtek)</p>
+<h3>Tokenek</h3>
+<ul class="grid tokens">
+	<li><a href="#token/coal"><svg viewbox="0 0 500 500"><use href="#se-coal"/></svg> Coal (Szén)</a></li>
+	<li><a href="#token/gift"><img src="/szabalytar/img/components/token-gift.webp" alt="Gift" width="200" height="183"> Gift (Ajándék)</a></li>
+	<li><a href="#token/rejects"><img src="/szabalytar/img/components/rejects.webp" alt="Rejects" width="150" height="234"> Rejects (Selejtek)</a></li>
+</ul>
+<h3>Szabálytisztázások</h3>
+<details>
+	<summary>Rejects (Selejtek)</summary>
+	<div>
+		<p>Ha 3 Selejted van és egy újabbat húznál, <a href="#activate">aktiválhatsz</a> egy Selejtet, mielőtt továbbiakat húznál.</p>
+		<p>Soha nem aktiválhatod ugyanazt a Selejtet egynél többször egy körben.</p>
+		<p>Valahányszor 2 Selejtet húzol, mindkettőt egyszerre kell húznod (azaz nem húzhatsz 1-et, dobhatsz el 3-ra csökkentve a számukat, majd húzhatsz egy másikat).</p>
+		<p>Amikor 2 Selejtet kell húznod, de már csak 1 elérhető, húzd meg az elsőt, keverd meg az eldobott Selejteket, majd húzd a következőt. E folyamat közben nem költhetsz el Selejtet.</p>
+		<p>A Selejtek <a href="#companions">Társaknak</a> minősülnek, nem pedig kártyáknak, amelyeket el lehetne adni <a href="#combat-points"><svg class="◊" viewbox="0 0 500 500"><use href="#i-cp"/></svg></a> CP-ért.</p>
+		<p>A megszerzésük körében is <a href="#activate">aktiválhatod</a> a Selejteket.</p>
+		<p>Azon Selejtek, amelyeknek <a href="#attack-modifiers">Támadásmódosító</a> aktiválási hatásuk van, nem használhatók <a href="#damage-types">járulékos sebzésre</a> (mivel a járulékos sebzés nem számít Támadásnak).</p>
+	</div>
+</details>
+<details>
+	<summary>Sproingy’s Surprise (Sproingy meglepetése)</summary>
+	<div>
+		<p>A <a href="#token/coal">Coal <svg class="◊" viewbox="0 0 500 500"><use href="#se-coal"/></svg></a> (Szén) mennyisége a <a href="#action-cards">kártya</a> kijátszásakor számít. Ha az ellenfél később távolít el egy Coal <svg class="◊" viewbox="0 0 500 500"><use href="#se-coal"/></svg> jelzőt a <a href="#defensive-roll-phase">Védekező Dobási Fázis</a> során, a hozzáadott sebzés nem változik.</p>
+	</div>
+</details>
+<details>
+	<summary>Védekező képesség</summary>
+	<div>
+		<p>If you roll a 6 while activating your Defensive Ability, you may still <a href="#activate">Activate</a> Squishy afterward without reducing the amount of damage dealt.</p>
+	</div>
+</details>
+<details>
+	<summary>Activating Bitey</summary>
+	<div>
+		<p>The Healing effect is accumulated with all other damage / prevention effects and is applied <a href="#final-dmg-total">simultaneously</a> at the conclusion of the <a href="#roll-phase">Dobási fázis</a>.</p>
+	</div>
+</details>
+<details>
+	<summary>Coal (Szén) <svg class="◊" viewbox="0 0 500 500"><use href="#se-coal"/></svg></summary>
+	<div>
+		<p>Ha <svg class="◊" viewbox="0 0 465 500"><use href="#i-cp-15"/></svg> CP-d és 4 Coal <svg class="◊" viewbox="0 0 500 500"><use href="#se-coal"/></svg> jelződ van a <a href="#income-phase">Bevételi Fázisod</a> során, a Coal <svg class="◊" viewbox="0 0 500 500"><use href="#se-coal"/></svg> nem kerül eltávolításra, mivel nem vagy képes további <svg class="◊" viewbox="0 0 500 500"><use href="#i-cp"/></svg> CP-t szerezni, ha már <svg class="◊" viewbox="0 0 465 500"><use href="#i-cp-15"/></svg>-tel rendelkezel.</p>
+	</div>
+</details>

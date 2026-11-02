@@ -1,0 +1,59 @@
+<h2 slot="header">Sápadt Hölgy</h2>
+<ul slot="header" class="see-also">
+	<li><a href="#heroes">Hősök</a></li></ul>
+<div class="hero-basics float-right">
+	<img class="portrait" src="/szabalytar/img/heroes/pale-lady.webp" alt="Sápadt Hölgy" width="300" height="300">
+	<img class="complexity" src="/szabalytar/img/heroes/complexity-3.webp" alt="Bonyolultság 3" width="213" height="72">
+</div>
+<p class="bio">Óvakodj attól, aki a telihold fényében gyönyörködik. Ne ítéld meg ártatlan modorát. Bár tele van etikettel és generációk óta tartó szabályokkal, amelyek megpróbálják kiszorítani belőle a vadságot, a Sápadt Hölgy nem az, akivel szórakozni lehet. Ne hagyd magad megtéveszteni, mert a vadászból ugyanúgy válhat üldözött vad.</p>
+<p><dfn>Választott fegyver:</dfn> Karmok</p>
+<h3>Tokenek</h3>
+<ul class="grid tokens">
+	<li><a href="#token/moon-shard"><img src="/szabalytar/img/components/token-moon-shards.webp" alt="Moon Shard" width="200" height="200"> Moon Shard (Holdtöredék)</a></li>
+	<li><a href="#token/bleed"><svg viewbox="0 0 500 500"><use href="#se-bleed"/></svg> Bleed (Vérzés)</a></li>
+	<li><a href="#token/prey"><svg viewBox="0 0 500 500"><use href="#se-prey"/></svg> Prey (Préda)</a></li>
+</ul>
+<h3>Hős Előkészület</h3>
+<p>Kezdd a játékot a <a href="#hero-board">Hős Tábláddal</a> a „Pale Lady” (Sápadt Hölgy) oldalával felfelé.</p>
+<h3>Szabálytisztázások</h3>
+<details>
+	<summary><i>Moon Shard</i> (Holdtöredék) <img class="◊" src="/szabalytar/img/components/token-moon-shard.webp" alt="Moon Shard" width="200" height="200"></summary>
+	<div>
+		<p>A <a href="#token/moon-shard"><i>Moon Shard</i> <img class="◊" src="/szabalytar/img/components/token-moon-shard.webp" alt="Moon Shard" width="200" height="200"></a> jelzők megszerzése vagy eltávolítása a Hős képességeidből és kártyáidból nem opcionális (kivéve, ha az <i>Unleash The Beast!</i> Végső képességedet aktiválod).</p>
+	</div>
+</details>
+<details>
+	<summary>A Hős Tábla megfordítása</summary>
+	<div>
+		<p>A <a href="#hero-board">Hős Táblád</a> megfordítása a Twilight (Szürkület) <i>Passzív Képesség</i> miatt nem opcionális sem a „Pale Lady” oldalon, sem a „Werewolf” (Farkasember) oldalon.</p>
+		<p>A Sápadt Hölgy a köre kezdetén, a <a href="#upkeep-phase"><i>Állapot fázis</i></a> során átfordul a „Werewolf” oldalra (ha van 3 <a href="#token/moon-shard"><i>Moon Shard</i> <img class="◊" src="/szabalytar/img/components/token-moon-shard.webp" alt="Moon Shard" width="200" height="200"></a> jelzője).</p>
+		<p>A Farkasember a kör végén átfordul a „Pale Lady” oldalra (ha nincs egyetlen <i>Moon Shard</i> <img class="◊" src="/szabalytar/img/components/token-moon-shard.webp" alt="Moon Shard" width="200" height="200"> jelzője sem).</p>
+	</div>
+</details>
+<details>
+	<summary>Side-specific cards</summary>
+	<div>
+		<p><a href="#hero-cards">Cards</a> that read “if Pale Lady” or “if Werewolf” cannot be played unless the specified side of your <a href="#hero-board">Hero Board</a> is face-up.</p>
+	</div>
+</details>
+<details>
+	<summary>Dobás a <i>Prey</i> (Préda) <svg class="◊" viewbox="0 0 500 500"><use href="#se-prey" /></svg> jelzőre</summary>
+	<div>
+		<p>A <a href="#token/prey"><i>Prey</i> <svg class="◊" viewbox="0 0 500 500"><use href="#se-prey" /></svg></a> hatás bármikor feloldható egy <a href="#attack"><i>Támadás</i></a> sikeres aktiválása után, de még a <a href="#final-dmg-total">sebzésszámítások</a> előtt.</p>
+		<p>Minden egyes <i>Prey</i> <svg class="◊" viewbox="0 0 500 500"><use href="#se-prey" /></svg> jelzőre külön-külön dobj.</p>
+		<p>Miután a kockadobás megtörtént, a hozzáadott sebzés „rögzítésre kerül” ahhoz a konkrét <i>Prey</i> <svg class="◊" viewbox="0 0 500 500"><use href="#se-prey" /></svg> jelzőhöz (például az egyik jelző adhat <svg class="◊" viewbox="0 0 500 500"><use href="#i-dmg-1" /></svg> sebzést, egy second token may add <svg class="◊" viewbox="0 0 500 500"><use href="#i-dmg-2" /></svg> dmg). If a <i>Prey</i> <svg class="◊" viewbox="0 0 500 500"><use href="#se-prey" /></svg> token is removed before damage calculations (i.e. Buh-Bye!), the increased damage for that <i>Prey</i> <svg class="◊" viewbox="0 0 500 500"><use href="#se-prey" /></svg> token does not get added to the final damage total.</p>
+		<p>A <i>Támadó</i> részéről a <i>Prey</i> <svg class="◊" viewbox="0 0 500 500"><use href="#se-prey" /></svg> jelzőkre történő kockadobás opcionális.</p>
+	</div>
+</details>
+<details>
+	<summary>A <i>Prey</i> (Préda) <svg class="◊" viewbox="0 0 500 500"><use href="#se-prey" /></summary> kiróása</summary>
+	<div>
+		<p>Ha a <a href="#roll-phase"><i>Dobási fázis</i></a> során a <a href="#status-effects">Halmozási Limiten</a> felül további <a href="#token/prey"><i>Prey</i> <svg class="◊" viewbox="0 0 500 500"><use href="#se-prey" /></svg></a> jelzőket rónál ki, először dobhatsz a két eredeti <i>Prey</i> <svg class="◊" viewbox="0 0 500 500"><use href="#se-prey" /></svg> jelzőre. Ha 1-est dobsz, az eredeti <i>Prey</i> <svg class="◊" viewbox="0 0 500 500"><use href="#se-prey" /></svg> jelző eltávolítható, és a további <i>Prey</i> <svg class="◊" viewbox="0 0 500 500"><use href="#se-prey" /></svg> jelző ekkor kiróható.</p>
+	</div>
+</details>
+<details>
+	<summary><i>Bleed</i> (Vérzés) <svg class="◊" viewbox="0 0 500 500"><use href="#se-bleed" /></summary>
+	<div>
+		<p>Minden <a href="#token/bleed"><i>Bleed</i> <svg class="◊" viewbox="0 0 500 500"><use href="#se-bleed" /></svg></a> jelzőre külön-külön dobj.</p>
+	</div>
+</details>

@@ -1,0 +1,40 @@
+<h2 slot="header">Barbár</h2>
+<ul slot="header" class="see-also">
+	<li><a href="#heroes">Hősök</a></li></ul>
+<div class="hero-basics float-right">
+	<img class="portrait" src="/szabalytar/img/heroes/barbarian.webp" alt="Barbár" width="300" height="300">
+	<img class="complexity" src="/szabalytar/img/heroes/complexity-1.webp" alt="Bonyolultság 1" width="213" height="72">
+</div>
+<p class="bio">A Barbár nem éppen a legelegánsabb hős. Imád dolgokat szétzúzni. Arról ismert, hogy olyan keményen üti meg ellenfeleit, hogy azok kábultan és agyrázkódással maradnak hátra. A nehéz ütések végtelen áradata megmutatja, hogy még a legegyszerűbb harci stílus is halálos lehet.</p>
+<p><dfn>Választott fegyver:</dfn> Bármi, ami vág vagy zúz</p>
+<h3>Tokenek</h3>
+<ul class="grid tokens">
+	<li><a href="#token/concussion"><svg viewbox="0 0 500 500"><use href="#se-concussion"/></svg> Concussion (Agyrázkódás)</a></li>
+	<li><a href="#token/stun"><svg viewbox="0 0 500 500"><use href="#se-stun"/></svg> Stun (Kábítás)</a></li>
+</ul>
+<h3>Szabálytisztázások</h3>
+<details>
+	<summary>Stun (Kábítás) <svg class="◊" viewbox="0 0 500 500"><use href="#se-stun"/></svg></summary>
+	<div>
+		<p>Amíg <a href="#token/stun">kábult</a> vagy, nem hajthatsz végre semmilyen akciót. Még ha az ellenfelednek van is olyan <a href="#ability">képessége</a>, <a href="#status-effects">állapotjelzője</a> vagy <a href="#action-cards">kártyája</a>, amely megakadályozhatna egy bejövő állapotjelzőt, a <a href="#token/stun">Stun <svg class="◊" viewbox="0 0 500 500"><use href="#se-stun"/></svg></a> kábítás még a sebzés kiosztása előtt rád kerül. Ugyanakkor egy csapattársad, aki nem kábult, végrehajthat olyan akciókat, amelyek eltávolítják a Stun <svg class="◊" viewbox="0 0 500 500"><use href="#se-stun"/></svg> kábítást (kivéve, ha a Stun <svg class="◊" viewbox="0 0 500 500"><use href="#se-stun"/></svg> a <a href="#ultimate-ability">Végső képességedből</a> származik, amely esetben egyetlen ellenfél sem hajthat végre semmilyen akciót).</p>
+		<p>Miután eltávolítottad a <a href="#token/stun">Stun <svg class="◊" viewbox="0 0 500 500"><use href="#se-stun"/></svg></a> kábítást és új <a href="#offensive-roll-phase">Támadó Dobási Fázist</a> kezdesz, az ellenfeled már nem kábult, és a megszokott módon cselekedhet.</p>
+	</div>
+</details>
+<details>
+	<summary>Overpower</summary>
+	<div>
+		<p>A <a href="#action-cards">kártyák</a> használhatók a három kocka módosítására a képesség sebzésének kiszámításakor. Azonban, ha a dobás értéke rögzítésre került, már nem léphetsz vissza az eredmény megváltoztatására.</p>
+	</div>
+</details>
+<details>
+	<summary>Thick Skin</summary>
+	<div>
+		<p>Minden sebzés és annak megakadályozása <a href="#final-dmg-total">egyidejűleg</a> lép életbe a <a href="#roll-phase">Dobási fázis</a> befejeztével. A gyógyulás a <a href="#defensive-roll-phase">Védekező Dobási Fázis</a> nem sebzést okozó hatásainak feloldásakor történik. A Thick Skin II esetében, ha olyan <a href="#status-effects">állapotjelzőt</a> kapnál, amellyel már rendelkezel (például <a href="#token/blind">Blind <svg class="◊" viewbox="0 0 500 500"><use href="#se-blind"/></svg></a>), megakadályozod a második bejövő állapotjelzőt (például <a href="#token/blind">Blind <svg class="◊" viewbox="0 0 500 500"><use href="#se-blind"/></svg></a>), de az első továbbra is rajtad marad. A kezdeti állapotjelző már a <a href="#defensive-ability">Védekező Képesség</a> aktiválása előtt is érvényben volt, és nem kerül eltávolításra.</p>
+	</div>
+</details>
+<details>
+	<summary>Head Bash</summary>
+	<div>
+		<p>Ez a kártya csak a <a href="#final-dmg-total">sebzés kiszámítása</a> után játszható ki, ha az ellenfeled sikeresen elszenvedett legalább <svg class="◊" viewbox="0 0 500 500"><use href="#i-dmg-8"/></svg> sebzést. Ezen a ponton már nem játszhatók ki sebzést megakadályozó <a href="#action-cards">kártyák</a> vagy <a href="#status-effects">állapotjelzők</a>, mivel a sebzés kiosztása sikeresen megtörtént.</p>
+	</div>
+</details>

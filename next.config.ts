@@ -1,6 +1,12 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // The Szabálytár reads its content files at request time (full pages); ship them with the
+  // server functions.
+  outputFileTracingIncludes: {
+    "/szabalytar": ["./src/features/rulebook/content/**/*"],
+    "/szabalytar/[...path]": ["./src/features/rulebook/content/**/*"],
+  },
   // The Meccsszervező moved from the site root to /meccsszervezo (v2.0). Old links live on in
   // Discord posts, bookmarks and calendar events, so they redirect. /auth and /api never moved.
   async redirects() {

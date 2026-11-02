@@ -1,0 +1,60 @@
+<h2 slot="header">Feltaláló</h2>
+<ul slot="header" class="see-also">
+	<li><a href="#heroes">Hősök</a></li></ul>
+<div class="hero-basics float-right">
+	<img class="portrait" src="/szabalytar/img/heroes/artificer.webp" alt="Feltaláló" width="300" height="300">
+	<img class="complexity" src="/szabalytar/img/heroes/complexity-6.webp" alt="Bonyolultság 6" width="213" height="72">
+</div>
+<p class="bio">Alulbecsülni a Feltalálót annyi, mint egy hideg és kiszámított robottámadás általi pusztulást előidézeni. A fémes pusztítóeszközök iránti őrült rajongása mögött csak az a vágy áll, hogy minden harcolót a semmivé változtasson.</p>
+<p><dfn>Választott fegyver:</dfn> Robot Army (Robothadsereg)</p>
+<h3>Tokenek</h3>
+<ul class="grid tokens">
+	<li><a href="#token/synth"><svg viewbox="0 0 500 500"><use href="#se-synth"/></svg> Synth</a></li>
+	<li><a href="#token/nanite"><img src="/szabalytar/img/components/token-nanite.webp" alt="Nanite" width="242" height="242"> Nanite (Nanit)</a></li>
+	<li><a href="#token/nanobot"><img src="/szabalytar/img/components/token-nanobot.webp" alt="Nanobot" width="181" height="200"> Nanobot</a></li>
+	<li><a href="#token/shock-bot"><img src="/szabalytar/img/components/token-shock-bot.webp" alt="Shock Bot" width="199" height="200"> Shock Bot (Sokkbot)</a></li>
+	<li><a href="#token/heal-bot"><img src="/szabalytar/img/components/token-heal-bot.webp" alt="Heal Bot" width="198" height="200"> Heal Bot (Gyógybot)</a></li>
+</ul>
+<h3>Szabálytisztázások</h3>
+<details>
+	<summary>Synth <svg class="◊" viewbox="0 0 500 500"><use href="#se-synth"/></svg> elköltése</summary>
+	<div>
+		<p>Az ellenfeled nem költhet el 2 <a href="#token/synth">Synth <svg class="◊" viewbox="0 0 500 500"><use href="#se-synth"/></svg></a>-et Bot építésére (csak a Feltaláló építhet Botokat). A Dobási fázisod során megszerzett Synth <svg class="◊" viewbox="0 0 500 500"><use href="#se-synth"/></svg> elkölthető abban a körben, amelyben megszerezted, egy Bot <a href="#activate">aktiválására</a> (például a Heal Bot a <a href="#defensive-roll-phase">Védekező Dobási Fázis</a> során).</p>
+	</div>
+</details>
+<details>
+	<summary>Botok építése</summary>
+	<div>
+		<p>Egy Alap Botot kell építened, mielőtt Fejlett Botra fejlesztenéd. Miután egy Bot megépült, nem lehet eltávolítani vagy megsemmisíteni.</p>
+	</div>
+</details>
+<details>
+	<summary>Botok aktiválása</summary>
+	<div>
+		<p>Az „Aktiválási korlát” arra utal, hogy hányszor használható egyetlen <a href="#turns">Fázis</a> során. A „Normál aktiválási követelmények figyelmen kívül hagyása” azt jelenti, hogy bármelyik megépített Botot <a href="#activate">aktiválhatod</a> anélkül, hogy Synth <svg class="◊" viewbox="0 0 500 500"><use href="#se-synth"/></svg>-et költenél.</p>
+	</div>
+</details>
+<details>
+	<summary>Heal Bot (Gyógybot)</summary>
+	<div>
+		<p><a href="#activate">Aktiválható</a> akkor is, ha egy <a href="#attack">Támadásból</a> származó bejövő sebzés <a href="#damage-types">kivédhetetlen</a>. Nem aktiválható a <a href="#ultimate-ability">Végső képesség</a> ellen. Nem használható, ha a Feltaláló <a href="#damage-types">járulékos</a> sebzést szenved el, vagy ha az ellenfél <a href="#defensive-ability">Védekező Képességéből</a> származó sebzést kap. Amikor a <a href="#token/heal-bot">Heal Bot</a> <a href="#health">gyógyítja</a>, a Gyógyulást azonnal végre kell hajtani, miután a Heal Bot kockadobása megtörtént, és nem adódik össze a <a href="#offensive-roll-phase">Támadó Dobási Fázis</a> során okozott többi sebzéssel.</p>
+	</div>
+</details>
+<details>
+	<summary>Shock Bot (Sokkbot)</summary>
+	<div>
+		<p>A <a href="#token/shock-bot">Shock Bot</a> által hozzáadott sebzés nem számít különálló sebzésnek. <a href="#final-dmg-total">Összeadódik</a> a <a href="#offensive-roll-phase">Támadó Dobási Fázis</a> során okozott minden más sebzéssel. A Shock Bot <a href="#damage-types">sebzéstípusa</a> megegyezik az aktivált <a href="#offensive-ability">Támadó Képességével</a>.</p>
+	</div>
+</details>
+<details>
+	<summary>Nanobot</summary>
+	<div>
+		<p>Amikor a <a href="#token/nanobot">Nanobotot</a> aktiválják a <a href="#offensive-roll-phase">Támadó Dobási Fázis</a> során, a Nanobot <a href="#damage-types">sebzéstípusa</a> megegyezik az aktivált <a href="#offensive-ability">Támadó Képességével</a>. A sebzés <a href="#final-dmg-total">összeadódik</a> az összes többi okozott sebzéssel, és a <a href="#roll-phase">Dobási fázis</a> végén egyidejűleg kerül kiosztásra.</p>
+	</div>
+</details>
+<details>
+	<summary>Feltaláló tükörjáték</summary>
+	<div>
+		<p>Egy <a href="#token/nanobot">Nanobot</a> felrobbantja az összes <a href="#token/nanite">Nanitet <img class="◊" src="/szabalytar/img/components/token-nanite.webp" alt="Nanite" width="242" height="242"></a>, még azokat is, amelyeket egy másik Feltaláló helyezett el.</p>
+	</div>
+</details>

@@ -1,0 +1,52 @@
+<h2 slot="header">Árnyéktolvaj</h2>
+<ul slot="header" class="see-also">
+	<li><a href="#heroes">Hősök</a></li></ul>
+<div class="hero-basics float-right">
+	<img class="portrait" src="/szabalytar/img/heroes/shadow-thief.webp" alt="Árnyéktolvaj" width="300" height="300">
+	<img class="complexity" src="/szabalytar/img/heroes/complexity-5.webp" alt="Bonyolultság 5" width="213" height="72">
+</div>
+<p class="bio">A Árnyéktolvaj nem szereti gyorsan lezárni a dolgokat. Jobban szereti a hosszú játékot. Növeli az életerejét, megmérgezi ellenfeleit, rejtőzködik és lecsap az árnyékból — ez az ő stílusa. Ha megengedik neki, hogy elérje bonyolult játéktervének végkifejletét, áldozatai teljes romlásba dőlnek.</p>
+<p><dfn>Választott fegyver:</dfn> Mérgezett tőr</p>
+<h3>Tokenek</h3>
+<ul class="grid tokens">
+	<li><a href="#token/shadows"><svg viewbox="0 0 500 500"><use href="#se-shadows"/></svg> Shadows (Árnyékok)</a></li>
+	<li><a href="#token/sneak-attack"><svg viewbox="0 0 500 500"><use href="#se-sneak-attack"/></svg> Sneak Attack (Orvtámadás)</a></li>
+	<li><a href="#token/poison"><svg viewbox="0 0 500 500"><use href="#se-poison"/></svg> Poison (Méreg)</a></li>
+</ul>
+<h3>Szabálytisztázások</h3>
+<details>
+	<summary>Shadows (Árnyékok) <svg class="◊" viewbox="0 0 500 500"><use href="#se-shadows"/></svg> eldobása</summary>
+	<div>
+		<p>Ha már az <a href="#token/shadows">Shadows <svg class="◊" viewbox="0 0 500 500"><use href="#se-shadows"/></svg></a> (Árnyékok) hatás alatt vagy, és ismét megkapod azt, egy second instance of it cannot be gained since the Stack Limit is 1. The first one still goes away at the end of your turn.</p>
+		<p>Shadows <svg class="◊" viewbox="0 0 500 500"><use href="#se-shadows"/></svg> can be transferred to a different player.</p>
+		<p>It is only discarded at the conclusion of a turn in which you started with the same Shadows <svg class="◊" viewbox="0 0 500 500"><use href="#se-shadows"/></svg> token on your <a href="#hero-board">Hero board</a>.</p>
+	</div>
+</details>
+<details>
+	<summary>Sebződés Shadows (Árnyékok) <svg class="◊" viewbox="0 0 500 500"><use href="#se-shadows"/></svg> alatt</summary>
+	<div>
+		<p>Ha <a href="#token/stun">kábult</a> vagy, miközben már az <a href="#token/shadows">Shadows <svg class="◊" viewbox="0 0 500 500"><use href="#se-shadows"/></svg></a> (Árnyékok) állapotban vagy, nem kapsz sebzést, de az ellenfeled továbbra is kap egy plusz <a href="#offensive-roll-phase">Támadó Dobási Fázist</a>.</p>
+		<p>Damage received outside of an opponent’s Támadó dobási fázis is not prevented (i.e. Poison <svg class="◊" viewbox="0 0 500 500"><use href="#se-poison"/></svg>, Burn <svg class="◊" viewbox="0 0 500 500"><use href="#se-burn"/></svg>, etc).</p>
+		<p>Does not prevent damage from an <a href="#ultimate-ability">Ultimate Ability</a>.</p>
+	</div>
+</details>
+<details>
+	<summary>Védekező képesség</summary>
+	<div>
+		<p>You must choose which <a href="#defensive-ability">Defensive Ability</a> to use before you roll your dice.</p>
+		<p>If you roll <img class="◊" src="/szabalytar/img/icons/die-shadow.webp" alt="Shadow" width="33" height="39"><img class="◊" src="/szabalytar/img/icons/die-shadow.webp" alt="Shadow" width="33" height="39"> on your Shadow Defense, you gain both a <a href="#token/sneak-attack">Sneak Attack <svg class="◊" viewbox="0 0 500 500"><use href="#se-sneak-attack"/></svg></a> and <a href="#token/shadows">Shadows <svg class="◊" viewbox="0 0 500 500"><use href="#se-shadows"/></svg></a>.</p>
+	</div>
+</details>
+<details>
+	<summary>A <svg class="◊" viewbox="0 0 500 500"><use href="#i-cp"/></svg> CP okozása sebzésként</summary>
+	<div>
+		<p>Damage is dealt based upon the <a href="#combat-points"><svg class="◊" viewbox="0 0 500 500"><use href="#i-cp"/></svg></a> you have when the ability you activated is resolved. This means that any changes to your <a href="#combat-points"><svg class="◊" viewbox="0 0 500 500"><use href="#i-cp"/></svg></a> gained from the ability or from cards played at the point of "then" will affect the dmg amount. Any changes to your <a href="#combat-points"><svg class="◊" viewbox="0 0 500 500"><use href="#i-cp"/></svg></a> after the ability was activated do not affect the dmg amount.</p>
+		<p><svg class="◊" viewbox="0 0 500 500"><use href="#i-cp"/></svg> is not spent when activating these abilities.</p>
+	</div>
+</details>
+<details>
+	<summary>Sneak Attack (Orvtámadás) <svg class="◊" viewbox="0 0 500 500"><use href="#se-sneak-attack"/></svg></summary>
+	<div>
+		<p>A <a href="#token/sneak-attack">Sneak Attack <svg class="◊" viewbox="0 0 500 500"><use href="#se-sneak-attack"/></svg></a> elkölthető bármikor a <a href="#attack">Támadás</a> aktiválása után (beleértve a <a href="#defensive-roll-phase">védekező dobás</a> előtt vagy után is), de el kell költeni a sebzés kiosztása előtt.</p>
+	</div>
+</details>

@@ -1,0 +1,48 @@
+<h2 slot="header">Állapotjelzők</h2>
+    <ul class="token-stack float-right">
+      <li><svg viewbox="0 0 500 500"><use href="#se-powder-keg"/></svg></li>
+      <li><svg viewbox="0 0 500 500"><use href="#se-powder-keg"/></svg></li>
+      <li><svg viewbox="0 0 500 500"><use href="#se-powder-keg"/></svg></li>
+      <li><svg viewbox="0 0 500 500"><use href="#se-powder-keg"/></svg></li>
+    </ul>
+    <p>Minden <a href="#heroes">hős</a> rendelkezik egy egyedi állapotjelző-készlettel, amely a <a href="#hero-leaflet">Hős Karakterlapján</a> van feltüntetve, és ezeket <a href="#tokens">jelzők</a> képviselik. Ha több jelzőre van szükséged, mint amennyi rendelkezésre áll, helyettesítsd őket valami mással.</p>
+    <p>A <strong>Pozitív</strong> vagy <strong>Negatív</strong> állapotjelzőket <a href="#gain"><strong>megszerezheted</strong></a>, vagy <a href="#inflict"><strong>rárakhatod</strong></a> magadra vagy más játékosokra. Az állapotjelzők általában <a href="#action-cards">kártyák</a> vagy <a href="#offensive-ability">Támadó képességek</a> révén kerülnek felhelyezésre.</p>
+    <p>Amikor megszerezel vagy ráraksz egy állapotjelzőt, vedd el a megfelelő <a href="#tokens">jelzőt</a> a <a href="#hero-leaflet">Hős Karakterlapodról</a>, és helyezd a fogadó játékos <a href="#hero-board">Hős Táblájának</a> közepére. Ez az állapotjelző ekkor „játékban lévőnek” minősül.</p>
+    <p><b>Fontos:</b> Ha egy játékos kiesik a játékból, az általa más játékosokra rakott állapotjelzők továbbra is játékban maradnak.</p>
+
+    <h3>Állapotjelzők eltávolítása</h3>
+    <p>Amikor egy állapotjelző eltávolításra kerül, helyezd vissza a jelzőt a megfelelő helyre a Hős Karakterlapján. Amikor olyan kártyát vagy képességet használsz, amely meghatározott számú állapotjelzőt távolít el, pontosan ennyi jelzőt vegyél le.</p>
+
+    <h3>Elkölthető állapotjelzők</h3>
+    <p>Egyes állapotjelzők <a href="#spent-spend">elköltésével</a> szűnnek meg. Eltérő rendelkezés hiányában ezeket az állapotjelzőket bármikor elköltheted bármelyik játékos <a href="#turns">körének</a> bármelyik fázisában, és hatásuk azonnal érvényesül.</p>
+
+    <h3>Tartós állapotjelzők</h3>
+    <svg class="float-right token" viewbox="0 0 500 500"><use href="#se-wither"/></svg>
+    <p>A „Tartós” (Persistent) jelöléssel ellátott állapotjelzők mindaddig játékban maradnak, amíg egy <a href="#hero-cards">kártya</a>, másik állapotjelző vagy <a href="#ability">képesség</a> nem okozza az eltávolításukat a Hősről.</p>
+
+    <h3>Halmozási limitek</h3>
+    <p>Sok állapotjelző többször is alkalmazható egy Hősre, halmot képezve a Hős Tábláján. A Halmozási limit jelzi a maximálisan felhelyezhető <a href="#tokens">jelzők</a> számát egyetlen <a href="#hero-board">Hős Táblán</a> egy adott időben (pl. egy 2-es halmozási limitű állapotjelzőből legfeljebb 2 darab lehet egyszerre egy játékoson).</p>
+
+    <h4>Halmozási limit növelése</h4>
+    <p>Ha egy játékos <strong>megnöveli</strong> egy állapotjelző Halmozási limitjét, ez a növekedés csak arra a játékosra vonatkozik, és a játék végéig tart.</p>
+
+    <img class="float-right w125" src="/szabalytar/img/components/token-cursed-doubloon.webp" alt="Cursed Doubloon" width="200" height="200">
+    <h3>Egyedi állapotjelzők</h3>
+    <p>Ezek alapjaiban változtatják meg a standard állapotjelző-szabályokat (részletek a leírásukban). Sem Pozitív, sem Negatív állapotjelzőnek nem minősülnek. Az egyedi állapotjelzők gyakran egyedi alakúak és/vagy méretűek.</p>
+
+    <h3>Állapotjelzők megszakítása</h3>
+    <p>Ha egy állapotjelző elköltésre kerül, a hatása nem <a href="#timing">szakítható meg</a>.</p>
+
+    <figure>
+      <div class="rp-composite fig-status-effects" style="aspect-ratio:5/4">
+        <div class="rp-img-detail hero-board" style="background-image:url('/szabalytar/img/figs/hero-board.webp');background-size:200%;background-position:50% 0%;aspect-ratio:5/4"></div>
+        <svg class="token powder-keg" viewbox="0 0 500 500"><use href="#se-powder-keg"/></svg>
+        <svg class="token wither-1" viewbox="0 0 500 500"><use href="#se-wither"/></svg>
+        <svg class="token wither-2" viewbox="0 0 500 500"><use href="#se-wither"/></svg>
+        <svg class="key-letter key-A key-blue" viewbox="0 0 500 500"><use href="#key-A"/></svg>
+        <svg class="key-letter key-B key-purple" viewbox="0 0 500 500"><use href="#key-B"/></svg>
+      </div>
+      <figcaption>
+        <p>Az <a href="#hero/cursed-pirate">Elátkozott Kalóz</a> egy <a href="#token/powder-keg">Lőporos hordó <svg class="◊ key-A key-blue" viewbox="0 0 500 500"><use href="#key-A"/></svg></a> és két <a href="#token/wither">Aszalás <svg class="◊ key-B key-purple" viewbox="0 0 500 500"><use href="#key-B"/></svg></a> állapotjelzőt rakott a <a href="#hero/gunslinger">Revolverhősre</a>. Az Aszalás (Wither) a leírása alapján Tartós, így a Revolverhős tábláján marad, amíg el nem tudja távolítani. Az Aszalás halmozási limitje 2, így az Elátkozott Kalóz kétszer is rárakhatta a Revolverhősre.</p>
+      </figcaption>
+    </figure>

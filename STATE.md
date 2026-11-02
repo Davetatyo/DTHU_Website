@@ -1,6 +1,6 @@
 # Project state: DTHU website
 
-**Current version: v2.7** (2026-11-03). Live: https://dthu.hu builds from this repository's
+**Current version: v2.8** (2026-11-03). Live: https://dthu.hu builds from this repository's
 `main` (the owner moved Vercel over around 2026-11-01; checked live 2026-11-02). Every push to
 `main` deploys within a minute.
 **Launch phase: 1**: the public sees only the Meccsszervező; the whole site from the prototype
@@ -86,7 +86,7 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 | `timetables` Eseménynaptár (was Versenynaptár) | `/esemenynaptar` (+ `/esemenynaptar/<slug>`, admin `/meccsszervezo/admin/esemenyek`) | preview (admins only), **on `main` since v2.3** | all real: events table (migration 0003) + online rounds; sample data removed | owner tests live; then phase 5 (calendar feed, Hírek tiles, Discord later) |
 | `tickets` Jegyek | `/jegyek` | preview | balance sample (from sample ranking) | ticket ledger table + earning rules sign-off |
 | `shop` Bolt | `/bolt` | preview | items sample; wishlist only in the browser | shared wishlist, then redeeming (needs tickets) |
-| `rulebook` Szabálytár | `/szabalytar` | preview | content is final text from the prototype | credit/permission wording for Rulepop |
+| `rulebook` Szabálytár | `/szabalytar` | preview; **RulePop rebuild on `feature/rulebook`** (roadmap R10, phase 1 of 6) | the owner's Hungarian RulePop imported (36 sections, 40 heroes, 123 tokens), popups + own links | owner reviews phase 1; missing rulepop.com content to translate (phase 5) |
 | `faq` GYIK (site-wide) | `/gyik` | preview | content from the prototype | review texts |
 | `links` Linkek | `/linkek`, admin `/meccsszervezo/admin/linkek` | preview (admins only), **admin editor on `main` since v2.7** | links from the `links` table (migration 0006) | owner runs migration 0006, tests live |
 | `alchemist` Alkimista | `/alkimista` + help vial | preview | knowledge base from the prototype; unanswered questions only in the browser | admin inbox for unanswered questions |
@@ -164,6 +164,9 @@ quiz) are in
   their own tables).
 - Login and profile live under `/meccsszervezo`; at the full launch they may belong to a
   site-level account area.
+- The Alchemist answers from the prototype's rule summary (`features/rulebook/data/`), not from
+  the imported RulePop content; its rule links redirect to the new pages
+  (`LEGACY_SLUGS` in `features/rulebook/lib/pages.ts`). Move it onto `content/` later.
 - The old class names in `globals.css` are aliased onto the new tokens (`--surface`,
   `--accent`, …); new code should use the design tokens (`--panel`, `--gold`, …) directly.
 
@@ -172,6 +175,32 @@ quiz) are in
 ## Handover log
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
+
+### 2026-11-03 (after Linkek) · Szabálytár = the Hungarian RulePop, phase 1 (feature/rulebook, v2.8)
+
+- Owner: the Szabálytár should be his Hungarian RulePop (dice-throne-rulepop-hu.vercel.app),
+  same content and use, in our design. Decisions are in roadmap **R10** (popups with own links;
+  translate what's missing vs. rulepop.com; Adventures/Marvel co-op out; no Visszajelzés, no
+  admin editing, no install; the old site stays online).
+- `scripts/rulebook/import-rulepop.mjs` (one-off, refuses to re-run) imported 36 sections,
+  40 heroes, 123 tokens (11 Adventures/Marvel-only tokens left out) into
+  `src/features/rulebook/content/`, 157 pictures into `public/szabalytar/img/` and the icon
+  sheet `public/szabalytar/sprites.svg`. The old prototype UI (Rulebook.tsx, search.ts,
+  rulebook.css, `[id]` page) is gone; `data/` stays only for the Alchemist.
+- New: `lib/pages.ts` (slugs, start page groups, old-address redirects), `lib/render.ts` (+tests),
+  `lib/content.ts` (+tests over every file, snapshot of link targets still without a page),
+  `components/RulebookViewer.tsx` (popups, history), `EntryView.tsx`, `SpriteSheet.tsx`,
+  `RulebookHome.tsx`, `rulepop.css`; routes `szabalytar/layout.tsx`, `page.tsx`,
+  `[...path]/page.tsx`, `api/szabalytar/[...path]/route.ts` (static JSON, built at deploy);
+  middleware matcher skips `api/szabalytar`; `next.config.ts` ships the content files with the
+  server pages.
+- Verified: types, lint, 148 tests, production build in a temporary copy (popup JSON
+  prerendered for all 199 entries; content traced into the page functions). In the browser
+  (TEMP-PREVIEW middleware bypass for /szabalytar, reverted, grep clean): start page, popups
+  (Körök with game-mode switch, link chains, back/forward, close), full pages (Előkészítés,
+  Hőstábla, Szövegek végrehajtása, Hősök, Tokenek, Burn, Sebzéstáblázat, GYIK), 375 px and
+  dark/light. Fixed: hero portrait overflowed on phones.
+- Merged to `main` and pushed as v2.8 (owner's OK). Next: owner's feedback on phase 1 (live), then phase 3 (search + Tárgymutató), 4 (hero filter), 5 (translations), 6.
 
 ### 2026-11-03 (end) · Linkek kezelése (feature/links)
 
@@ -535,6 +564,17 @@ webhook, no cron secret), so nothing local can post to Discord.
 ---
 
 ## Changelog
+
+### v2.8 · 2026-11-03 · merge of `feature/rulebook`
+**Changed (admins only, phase 1):** Szabálytár is now the Hungarian RulePop: start page with
+the two button groups; every rule, hero (40) and token (123) opens as a popup with its own
+link (shared links open a full page); game-mode switch on Körök, FAQ categories. Adventures
+and Marvel co-op left out. Search, hero filter and the missing rulepop.com content come next
+(roadmap R10).
+**Players:** nothing changes in the Időpontfoglaló.
+**Manual steps:** none.
+**Verified:** types, lint, 148 tests, production build (popup data prerendered for 199
+entries), browser check desktop + 375 px, dark + light.
 
 ### v2.7 · 2026-11-03 · merge of `feature/links`
 **Changed (admins only, phase 1):** Linkek from the database: Admin felület → Linkek kezelése

@@ -1,0 +1,61 @@
+<h2 slot="header">Sebzéstípusok</h2>
+				<ul slot="header" class="see-also">
+					<li><a href="#damage">Sebzéstáblázat</a></li>
+					<li><a href="#final-dmg-total">Végső sebzés összege</a></li>
+				</ul>
+				<p>A játékosra váró aktuális sebzésmennyiség „bejövő sebzésnek” (incoming damage) minősül.</p>
+				<p>5 sebzéstípus létezik: sima (egyszerűen „sebzés”-ként [dmg] jelölve), kivédhetetlen, tiszta, járulékos és ultimate.</p>
+				<h3>Sebzéstípusok tulajdonságai</h3>
+				<p>Mindegyik sebzéstípus rendelkezik az alábbi tulajdonságok közül eggyel vagy többel:</p>
+				<ul>
+					<li><p><dfn>Kivédhető (Defendable)</dfn> - Ha a sebzés az ellenfeled <a href="#offensive-ability">támadó képességének</a> eredménye, végrehajthatod a <a href="#defensive-ability">védekező képességedet</a>.</p></li>
+					<li><p><dfn>Elkerülhető (Avoidable)</dfn> - Kártyákkal és/vagy <a href="#status-effects">állapotjelzőkkel</a> csökkenthető, megelőzhető, elkerülhető vagy megszakítható.</p></li>
+					<li><p><dfn>Módosítható (Modifiable)</dfn> - <a href="#attack-modifiers">Támadásmódosítókkal</a> növelhető.</p></li>
+					<li><p><dfn>Speciális célzási szabályok (Special Targeting Rules)</dfn> - A sebzést elszenvedő játékos meg van határozva a leírásban. Nincs szükség <a href="#targeting-roll-phase">Célzó dobási fázisra</a> a sebzést elszenvedő játékos meghatározásához.</p></li>
+				</ul>
+				<h3>Sima sebzés (Normal Damage)</h3>
+				<ul>
+					<li><p>Ez a leggyakoribb sebzéstípus, amelyet egy fekete körben lévő szám (pl. <svg class="◊" viewbox="0 0 500 500"><use href="#i-dmg-5"/></svg>) és az azt követő „dmg” (sebzés) jelöl.</p></li>
+					<li><p>Kivédhető, elkerülhető és módosítható.</p></li>
+					<li><p>Nincsenek speciális célzási szabályok.</p></li>
+				</ul>
+				<h3>Kivédhetetlen sebzés (Undefendable Damage)</h3>
+				<ul>
+					<li><p>Egy másik gyakori sebzéstípus, amelyet egy piros körben lévő szám (pl. <svg class="◊ dmg-spcl" viewbox="0 0 500 500"><use href="#i-dmg-2"/></svg>) és az azt követő „undefendable dmg” (kivédhetetlen sebzés) jelöl.</p></li>
+					<li><p>Nem kivédhető, de elkerülhető (<a href="#hero-cards">kártyákkal</a> / <a href="#status-effects">állapotjelzőkkel</a>).</p></li>
+					<li><p>Módosítható.</p></li>
+					<li><p>Nincsenek speciális célzási szabályok.</p></li>
+				</ul>
+				<h3>Tiszta sebzés (Pure Damage)</h3>
+				<ul>
+					<li><p>A kivédhetetlen sebzés egy speciális típusa, amelyet egy piros körben lévő szám (pl. <svg class="◊ dmg-spcl" viewbox="0 0 500 500"><use href="#i-dmg-2"/></svg>) és az azt követő „pure dmg” (tiszta sebzés) jelöl.</p></li>
+					<li><p>Nem kivédhető, de elkerülhető.</p></li>
+					<li><p>Nem módosítható.</p></li>
+					<li><p>Nincsenek speciális célzási szabályok.</p></li>
+				</ul>
+				<h3>Járulékos sebzés (Collateral Damage)</h3>
+				<ul>
+					<li><p>A kivédhetetlen sebzés egy speciális típusa, amelyet egy piros körben lévő szám (pl. <svg class="◊ dmg-spcl" viewbox="0 0 500 500"><use href="#i-dmg-2"/></svg>) és az azt követő „collateral dmg” (járulékos sebzés) jelöl.</p></li>
+					<li><p>Nem kivédhető, de elkerülhető.</p></li>
+					<li><p>Nem módosítható.</p></li>
+					<li><p>Speciális célzási szabályai vannak (a képességen/kártyán részletezve).</p></li>
+					<li><p>Nem minősül <a href="#attack">támadásnak</a>, mivel nem céloz meg közvetlenül senkit.</p></li>
+					<li><p>Ha ugyanazon <a href="#game-modes">csapat</a> több játékosának okozza egyszerre, csökkentsd a közös <a href="#health">Életerő-tárcsát</a> a kiosztott sebzések együttes összegével.</p></li>
+				</ul>
+				<h3>Ultimate sebzés (Ultimate Damage)</h3>
+				<ul>
+					<li><p>Az <a href="#ultimate-ability">Ultimate képességed</a> által okozott különleges típusú kivédhetetlen sebzés.</p></li>
+					<li><p>Piros körben lévő számmal jelölve (pl. <svg class="◊ dmg-spcl" viewbox="0 0 500 500"><use href="#i-dmg-2"/></svg>).</p></li>
+					<li><p>Nem kivédhető és nem elkerülhető.</p></li>
+					<li><p>Módosítható, de csak növelhető, soha nem csökkenthető.</p></li>
+					<li><p>Nincsenek speciális célzási szabályok.</p></li>
+				</ul>
+				<figure>
+					<img src="/szabalytar/img/figs/ultimate-ability.webp" alt="Ultimate képesség" width="600" height="186">
+					<figcaption>
+						<p>A <a href="#hero/gunslinger">Gunslinger</a> Ultimate képessége</p>
+					</figcaption>
+				</figure>
+				<aside>
+					<p><b>Megjegyzés:</b> A támadáson kívül bekövetkező sebzésnek (pl. <a href="#status-effects">állapotjelző</a> vagy <a href="#defensive-ability">védekező képesség</a> által) nincs sebzéstípusa. Ez a sebzés elkerülhető, de nem használhatsz <a href="#attack-modifiers">támadásmódosítót</a> a növelésére, és nem használhatsz ellene védekező képességet.</p>
+				</aside>

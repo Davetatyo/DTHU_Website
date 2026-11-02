@@ -1,0 +1,50 @@
+<h2 slot="header">Gambit</h2>
+<ul slot="header" class="see-also">
+	<li><a href="#heroes">Hősök</a></li>
+</ul>
+<div class="hero-basics float-right">
+	<img class="portrait" src="/szabalytar/img/heroes/gambit.webp" alt="Gambit" width="300" height="300">
+	<img class="complexity" src="/szabalytar/img/heroes/complexity-6.webp" alt="Bonyolultság 6" width="213" height="72">
+</div>
+<p class="bio">Remy LeBeau, a piros szemű férfi, akit „Le Diable Blanc” néven is ismernek, tolvajként kezdte életét, aki Mister Sinister adósa volt. Az X-Men soraiban Gambit megtalálta valódi otthonát. Kedvenc fegyverével, egy pakli kinetikusan feltöltött játékkártyával, ő egy rendkívül robbanékony eredményeket elérő hős.</p>
+<p><dfn>Választott fegyver:</dfn> Játékkártyák</p>
+<h3>Tokenek és Kártyák</h3>
+<ul class="grid tokens">
+	<li><a href="#token/ace-cards"><img src="/szabalytar/img/components/ace-cards.webp" alt="Ace Cards" width="200" height="97"> Ace Cards (Ász kártyák)</a></li>
+	<li><a href="#token/molecular-acceleration"><img src="/szabalytar/img/components/token-molecular-acceleration.webp" alt="Molecular Acceleration" width="200" height="200"> Molecular Acceleration (Molekuláris gyorsítás)</a></li>
+	<li><a href="#token/dissolution"><svg viewBox="0 0 500 500"><use href="#se-dissolution"/></svg> Dissolution (Feloszlás)</a></li>
+	<li><a href="#token/disruption"><svg viewBox="0 0 500 500"><use href="#se-disruption"/></svg> Disruption (Zavarás)</a></li>
+</ul>
+<h3>Hős Előkészület</h3>
+<p>Kezdd a játékot mind a 4 <a href="#token/ace-cards">Ace Card</a> kártyát képpel felfelé helyezve a <a href="#hero-board">Hős Táblád</a> mellé.</p>
+<h3>Szabálytisztázások</h3>
+<details>
+	<summary>Ace Cards (Ász kártyák)</summary>
+	<div>
+		<p>Az <a href="#token/ace-cards">Ace kártyák</a> nem <a href="#sell">adhatók el</a> <svg class="◊" viewBox="0 0 465 500"><use href="#i-cp"/></svg>-ért és nem dobhatók el (csak átfordíthatók és visszaszerezhetők).</p>
+		<p>Körönként összesen legfeljebb egy Ace kártyát robbanthatsz fel (típustól függetlenül), kivéve, ha egy kártya vagy képesség másképp rendelkezik (pl. <i>Bojutsu</i>, <i>Gambit’s Gambit</i>).</p>
+	</div>
+</details>
+<details>
+	<summary>Regain (Visszaszerzés)</summary>
+	<div>
+		<p>Ha egy képesség vagy hatás miatt „visszaszerzel egy Ace kártyát”, az azt jelenti, hogy egy <a href="#token/ace-cards">Ace kártyát</a> átfordíthatsz képpel lefelé fordított helyzetből képpel felfelé fordított helyzetbe.</p>
+	</div>
+</details>
+<details>
+	<summary>Ace kártyák elköltése</summary>
+	<div>
+		<p>Az <a href="#token/ace-cards">Ace kártyák</a> bármikor felrobbanthatók a <a href="#attack">Támadás</a> aktiválása után (beleértve a <a href="#defensive-roll-phase">Védekező Dobási Fázis</a> előtt vagy után is), de el kell költeni őket a sebzés kiosztása előtt.</p>
+		<p>Bármilyen <a href="#damage">módosítható</a> Támadás sebzéstípusának növelésére használható (pl. <a href="#damage-types">sima</a>, <a href="#damage-types">kivédhetetlen</a>, <a href="#damage-types">Ultimate</a> sebzés).</p>
+	</div>
+</details>
+<details>
+	<summary>Accelerating (Gyorsítás) <img class="◊" src="/szabalytar/img/components/token-molecular-acceleration.webp" alt="Molecular Acceleration" width="200" height="200"> képességaktiválásból</summary>
+	<div>
+		<p>Amikor olyan <a href="#offensive-ability">Támadó Képességet</a> aktiválsz, amely Kőrt/Kárót <svg class="◊" viewBox="0 0 420 500"><use href="#i-heart-diamond"/></svg> vagy Pikket/Treffet <svg class="◊" viewBox="0 0 420 500"><use href="#i-spade-club"/></svg> használ, <a href="#token/molecular-acceleration">gyorsíthatsz <img class="◊" src="/szabalytar/img/components/token-molecular-acceleration.webp" alt="Molecular Acceleration" width="200" height="200"></a> egy egyező szimbólumú <a href="#token/ace-cards">Ace kártyát</a>. Ez magában foglalja azt is, amikor a kis/nagy sor képességedhez (Card Shark) használsz <svg class="◊" viewBox="0 0 420 500"><use href="#i-heart-diamond"/></svg> vagy <svg class="◊" viewBox="0 0 420 500"><use href="#i-spade-club"/></svg> szimbólumot.</p>
+		<p>Ez a hatás azonnal megtörténik a képesség aktiválásakor (mielőtt a képesség bármely más hatása vagy a <a href="#attack-modifiers">Támadásmódosítók</a> használhatók lennének).</p>
+		<p>Amikor többször <a href="#token/molecular-acceleration">Gyorsítasz <img class="◊" src="/szabalytar/img/components/token-molecular-acceleration.webp" alt="Molecular Acceleration" width="200" height="200"></a>, dönthetsz úgy, hogy különböző Ace kártyákat gyorsítasz (vagy ugyanazt az Ace kártyát többször).</p>
+		<p>Amikor többször <a href="#token/molecular-acceleration">Gyorsítasz <img class="◊" src="/szabalytar/img/components/token-molecular-acceleration.webp" alt="Molecular Acceleration" width="200" height="200"></a>, ezek a Gyorsítások egyszerre történnek meg (pl. ha háromszor gyorsítasz, nem gyorsíthatod meg a Káró Ace kártyát egyszer, felrobbantva azt, hogy visszaszerezd a Kőr Ace kártyádat, majd gyorsíthatod meg a Kőr Ace kártyádat kétszer).</p>
+	</div>
+</details>
+<p>© MARVEL</p>
