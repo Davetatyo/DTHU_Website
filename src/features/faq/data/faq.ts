@@ -8,7 +8,7 @@ export const FAQ: [string, string][] = [
   ['Meddig tart egy forduló?','Legfeljebb egy hétig. Ha mindenki hamarabb végez, a következő forduló korábban indulhat. 48 órával a határidő előtt a bot emlékeztet, ha még nincs időpont.'],
   ['Mi az a Bye?','Ha páratlan a létszám, valaki pihen. Erre a fordulóra nincs ellenfele, és a pihenő is jegyet ér.'],
   ['Hol rögzítem az eredményt?','Az eredmény továbbra is a Karnyxba kerül, ott vezetik a hivatalos tabellát. Itt csak azt jelölöd, hogy lejátszottátok.'],
-  ['Hogyan szerzek jegyeket?','Lejátszott meccsért, győzelemért, élő eseményen való részvételért és szervezési segítségért. A pontos táblázat a Jegyek oldalon van.'],
+  ['Hogyan szerzek jegyeket?','Lejátszott meccsért, győzelemért, élő eseményen való részvételért és szervezési segítségért.'],
   ['Mikor nyílik a bolt?','Ha összegyűlt elég jegy és nyeremény. Addig is megjelölheted, mit szeretnél, így látjuk, mire van igény.'],
   ['Ki látja a Facebook- és Discord-nevemet?','Csak a bejelentkezett játékosok. A nyilvános listák a Karnyx-nevet mutatják.']
 ];

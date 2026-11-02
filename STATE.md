@@ -1,6 +1,6 @@
 # Project state: DTHU website
 
-**Current version: v2.10** (2026-11-03). Live: https://dthu.hu builds from this repository's
+**Current version: v2.11** (2026-11-03). Live: https://dthu.hu builds from this repository's
 `main` (the owner moved Vercel over around 2026-11-01; checked live 2026-11-02). Every push to
 `main` deploys within a minute.
 **Launch phase: 1**: the public sees only the Meccsszervező; the whole site from the prototype
@@ -84,8 +84,8 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 | `landing-page` Hírek (home) + news | `/`, `/hirek`, `/hirek/<slug>`, admin `/meccsszervezo/admin/hirek` | preview (admins only), **on `main` since v2.5** | news real (table `news`, migration 0004); banner + matches real; ranking and tickets sample | owner runs migration 0004, tests live after the push |
 | `rankings` Ranglista | `/ranglista` | preview | names/heroes real; points, records, movement sample | results source (Karnyx copy-paste? results on "Lejátszottuk"?) |
 | `timetables` Eseménynaptár (was Versenynaptár) | `/esemenynaptar` (+ `/esemenynaptar/<slug>`, admin `/meccsszervezo/admin/esemenyek`) | preview (admins only), **on `main` since v2.3** | all real: events table (migration 0003) + online rounds; sample data removed | owner tests live; then phase 5 (calendar feed, Hírek tiles, Discord later) |
-| `tickets` Jegyek | `/jegyek` | preview | balance sample (from sample ranking) | ticket ledger table + earning rules sign-off |
-| `shop` Bolt | `/bolt` | preview | items sample; wishlist only in the browser | shared wishlist, then redeeming (needs tickets) |
+| `games` Játékok | `/jatekok`, `/jatekok/taktikai-elony` | preview (admins only), **on `main` since v2.11** | Taktikai Előny: static data from the Szabálytár + `lib/tactician-traits.ts`; no database | owner reviews the hero facts table; Kvíz parked |
+| `shop` Bolt | `/bolt` | preview | items sample; wishlist only in the browser; ticket balance sample (the Jegyek page was removed in v2.11, `/jegyek` redirects here) | shared wishlist, then redeeming (needs a ticket ledger) |
 | `rulebook` Szabálytár | `/szabalytar` | preview (admins only), **RulePop version on `main` since v2.8** (roadmap R10) | the owner's Hungarian RulePop imported (36 sections, 40 heroes, 123 tokens) + the 5 newer heroes and 13 tokens translated (v2.9); popups + own links | owner reviews the new translations; ~20 core pages still to translate |
 | `faq` GYIK (site-wide) | `/gyik` | preview | content from the prototype | review texts |
 | `links` Linkek | `/linkek`, admin `/meccsszervezo/admin/linkek` | preview (admins only), **admin editor on `main` since v2.7** | links from the `links` table (migration 0006) | owner runs migration 0006, tests live |
@@ -175,6 +175,27 @@ quiz) are in
 ## Handover log
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
+
+### 2026-11-03 (night) · Játékok tab and Taktikai Előny (feature/games, v2.11)
+
+- Owner: remove the Jegyek tab (keep Bolt as is), add a Játékok tab after Bolt; park the quiz
+  (plan discussed: level map, combo, reveal animations; R7) and build Taktikai Előny instead:
+  the Hadvezér guesses the hero you think of. Decisions: max 10 questions, 3 guesses, yes/no
+  only, logged-in players, no saving/XP yet; owner sent high-res art.
+- Removed `src/features/tickets/` and `src/app/(site)/jegyek/`; redirect `/jegyek` → `/bolt`;
+  home tile → Taktikai Előny; FAQ answer no longer points to the Jegyek page;
+  `routes.games`, `routes.tacticianGame`; registry entry `games` after `shop`.
+- New `src/features/games/` (README): hub cards (`lib/hub.ts`, `components/GamesHub.tsx`),
+  hero facts (`lib/tactician-traits.ts`, hand-written + token/complexity questions from the
+  Szabálytár via `lib/tactician-data.ts`; `glossary.ts` now also gives token ids), engine
+  (`lib/tactician.ts` + tests), game UI (`components/TacticianGame.tsx`, `tactician.css`),
+  pictures in `public/jatekok/`. The help vial (`alchemist/components/HelpVial.tsx`) is hidden
+  under `/jatekok/…`.
+- **Owner to review:** the facts table (which heroes are a "yes" for each question).
+- Verified: types, lint, tests (all heroes found with honest answers; avg 6.4 questions; one
+  wrong answer usually tolerated), production build in a copy; browser with TEMP-PREVIEW fake
+  login (reverted, grep clean): hub, intro, transition, questions, guess (Thor), win screen,
+  375 px.
 
 ### 2026-11-03 (later still) · Alchemist knows every hero and token; no tickets/shop (v2.10)
 
@@ -604,6 +625,16 @@ webhook, no cron secret), so nothing local can post to Discord.
 ---
 
 ## Changelog
+
+### v2.11 · 2026-11-03 · merge of `feature/games`
+**Changed (admins only, phase 1):** the Jegyek tab is gone (`/jegyek` redirects to `/bolt`, the
+home tile became a Játékok tile); new **Játékok** tab after Bolt with the Taktikai Előny game
+(the Hadvezér guesses your hero in at most 10 questions and 3 guesses) and the Kvíz as
+"Hamarosan"; the help vial is hidden on game pages.
+**Players:** nothing changes in the Időpontfoglaló.
+**Manual steps:** none.
+**Verified:** types, lint, tests (game plays every hero), production build, browser (desktop
+dark, 375 px light/dark).
 
 ### v2.10 · 2026-11-03 · `c16fc8a` on `main`
 **Changed (admins only, phase 1):** the Alchemist answers about every hero and token (all 45

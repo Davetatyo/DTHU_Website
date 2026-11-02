@@ -333,8 +333,9 @@ every page and action, whatever the view switch shows.
 
 ### R6 · Games section (Játékok)
 
-**Status:** Idea · **Feature id (proposed):** `games` · **Depends on:** nothing to start (a
-page of cards). Games that award XP need R4.
+**Status:** Built (hub, v2.11, 2026-11-03): Játékok tab after Bolt, cards for Taktikai Előny
+(R11) and the parked Kvíz ("Hamarosan"). · **Feature id:** `games` · **Depends on:** nothing.
+Games that award XP need R4.
 
 A new site section that keeps users engaged and coming back. It introduces games one by one.
 
@@ -353,7 +354,7 @@ A new site section that keeps users engaged and coming back. It introduces games
 
 ### R7 · Quiz (Kvíz)
 
-**Status:** Idea · **Feature id (proposed):** `quiz` (a game inside R6) · **Depends on:** R6
+**Status:** Parked by the owner (2026-11-03; plan discussed: level map, reveal animations); shown as "Hamarosan" on the Játékok page. Was: Idea · **Feature id (proposed):** `quiz` (a game inside R6) · **Depends on:** R6
 hub, R4 XP (for rewards), R5 Admin area (for managing questions)
 
 Quizzes on the website in **increasing difficulty**. Users learn the game and earn XP.
@@ -469,6 +470,22 @@ checks. Details: `src/features/rulebook/README.md`.
 
 ---
 
+### R11 · Taktikai Előny (the Hadvezér guesses your hero)
+
+**Status:** Built and live for admins (v2.11, 2026-11-03; see `src/features/games/README.md`).
+· **Feature id:** `games` · **Depends on:** the Szabálytár (hero list, tokens, portraits)
+
+The Hadvezér (Tactician) guesses which Dice Throne hero the player thinks of, from yes/no
+answers. Opens with his portrait and the line "Azt hiszed lehetnek titkaid előttem? Minden
+eshetőségre felkészültem! Készen állsz?", then he moves into the background (second picture).
+Owner decisions (2026-11-03): at most 10 questions and 3 guesses; yes/no only; logged-in
+players; no saved games or XP for now (XP later with R4).
+
+**Open questions:** the owner reviews the hero facts table (`lib/tactician-traits.ts`),
+especially "nő", "első/második évad", "sötét teremtmény" and "varázslat".
+
+---
+
 ## Built
 
 Format: `R# · name · version · date · one line`. (Built items keep their full entry above
@@ -477,6 +494,8 @@ while their docs point there.)
 - R2 · Events (Eseménynaptár) · v2.3–v2.4 · 2026-11-03 · real events, admin editor, event pages.
 - R2 · News (Hírek) + Szavazás · v2.5–v2.6 · 2026-11-03 · news admin, rich articles, polls.
 - R9 · Linkek kezelése · v2.7 · 2026-11-03 · admin-managed links with pictures and order.
+- R6 · Játékok hub · v2.11 · 2026-11-03 · games tab with cards.
+- R11 · Taktikai Előny · v2.11 · 2026-11-03 · the Hadvezér guesses your hero.
 
 ## Dropped
 
