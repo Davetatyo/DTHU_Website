@@ -1,6 +1,6 @@
 # Project state: DTHU website
 
-**Current version: v2.1** (2026-11-02). Live: https://dthu.hu builds from this repository's
+**Current version: v2.2** (2026-11-02). Live: https://dthu.hu builds from this repository's
 `main` (the owner moved Vercel over around 2026-11-01; checked live 2026-11-02). Every push to
 `main` deploys within a minute.
 **Launch phase: 1**: the public sees only the Meccsszervező; the whole site from the prototype
@@ -91,22 +91,10 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 | `links` Linkek | `/linkek` | preview | real links | — |
 | `alchemist` Alkimista | `/alkimista` + help vial | preview | knowledge base from the prototype; unanswered questions only in the browser | admin inbox for unanswered questions |
 | `register-page` Regisztráció | `/regisztracio` | **live** | static guide content; tournament banner real | owner review of Hungarian texts |
-| `profile` Profilkép, Profil szerkesztése, Kitiltás | `/meccsszervezo/profil`, `/meccsszervezo/admin/felhasznalo/<id>` | **live, test phase** (v2.1): uploads only for the owner (`AVATAR_TEST_MODE`); admin page and bans for all admins | all real | owner tests live; then set `AVATAR_TEST_MODE = false` |
+| `profile` Profilkép, Profil szerkesztése, Kitiltás | `/meccsszervezo/profil`, `/meccsszervezo/admin/felhasznalo/<id>` | **live** (v2.2): every logged-in user can upload a picture; admin page and bans for all admins | all real | badge ring (R3/R4), cosmetics collection |
 
 ## Needs the owner
 
-0. **Test the profile picture + ban work live (v2.1 on dthu.hu):**
-   1. Supabase → SQL Editor: run `supabase/migrations/0002_profile_avatars_and_bans.sql`
-      (adds `profiles.avatar_path`, `banned_at`, `banned_by` and the `avatars` storage bucket;
-      only adds things). Without it the pages still work, but uploads and bans fail with an
-      error message.
-   2. Local login landed on dthu.hu (2026-11-02): Supabase → Authentication → URL Configuration
-      → Redirect URLs is probably missing `http://localhost:3000/auth/callback`, so Supabase
-      falls back to the Site URL. Add it to test locally again.
-   3. Profilom: upload, move/zoom, Mentés; check the header and your match rows; Csere; Törlés.
-   4. Admin felület → a user → "Profil szerkesztése": Facebook name / time zone save; picture
-      remove/replace. Ban only a test account (e.g. a second Discord account of yours): Kitiltás
-      → Igen, kitiltom → that account is logged out and can't log in; then Tiltás feloldása.
 1. **Follow [docs/vercel.md](docs/vercel.md)**: new Vercel project for DTHU_Website, test on its
    address (admin + player login), then move dthu.hu over between rounds.
 2. Carried over from DT_Match_Organizer `state.md` (2026-10-30), status unknown here, please
@@ -172,6 +160,16 @@ quiz) are in
 ## Handover log
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
+
+### 2026-11-02 (night) · Profile pictures opened to everyone (v2.2)
+
+- The owner ran migration 0002 and tested v2.1 live: "works all good". At his request
+  `AVATAR_TEST_MODE` is now `false` (`src/features/profile/lib/access.ts`): every logged-in user
+  can upload. `canUploadOwnAvatar` takes the mode as a parameter so both modes stay tested.
+- Removed the owner test steps from "Needs the owner". Local Discord login works again once
+  `http://localhost:3000/auth/callback` is in Supabase's Redirect URLs.
+- Next for this feature (roadmap R3/R4): badge ring around the avatar and the cosmetics
+  collection, once the XP decisions are final.
 
 ### 2026-11-02 (evening) · Profile pictures, admin Profil szerkesztése, ban (feature/profile)
 
@@ -412,6 +410,13 @@ webhook, no cron secret), so nothing local can post to Discord.
 ---
 
 ## Changelog
+
+### v2.2 · 2026-11-02 · merge of `feature/profile`
+**Changed:**
+- Profile pictures are open to everyone: every logged-in player sees "Profilkép" on Profilom
+  and can upload, crop, replace and delete their picture (`AVATAR_TEST_MODE = false`).
+**Manual steps:** none (migration 0002 already run by the owner).
+**Verified:** the owner tested v2.1 live and confirmed it works; types, lint, 91 tests; Vercel build and live deploy checked.
 
 ### v2.1 · 2026-11-02 · merge of `feature/profile`
 **Changed:**

@@ -55,13 +55,18 @@ describe("avatar paths and URLs", () => {
   });
 });
 
-describe("canUploadOwnAvatar (test phase)", () => {
+describe("canUploadOwnAvatar", () => {
   afterEach(() => vi.unstubAllEnvs());
 
-  it("lets only the bootstrap admin upload", () => {
+  it("lets every logged-in user upload now that the test phase is over", () => {
+    expect(canUploadOwnAvatar({ discord_username: "someone" })).toBe(true);
+    expect(canUploadOwnAvatar({ discord_username: null })).toBe(true);
+  });
+
+  it("in the test phase lets only the bootstrap admin upload", () => {
     vi.stubEnv("BOOTSTRAP_ADMIN_DISCORD", "davetatyo");
-    expect(canUploadOwnAvatar({ discord_username: "DaveTatyo" })).toBe(true);
-    expect(canUploadOwnAvatar({ discord_username: "someone" })).toBe(false);
-    expect(canUploadOwnAvatar({ discord_username: null })).toBe(false);
+    expect(canUploadOwnAvatar({ discord_username: "DaveTatyo" }, true)).toBe(true);
+    expect(canUploadOwnAvatar({ discord_username: "someone" }, true)).toBe(false);
+    expect(canUploadOwnAvatar({ discord_username: null }, true)).toBe(false);
   });
 });
