@@ -87,41 +87,61 @@ works.
 
 ### R2 · News and events management (Hírek és események kezelése)
 
-**Status:** Events half **built on `feature/timetables`** (2026-11-03, not merged yet: see
-`src/features/timetables/README.md`); news half still Idea. · **Feature ids:** extends
-`landing-page` (Hírek) and `timetables` (Eseménynaptár, renamed from Versenynaptár) ·
-**Depends on:** the image upload foundation (built). The admin pages live under today's Admin
-felület until R5.
+**Status:** **Events: built and live for admins** (v2.3–v2.4, 2026-11-03; see
+`src/features/timetables/README.md`). **News: Ready to plan** (decisions below, 2026-11-03). ·
+**Feature ids:** `timetables` (Eseménynaptár, renamed from Versenynaptár) and `landing-page`
+(Hírek) · **Depends on:** the image upload foundation and the event editor (both built). Admin
+pages live under today's Admin felület until R5.
 
-**Decisions (owner, 2026-11-03, events):** kinds Online bajnokság (rounds automatic) / Élő
-verseny / Asztali nap / közösségi játék / Egyéb + "Ötlet / tervezett"; admin-only until the
-full site opens; every admin edits; simple blocks; past events greyed in an archive at the
-bottom; drafts by default, publish now or scheduled; Discord announcements later via a
-separate webhook and channel.
+#### Events (done)
 
-Admins can **add, edit, remove and pin** news posts and calendar events. A pinned item is
-shown first.
+Owner decisions (2026-11-03): kinds Online bajnokság (rounds automatic) / Élő verseny /
+Asztali nap / közösségi játék / Egyéb + "Ötlet / tervezett"; admin-only until the full site
+opens; every admin edits; simple blocks; past events greyed in an archive at the bottom;
+drafts by default, publish now or scheduled; "card only" events link straight to their site;
+Discord announcements later via a separate webhook and channel. Built: `events` table
+(migration 0003), Admin felület → Események kezelése, `/esemenynaptar`, event pages
+`/esemenynaptar/<slug>`.
 
-- **News:** each news item gets its own sub page by default (e.g. `/hirek/<slug>`). The author
-  fills it freely with text and pictures in a content box, laid out however they like.
-- **Event:** the admin chooses with a checkbox between:
-  - a **small card**: a picture plus a direct link to the event's own site, no sub page; or
-  - a **news-style sub page**, where the link to the event is added separately in the
-    content.
-- **Card picture:** news and event cards can have an uploaded picture. It is compressed
-  automatically while keeping good quality.
+#### News (Hírek): to build next
 
-**Data (draft):** `posts` table (kind news/event, title, slug, body, cover image path,
-pinned, published flag, author, timestamps). Events also get a start/end, a place, a type
-(online / élő), an external link and the "card only" flag. Images go in a Storage bucket.
+Same base as events: **Admin felület → "Hírek kezelése"** card **above** the Eseménynaptár
+card (list, Új hír, edit, delete); draft by default → publish now / scheduled / back to draft;
+admins can preview drafts; card picture with crop; content blocks; a permanent address from
+the title (`/hirek/<slug>`).
 
-**Open questions:**
-- Editor: simple blocks (paragraph / picture / link) or rich text? Blocks are safer and
-  simpler to render nicely on phones.
-- Drafts and scheduled publishing, or publish immediately?
-- Post new news/events to Discord automatically?
-- Online rounds: should they come from the Meccsszervező rounds table, so they aren't typed in
-  twice (see `src/features/timetables/README.md`)?
+What news adds (owner decisions, 2026-11-03):
+- **Category (rovat)** with a coloured label and a filter on the list page: Bajnokság,
+  Közösség, Élő esemény, Oldal / fejlesztés; Jegyek & Bolt later.
+- **Header:** author name **with their profile picture**, publish date, a "Frissítve" date when
+  edited after publishing, and a **bevezető** (lead, 1–2 sentences) on the card and in bold at
+  the top of the article.
+- **Inline formatting** in paragraphs: bold, italic and links, from toolbar buttons (stored as
+  a safe subset, never raw HTML).
+- **More blocks** (all in the first version): Felsorolás (bullet/numbered list), Idézet,
+  Kiemelt doboz (info/warning), Galéria (grid, opens larger on tap), Videó (YouTube and Twitch
+  embeds only), Esemény kártya (an event from the Eseménynaptár; the event page then lists
+  "Kapcsolódó hírek"), Elválasztó. Plus the event blocks: alcím, bekezdés, kép, link.
+- **Where it shows:** the home page (`/`) shows the latest 4 news cards (pinned first) and a
+  "Minden hír ›" link; a new list page `/hirek` with every article, newest first, category
+  filter and "Régebbi hírek" paging; article pages with previous/next links.
+- **Pinning:** pinned until an admin unpins it (no end date).
+- **Share previews** (Open Graph: cover, title, lead) for Facebook and Discord links; they
+  start working once the site is public.
+- **No user reactions or comments for now**, but keep the article page open for it: a later
+  idea is a "read it" confirmation with an emoji that earns XP (see R4).
+- **Later:** automatic Discord/Facebook announcement through a separate webhook (same as
+  events).
+
+**Data (draft):** `news` table: slug, title, category, lead, body (blocks, jsonb), cover path,
+pinned, published_at (null = draft), author (profile), created/updated by and at,
+"Frissítve" time. Pictures in a storage bucket (reuse `event-images` or a new `news-images`).
+Event card blocks store the event id; "Kapcsolódó hírek" is read from the blocks.
+
+**Build plan:** branch `feature/landing-page`, in phases like the Eseménynaptár: (1) table +
+admin list/new/edit with the shared blocks, (2) inline formatting and the new blocks, (3)
+article page, `/hirek` list and the home page cards, (4) share previews and "Kapcsolódó
+hírek" on event pages. Then push to `main` for the owner's live test.
 
 ### R3 · Profile page upgrade and settings (Profil, Profilbeállítások)
 
@@ -198,6 +218,7 @@ Users earn XP for activities and level up at rising milestones, in the style of 
 | Daily Quiz (R7) | automatic | once a day | 10 |
 | Quiz level completed (R7) | automatic | once per level, only with 100% correct answers | 15–40, rising with difficulty |
 | Attending a live event | admin | once per event | 50 |
+| Idea (later): reading a news article and confirming it with an emoji (R2) | automatic | once per article | small, to decide |
 
 The values are a starting point modelled on Duolingo (about 10 XP for a daily task). Admins
 fine-tune them on the XP management page.

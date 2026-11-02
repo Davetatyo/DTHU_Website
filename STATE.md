@@ -95,12 +95,6 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 
 ## Needs the owner
 
-0. **Eseménynaptár (v2.3, live for admins):** run
-   `supabase/migrations/0003_events.sql` in the Supabase SQL Editor if not done yet (new
-   `events` table and `event-images` bucket; only adds things). Then on dthu.hu as admin: Admin felület →
-   Események kezelése → Új esemény → card picture, content blocks → publish now / scheduled /
-   back to draft; check `/esemenynaptar` (tiles, month view, archive) and the event page.
-   Events created while testing are real rows: delete them afterwards (Törlés).
 1. **Follow [docs/vercel.md](docs/vercel.md)**: new Vercel project for DTHU_Website, test on its
    address (admin + player login), then move dthu.hu over between rounds.
 2. Carried over from DT_Match_Organizer `state.md` (2026-10-30), status unknown here, please
@@ -166,6 +160,20 @@ quiz) are in
 ## Handover log
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
+
+### 2026-11-03 (evening) · Hírek planned (roadmap R2, news half)
+
+- Owner tested the Eseménynaptár live ("all works fine"); removed its test item from "Needs
+  the owner".
+- Discussed Hírek (news) with the owner and recorded every decision in
+  [Features_Roadmap.md](Features_Roadmap.md) R2 → "News": "Hírek kezelése" card above the
+  Eseménynaptár card on Admin felület; categories; author with profile picture; lead; inline
+  bold/italic/links; seven extra blocks (list, quote, info box, gallery, YouTube/Twitch video,
+  event card, divider); home shows the latest 4 + `/hirek` list page with filter and paging;
+  pinned until unpinned; share previews; no reactions/comments for now. R4 got a future XP
+  idea: confirming a read news article with an emoji.
+- Nothing built yet. Next: build it on `feature/landing-page` in the four phases written in
+  R2, then push to `main` for the owner's live test.
 
 ### 2026-11-03 (later) · Event card tag no longer covers the date (fix/event-card-label)
 
