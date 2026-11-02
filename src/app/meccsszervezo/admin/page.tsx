@@ -78,6 +78,16 @@ export default async function AdminPage({
 
       <section className="card flex flex-wrap items-center justify-between gap-3">
         <div>
+          <h2 className="font-bold">Hírek</h2>
+          <p className="muted text-sm">Hírek írása képekkel, galériával, videóval: piszkozat, közzététel, időzítés.</p>
+        </div>
+        <Link href={routes.adminNews} className="btn btn-secondary">
+          Hírek kezelése ›
+        </Link>
+      </section>
+
+      <section className="card flex flex-wrap items-center justify-between gap-3">
+        <div>
           <h2 className="font-bold">Eseménynaptár</h2>
           <p className="muted text-sm">Élő versenyek, asztali napok és egyéb események: piszkozat, közzététel, időzítés.</p>
         </div>

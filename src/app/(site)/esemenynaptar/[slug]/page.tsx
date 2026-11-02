@@ -3,10 +3,20 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getCurrentProfile } from "@/lib/auth";
 import { routes } from "@/lib/routes";
-import { DEFAULT_TIMEZONE, formatDateTime } from "@/features/match-organizer/lib/time";
-import { EventBody } from "@/features/timetables/components/EventBody";
-import { eventEnd, formatEventDate, KIND_LABELS, parseBlocks, publishState, TENTATIVE_LABEL } from "@/features/timetables/lib/events";
+import { DEFAULT_TIMEZONE, formatDateTime, formatShortDate } from "@/features/match-organizer/lib/time";
+import { ContentBody } from "@/components/content/ContentBody";
+import { getSiteUrl } from "@/lib/site";
+import {
+  EVENT_IMAGE_BUCKET,
+  eventEnd,
+  formatEventDate,
+  KIND_LABELS,
+  parseBlocks,
+  publishState,
+  TENTATIVE_LABEL,
+} from "@/features/timetables/lib/events";
 import { eventImageUrl, getEventBySlug } from "@/features/timetables/lib/events-data";
+import { getNewsAboutEvent } from "@/features/landing-page/lib/news-data";
 import "@/features/timetables/timetables.css";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -31,6 +41,7 @@ export default async function EventPage({ params }: Props) {
   const parsed = parseBlocks(event.body, event.id);
   const cover = eventImageUrl(event.cover_path);
   const past = eventEnd(event, tz) < new Date();
+  const related = await getNewsAboutEvent(event.id);
 
   return (
     <article className="mx-auto max-w-3xl space-y-4">
@@ -64,7 +75,23 @@ export default async function EventPage({ params }: Props) {
       </header>
 
       {event.summary && <p className="lead">{event.summary}</p>}
-      {parsed.ok && <EventBody blocks={parsed.blocks} />}
+      {parsed.ok && <ContentBody blocks={parsed.blocks} bucket={EVENT_IMAGE_BUCKET} host={new URL(await getSiteUrl()).hostname} />}
+
+      {related.length > 0 && (
+        <section className="space-y-2">
+          <h2 className="text-lg font-bold">Kapcsolódó hírek</h2>
+          <ul className="space-y-1">
+            {related.map((n) => (
+              <li key={n.id}>
+                <Link href={routes.newsArticle(n.slug)} className="link">
+                  {n.title}
+                </Link>
+                {n.published_at && <span className="muted text-sm"> · {formatShortDate(n.published_at, tz)}</span>}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       <div className="flex flex-wrap gap-2">
         {event.link_url && (

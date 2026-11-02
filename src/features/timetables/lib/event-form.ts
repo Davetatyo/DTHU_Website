@@ -2,7 +2,8 @@
 // Pure (no database), unit-tested. Dates and times are typed in the admin's own time zone.
 
 import { utcToWallTime, wallTimeToUtc } from "@/features/match-organizer/lib/time";
-import { isEventKind, safeUrl, type EventKind, type EventRow } from "./events";
+import { safeUrl } from "@/lib/publishing";
+import { isEventKind, type EventKind, type EventRow } from "./events";
 
 /** Form values as strings, the way <input>s send them (checkboxes: "on" or missing). */
 export type EventFormInput = Record<string, string | undefined>;
@@ -89,47 +90,5 @@ export function eventFormDefaults(e: EventRow, timeZone: string) {
   };
 }
 
-export type PublishIntent =
-  | { kind: "save" }
-  | { kind: "publish_now" }
-  | { kind: "schedule"; at: string }
-  | { kind: "unpublish" };
-
-/** Which button was pressed; "Időzítés" needs a go-live time in the future. */
-export function parsePublishIntent(
-  intent: string | undefined,
-  publishAt: string | undefined,
-  timeZone: string,
-  now: Date = new Date(),
-): { ok: true; intent: PublishIntent } | { ok: false; error: string } {
-  switch (intent) {
-    case "publish_now":
-      return { ok: true, intent: { kind: "publish_now" } };
-    case "unpublish":
-      return { ok: true, intent: { kind: "unpublish" } };
-    case "schedule": {
-      if (!publishAt || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(publishAt)) {
-        return { ok: false, error: "Add meg, mikor jelenjen meg az esemény." };
-      }
-      const at = wallTimeToUtc(publishAt, timeZone);
-      if (at <= now) return { ok: false, error: "Az időzített megjelenés a jövőben legyen (vagy válaszd a „Közzététel most” gombot)." };
-      return { ok: true, intent: { kind: "schedule", at: at.toISOString() } };
-    }
-    default:
-      return { ok: true, intent: { kind: "save" } };
-  }
-}
-
-/** published_at after the button: unchanged on a plain save. */
-export function nextPublishedAt(current: string | null, intent: PublishIntent, now: Date = new Date()): string | null {
-  switch (intent.kind) {
-    case "publish_now":
-      return now.toISOString();
-    case "schedule":
-      return intent.at;
-    case "unpublish":
-      return null;
-    default:
-      return current;
-  }
-}
+// Publishing buttons are shared with news (src/lib/publishing.ts).
+export { nextPublishedAt, parsePublishIntent, type PublishIntent } from "@/lib/publishing";

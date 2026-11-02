@@ -81,7 +81,7 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 | Feature (folder / branch `feature/<id>`) | Route | Status | Real data / still sample | Next step |
 |---|---|---|---|---|
 | `match-organizer` Meccsszervező | `/meccsszervezo` | **live** (v1.2 old design on dthu.hu; v2.0 ready) | all real | Launch plan |
-| `landing-page` Hírek (home) | `/` | preview | banner + upcoming matches real; news sample | decide the news source (table + admin page?) |
+| `landing-page` Hírek (home) + news | `/`, `/hirek`, `/hirek/<slug>`, admin `/meccsszervezo/admin/hirek` | preview, **built on `feature/landing-page`, committed, not merged** | news real (table `news`, migration 0004); banner + matches real; ranking and tickets sample | owner runs migration 0004, tests live after the push |
 | `rankings` Ranglista | `/ranglista` | preview | names/heroes real; points, records, movement sample | results source (Karnyx copy-paste? results on "Lejátszottuk"?) |
 | `timetables` Eseménynaptár (was Versenynaptár) | `/esemenynaptar` (+ `/esemenynaptar/<slug>`, admin `/meccsszervezo/admin/esemenyek`) | preview (admins only), **on `main` since v2.3** | all real: events table (migration 0003) + online rounds; sample data removed | owner tests live; then phase 5 (calendar feed, Hírek tiles, Discord later) |
 | `tickets` Jegyek | `/jegyek` | preview | balance sample (from sample ranking) | ticket ledger table + earning rules sign-off |
@@ -95,6 +95,11 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 
 ## Needs the owner
 
+0. **Hírek:** run `supabase/migrations/0004_news.sql` in the Supabase SQL Editor (new `news`
+   table and `news-images` bucket; only adds things) before the branch is pushed to `main`.
+   Then on dthu.hu as admin: Admin felület → Hírek kezelése → Új hír → card picture, blocks
+   (try formatting, list, gallery, a YouTube link, an event card) → publish now / scheduled →
+   check `/`, `/hirek` and the article; delete test articles afterwards.
 1. **Follow [docs/vercel.md](docs/vercel.md)**: new Vercel project for DTHU_Website, test on its
    address (admin + player login), then move dthu.hu over between rounds.
 2. Carried over from DT_Match_Organizer `state.md` (2026-10-30), status unknown here, please
@@ -160,6 +165,30 @@ quiz) are in
 ## Handover log
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
+
+### 2026-11-03 (night) · Hírek built (feature/landing-page)
+
+- Built the news half of roadmap R2 on `feature/landing-page` (fast-forwarded to `main`
+  first), in the four planned phases; **committed on the branch, not pushed or merged**.
+- Shared first, so events and news use the same code: `src/lib/publishing.ts`,
+  `src/lib/content-blocks.ts` (11 block types, `SIMPLE_BLOCKS` for events, `ALL_BLOCKS` for
+  news, YouTube/Twitch parsing), `src/lib/inline-format.ts` (bold/italic/links, never HTML),
+  `src/lib/content-images.ts`, `src/components/content/` (CoverEditor, BlocksEditor with the
+  B / I / 🔗 toolbar, ContentBody, Gallery lightbox, InlineText, content.css). The event editor
+  and event page moved onto them (old timetables copies deleted; still 4 simple blocks).
+- News: migration `0004_news.sql`; `lib/news.ts` (+ tests), `lib/news-data.ts`,
+  `actions/news.ts`; admin `…/admin/hirek` list, `/uj`, `/<id>`; "Hírek kezelése" card above
+  the Eseménynaptár card; home shows the latest 4 (sample news removed), `/hirek` with
+  category filter and paging, article page with author + picture, Frissítve, previous/next,
+  Open Graph share previews; event pages list "Kapcsolódó hírek"; the Hírek tab stays active
+  on `/hirek`.
+- Verified: types, lint, 124 tests, production build (temporary copy); screenshots with
+  TEMP-PREVIEW sample news and fake login (reverted, grep clean): home cards and `/hirek`
+  (desktop dark), the article with formatting, box, list, quote, YouTube embed and event card,
+  og: tags present, the news editor (375 px light) and the event editor still limited to 4
+  blocks. Fixed: card bevezető showed raw `**` marks. **Not verified:** real saving and
+  uploads (need migration 0004 and a real admin), the gallery with real pictures, a Twitch
+  embed on dthu.hu.
 
 ### 2026-11-03 (evening) · Hírek planned (roadmap R2, news half)
 

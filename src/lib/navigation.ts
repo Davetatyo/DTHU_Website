@@ -7,6 +7,8 @@ export const siteMenu: NavItem[] = MENU_FEATURES.map((f) => ({
   href: f.route,
   label: f.label,
   prefix: f.route !== "/",
+  // The home tab ("Hírek") is also active on the news list and articles.
+  also: f.route === routes.home ? [routes.news] : undefined,
   badge: f.badge,
 }));
 

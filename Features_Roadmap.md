@@ -88,7 +88,8 @@ works.
 ### R2 · News and events management (Hírek és események kezelése)
 
 **Status:** **Events: built and live for admins** (v2.3–v2.4, 2026-11-03; see
-`src/features/timetables/README.md`). **News: Ready to plan** (decisions below, 2026-11-03). ·
+`src/features/timetables/README.md`). **News: built on `feature/landing-page`** (2026-11-03, not merged yet; see
+`src/features/landing-page/README.md`). ·
 **Feature ids:** `timetables` (Eseménynaptár, renamed from Versenynaptár) and `landing-page`
 (Hírek) · **Depends on:** the image upload foundation and the event editor (both built). Admin
 pages live under today's Admin felület until R5.
@@ -103,7 +104,7 @@ Discord announcements later via a separate webhook and channel. Built: `events` 
 (migration 0003), Admin felület → Események kezelése, `/esemenynaptar`, event pages
 `/esemenynaptar/<slug>`.
 
-#### News (Hírek): to build next
+#### News (Hírek): built, waiting for the owner's live test
 
 Same base as events: **Admin felület → "Hírek kezelése"** card **above** the Eseménynaptár
 card (list, Új hír, edit, delete); draft by default → publish now / scheduled / back to draft;

@@ -4,8 +4,8 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Cropper, { type Area, type Point } from "react-easy-crop";
 import { cropToBlob } from "@/lib/image-crop";
-import type { EventImageResult } from "../lib/events";
-import "../timetables.css";
+import type { ContentImageResult } from "@/lib/content-blocks";
+import "./content.css";
 
 const WIDTH = 1280;
 const HEIGHT = 720;
@@ -13,19 +13,24 @@ const MAX_BYTES = 550 * 1024;
 const MAX_SOURCE_BYTES = 20 * 1024 * 1024;
 
 /**
- * The event's card picture: pick a photo, frame it in the 16:9 card shape, and the browser
- * shrinks it to 1280×720 before uploading. Saved on the event right away.
+ * The card picture of an event or news item: pick a photo, frame it in the 16:9 card shape,
+ * and the browser shrinks it to 1280×720 before uploading. Saved on the item right away.
+ * `ownerField` / `ownerId` tell the upload action which item it is (e.g. "event_id").
  */
 export function CoverEditor({
-  eventId,
+  ownerField,
+  ownerId,
   currentUrl,
+  emptyText,
   upload,
   remove,
 }: {
-  eventId: string;
+  ownerField: string;
+  ownerId: string;
   currentUrl: string | null;
-  upload: (formData: FormData) => Promise<EventImageResult>;
-  remove: (formData: FormData) => Promise<EventImageResult>;
+  emptyText: string;
+  upload: (formData: FormData) => Promise<ContentImageResult>;
+  remove: (formData: FormData) => Promise<ContentImageResult>;
 }) {
   const router = useRouter();
   const fileInput = useRef<HTMLInputElement>(null);
@@ -58,7 +63,7 @@ export function CoverEditor({
 
   function form(): FormData {
     const fd = new FormData();
-    fd.append("event_id", eventId);
+    fd.append(ownerField, ownerId);
     fd.append("role", "cover");
     return fd;
   }
@@ -94,9 +99,9 @@ export function CoverEditor({
     <div className="space-y-3">
       {currentUrl ? (
         // eslint-disable-next-line @next/next/no-img-element -- a picture from Supabase Storage
-        <img src={currentUrl} alt="Kártya kép" className="ev-cover-preview" width={WIDTH} height={HEIGHT} />
+        <img src={currentUrl} alt="Kártya kép" className="ce-cover-preview" width={WIDTH} height={HEIGHT} />
       ) : (
-        <p className="muted text-sm">Nincs kép: a kártya az esemény fajtájának színeit mutatja.</p>
+        <p className="muted text-sm">{emptyText}</p>
       )}
       <div className="flex flex-wrap gap-2">
         <button type="button" className="btn btn-sm" onClick={() => fileInput.current?.click()} disabled={pending}>
@@ -119,9 +124,9 @@ export function CoverEditor({
       />
 
       {src && (
-        <div className="ev-crop">
+        <div className="ce-crop">
           <p className="label">Igazítsd a képet a kártya keretébe</p>
-          <div className="ev-crop-stage">
+          <div className="ce-crop-stage">
             <Cropper
               image={src}
               crop={crop}
@@ -144,7 +149,7 @@ export function CoverEditor({
               step={0.01}
               value={zoom}
               onChange={(e) => setZoom(Number(e.target.value))}
-              className="ev-zoom"
+              className="ce-zoom"
               aria-label="Nagyítás"
             />
           </label>

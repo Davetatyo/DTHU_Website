@@ -7,6 +7,10 @@ const MO = "/meccsszervezo";
 export const routes = {
   /** Site home ("Hírek"). Phase 1: admins only, everyone else is sent to the Meccsszervező. */
   home: "/",
+  /** Every news article (list with category filter and paging) and one article. */
+  news: "/hirek",
+  newsArticle: (slug: string) => `/hirek/${slug}`,
+  newsCategory: (category: string) => `/hirek?rovat=${category}`,
 
   // Full-site pages (phase 1: admins only, see lib/site-mode.ts)
   rankings: "/ranglista",
@@ -29,6 +33,9 @@ export const routes = {
   register: "/regisztracio",
   admin: `${MO}/admin`,
   adminUser: (id: string) => `${MO}/admin/felhasznalo/${id}`,
+  adminNews: `${MO}/admin/hirek`,
+  adminNewsNew: `${MO}/admin/hirek/uj`,
+  adminNewsItem: (id: string) => `${MO}/admin/hirek/${id}`,
   adminEvents: `${MO}/admin/esemenyek`,
   adminEventNew: `${MO}/admin/esemenyek/uj`,
   adminEvent: (id: string) => `${MO}/admin/esemenyek/${id}`,

@@ -33,17 +33,6 @@
 .legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; margin-right: 5px; background: currentColor; vertical-align: -1px; }
 @media (max-width: 560px) { .cal .day { min-height: 58px; } .cal .evl { font-size: 0; height: 6px; padding: 0; } .cal .mt { display: none; } .cal .mdot::after { content: "•"; color: var(--gold); } }
 
-/* ---------- admin: event editor ---------- */
-.ev-cover-preview { width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 6px; border: 1px solid var(--line); }
-.ev-crop { border: 1px solid var(--line); border-radius: 8px; background: var(--bg2); padding: 14px; }
-/* react-easy-crop fills its positioned parent; touch-action lets fingers drag and pinch. */
-.ev-crop-stage { position: relative; height: 260px; border-radius: 6px; overflow: hidden; background: #000; touch-action: none; }
-.ev-crop-stage .reactEasyCrop_CropArea { color: rgba(0, 0, 0, 0.6); border: 2px solid var(--gold); }
-.ev-zoom { flex: 1; accent-color: var(--gold); }
-.ev-block { border: 1px solid var(--line); border-radius: 8px; padding: 10px; background: var(--bg2); display: grid; gap: 8px; }
-.ev-block-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.ev-block-img { max-height: 220px; width: auto; max-width: 100%; border-radius: 6px; }
-
 /* ---------- event page ---------- */
 .ev-hero { position: relative; overflow: hidden; border: 1px solid var(--line); border-radius: 10px; min-height: 220px; display: flex; align-items: flex-end; color: #f4ecda; isolation: isolate; background: radial-gradient(circle at 75% 25%, var(--c1), var(--c2) 80%); }
 .ev-hero.online { --c1: #4f8fe0; --c2: #2a2147; }
@@ -56,9 +45,4 @@
 .ev-hero-in h1 { font-size: 30px; font-weight: 800; line-height: 1.15; text-transform: uppercase; letter-spacing: 0.02em; }
 .ev-hero-in .muted { color: #cfc6b4; }
 .ev-hero .chip { background: rgba(10, 8, 14, 0.7); }
-.ev-body { display: grid; gap: 12px; }
-.ev-body h2 { font-size: 20px; font-weight: 800; color: var(--gold); margin-top: 6px; }
-.ev-body p { white-space: pre-line; line-height: 1.6; }
-.ev-body figure img { width: 100%; height: auto; border-radius: 8px; border: 1px solid var(--line); }
-.ev-body figcaption { color: var(--muted); font-size: 14px; margin-top: 4px; }
 @media (min-width: 640px) { .ev-hero { min-height: 300px; } .ev-hero-in h1 { font-size: 38px; } }

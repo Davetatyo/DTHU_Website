@@ -5,15 +5,16 @@ import { MatchList } from "@/features/match-organizer/components/MatchList";
 import { StatusBadge } from "@/features/match-organizer/components/StatusBadge";
 import { getActiveTournament, getLatestRound, getRoundMatches, isParticipant } from "@/features/match-organizer/lib/data";
 import { DEFAULT_TIMEZONE, timeLeft } from "@/features/match-organizer/lib/time";
-import { NEWS, NEWSART, NEWSLBL, NEWSLINK } from "@/features/landing-page/data/news";
+import { NewsCard } from "@/features/landing-page/components/NewsCard";
+import { getPublishedNews } from "@/features/landing-page/lib/news-data";
 import { PowerRanking } from "@/features/rankings/components/PowerRanking";
 import { loadRanking, rowOf } from "@/features/rankings/lib/load";
 import { getCurrentProfile, sameName } from "@/lib/auth";
 import { routes } from "@/lib/routes";
 import "@/features/landing-page/news.css";
 
-// Site home ("Hírek"), prototype V3. The tournament banner and the match schedule are real
-// Meccsszervező data; news, ranking numbers and tickets are sample data for now.
+// Site home ("Hírek"), prototype V3. The tournament banner, the match schedule and the latest
+// news are real data; ranking numbers and tickets are sample data for now.
 export default async function NewsPage() {
   const viewer = await getCurrentProfile();
   const tz = viewer?.timezone ?? DEFAULT_TIMEZONE;
@@ -28,6 +29,7 @@ export default async function NewsPage() {
   const opp = myMatch && (meSide === myMatch.a ? myMatch.b : myMatch.a);
   const upcoming = matches.filter((m) => m.status === "confirmed" && m.scheduled_at && Date.parse(m.scheduled_at) > Date.now() - 86_400_000);
   const ranking = await loadRanking();
+  const { rows: news } = await getPublishedNews({ perPage: 4 });
   const myTickets = rowOf(ranking, viewer?.karnyx_name)?.tix;
 
   return (
@@ -75,19 +77,17 @@ export default async function NewsPage() {
       <section>
         <div className="hh">
           <h2>Hírek</h2>
+          <Link href={routes.news}>Minden hír ›</Link>
         </div>
-        <div className="news4">
-          {NEWS.map((n) => (
-            <Link key={n.t} className="ncard" href={NEWSLINK[n.i]}>
-              <span className="pic">
-                <Art spec={NEWSART[n.i]} />
-              </span>
-              <span className="lbl">{NEWSLBL[n.i]}</span>
-              <b>{n.t}</b>
-              <small>{n.d}</small>
-            </Link>
-          ))}
-        </div>
+        {news.length ? (
+          <div className="news4">
+            {news.map((n) => (
+              <NewsCard key={n.id} article={n} timeZone={tz} />
+            ))}
+          </div>
+        ) : (
+          <p className="card muted">Még nincs hír.</p>
+        )}
       </section>
 
       <div className="l3">
