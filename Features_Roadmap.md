@@ -504,6 +504,21 @@ logged-in players; no saving or XP yet.
 
 ---
 
+### R13 · Szemfüles (spot the differences)
+
+**Status:** Built and live for admins (v2.17, 2026-11-03; see `src/features/games/README.md`).
+· **Feature id:** `games` · **Depends on:** nothing
+
+Spot-the-differences pictures to choose from; the first is "Tea Party" (10 differences).
+Owner decisions (2026-11-03): +10 per difference, −5 per wrong tap (never below 0); 60
+seconds, then the score counts; titles 100% Szemfüles, 80% Sasszem, 60% Ügyeske, otherwise a
+congratulation. New pictures: the owner sends two images, the differences are marked in code
+(an admin upload screen is possible later).
+
+**Open questions:** none.
+
+---
+
 ## Built
 
 Format: `R# · name · version · date · one line`. (Built items keep their full entry above
@@ -515,6 +530,7 @@ while their docs point there.)
 - R6 · Játékok hub · v2.11 · 2026-11-03 · games tab with cards.
 - R11 · Taktikai Előny · v2.11 · 2026-11-03 · the Hadvezér guesses your hero.
 - R12 · Kockázat · v2.13 · 2026-11-03 · dice poker against the Barbarian.
+- R13 · Szemfüles · v2.17 · 2026-11-03 · spot the differences, first picture Tea Party.
 
 ## Dropped
 

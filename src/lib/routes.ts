@@ -20,6 +20,7 @@ export const routes = {
   games: "/jatekok",
   tacticianGame: "/jatekok/taktikai-elony",
   diceGame: "/jatekok/kockazat",
+  spotGame: "/jatekok/szemfules",
   shop: "/bolt",
   rulebook: "/szabalytar",
   rule: (id: string) => `/szabalytar/${id}`,

@@ -4,8 +4,8 @@
 |---|---|
 | Folder | `src/features/games/` |
 | Branch | `feature/games` |
-| Route | `/jatekok` (hub), `/jatekok/taktikai-elony`, `/jatekok/kockazat` (pages in `src/app/(site)/jatekok/`) |
-| Status | **preview**: admins only until the full site opens. Roadmap: R6 (hub), R11 (Taktikai Előny), R12 (Kockázat), R7 (Kvíz, parked) |
+| Route | `/jatekok` (hub), `/jatekok/taktikai-elony`, `/jatekok/kockazat`, `/jatekok/szemfules` (pages in `src/app/(site)/jatekok/`) |
+| Status | **preview**: admins only until the full site opens. Roadmap: R6 (hub), R11 (Taktikai Előny), R12 (Kockázat), R13 (Szemfüles), R7 (Kvíz, parked) |
 
 ## What it is
 
@@ -19,6 +19,7 @@ The Játékok menu tab (after Bolt): a hub with one card per game (`lib/hub.ts`)
   hero (those are filtered out in `lib/tactician-data.ts`). The stage is sized to the screen
   below the top bar and scrolled to the middle when the page opens and when a game starts.
 - **Kockázat** (live for admins): dice poker against the Barbarian, who turns into your fan.
+- **Szemfüles** (live for admins): spot the 10 differences in 60 seconds.
 - **Kvíz**: parked, shown as "Hamarosan".
 
 ## Taktikai Előny
@@ -67,6 +68,25 @@ The Játékok menu tab (after Bolt): a hub with one card per game (`lib/hub.ts`)
 - `components/stage.ts`: shared by both games (typed speech, vibration, sizing and centring
   the stage below the top bar).
 - Pictures: `public/jatekok/barbar-harcos.jpg`, `barbar-rajongo.jpg`.
+
+## Szemfüles
+
+- Owner decisions (2026-11-03): +10 per difference, −5 per wrong tap, never below 0; 60 s;
+  titles by share of the maximum (100% Szemfüles, 80% Sasszem, 60% Ügyeske, else
+  Gratulálunk); pictures stacked on phones with forgiving taps; personal best kept in the
+  browser (`localStorage`); no host character; logged-in players; no saving or XP.
+- `lib/spot.ts` (+ tests): `PICTURES` (two images + the differences as shares of the
+  picture's width/height and a label), `hitSpot()` (30% tolerance, a fingertip minimum),
+  scoring and `title()`.
+- `components/SpotGame.tsx` + `szemfules.css`: picture picker (with "Legjobb"), 3-2-1
+  countdown (pictures blurred until "Rajt!"), the two pictures (gold rings drawn on both for a
+  hit, red ✕ and −5 with a shake for a miss, double taps within 300 ms cost once), clock bar
+  (red in the last 10 s), results with the title stamp, counting score, and the missed
+  differences blinking in red.
+- **Adding a picture:** put the two versions in `public/jatekok/szemfules/` and add an entry
+  to `PICTURES`. To find the differences, compare the two images (pixel difference, blurred
+  against JPEG noise) and confirm each with the owner: the second image of an AI-generated
+  pair is redrawn everywhere, so not every changed pixel is a real difference.
 
 ## Adding a game
 
