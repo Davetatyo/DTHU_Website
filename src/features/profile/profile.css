@@ -1,0 +1,26 @@
+@layer components {
+  /* ---------- profile picture (AvatarEditor) ---------- */
+  .avatar-photo {
+    width: 84px;
+    height: 84px;
+    flex: none;
+    border-radius: 50%;
+    border: 2px solid var(--gold);
+    object-fit: cover;
+    box-shadow: 0 3px 10px var(--shadow);
+  }
+  .avatar-empty { display: grid; place-items: center; background: var(--bg2); color: var(--gold); }
+  .avatar-empty svg { width: 36px; height: 36px; }
+  .avatar-crop { border: 1px solid var(--line); border-radius: 8px; background: var(--bg2); padding: 14px; }
+  /* react-easy-crop fills its positioned parent; touch-action lets fingers drag and pinch the photo. */
+  .avatar-crop-stage { position: relative; height: 280px; border-radius: 6px; overflow: hidden; background: #000; touch-action: none; }
+  .avatar-zoom { flex: 1; accent-color: var(--gold); }
+
+  /* ---------- admin: Profil szerkesztése, ban ---------- */
+  .danger-zone { border: 1px solid color-mix(in srgb, var(--danger) 45%, var(--line)); border-radius: 8px; padding: 14px; }
+  .danger-zone h2 { color: var(--danger); }
+}
+
+/* Outside the layer on purpose: react-easy-crop injects its own unlayered styles, which would
+   beat anything inside @layer. */
+.avatar-crop-stage .reactEasyCrop_CropArea { color: rgba(0, 0, 0, 0.6); border: 2px solid var(--gold); }

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { LogoutIcon, UserIcon } from "@/components/icons";
 import { getAdminView, getCurrentProfile } from "@/lib/auth";
+import { avatarPublicUrl } from "@/lib/avatar-url";
 import { routes } from "@/lib/routes";
 import { seesFullSite } from "@/lib/site-mode";
 import { ViewAsToggle } from "./ViewAsToggle";
@@ -16,6 +17,7 @@ export async function SiteHeader({ tabs, subTabs, section }: { tabs: NavItem[]; 
   const profile = await getCurrentProfile();
   const adminView = await getAdminView();
   const name = profile ? (profile.karnyx_name ?? profile.display_name ?? "Profil") : null;
+  const avatar = avatarPublicUrl(profile?.avatar_path);
 
   return (
     <header className="topbar">
@@ -42,9 +44,13 @@ export async function SiteHeader({ tabs, subTabs, section }: { tabs: NavItem[]; 
                 </>
               )}
               <Link href={routes.profile} className="tb-user" title="Profilom">
-                <span className="ini">
-                  <UserIcon />
-                </span>
+                {avatar ? (
+                  <span className="ini" style={{ backgroundImage: `url(${avatar})`, backgroundSize: "cover", backgroundPosition: "center" }} aria-hidden />
+                ) : (
+                  <span className="ini">
+                    <UserIcon />
+                  </span>
+                )}
                 <span className="truncate">{name}</span>
               </Link>
               <form action={routes.signout} method="post">

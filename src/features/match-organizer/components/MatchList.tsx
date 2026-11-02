@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { HeroAvatar } from "@/components/HeroAvatar";
+import { PlayerAvatar } from "@/features/profile/components/PlayerAvatar";
 import { sameName } from "@/lib/auth";
 import { routes } from "@/lib/routes";
 import { groupMatches } from "@/features/match-organizer/lib/schedule";
@@ -20,7 +20,7 @@ function Side({ player, side }: { player: Player | null; side: "l" | "r" }) {
   }
   return (
     <span className={`pl ${side}`}>
-      <HeroAvatar name={player.karnyx_name} hero={player.heroes[0]} />
+      <PlayerAvatar name={player.karnyx_name} hero={player.heroes[0]} />
       <span className="min-w-0">
         <b>{player.karnyx_name}</b>
         {player.heroes.length > 0 && <small>{player.heroes.slice(0, 2).join(" · ")}</small>}

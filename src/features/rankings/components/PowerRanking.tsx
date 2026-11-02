@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { HeroAvatar } from "@/components/HeroAvatar";
+import { PlayerAvatar } from "@/features/profile/components/PlayerAvatar";
 import { routes } from "@/lib/routes";
 import { movement, type RankRow } from "../lib/ranking";
 import "../rankings.css";
@@ -15,7 +15,7 @@ export function PowerRanking({ rows, limit, me }: { rows: RankRow[]; limit: numb
           <Link key={r.p} href={routes.rankings} className={`pr-row${r.p === me ? " me" : ""}`}>
             <span className="n">{i + 1}</span>
             <span className={`mv ${cls}`}>{label}</span>
-            <HeroAvatar name={r.p} hero={r.hero} />
+            <PlayerAvatar name={r.p} hero={r.hero} />
             <span className="min-w-0">
               <b>{r.p}</b>
               <small>{r.hero}</small>

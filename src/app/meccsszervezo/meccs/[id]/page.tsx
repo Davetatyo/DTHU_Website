@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 import { CopyButton } from "@/components/CopyButton";
 import { SlotPicker } from "@/features/match-organizer/components/SlotPicker";
 import { StatusBadge } from "@/features/match-organizer/components/StatusBadge";
-import { HeroAvatar } from "@/components/HeroAvatar";
+import { PlayerAvatar } from "@/features/profile/components/PlayerAvatar";
 import { SubmitButton } from "@/components/SubmitButton";
 import { InfoTip } from "@/components/InfoTip";
 import { getAdminView, getCurrentProfile, sameName } from "@/lib/auth";
@@ -26,7 +26,7 @@ function PlayerCard({ player, profile, showContacts }: { player: Player | null; 
   return (
     <div className="card">
       <div className="flex items-center gap-3">
-        <HeroAvatar name={player.karnyx_name} hero={player.heroes[0]} />
+        <PlayerAvatar name={player.karnyx_name} hero={player.heroes[0]} />
         <div className="min-w-0">
           <div className="text-lg font-bold">{player.karnyx_name}</div>
           {player.heroes.length > 0 && <div className="muted text-sm">{player.heroes.join(" · ")}</div>}
@@ -126,13 +126,13 @@ export default async function MatchPage({
           </div>
           <div className="vsbox">
             <div className="p">
-              <HeroAvatar name={match.a.karnyx_name} hero={match.a.heroes[0]} size="lg" />
+              <PlayerAvatar name={match.a.karnyx_name} hero={match.a.heroes[0]} size="lg" />
               <h1 className="text-xl font-extrabold sm:text-2xl">{match.a.karnyx_name}</h1>
               <small>{match.a.heroes.join(" · ")}</small>
             </div>
             <span className="vsx text-4xl">VS</span>
             <div className="p">
-              <HeroAvatar name={match.b?.karnyx_name ?? null} hero={match.b?.heroes[0]} size="lg" />
+              <PlayerAvatar name={match.b?.karnyx_name ?? null} hero={match.b?.heroes[0]} size="lg" />
               <h2 className="text-xl font-extrabold sm:text-2xl">{match.b?.karnyx_name ?? "Bye"}</h2>
               <small>{match.b ? match.b.heroes.join(" · ") : "nincs ellenfél"}</small>
             </div>

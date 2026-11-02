@@ -1,7 +1,8 @@
 # Project state: DTHU website
 
-**Current version: v2.0 (in development, not deployed).** Live: https://dthu.hu still runs
-**v1.2** from the old repository github.com/Davetatyo/DT_Match_Organizer (commit `a278e0a`).
+**Current version: v2.1** (2026-11-02). Live: https://dthu.hu builds from this repository's
+`main` (the owner moved Vercel over around 2026-11-01; checked live 2026-11-02). Every push to
+`main` deploys within a minute.
 **Launch phase: 1**: the public sees only the Meccsszervező; the whole site from the prototype
 is built and visible to **signed-in admins** as a developer preview. See "Launch plan".
 
@@ -90,9 +91,22 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 | `links` Linkek | `/linkek` | preview | real links | — |
 | `alchemist` Alkimista | `/alkimista` + help vial | preview | knowledge base from the prototype; unanswered questions only in the browser | admin inbox for unanswered questions |
 | `register-page` Regisztráció | `/regisztracio` | **live** | static guide content; tournament banner real | owner review of Hungarian texts |
+| `profile` Profilkép, Profil szerkesztése, Kitiltás | `/meccsszervezo/profil`, `/meccsszervezo/admin/felhasznalo/<id>` | **live, test phase** (v2.1): uploads only for the owner (`AVATAR_TEST_MODE`); admin page and bans for all admins | all real | owner tests live; then set `AVATAR_TEST_MODE = false` |
 
 ## Needs the owner
 
+0. **Test the profile picture + ban work live (v2.1 on dthu.hu):**
+   1. Supabase → SQL Editor: run `supabase/migrations/0002_profile_avatars_and_bans.sql`
+      (adds `profiles.avatar_path`, `banned_at`, `banned_by` and the `avatars` storage bucket;
+      only adds things). Without it the pages still work, but uploads and bans fail with an
+      error message.
+   2. Local login landed on dthu.hu (2026-11-02): Supabase → Authentication → URL Configuration
+      → Redirect URLs is probably missing `http://localhost:3000/auth/callback`, so Supabase
+      falls back to the Site URL. Add it to test locally again.
+   3. Profilom: upload, move/zoom, Mentés; check the header and your match rows; Csere; Törlés.
+   4. Admin felület → a user → "Profil szerkesztése": Facebook name / time zone save; picture
+      remove/replace. Ban only a test account (e.g. a second Discord account of yours): Kitiltás
+      → Igen, kitiltom → that account is logged out and can't log in; then Tiltás feloldása.
 1. **Follow [docs/vercel.md](docs/vercel.md)**: new Vercel project for DTHU_Website, test on its
    address (admin + player login), then move dthu.hu over between rounds.
 2. Carried over from DT_Match_Organizer `state.md` (2026-10-30), status unknown here, please
@@ -158,6 +172,35 @@ quiz) are in
 ## Handover log
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
+
+### 2026-11-02 (evening) · Profile pictures, admin Profil szerkesztése, ban (feature/profile)
+
+- **Merged to `main` and pushed as v2.1 at the owner's request** (local login landed on dthu.hu,
+  so he tests live). Branch `feature/profile` pushed too.
+  Agreed with the owner: upload only on his own profile for now; pictures shown to everyone
+  right away; admins can remove/replace pictures and ban (Discord ID) with a two-step
+  confirmation instead of deleting users.
+- New `src/features/profile/` (see its README): AvatarEditor (react-easy-crop 6.2.4, crop in
+  a round frame, browser shrinks to 512×512 WebP ≤ 300 KB), PlayerAvatar (picture by Karnyx
+  name, else hero art) used at every former HeroAvatar call site, BanButton, actions for
+  avatar upload/remove (own + admin) and ban/unban, pure checks with tests (file format by
+  magic bytes, size, ban rules).
+- Site-wide: `src/lib/avatar-url.ts`, `src/lib/image-crop.ts` (reusable for R2 pictures),
+  header pill shows the picture, `HeroAvatar` takes `photo`.
+- Ban: `profiles.banned_at/banned_by` + Supabase Auth ban (`ban_duration`); middleware signs
+  banned users out → `/meccsszervezo/login?hiba=tiltva`; `getCurrentProfile` returns null for
+  them; login callback refuses them. Admins/owner/self can't be banned. Admin list shows a
+  "kitiltva" badge; its button is now "Profil szerkesztése", which also edits Facebook name
+  and time zone (`adminSaveProfile`, formerly `adminSetKarnyxName`).
+- Migration `supabase/migrations/0002_profile_avatars_and_bans.sql` (owner runs it first).
+- Verified: types, lint, 90 tests, production build; screenshots with a temporary fake login
+  (TEMP-PREVIEW, reverted, grep clean) of Profilom with/without picture and the crop open
+  (desktop dark, 375 px light), the overview match row with the picture, the admin page with
+  the ban confirmation (375 px dark, desktop light). Fixed: empty display names showed
+  "Biztosan kitiltod: ?". **Not verified:** real upload, Supabase Auth ban and the logout of
+  a banned user (need the migration and a real login on port 3000).
+- Next: owner runs the migration and tests ("Needs the owner" 0); then commit on the branch,
+  merge to main, and later set `AVATAR_TEST_MODE = false` to open uploads to everyone.
 
 ### 2026-11-02 (later) · Roadmap R8: Discord login without the Authorize screen
 
@@ -369,6 +412,21 @@ webhook, no cron secret), so nothing local can post to Discord.
 ---
 
 ## Changelog
+
+### v2.1 · 2026-11-02 · merge of `feature/profile`
+**Changed:**
+- Profilom: profile picture upload with crop (move, zoom) in a round frame; the browser
+  shrinks it to 512×512 px. Test phase: only the owner sees the upload.
+- Uploaded pictures replace the hero artwork wherever a player avatar shows (header, match
+  rows, matchup grid, match page, Hírek, Ranglista).
+- Admin: "Karnyx név szerkesztése" became "Profil szerkesztése" (Karnyx name, Facebook name,
+  time zone, remove/replace picture) with a two-step "Kitiltás" (ban) and "Tiltás feloldása".
+  Banned users are logged out and can't log in with that Discord account.
+**Manual steps:** run `supabase/migrations/0002_profile_avatars_and_bans.sql` in Supabase
+(new columns + `avatars` storage bucket). The code tolerates it missing, but uploads and bans
+need it.
+**Verified:** types, lint, 90 tests, production build, screenshots with a fake login (desktop +
+375 px, dark + light). Real upload and ban to be tested live by the owner.
 
 ### v2.0 · not deployed yet · commits `89237b9`, `9b4ad23`, `71f9cbf` + docs
 Major version agreed with the owner (2026-10-30): the Meccsszervező becomes the first feature
