@@ -192,7 +192,9 @@ Newest first. Each session adds an entry (see CLAUDE.md → "End of every sessio
   new Szabálytár addresses; the hero count comes from the Szabálytár (45).
 - Verified: types, lint, 153 tests (new `alchemist/lib/knowledge.test.ts` against the real
   content); chat page in the browser (TEMP-PREVIEW, reverted).
-- Branch `feature/alchemist` (from `main`), merged to `main` after the owner's OK.
+- Pushed with the owner's OK. Meant for `feature/alchemist`, but the switch to that old branch
+  failed and the commit landed on `main` directly (`c16fc8a`); `feature/alchemist` was then
+  fast-forwarded to `main`, so both match.
 
 ### 2026-11-03 (later) · Szabálytár: the 5 newer heroes translated (feature/rulebook, v2.9)
 
@@ -603,7 +605,7 @@ webhook, no cron secret), so nothing local can post to Discord.
 
 ## Changelog
 
-### v2.10 · 2026-11-03 · merge of `feature/alchemist`
+### v2.10 · 2026-11-03 · `c16fc8a` on `main`
 **Changed (admins only, phase 1):** the Alchemist answers about every hero and token (all 45
 heroes, including the 5 new ones) from the Szabálytár pages, with a link to the page; ticket
 (Jegyek) and shop (Bolt) answers and suggestions removed; rule links go to the new Szabálytár
