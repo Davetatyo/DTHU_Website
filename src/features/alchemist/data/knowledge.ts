@@ -1,7 +1,5 @@
 // Content from reference/artifact (the prototype), unchanged unless noted.
 
-import { RT_HEROES } from "@/features/rulebook/data/heroes";
-
 /** Short answers to rule pages: rule id → [answer HTML, extra keywords]. */
 export const AQ: Record<string, [string, string]> = {
   // rövid válaszok a szabálylapokhoz + extra kulcsszavak
@@ -41,9 +39,7 @@ export type SiteIntent = { id: string; q: string; a: string; link?: [string, str
 
 /** Questions about the site and small talk. Links use routes (converted from the prototype's #hash links). */
 export const SITE_INTENTS: SiteIntent[] = [
-  {id:'s-ki', q:'ki vagy te kicsoda neved alkimista mi vagy', a:'Az <b>Alkimista</b> vagyok, a DTHU szabályfőzetmestere! Kérdezz a szabályokról, a versenyről vagy a jegyekről. Mesterséges intelligencia nincs bennem, csak egy jól felcímkézett polcnyi előre megírt válasz.'},
-  {id:'s-jegy', q:'jegy jegyek hogyan kapok szerzek gyujt ticket', a:'Jegyet kapsz minden lejátszott online meccsért (+1), győzelemért (+1), teljes bajnokságért (+3), élő eseményért (+2), dobogóért (+5/+3/+2) és szervezési segítségért (+2).', link:['/jegyek','Jegyek oldal']},
-  {id:'s-bolt', q:'bolt shop vasarol bevalt mire koltheto jutalom mikor nyilik', a:'A bolt még nem nyílt meg. Ha megnyit, rangokra, profilkeretre, sorsolásra, nevezési kedvezményre és kockakészletre válthatod a jegyeidet. Addig jelöld meg, mi érdekel!', link:['/bolt','Bolt']},
+  {id:'s-ki', q:'ki vagy te kicsoda neved alkimista mi vagy', a:'Az <b>Alkimista</b> vagyok, a DTHU szabályfőzetmestere! Kérdezz a szabályokról, a hősökről vagy a versenyről. Mesterséges intelligencia nincs bennem, csak egy jól felcímkézett polcnyi előre megírt válasz.'},
   {id:'s-idopont', q:'idopont idopontfoglalo egyeztet meccs mikor jatszunk javasol ellenfel megbeszel', a:'Az Időpontfoglalóban nyisd meg a meccsedet, és javasolj legfeljebb 3 időpontot. Az ellenfeled az „Elfogadom” gombbal erősíti meg.', link:['/meccsszervezo','Időpontfoglaló']},
   {id:'s-eredmeny', q:'eredmeny rogzit karnyx tabella beir hova irom', a:'Az eredményt a <b>Karnyxban</b> rögzítsd, ott vezetik a hivatalos tabellát. Itt csak a „Lejátszottuk” gombot nyomod meg.', link:['https://karnyx.app/','Karnyx megnyitása']},
   {id:'s-hatarido', q:'hatarido meddig lejar fordulo vege mennyi ido', a:`Az aktuális forduló határideje: <b>hétfő (11.02.) 12:25</b>. Egy forduló legfeljebb egy hétig tart.`, link:['/meccsszervezo','Időpontfoglaló']},
@@ -52,7 +48,7 @@ export const SITE_INTENTS: SiteIntent[] = [
   {id:'s-naptar', q:'naptar esemenynaptar versenynaptar feliratkoz google apple outlook esemeny verseny mikor lesz', a:'Az Eseménynaptárban látod a következő fordulókat, élő versenyeket és közösségi programokat, a meccseket pedig a Google, Apple vagy Outlook naptáradba is felveheted.', link:['/esemenynaptar','Eseménynaptár']},
   {id:'s-discord', q:'discord belep belepes regisztral fiok', a:'Discorddal lépsz be, külön jelszó nincs. Így az ellenfeled megtalál, és a bot is meg tud jelölni.', link:['https://discord.gg/Y5mJ6Sewy','Csatlakozz a Discord szerverhez']},
   {id:'s-titok', q:'titok titkos easter egg rejtett szin tema lila zold', a:'Psszt… vidd az egeret a téma gomb fölé, és tartsd ott egy másodpercig. Hihi!'},
-  {id:'s-hosok', q:'hos hosok hany hos lista melyik hos karakter', a:`Jelenleg <b>${RT_HEROES.length} hőst</b> ismerek. A teljes listát a Szabálytárban találod.`, link:['/szabalytar?tab=hosok','Hősök listája']},
+  {id:'s-hosok', q:'hos hosok hany hos lista melyik hos karakter', a:'A Szabálytárban minden hősnek saját oldala van, kérdezz rá bármelyikre név szerint!', link:['/szabalytar/hosok','Hősök listája']},
   {id:'s-szin', q:'kedvenc szin szined szinem', a:'Lila, természetesen! Mint a kabátom, a kesztyűm és a legtöbb robbanásom.'},
   {id:'s-vicc', q:'vicc mesélj viccet nevess unatkoz', a:'Miért nem játszik a Ninja King of the Hillt? Mert sosem találják meg, hogy ki legyen a Vezető! Ha-haa… jó, a főzeteim jobbak.'},
   {id:'s-koszi', q:'koszi koszonom kosz thanks szuper kiraly orulok', a:'Szívesen! Ha újabb kérdés bugyog fel benned, itt leszek a lombikjaim között.'},

@@ -13,7 +13,7 @@ A rule-based helper (no AI): players ask in Hungarian and get a canned answer wi
 
 ## What's built
 
-Page `src/app/(site)/alkimista/` with `components/Chat`; `components/HelpVial` (floating "?" on every full-site page, pops up when the Szabálytár or GYIK is opened). Matcher `lib/matcher.ts` and replies `lib/reply.ts` (both tested); answers in `data/knowledge.ts`. Unanswered questions are kept in the browser's localStorage for now (no admin inbox yet).
+Page `src/app/(site)/alkimista/` with `components/Chat`; `components/HelpVial` (floating "?" on every full-site page, pops up when the Szabálytár or GYIK is opened). Matcher `lib/matcher.ts` and replies `lib/reply.ts` (both tested); answers in `data/knowledge.ts`. Heroes and tokens come from the Szabálytár (`features/rulebook/lib/glossary.ts`, passed to `Chat` by the `/alkimista` page): every hero and token can be asked about by its Hungarian or English name and the answer links to its page (`lib/knowledge.test.ts`). Names are matched whole, not stemmed; answers that rest only on typo-corrected words are offered as "erre gondoltál?" instead of asserted. No ticket or shop answers (owner, 2026-11-03). Unanswered questions are kept in the browser's localStorage for now (no admin inbox yet).
 
 ## Design
 

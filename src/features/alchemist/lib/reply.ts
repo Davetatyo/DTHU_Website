@@ -14,11 +14,11 @@ export const SUGGESTIONS = [
   "Hogyan állíthatom meg az Ultimate-et?",
   "Mennyi CP-vel kezdek?",
   "Mi a tiszta sebzés?",
-  "Hogyan szerzek jegyet?",
+  "Mit tud a Druida?",
   "Hogyan egyeztetek időpontot?",
 ];
 export const GREETING =
-  "Ha-haa! Az <b>Alkimista</b> vagyok, a szabályok főzetmestere. Kérdezz bármit a Dice Throne szabályairól, a versenyről vagy a jegyekről!";
+  "Ha-haa! Az <b>Alkimista</b> vagyok, a szabályok főzetmestere. Kérdezz bármit a Dice Throne szabályairól, a hősökről vagy a versenyről!";
 
 /** A bot message. html is our own trusted content (answers from the knowledge base). */
 export type BotReply = {
@@ -47,7 +47,7 @@ export function reply(q: string, rand: Rand = Math.random): BotReply {
   const [top, sec] = res;
   if (/^\s*(ki|mi|kicsoda) (vagy|vagytok)\b/.test(anorm(q))) return answerById("s-ki", rand)!;
   if (!qt.length) return { html: "Csak bugyogás jött ki… írj egy kérdést a szabályokról!" };
-  if (top && top.s >= 2.2) {
+  if (top && top.s >= 2.2 && !top.fuzzy) {
     if (sec && sec.s >= top.s * 0.85 && sec.it.a !== top.it.a && !top.it.id.startsWith("s-")) {
       return { html: "Hmm, kettő is bugyog a fejemben. Melyikre gondolsz?", choices: [top, sec].map((r) => ({ id: r.it.id, title: r.it.title })) };
     }
@@ -58,14 +58,14 @@ export function reply(q: string, rand: Rand = Math.random): BotReply {
   const tok = ents.find((e) => e.kind === "token");
   if (hero) {
     return {
-      html: `${pick(OPENERS, rand)} A(z) <b>${hero.name}</b> részletes hőslapja (képességek, kártyák) még készül a Szabálytárban. Addig általános szabályokban segítek!`,
-      link: ["/szabalytar?tab=hosok", "Hősök listája"],
+      html: `${pick(OPENERS, rand)} Erre pontosan nem tudok felelni, de a(z) <b>${hero.name}</b> hőslapján megtalálod a jelzőit és a szabálytisztázásait.`,
+      link: hero.url ? [hero.url, `${hero.name} hőslapja`] : ["/szabalytar/hosok", "Hősök listája"],
     };
   }
   if (tok) {
     return {
-      html: `${pick(OPENERS, rand)} A(z) <b>${tok.name}</b> jelző pontos leírása még készül. Az általános jelzőszabály: az elkölthető jelzőt bármikor elköltheted, a tartós addig marad, amíg el nem távolítják.`,
-      link: ["/szabalytar/allapotjelzok", "Állapotjelzők"],
+      html: `${pick(OPENERS, rand)} Erre pontosan nem tudok felelni, de a(z) <b>${tok.name}</b> jelző oldalán minden részlet megvan. Az általános jelzőszabály: az elkölthető jelzőt bármikor elköltheted, a tartós addig marad, amíg el nem távolítják.`,
+      link: tok.url ? [tok.url, `${tok.name} oldala`] : ["/szabalytar/allapotjelzok", "Állapotjelzők"],
     };
   }
   if (top && top.s >= 1.2) {

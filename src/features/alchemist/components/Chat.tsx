@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { setKnowledge, type Knowledge } from "../lib/matcher";
 import { answerById, GREETING, reply, SUGGESTIONS, type BotReply } from "../lib/reply";
 import "../alchemist.css";
 
@@ -49,8 +50,12 @@ function BotBubble({ r, onAsk, onPick, onSubmit }: { r: BotReply; onAsk: (q: str
   );
 }
 
-/** Chat with the Alchemist: rule-based answers, no AI. */
-export function Chat() {
+/**
+ * Chat with the Alchemist: rule-based answers, no AI. `knowledge` (the Szabálytár's heroes and
+ * tokens) lets it answer about every hero and token with a link to its page.
+ */
+export function Chat({ knowledge }: { knowledge?: Knowledge }) {
+  useMemo(() => setKnowledge(knowledge ?? null), [knowledge]);
   const [log, setLog] = useState<Msg[]>([{ bot: true, r: { html: GREETING } }]);
   const [typing, setTyping] = useState(false);
   const [input, setInput] = useState("");

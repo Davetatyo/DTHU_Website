@@ -26,7 +26,7 @@ describe("match", () => {
     expect(match("Hogyan állíthatom meg az ultimatet?").res[0].it.title).toMatch(/ultimate/i);
   });
   it("answers site questions", () => {
-    expect(top("Hogyan szerzek jegyet?")).toBe("s-jegy");
+    expect(top("Hogyan egyeztetek időpontot?")).toBe("s-idopont");
   });
   it("recognises heroes", () => {
     expect(entities("Hogy működik a Barbár?").some((e) => e.kind === "hero")).toBe(true);

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Chat } from "@/features/alchemist/components/Chat";
+import { glossary } from "@/features/rulebook/lib/glossary";
 
 export const metadata: Metadata = { title: "Alkimista" };
 
@@ -9,7 +10,7 @@ export default function AlchemistPage() {
       <div className="sec-h">
         <h1>Kérdezd az Alkimistát</h1>
       </div>
-      <Chat />
+      <Chat knowledge={glossary()} />
     </div>
   );
 }

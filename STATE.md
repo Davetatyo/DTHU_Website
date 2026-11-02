@@ -1,6 +1,6 @@
 # Project state: DTHU website
 
-**Current version: v2.9** (2026-11-03). Live: https://dthu.hu builds from this repository's
+**Current version: v2.10** (2026-11-03). Live: https://dthu.hu builds from this repository's
 `main` (the owner moved Vercel over around 2026-11-01; checked live 2026-11-02). Every push to
 `main` deploys within a minute.
 **Launch phase: 1**: the public sees only the Meccsszervező; the whole site from the prototype
@@ -164,9 +164,9 @@ quiz) are in
   their own tables).
 - Login and profile live under `/meccsszervezo`; at the full launch they may belong to a
   site-level account area.
-- The Alchemist answers from the prototype's rule summary (`features/rulebook/data/`), not from
-  the imported RulePop content; its rule links redirect to the new pages
-  (`LEGACY_SLUGS` in `features/rulebook/lib/pages.ts`). Move it onto `content/` later.
+- The Alchemist's rule answers still come from the prototype's summary
+  (`features/rulebook/data/`); heroes and tokens already come from the Szabálytár (v2.10).
+  Its rule links are mapped to the new pages (`LEGACY_SLUGS` in `features/rulebook/lib/pages.ts`).
 - The old class names in `globals.css` are aliased onto the new tokens (`--surface`,
   `--accent`, …); new code should use the design tokens (`--panel`, `--gold`, …) directly.
 
@@ -175,6 +175,24 @@ quiz) are in
 ## Handover log
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
+
+### 2026-11-03 (later still) · Alchemist knows every hero and token; no tickets/shop (v2.10)
+
+- Owner: the Alchemist should answer questions about the new heroes, and stop answering or
+  suggesting anything about Jegyek and Bolt.
+- New `features/rulebook/lib/glossary.ts`: short facts for every hero (name, English name,
+  weapon, complexity, tokens) and token (Hungarian name, stats, summary line, heroes) from the
+  Szabálytár content. The `/alkimista` page passes it to `Chat` → `setKnowledge` in
+  `alchemist/lib/matcher.ts`, which adds one answer per hero and token (linked to its page) and
+  uses them for the "named a hero/token" fallback. Names match as whole words (the stemmer had
+  turned "Szerzetes" into "szerz" = "szerzek"); typo corrections keep the first letter, never
+  land on stop words, and an answer resting only on a corrected word becomes a suggestion.
+- Removed: `s-jegy`, `s-bolt`, the ticket suggestion (now "Mit tud a Druida?"), the
+  jegy/bolt synonyms, ticket mentions in the greeting and "Ki vagy?". Rule links now go to the
+  new Szabálytár addresses; the hero count comes from the Szabálytár (45).
+- Verified: types, lint, 153 tests (new `alchemist/lib/knowledge.test.ts` against the real
+  content); chat page in the browser (TEMP-PREVIEW, reverted).
+- Branch `feature/alchemist` (from `main`), merged to `main` after the owner's OK.
 
 ### 2026-11-03 (later) · Szabálytár: the 5 newer heroes translated (feature/rulebook, v2.9)
 
@@ -584,6 +602,16 @@ webhook, no cron secret), so nothing local can post to Discord.
 ---
 
 ## Changelog
+
+### v2.10 · 2026-11-03 · merge of `feature/alchemist`
+**Changed (admins only, phase 1):** the Alchemist answers about every hero and token (all 45
+heroes, including the 5 new ones) from the Szabálytár pages, with a link to the page; ticket
+(Jegyek) and shop (Bolt) answers and suggestions removed; rule links go to the new Szabálytár
+pages; fewer wrong answers from typo guesses.
+**Players:** nothing changes in the Időpontfoglaló.
+**Manual steps:** none.
+**Verified:** types, lint, 153 tests (new: Alchemist with the Szabálytár glossary), chat page
+in the browser.
 
 ### v2.9 · 2026-11-03 · merge of `feature/rulebook`
 **Changed (admins only, phase 1):** Szabálytár: the 5 newer heroes from rulepop.com (Druida,

@@ -21,6 +21,7 @@ export const plainText = (html: string) =>
     .replace(/&nbsp;/g, " ")
     .replace(/&amp;/g, "&")
     .replace(/\s+/g, " ")
+    .replace(/ ([:.,;!?)])/g, "$1")
     .trim();
 
 /**
