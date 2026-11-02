@@ -1,6 +1,6 @@
 # Project state: DTHU website
 
-**Current version: v2.6** (2026-11-03). Live: https://dthu.hu builds from this repository's
+**Current version: v2.7** (2026-11-03). Live: https://dthu.hu builds from this repository's
 `main` (the owner moved Vercel over around 2026-11-01; checked live 2026-11-02). Every push to
 `main` deploys within a minute.
 **Launch phase: 1**: the public sees only the Meccsszervező; the whole site from the prototype
@@ -88,13 +88,17 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 | `shop` Bolt | `/bolt` | preview | items sample; wishlist only in the browser | shared wishlist, then redeeming (needs tickets) |
 | `rulebook` Szabálytár | `/szabalytar` | preview | content is final text from the prototype | credit/permission wording for Rulepop |
 | `faq` GYIK (site-wide) | `/gyik` | preview | content from the prototype | review texts |
-| `links` Linkek | `/linkek` | preview | real links | — |
+| `links` Linkek | `/linkek`, admin `/meccsszervezo/admin/linkek` | preview (admins only), **admin editor on `main` since v2.7** | links from the `links` table (migration 0006) | owner runs migration 0006, tests live |
 | `alchemist` Alkimista | `/alkimista` + help vial | preview | knowledge base from the prototype; unanswered questions only in the browser | admin inbox for unanswered questions |
 | `register-page` Regisztráció | `/regisztracio` | **live** | static guide content; tournament banner real | owner review of Hungarian texts |
 | `profile` Profilkép, Profil szerkesztése, Kitiltás | `/meccsszervezo/profil`, `/meccsszervezo/admin/felhasznalo/<id>` | **live** (v2.2): every logged-in user can upload a picture; admin page and bans for all admins | all real | badge ring (R3/R4), cosmetics collection |
 
 ## Needs the owner
 
+0. **Linkek (v2.7, on `main`):** run `supabase/migrations/0006_links.sql` in the Supabase SQL
+   Editor if not done yet (new `links` table with the four current links, `link-images`
+   bucket; without it the Linkek page is empty). Then on dthu.hu: Admin felület → Linkek kezelése → Új link, picture, ↑ / ↓,
+   "Látható" off, delete; check `/linkek`.
 0. **Szavazás (v2.6, on `main`):** run `supabase/migrations/0005_polls.sql` in the Supabase SQL
    Editor if not done yet (tables `polls`, `poll_votes`; only adds things; without it saving a
    poll shows an error). Then on dthu.hu: a news article → "+
@@ -168,6 +172,23 @@ quiz) are in
 ## Handover log
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
+
+### 2026-11-03 (end) · Linkek kezelése (feature/links)
+
+- Owner asked for admin-managed links ("same logic, simple"), editor under the Eseménynaptár
+  card. Built on `feature/links` (fast-forwarded to `main`), committed, not merged.
+- Migration `0006_links.sql`: `links` table seeded with the four links the page had, and the
+  `link-images` bucket. `lib/links.ts` (+ tests: form, ordering), `lib/links-data.ts`,
+  `actions/links.ts` (create, save, delete, move ↑/↓, picture upload/remove),
+  `components/LinkTile.tsx`, `LinkFormFields.tsx`; admin pages `…/admin/linkek`, `/uj`,
+  `/<id>`; "Linkek kezelése" card under the Eseménynaptár card; `/linkek` reads the table.
+  Links with no picture show a gold gradient (the old Dice Throne tile picture was a static
+  file, so the seeded links start without pictures).
+- Roadmap: new R9 (built); "Built" section now lists R2 events and news.
+- Verified: types, lint, 139 tests, production build (temporary copy); screenshots with
+  TEMP-PREVIEW sample links (reverted, grep clean): `/linkek` (desktop dark), the admin list
+  and edit page (375 px light). Fixed: the admin list overflowed on phones (now wrapping rows).
+  **Not verified:** real saving, ordering and picture upload (need migration 0006).
 
 ### 2026-11-03 (late night) · Szavazás (polls) in news (feature/landing-page)
 

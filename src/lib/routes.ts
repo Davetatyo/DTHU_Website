@@ -39,6 +39,9 @@ export const routes = {
   adminEvents: `${MO}/admin/esemenyek`,
   adminEventNew: `${MO}/admin/esemenyek/uj`,
   adminEvent: (id: string) => `${MO}/admin/esemenyek/${id}`,
+  adminLinks: `${MO}/admin/linkek`,
+  adminLinkNew: `${MO}/admin/linkek/uj`,
+  adminLink: (id: string) => `${MO}/admin/linkek/${id}`,
 
   // Account pages. They live in the Meccsszervező until the full site gets its own account area.
   login: `${MO}/login`,
