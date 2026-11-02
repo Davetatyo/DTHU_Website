@@ -5,12 +5,13 @@ import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth";
 import { routes } from "@/lib/routes";
 import { createAdminClient } from "@/lib/supabase/server";
-import { imagePathsInUse, type ContentImageResult } from "@/lib/content-blocks";
+import { imagePathsInUse, pollsIn, type ContentImageResult } from "@/lib/content-blocks";
 import { deleteUnusedContentImages, removeContentImage, storeContentImage } from "@/lib/content-images";
 import { nextPublishedAt, parsePublishIntent, PUBLISH_LABELS, publishState, slugify, uniqueSlug } from "@/lib/publishing";
 import { formatDateTime } from "@/features/match-organizer/lib/time";
 import { NEWS_IMAGE_BUCKET, parseNewsBlocks, parseNewsForm } from "@/features/landing-page/lib/news";
 import { getAuthorOptions, getNewsById } from "@/features/landing-page/lib/news-data";
+import { checkPollSetups, syncPolls } from "@/features/landing-page/lib/polls-data";
 
 const MIGRATION_HINT = "Lefuttattad a 0004-es adatbázis-frissítést?";
 const MAX_COVER_BYTES = 600 * 1024;
@@ -65,6 +66,9 @@ export async function saveNews(formData: FormData) {
   if (!blocks.ok) go(url, "hiba", blocks.error);
   const intent = parsePublishIntent(input.intent, input.publish_at, me.timezone);
   if (!intent.ok) go(url, "hiba", intent.error);
+  const polls = pollsIn(blocks.blocks).setups;
+  const pollError = await checkPollSetups(article.id, polls);
+  if (pollError) go(url, "hiba", pollError);
 
   const now = new Date();
   const wasLive = publishState(article.published_at, now) === "live";
@@ -77,6 +81,8 @@ export async function saveNews(formData: FormData) {
     .update({ ...parsed.fields, body: blocks.blocks, published_at: publishedAt, edited_at: editedAt, updated_by: me.id, updated_at: now.toISOString() })
     .eq("id", article.id);
   if (error) go(url, "hiba", "A mentés nem sikerült, próbáld újra.");
+  const syncError = await syncPolls(article.id, polls, me.id);
+  if (syncError) go(url, "hiba", syncError);
 
   await deleteUnusedContentImages(NEWS_IMAGE_BUCKET, article.id, imagePathsInUse(article.cover_path, blocks.blocks));
 
@@ -92,7 +98,7 @@ export async function saveNews(formData: FormData) {
   go(url, "uzenet", message);
 }
 
-/** Deletes an article and all its pictures. */
+/** Deletes an article and all its pictures (its polls and their votes go with it). */
 export async function deleteNews(formData: FormData) {
   await requireAdmin();
   const article = await getNewsById(String(formData.get("news_id") ?? ""));

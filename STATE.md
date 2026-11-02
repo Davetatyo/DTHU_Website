@@ -95,6 +95,11 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 
 ## Needs the owner
 
+0. **Szavazás (branch `feature/landing-page`, committed, not merged):** run
+   `supabase/migrations/0005_polls.sql` in the Supabase SQL Editor (tables `polls`,
+   `poll_votes`; only adds things) before the push. Then on dthu.hu: a news article → "+
+   Szavazás indítása" → publish → vote, change the vote, check live results (a second admin
+   account helps), "Új hír az eredményből".
 0. **Hírek (v2.5, migration 0004 run by the owner):** on dthu.hu as admin: Admin felület → Hírek kezelése → Új hír → card picture, blocks
    (try formatting, list, gallery, a YouTube link, an event card) → publish now / scheduled →
    check `/`, `/hirek` and the article; delete test articles afterwards.
@@ -163,6 +168,24 @@ quiz) are in
 ## Handover log
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
+
+### 2026-11-03 (late night) · Szavazás (polls) in news (feature/landing-page)
+
+- Owner asked for polls in news; decisions via questions: logged-in voters only (one vote per
+  account, changeable until closing), Hírek stays admin-only for now, results after voting
+  (everyone after closing, admins always), votes anonymous, "Egyéb" answers public without
+  names.
+- Migration `0005_polls.sql` (`polls`, `poll_votes`). Shared blocks gained `poll` (setup stored
+  in the article body and synced to `polls` on save) and `pollresult`; editor "+ Szavazás
+  indítása" (options, single/multi, Egyéb, closing time) and "+ Szavazás eredménye".
+  `lib/polls.ts` (+ tests), `lib/polls-data.ts`, `actions/polls.ts`, `components/PollCard.tsx`
+  (vote, change vote, live refresh every 10 s, admin "Új hír az eredményből" → draft with a
+  results block and a link to the original).
+- Verified: types, lint, 134 tests, production build (temporary copy); screenshots with
+  TEMP-PREVIEW sample polls (reverted, grep clean): open poll with the Egyéb box, a voted
+  multi-choice poll with live results and the admin button, a closed result block with Egyéb
+  answers (desktop dark), the poll editor (375 px light). **Not verified:** real voting and the
+  live refresh against the database (needs migration 0005).
 
 ### 2026-11-03 (night) · Hírek built (feature/landing-page)
 

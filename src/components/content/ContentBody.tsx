@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { publicStorageUrl } from "@/lib/storage-url";
 import { videoEmbedUrl, type ContentBlock } from "@/lib/content-blocks";
 import { Gallery } from "./Gallery";
@@ -18,11 +19,14 @@ export function ContentBody({
   bucket,
   host,
   events = {},
+  extras = {},
 }: {
   blocks: ContentBlock[];
   bucket: string;
   host: string;
   events?: Record<string, EmbeddedEvent>;
+  /** Interactive parts a feature renders itself, keyed "poll:<id>" and "pollresult:<id>". */
+  extras?: Record<string, ReactNode>;
 }) {
   if (blocks.length === 0) return null;
   const url = (path: string) => publicStorageUrl(bucket, path) ?? "";
@@ -125,6 +129,10 @@ export function ContentBody({
               </Link>
             );
           }
+          case "poll":
+            return <div key={i}>{extras[`poll:${b.poll.id}`] ?? null}</div>;
+          case "pollresult":
+            return <div key={i}>{extras[`pollresult:${b.id}`] ?? null}</div>;
           case "hr":
             return <hr key={i} className="cb-hr" />;
         }

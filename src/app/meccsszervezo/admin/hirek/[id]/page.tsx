@@ -14,6 +14,7 @@ import { deleteNews, removeNewsCover, saveNews, uploadNewsImage } from "@/featur
 import { NewsFormFields } from "@/features/landing-page/components/NewsFormFields";
 import { NEWS_IMAGE_BUCKET, parseNewsBlocks } from "@/features/landing-page/lib/news";
 import { getAuthorOptions, getNewsById, newsImageUrl } from "@/features/landing-page/lib/news-data";
+import { getPollChoices } from "@/features/landing-page/lib/polls-data";
 import { formatEventDate } from "@/features/timetables/lib/events";
 import { getAllEvents } from "@/features/timetables/lib/events-data";
 
@@ -37,7 +38,7 @@ export default async function EditNewsPage({
   const tz = me.timezone;
   const state = publishState(article.published_at);
   const parsed = parseNewsBlocks(article.body, article.id);
-  const [authors, events] = await Promise.all([getAuthorOptions(), getAllEvents()]);
+  const [authors, events, pollChoices] = await Promise.all([getAuthorOptions(), getAllEvents(), getPollChoices()]);
   const eventOptions = events.map((e) => ({ id: e.id, label: `${e.title} · ${formatEventDate(e.starts_at, e.ends_at, e.all_day, tz)}` }));
   const scheduledAt = state === "scheduled" ? utcToWallTime(new Date(article.published_at!), tz) : "";
 
@@ -99,7 +100,7 @@ export default async function EditNewsPage({
         <section className="card space-y-3">
           <h2 className="text-lg font-bold">
             Tartalom
-            <InfoTip text="Blokkokból áll: bekezdés, felsorolás, idézet, kiemelt doboz, kép, galéria, videó, link, esemény kártya, elválasztó. A szövegben a B / I / 🔗 gombokkal félkövér, dőlt és link is lehet." />
+            <InfoTip text="Blokkokból áll: bekezdés, felsorolás, idézet, kiemelt doboz, kép, galéria, videó, link, esemény kártya, szavazás, szavazás eredménye, elválasztó. A szövegben a B / I / 🔗 gombokkal félkövér, dőlt és link is lehet." />
           </h2>
           <BlocksEditor
             ownerField="news_id"
@@ -109,6 +110,7 @@ export default async function EditNewsPage({
             allowed={ALL_BLOCKS}
             upload={uploadNewsImage}
             events={eventOptions}
+            polls={pollChoices}
           />
         </section>
 

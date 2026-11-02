@@ -17,7 +17,20 @@ export type ContentBlock =
   | { t: "gallery"; paths: string[] }
   | { t: "video"; video: VideoRef }
   | { t: "event"; id: string }
+  | { t: "poll"; poll: PollSetup }
+  | { t: "pollresult"; id: string }
   | { t: "hr" };
+
+/** A poll as the admin sets it up in the editor (saved to the polls table with the article). */
+export type PollSetup = {
+  id: string;
+  question: string;
+  options: { id: string; label: string }[];
+  multi: boolean;
+  other: boolean;
+  /** ISO time when voting closes. */
+  closes_at: string;
+};
 
 export type BlockType = ContentBlock["t"];
 
@@ -36,12 +49,14 @@ export const BLOCK_LABELS: Record<BlockType, string> = {
   gallery: "Galéria",
   video: "Videó",
   event: "Esemény kártya",
+  poll: "Szavazás",
+  pollresult: "Szavazás eredménye",
   hr: "Elválasztó",
 };
 
 /** Blocks events use (owner, 2026-11-03: simple blocks). News may use all of them. */
 export const SIMPLE_BLOCKS: BlockType[] = ["h", "p", "img", "link"];
-export const ALL_BLOCKS: BlockType[] = ["h", "p", "list", "quote", "box", "img", "gallery", "video", "link", "event", "hr"];
+export const ALL_BLOCKS: BlockType[] = ["h", "p", "list", "quote", "box", "img", "gallery", "video", "link", "event", "poll", "pollresult", "hr"];
 
 const MAX_BLOCKS = 150;
 const MAX_TEXT = 5000;
@@ -176,12 +191,47 @@ export function parseBlocks(
         if (typeof b.id === "string" && UUID.test(b.id)) blocks.push({ t: "event", id: b.id });
         break;
       }
+      case "poll": {
+        const poll = parsePollSetup(b.poll);
+        if (!poll.ok) return poll;
+        if (blocks.some((x) => x.t === "poll" && x.poll.id === poll.poll.id)) return { ok: false, error: "Ugyanaz a szavazás kétszer szerepel." };
+        blocks.push({ t: "poll", poll: poll.poll });
+        break;
+      }
+      case "pollresult": {
+        if (typeof b.id === "string" && UUID.test(b.id)) blocks.push({ t: "pollresult", id: b.id });
+        break;
+      }
       case "hr":
         blocks.push({ t: "hr" });
         break;
     }
   }
   return { ok: true, blocks };
+}
+
+const OPTION_ID = /^[a-z0-9]{1,12}$/;
+
+/** Checks a poll set up in the editor: a question, 2–20 distinct options, a closing time. */
+export function parsePollSetup(input: unknown): { ok: true; poll: PollSetup } | { ok: false; error: string } {
+  const p = (input ?? {}) as Record<string, unknown>;
+  if (typeof p.id !== "string" || !UUID.test(p.id)) return { ok: false, error: "Egy szavazás hibás, töröld és hozd létre újra." };
+  const question = text(p.question, 300);
+  if (!question) return { ok: false, error: "Add meg a szavazás kérdését." };
+  const seen = new Set<string>();
+  const options: PollSetup["options"] = [];
+  for (const o of Array.isArray(p.options) ? (p.options as Record<string, unknown>[]) : []) {
+    const label = text(o?.label, 200);
+    if (!label) continue;
+    if (typeof o.id !== "string" || !OPTION_ID.test(o.id) || seen.has(o.id)) return { ok: false, error: "Egy szavazási lehetőség hibás, töltsd újra az oldalt." };
+    seen.add(o.id);
+    options.push({ id: o.id, label });
+  }
+  if (options.length < 2) return { ok: false, error: `A szavazáshoz („${question}”) legalább két lehetőség kell.` };
+  if (options.length > 20) return { ok: false, error: "Egy szavazásban legfeljebb 20 lehetőség lehet." };
+  const closes = typeof p.closes_at === "string" ? new Date(p.closes_at) : null;
+  if (!closes || Number.isNaN(closes.getTime())) return { ok: false, error: `Add meg, mikor zárul a szavazás („${question}”).` };
+  return { ok: true, poll: { id: p.id, question, options, multi: p.multi === true, other: p.other === true, closes_at: closes.toISOString() } };
 }
 
 /** Pictures the item still uses (card picture + pictures and galleries in the content). */
@@ -193,6 +243,14 @@ export function imagePathsInUse(coverPath: string | null, blocks: ContentBlock[]
     if (b.t === "gallery") b.paths.forEach((p) => used.add(p));
   }
   return used;
+}
+
+/** Polls set up in the content, and polls whose results it shows. */
+export function pollsIn(blocks: ContentBlock[]): { setups: PollSetup[]; resultIds: string[] } {
+  return {
+    setups: blocks.flatMap((b) => (b.t === "poll" ? [b.poll] : [])),
+    resultIds: [...new Set(blocks.flatMap((b) => (b.t === "pollresult" ? [b.id] : [])))],
+  };
 }
 
 /** Ids of events shown as cards in the content. */

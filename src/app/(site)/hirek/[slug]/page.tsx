@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { getCurrentProfile } from "@/lib/auth";
 import { routes } from "@/lib/routes";
 import { getSiteUrl } from "@/lib/site";
-import { eventIdsIn } from "@/lib/content-blocks";
+import { eventIdsIn, pollsIn } from "@/lib/content-blocks";
 import { stripInline } from "@/lib/inline-format";
 import { publishState } from "@/lib/publishing";
 import { ContentBody, type EmbeddedEvent } from "@/components/content/ContentBody";
@@ -13,6 +13,8 @@ import { DEFAULT_TIMEZONE, formatDateTime, formatDay } from "@/features/match-or
 import { CATEGORY_CHIP, CATEGORY_LABELS, NEWS_IMAGE_BUCKET, parseNewsBlocks, showEdited } from "@/features/landing-page/lib/news";
 import { getAdjacentNews, getAuthors, getNewsBySlug, newsImageUrl } from "@/features/landing-page/lib/news-data";
 import { getEventCards } from "@/features/timetables/lib/events-data";
+import { PollCard, PollResultsView } from "@/features/landing-page/components/PollCard";
+import { getPollResults, getPollStates } from "@/features/landing-page/lib/polls-data";
 import "@/features/landing-page/news.css";
 import "@/features/timetables/timetables.css";
 
@@ -61,12 +63,31 @@ export default async function NewsArticlePage({ params }: Props) {
   const tz = viewer?.timezone ?? DEFAULT_TIMEZONE;
   const parsed = parseNewsBlocks(article.body, article.id);
   const blocks = parsed.ok ? parsed.blocks : [];
-  const [authors, cards, adjacent, site] = await Promise.all([
+  const { setups, resultIds } = pollsIn(blocks);
+  const [authors, cards, adjacent, site, pollStates, pollResults] = await Promise.all([
     getAuthors([article.author_id]),
     getEventCards(eventIdsIn(blocks), tz),
     getAdjacentNews(article),
     getSiteUrl(),
+    getPollStates(setups.map((s) => s.id), viewer),
+    getPollResults(resultIds),
   ]);
+  const extras = {
+    ...Object.fromEntries(Object.entries(pollStates).map(([id, state]) => [`poll:${id}`, <PollCard key={id} initial={state} />])),
+    ...Object.fromEntries(
+      Object.entries(pollResults).map(([id, r]) => [
+        `pollresult:${id}`,
+        <section key={id} className="poll" aria-label="Szavazás eredménye">
+          <div className="poll-head">
+            <span className="kicker">{r.closed ? "Végeredmény" : "Jelenlegi állás"}</span>
+            <span className={`chip ${r.closed ? "mut" : "ok"}`}>{r.closed ? "Lezárult" : "Folyamatban"}</span>
+          </div>
+          <h3 className="poll-q">{r.poll.question}</h3>
+          <PollResultsView results={r.results} />
+        </section>,
+      ]),
+    ),
+  };
   const author = article.author_id ? authors.get(article.author_id) : undefined;
   const events: Record<string, EmbeddedEvent> = Object.fromEntries(
     Object.entries(cards).map(([id, c]) => [id, { title: c.title, dateLabel: c.dateLabel, href: c.href, external: c.external, cover: c.cover }]),
@@ -124,7 +145,7 @@ export default async function NewsArticlePage({ params }: Props) {
           <InlineText text={article.lead} />
         </p>
       )}
-      <ContentBody blocks={blocks} bucket={NEWS_IMAGE_BUCKET} host={new URL(site).hostname} events={events} />
+      <ContentBody blocks={blocks} bucket={NEWS_IMAGE_BUCKET} host={new URL(site).hostname} events={events} extras={extras} />
 
       {isAdmin && (
         <Link href={routes.adminNewsItem(article.id)} className="btn btn-secondary">
