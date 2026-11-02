@@ -1,6 +1,6 @@
 # Project state: DTHU website
 
-**Current version: v2.5** (2026-11-03). Live: https://dthu.hu builds from this repository's
+**Current version: v2.6** (2026-11-03). Live: https://dthu.hu builds from this repository's
 `main` (the owner moved Vercel over around 2026-11-01; checked live 2026-11-02). Every push to
 `main` deploys within a minute.
 **Launch phase: 1**: the public sees only the Meccsszervező; the whole site from the prototype
@@ -95,9 +95,9 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 
 ## Needs the owner
 
-0. **Szavazás (branch `feature/landing-page`, committed, not merged):** run
-   `supabase/migrations/0005_polls.sql` in the Supabase SQL Editor (tables `polls`,
-   `poll_votes`; only adds things) before the push. Then on dthu.hu: a news article → "+
+0. **Szavazás (v2.6, on `main`):** run `supabase/migrations/0005_polls.sql` in the Supabase SQL
+   Editor if not done yet (tables `polls`, `poll_votes`; only adds things; without it saving a
+   poll shows an error). Then on dthu.hu: a news article → "+
    Szavazás indítása" → publish → vote, change the vote, check live results (a second admin
    account helps), "Új hír az eredményből".
 0. **Hírek (v2.5, migration 0004 run by the owner):** on dthu.hu as admin: Admin felület → Hírek kezelése → Új hír → card picture, blocks
@@ -514,6 +514,16 @@ webhook, no cron secret), so nothing local can post to Discord.
 ---
 
 ## Changelog
+
+### v2.6 · 2026-11-03 · merge of `feature/landing-page`
+**Changed (admins only, phase 1):** Szavazás in news articles: "+ Szavazás indítása" (single or
+multiple choice, optional Egyéb, closing time), voting for logged-in users with a changeable
+vote, results after voting refreshed every 10 s, "+ Szavazás eredménye" block and the admin
+button "Új hír az eredményből".
+**Players:** nothing changes in the Időpontfoglaló.
+**Manual steps:** `supabase/migrations/0005_polls.sql`.
+**Verified:** types, lint, 134 tests, production build, screenshots with sample polls. Real
+voting: owner tests live.
 
 ### v2.5 · 2026-11-03 · merge of `feature/landing-page`
 **Changed (admins only, phase 1):**
