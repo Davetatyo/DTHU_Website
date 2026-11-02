@@ -1,6 +1,6 @@
 # Project state: DTHU website
 
-**Current version: v2.6** (2026-11-03). Live: https://dthu.hu builds from this repository's
+**Current version: v2.7** (2026-11-03). Live: https://dthu.hu builds from this repository's
 `main` (the owner moved Vercel over around 2026-11-01; checked live 2026-11-02). Every push to
 `main` deploys within a minute.
 **Launch phase: 1**: the public sees only the Meccsszervező; the whole site from the prototype
@@ -88,16 +88,16 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 | `shop` Bolt | `/bolt` | preview | items sample; wishlist only in the browser | shared wishlist, then redeeming (needs tickets) |
 | `rulebook` Szabálytár | `/szabalytar` | preview | content is final text from the prototype | credit/permission wording for Rulepop |
 | `faq` GYIK (site-wide) | `/gyik` | preview | content from the prototype | review texts |
-| `links` Linkek | `/linkek`, admin `/meccsszervezo/admin/linkek` | preview, **admin editor built on `feature/links`, committed, not merged** | links from the `links` table (migration 0006) | owner runs migration 0006, tests live |
+| `links` Linkek | `/linkek`, admin `/meccsszervezo/admin/linkek` | preview (admins only), **admin editor on `main` since v2.7** | links from the `links` table (migration 0006) | owner runs migration 0006, tests live |
 | `alchemist` Alkimista | `/alkimista` + help vial | preview | knowledge base from the prototype; unanswered questions only in the browser | admin inbox for unanswered questions |
 | `register-page` Regisztráció | `/regisztracio` | **live** | static guide content; tournament banner real | owner review of Hungarian texts |
 | `profile` Profilkép, Profil szerkesztése, Kitiltás | `/meccsszervezo/profil`, `/meccsszervezo/admin/felhasznalo/<id>` | **live** (v2.2): every logged-in user can upload a picture; admin page and bans for all admins | all real | badge ring (R3/R4), cosmetics collection |
 
 ## Needs the owner
 
-0. **Linkek (branch `feature/links`):** run `supabase/migrations/0006_links.sql` in the Supabase
-   SQL Editor before the push (new `links` table with the four current links, `link-images`
-   bucket). Then on dthu.hu: Admin felület → Linkek kezelése → Új link, picture, ↑ / ↓,
+0. **Linkek (v2.7, on `main`):** run `supabase/migrations/0006_links.sql` in the Supabase SQL
+   Editor if not done yet (new `links` table with the four current links, `link-images`
+   bucket; without it the Linkek page is empty). Then on dthu.hu: Admin felület → Linkek kezelése → Új link, picture, ↑ / ↓,
    "Látható" off, delete; check `/linkek`.
 0. **Szavazás (v2.6, on `main`):** run `supabase/migrations/0005_polls.sql` in the Supabase SQL
    Editor if not done yet (tables `polls`, `poll_votes`; only adds things; without it saving a
