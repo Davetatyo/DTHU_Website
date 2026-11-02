@@ -22,6 +22,14 @@ export const GAMES: GameCard[] = [
     badge: "Új",
   },
   {
+    id: "dice",
+    name: "Kockázat",
+    blurb: "Kockapóker a Barbár ellen: 5 kocka, 3 dobás. Csak épp ő is neked szurkol…",
+    href: routes.diceGame,
+    picture: "/jatekok/barbar-harcos.jpg",
+    badge: "Új",
+  },
+  {
     id: "quiz",
     name: "Kvíz",
     blurb: "Szabályok, hősök, sebzésszámítás: egyre nehezedő szintek. Hamarosan.",

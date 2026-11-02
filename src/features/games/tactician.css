@@ -1,5 +1,5 @@
 /* Taktikai Előny. The stage stays dark red in both themes (it is the Hadvezér's war room). */
-.ta { --ta-gold: #f0c36a; position: relative; isolation: isolate; overflow: hidden; height: max(480px, min(720px, calc(100svh - var(--ta-top, 120px) - 20px))); border-radius: 12px; border: 1px solid #5a1416; background: radial-gradient(ellipse at 50% 30%, #5e0f12 0%, #2a0507 55%, #120203 100%); color: #f6ead8; display: flex; flex-direction: column; justify-content: flex-end; }
+.ta { --ta-gold: #f0c36a; position: relative; isolation: isolate; overflow: hidden; height: max(480px, min(720px, calc(100svh - var(--stage-top, 120px) - 20px))); border-radius: 12px; border: 1px solid #5a1416; background: radial-gradient(ellipse at 50% 30%, #5e0f12 0%, #2a0507 55%, #120203 100%); color: #f6ead8; display: flex; flex-direction: column; justify-content: flex-end; }
 
 /* Full figure: hidden at first, then fills the room behind the questions. */
 .ta-bg { position: absolute; inset: 0; z-index: -2; opacity: 0; transform: scale(1.25); transition: opacity 1.3s ease, transform 1.6s cubic-bezier(.2,.7,.2,1); }

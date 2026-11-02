@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { buzz, useReducedMotion, useStage, useTyped } from "./stage";
 import { answer, answered, confidence, MAX_QUESTIONS, newGame, nextMove, wrongGuess, type GameState } from "../lib/tactician";
 import type { GameHero, TacticianData } from "../lib/tactician-data";
 import type { Trait } from "../lib/tactician-traits";
@@ -31,30 +32,6 @@ type Phase =
 
 const pick = <T,>(a: T[]) => a[Math.floor(Math.random() * a.length)];
 
-function useReducedMotion() {
-  const [reduced, setReduced] = useState(false);
-  useEffect(() => setReduced(window.matchMedia("(prefers-reduced-motion: reduce)").matches), []);
-  return reduced;
-}
-
-/** Types `text` out letter by letter (instantly with reduced motion). */
-function useTyped(text: string, speed: number, reduced: boolean) {
-  const [n, setN] = useState(0);
-  useEffect(() => {
-    if (reduced) return setN(text.length);
-    setN(0);
-    const t = window.setInterval(() => setN((x) => (x >= text.length ? (window.clearInterval(t), x) : x + 1)), speed);
-    return () => window.clearInterval(t);
-  }, [text, speed, reduced]);
-  return { shown: text.slice(0, n), done: n >= text.length };
-}
-
-const buzz = (pattern: number | number[]) => {
-  try {
-    navigator.vibrate?.(pattern);
-  } catch {}
-};
-
 /** Taktikai Előny: the Hadvezér guesses the hero you thought of, from yes/no answers. */
 export function TacticianGame({ data }: { data: TacticianData }) {
   const reduced = useReducedMotion();
@@ -66,35 +43,7 @@ export function TacticianGame({ data }: { data: TacticianData }) {
   const [remark, setRemark] = useState("");
   const [rounds, setRounds] = useState(0);
   const timer = useRef<number | null>(null);
-  const stage = useRef<HTMLDivElement>(null);
-  const [topbar, setTopbar] = useState(120);
-
-  /** Scrolls so the whole stage sits in the middle of the screen, below the sticky top bar. */
-  const center = useCallback(
-    (smooth: boolean) => {
-      const el = stage.current;
-      if (!el) return;
-      const top = (document.querySelector(".topbar") as HTMLElement | null)?.offsetHeight ?? 0;
-      const r = el.getBoundingClientRect();
-      const y = Math.max(0, window.scrollY + r.top - top - Math.max(0, (window.innerHeight - top - r.height) / 2));
-      window.scrollTo({ top: y, behavior: smooth && !reduced ? "smooth" : "auto" });
-      // If the smooth scroll was cut short (or the browser skipped it), jump into place.
-      window.setTimeout(() => {
-        const max = document.documentElement.scrollHeight - window.innerHeight;
-        if (Math.abs(window.scrollY - Math.min(y, max)) > 4) window.scrollTo({ top: y });
-      }, 700);
-    },
-    [reduced],
-  );
-
-  // The stage fills the screen below the top bar; centred as soon as the page opens.
-  useEffect(() => {
-    setTopbar((document.querySelector(".topbar") as HTMLElement | null)?.offsetHeight ?? 120);
-    // After the page has settled (Next restores the scroll position after navigating, and the
-    // portrait loads), so the scroll isn't undone.
-    const t = window.setTimeout(() => center(true), 450);
-    return () => window.clearTimeout(t);
-  }, [center]);
+  const { stage, center, style: stageStyle } = useStage(reduced);
 
   useEffect(() => () => void (timer.current && window.clearTimeout(timer.current)), []);
 
@@ -161,7 +110,7 @@ export function TacticianGame({ data }: { data: TacticianData }) {
       ref={stage}
       className={`ta${started ? " started" : ""}${thinking ? " thinking" : ""}`}
       data-phase={phase.kind}
-      style={{ "--ta-top": `${topbar}px` } as React.CSSProperties}
+      style={stageStyle}
     >
       <div className="ta-bg" aria-hidden>
         {/* eslint-disable-next-line @next/next/no-img-element -- decorative, full-bleed art */}

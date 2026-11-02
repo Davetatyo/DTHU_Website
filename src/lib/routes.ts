@@ -19,6 +19,7 @@ export const routes = {
   event: (slug: string) => `/esemenynaptar/${slug}`,
   games: "/jatekok",
   tacticianGame: "/jatekok/taktikai-elony",
+  diceGame: "/jatekok/kockazat",
   shop: "/bolt",
   rulebook: "/szabalytar",
   rule: (id: string) => `/szabalytar/${id}`,

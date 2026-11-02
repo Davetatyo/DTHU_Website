@@ -488,6 +488,22 @@ especially "nő", "sötét teremtmény" and "varázslat".
 
 ---
 
+### R12 · Kockázat (dice poker against the Barbarian)
+
+**Status:** Built and live for admins (v2.13, 2026-11-03; see `src/features/games/README.md`).
+· **Feature id:** `games` · **Depends on:** nothing
+
+Dice poker in the classic style against the Barbarian. He greets you as a stern warrior ("Üdvözlégy
+harcos! Látom egy kis izgalomra vágysz! Készülj a harcra!"), then turns into your biggest fan,
+cheering your rolls while he plays his own turns. Owner decisions (2026-11-03): he really
+plays (a distractible amateur); he asks how much time you have (short 7 rounds / full 13
+rounds); Ultimate = five of a kind (50), 63 → +35 bonus; CSS 3D dice; no sound for now;
+logged-in players; no saving or XP yet.
+
+**Open questions:** none.
+
+---
+
 ## Built
 
 Format: `R# · name · version · date · one line`. (Built items keep their full entry above
@@ -498,6 +514,7 @@ while their docs point there.)
 - R9 · Linkek kezelése · v2.7 · 2026-11-03 · admin-managed links with pictures and order.
 - R6 · Játékok hub · v2.11 · 2026-11-03 · games tab with cards.
 - R11 · Taktikai Előny · v2.11 · 2026-11-03 · the Hadvezér guesses your hero.
+- R12 · Kockázat · v2.13 · 2026-11-03 · dice poker against the Barbarian.
 
 ## Dropped
 

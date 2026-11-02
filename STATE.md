@@ -1,6 +1,6 @@
 # Project state: DTHU website
 
-**Current version: v2.12** (2026-11-03). Live: https://dthu.hu builds from this repository's
+**Current version: v2.13** (2026-11-03). Live: https://dthu.hu builds from this repository's
 `main` (the owner moved Vercel over around 2026-11-01; checked live 2026-11-02). Every push to
 `main` deploys within a minute.
 **Launch phase: 1**: the public sees only the Meccsszervező; the whole site from the prototype
@@ -84,7 +84,7 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 | `landing-page` Hírek (home) + news | `/`, `/hirek`, `/hirek/<slug>`, admin `/meccsszervezo/admin/hirek` | preview (admins only), **on `main` since v2.5** | news real (table `news`, migration 0004); banner + matches real; ranking and tickets sample | owner runs migration 0004, tests live after the push |
 | `rankings` Ranglista | `/ranglista` | preview | names/heroes real; points, records, movement sample | results source (Karnyx copy-paste? results on "Lejátszottuk"?) |
 | `timetables` Eseménynaptár (was Versenynaptár) | `/esemenynaptar` (+ `/esemenynaptar/<slug>`, admin `/meccsszervezo/admin/esemenyek`) | preview (admins only), **on `main` since v2.3** | all real: events table (migration 0003) + online rounds; sample data removed | owner tests live; then phase 5 (calendar feed, Hírek tiles, Discord later) |
-| `games` Játékok | `/jatekok`, `/jatekok/taktikai-elony` | preview (admins only), **on `main` since v2.11** | Taktikai Előny: static data from the Szabálytár + `lib/tactician-traits.ts`; no database | owner reviews the hero facts table; Kvíz parked |
+| `games` Játékok | `/jatekok`, `/jatekok/taktikai-elony`, `/jatekok/kockazat` | preview (admins only), **on `main` since v2.11** (Kockázat since v2.13) | Taktikai Előny: static data from the Szabálytár + `lib/tactician-traits.ts`; Kockázat: all in the browser; no database | owner reviews the hero facts table; Kvíz parked |
 | `shop` Bolt | `/bolt` | preview | items sample; wishlist only in the browser; ticket balance sample (the Jegyek page was removed in v2.11, `/jegyek` redirects here) | shared wishlist, then redeeming (needs a ticket ledger) |
 | `rulebook` Szabálytár | `/szabalytar` | preview (admins only), **RulePop version on `main` since v2.8** (roadmap R10) | the owner's Hungarian RulePop imported (36 sections, 40 heroes, 123 tokens) + the 5 newer heroes and 13 tokens translated (v2.9); popups + own links | owner reviews the new translations; ~20 core pages still to translate |
 | `faq` GYIK (site-wide) | `/gyik` | preview | content from the prototype | review texts |
@@ -175,6 +175,18 @@ quiz) are in
 ## Handover log
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
+
+### 2026-11-03 (very late) · Kockázat (feature/games, v2.13)
+
+- Owner: a dice-poker game against the Barbarian ("Kockázat"), with his two pictures (stern
+  greeting, then the fan). Decisions in roadmap R12 (he plays his own turns; short/full game
+  offered by him; Ultimate 50, bonus 63 → +35; CSS 3D dice; no sound; logged-in players).
+- New: `lib/dice.ts` (+ tests; his average ~122 short / ~200 full), `components/DiceGame.tsx`,
+  `kockazat.css`, page `src/app/(site)/jatekok/kockazat/`, `routes.diceGame`, hub card,
+  pictures `public/jatekok/barbar-*.jpg`. Shared `components/stage.ts` (typed speech, buzz,
+  stage sizing/centring) now used by Taktikai Előny too (its behaviour unchanged).
+- Verified: types, lint, 170 tests, production build in a copy; browser with TEMP-PREVIEW
+  fake login (reverted, grep clean): desktop and 375 px, a whole short game to the end.
 
 ### 2026-11-03 (late night) · Taktikai Előny feedback (feature/games, v2.12)
 
@@ -641,6 +653,15 @@ webhook, no cron secret), so nothing local can post to Discord.
 ---
 
 ## Changelog
+
+### v2.13 · 2026-11-03 · merge of `feature/games`
+**Changed (admins only, phase 1):** new game on the Játékok page: **Kockázat**, dice poker
+against the Barbarian (short 7-round or full 13-round game, CSS 3D dice). The two games now
+share their stage code.
+**Players:** nothing changes in the Időpontfoglaló.
+**Manual steps:** none.
+**Verified:** types, lint, tests (scoring, his play level), production build, browser (desktop
+dark, 375 px light): intro, fan switch, length choice, rolling, keeping dice, his turns, end.
 
 ### v2.12 · 2026-11-03 · merge of `feature/games`
 **Changed (admins only, phase 1):** Taktikai Előny: the game is centred on the screen when the
