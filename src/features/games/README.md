@@ -53,6 +53,11 @@ The Játékok menu tab (after Bolt): a hub with one card per game (`lib/hub.ts`)
   greeting, cross-fade (with a flash) into the fan picture, the length question, the dice tray
   (CSS 3D cubes that tumble and hop; kept dice glow gold), the scorecard (your score in the
   box, his in the corner, previews to choose from), his animated turns, the ending.
+- "Hogyan játssz?": three click-through cards (`HowToPlay` in `DiceGame.tsx`), from the intro
+  link and the "?" in the score bar.
+- 3D dice: each die keeps the same element between rolls (a new element wouldn't animate its
+  turn) and its hop restarts by switching between two identical keyframes; the perspective
+  sits on the die's own wrapper (`.kz-hop`), otherwise the cube renders flat.
 - `components/stage.ts`: shared by both games (typed speech, vibration, sizing and centring
   the stage below the top bar).
 - Pictures: `public/jatekok/barbar-harcos.jpg`, `barbar-rajongo.jpg`.
