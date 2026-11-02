@@ -1,0 +1,70 @@
+/* Szemfüles. A night-blue room in both themes, so the pictures stand out. */
+.sf { --sf-gold: #ffcf6b; position: relative; display: flex; flex-direction: column; gap: 10px; min-height: min(560px, calc(100svh - var(--stage-top, 120px) - 20px)); padding: 12px; border-radius: 12px; border: 1px solid #263452; background: radial-gradient(ellipse at 50% 0%, #1d2a4a, #0b1020 70%); color: #eef2ff; }
+
+/* Picking a picture. */
+.sf-pick { display: grid; gap: 10px; align-content: center; flex: 1; text-align: center; }
+.sf-pick h2 { font-size: 22px; font-weight: 800; }
+.sf-sub { font-size: 14px; color: #b8c3e6; }
+.sf-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; margin-top: 6px; text-align: left; }
+.sf-card { position: relative; display: grid; overflow: hidden; border-radius: 12px; border: 1px solid #33456e; background: #131c33; color: #fff; padding: 0; cursor: pointer; transition: transform .12s, border-color .15s; }
+.sf-card:hover { border-color: var(--sf-gold); }
+.sf-card:active { transform: scale(.98); }
+.sf-card img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+.sf-card span { display: grid; gap: 2px; padding: 10px 12px; }
+.sf-card b { font-size: 17px; }
+.sf-card small { color: #b8c3e6; }
+.sf-card.soon { min-height: 120px; place-items: center; border-style: dashed; cursor: default; opacity: .7; }
+
+/* Score bar and clock. */
+.sf-bar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; font-weight: 800; }
+.sf-name { color: #b8c3e6; font-size: 14px; text-transform: uppercase; letter-spacing: .06em; margin-right: auto; }
+.sf-found { font-size: 18px; }
+.sf-score { font-size: 18px; color: var(--sf-gold); animation: sf-bump .35s cubic-bezier(.3,1.6,.5,1); }
+.sf-time { min-width: 4.2em; text-align: right; font-size: 18px; font-variant-numeric: tabular-nums; }
+.sf-time.urgent { color: #ff6b6b; animation: sf-pulse .5s ease-in-out infinite alternate; }
+.sf-clock { height: 8px; border-radius: 4px; background: rgb(255 255 255 / .1); overflow: hidden; }
+.sf-clock span { display: block; height: 100%; border-radius: 4px; background: linear-gradient(90deg, #4fd1a5, var(--sf-gold)); transition: width .1s linear; }
+.sf-clock span.urgent { background: linear-gradient(90deg, #ff6b6b, #ffb36b); }
+
+/* The two pictures: side by side, stacked on narrow screens. */
+.sf-pics { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; transition: filter .4s; }
+.sf-pics.hidden { filter: blur(16px) brightness(.6); pointer-events: none; }
+@media (max-width: 760px) { .sf-pics { grid-template-columns: 1fr; } }
+.sf-pic { position: relative; overflow: hidden; border-radius: 10px; border: 1px solid #33456e; cursor: crosshair; touch-action: manipulation; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+.sf-pic img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+.sf-pic.shake { animation: sf-shake .35s; }
+.sf-rings { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.sf-rings circle { fill: none; stroke-width: 5; stroke-dasharray: 100; }
+.sf-rings circle.found { stroke: var(--sf-gold); filter: drop-shadow(0 0 4px rgb(255 207 107 / .9)); animation: sf-draw .5s ease-out both; }
+.sf-rings circle.missed { stroke: #ff5a5a; stroke-width: 7; stroke-dasharray: 8 5; filter: drop-shadow(0 0 5px rgb(255 90 90 / .9)); animation: sf-blink .8s ease-in-out infinite alternate; }
+
+/* Tap marks: +10 floats up, a wrong tap shows a red ✕ and −5. */
+.sf-mark { position: absolute; translate: -50% -50%; pointer-events: none; display: grid; justify-items: center; }
+.sf-mark b { font-size: 20px; font-weight: 900; color: var(--sf-gold); text-shadow: 0 2px 6px #000; animation: sf-float .9s ease-out forwards; }
+.sf-mark.bad b { color: #ff6b6b; }
+.sf-mark i { font-style: normal; font-size: 30px; font-weight: 900; color: #ff6b6b; text-shadow: 0 2px 6px #000; animation: sf-pop .3s cubic-bezier(.3,1.6,.5,1); }
+.sf-tip { display: none; font-size: 12px; color: #8f9cc4; text-align: center; }
+@media (max-width: 760px) and (orientation: portrait) { .sf-tip { display: block; } }
+
+/* 3-2-1 and the results. */
+.sf-count { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; }
+.sf-count b { font-size: 96px; font-weight: 900; color: #fff; text-shadow: 0 6px 30px rgb(0 0 0 / .8); animation: sf-count .7s ease-out both; }
+.sf-end { display: grid; justify-items: center; }
+.sf-result { display: grid; justify-items: center; gap: 6px; width: min(520px, 100%); padding: 16px; border-radius: 14px; background: rgb(10 16 32 / .9); border: 1px solid #33456e; text-align: center; }
+.sf-stamp { font-size: 34px; font-weight: 900; color: var(--sf-gold); letter-spacing: .02em; text-shadow: 0 0 20px rgb(255 207 107 / .5); animation: sf-stamp .6s cubic-bezier(.2,1.4,.4,1) both; }
+.sf-total { font-size: 26px; font-variant-numeric: tabular-nums; }
+.sf-actions { display: flex; gap: 8px; margin-top: 6px; }
+
+@keyframes sf-draw { from { stroke-dashoffset: 100; } to { stroke-dashoffset: 0; } }
+@keyframes sf-blink { from { opacity: .35; } to { opacity: 1; } }
+@keyframes sf-float { 0% { opacity: 0; transform: translateY(6px) scale(.8); } 20% { opacity: 1; transform: none; } 100% { opacity: 0; transform: translateY(-34px); } }
+@keyframes sf-pop { from { transform: scale(.4); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes sf-shake { 20%, 60% { transform: translateX(-6px); } 40%, 80% { transform: translateX(6px); } }
+@keyframes sf-bump { from { transform: scale(1.3); } to { transform: none; } }
+@keyframes sf-pulse { from { opacity: .6; } to { opacity: 1; } }
+@keyframes sf-count { 0% { transform: scale(1.8); opacity: 0; } 30% { transform: scale(1); opacity: 1; } 100% { transform: scale(.9); opacity: 0; } }
+@keyframes sf-stamp { 0% { transform: scale(2.4) rotate(-8deg); opacity: 0; } 100% { transform: rotate(-3deg); opacity: 1; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .sf *, .sf { animation: none !important; transition: none !important; }
+}

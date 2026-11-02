@@ -1,6 +1,6 @@
 # Project state: DTHU website
 
-**Current version: v2.16** (2026-11-03). Live: https://dthu.hu builds from this repository's
+**Current version: v2.18** (2026-11-03). Live: https://dthu.hu builds from this repository's
 `main` (the owner moved Vercel over around 2026-11-01; checked live 2026-11-02). Every push to
 `main` deploys within a minute.
 **Launch phase: 1**: the public sees only the Meccsszervező; the whole site from the prototype
@@ -84,7 +84,7 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 | `landing-page` Hírek (home) + news | `/`, `/hirek`, `/hirek/<slug>`, admin `/meccsszervezo/admin/hirek` | preview (admins only), **on `main` since v2.5** | news real (table `news`, migration 0004); banner + matches real; ranking and tickets sample | owner runs migration 0004, tests live after the push |
 | `rankings` Ranglista | `/ranglista` | preview | names/heroes real; points, records, movement sample | results source (Karnyx copy-paste? results on "Lejátszottuk"?) |
 | `timetables` Eseménynaptár (was Versenynaptár) | `/esemenynaptar` (+ `/esemenynaptar/<slug>`, admin `/meccsszervezo/admin/esemenyek`) | preview (admins only), **on `main` since v2.3** | all real: events table (migration 0003) + online rounds; sample data removed | owner tests live; then phase 5 (calendar feed, Hírek tiles, Discord later) |
-| `games` Játékok | `/jatekok`, `/jatekok/taktikai-elony`, `/jatekok/kockazat` | preview (admins only), **on `main` since v2.11** (Kockázat since v2.13) | Taktikai Előny: static data from the Szabálytár + `lib/tactician-traits.ts`; Kockázat: all in the browser; no database | owner reviews the hero facts table; Kvíz parked |
+| `games` Játékok | `/jatekok`, `/jatekok/taktikai-elony`, `/jatekok/kockazat`, `/jatekok/szemfules` | preview (admins only), **on `main` since v2.11** (Kockázat v2.13, Szemfüles v2.17) | Taktikai Előny: static data from the Szabálytár + `lib/tactician-traits.ts`; Kockázat: all in the browser; no database | owner reviews the hero facts table; Kvíz parked |
 | `shop` Bolt | `/bolt` | preview | items sample; wishlist only in the browser; ticket balance sample (the Jegyek page was removed in v2.11, `/jegyek` redirects here) | shared wishlist, then redeeming (needs a ticket ledger) |
 | `rulebook` Szabálytár | `/szabalytar` | preview (admins only), **RulePop version on `main` since v2.8** (roadmap R10) | the owner's Hungarian RulePop imported (36 sections, 40 heroes, 123 tokens) + the 5 newer heroes and 13 tokens translated (v2.9); popups + own links | owner reviews the new translations; ~20 core pages still to translate |
 | `faq` GYIK (site-wide) | `/gyik` | preview | content from the prototype | review texts |
@@ -175,6 +175,24 @@ quiz) are in
 ## Handover log
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
+
+### 2026-11-03 (later) · Favicon (v2.18)
+
+- Owner: replace the Vercel triangle tab icon with his die picture. Generated from the
+  2000 px picture (cropped tighter around the die so it reads at 16 px) with Pillow:
+  `src/app/favicon.ico`, `icon.png`, `apple-icon.png` (Next.js file conventions, no code).
+
+### 2026-11-03 (late) · Szemfüles (feature/games, v2.17)
+
+- Owner: a spot-the-differences game "Szemfüles", first picture "Tea Party" (two images, 10
+  differences), rules in roadmap R13. Found 8 differences by comparing the images; the owner
+  named the last two (the notched axe, the crow facing the other way).
+- New: `lib/spot.ts` (+ tests), `components/SpotGame.tsx`, `szemfules.css`, page
+  `src/app/(site)/jatekok/szemfules/`, `routes.spotGame`, hub card, pictures
+  `public/jatekok/szemfules/tea-party-{1,2}.jpg` (1400 px).
+- Verified: types, lint, 176 tests, production build in a copy; browser with TEMP-PREVIEW
+  (reverted): 7 hits + 2 misses = 60 points → "Ügyeske" at the time-out, missed differences
+  blinking on both pictures; 375 px stacked layout.
 
 ### 2026-11-03 (final+) · Kockázat scoreboard (feature/games, v2.16)
 
@@ -684,6 +702,22 @@ webhook, no cron secret), so nothing local can post to Discord.
 ---
 
 ## Changelog
+
+### v2.18 · 2026-11-03 · `main`
+**Changed (everyone, also players):** the browser tab / bookmark icon is the DTHU die (owner's
+picture) instead of Next.js's default Vercel triangle: `src/app/favicon.ico` (16/32/48 px),
+`src/app/icon.png` (192 px), `src/app/apple-icon.png` (180 px, iPhone home screen).
+**Manual steps:** none. Browsers cache favicons: a hard refresh may be needed to see it.
+**Verified:** the three icons are linked in the page head and served (outside the middleware).
+
+### v2.17 · 2026-11-03 · merge of `feature/games`
+**Changed (admins only, phase 1):** new game **Szemfüles** (spot the differences): picture
+picker, first picture "Tea Party" with 10 differences, 60 s, +10 / −5 points, titles, missed
+differences shown at the end.
+**Players:** nothing changes in the Időpontfoglaló.
+**Manual steps:** none.
+**Verified:** types, lint, tests (hits, misses, scoring, titles), production build, browser
+desktop + 375 px (a round to the time-out).
 
 ### v2.16 · 2026-11-03 · merge of `feature/games`
 **Changed (admins only, phase 1):** Kockázat: the scores moved out of the game box into a big

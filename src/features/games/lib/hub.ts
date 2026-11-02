@@ -30,6 +30,14 @@ export const GAMES: GameCard[] = [
     badge: "Új",
   },
   {
+    id: "spot",
+    name: "Szemfüles",
+    blurb: "Keresd meg a 10 különbséget 60 másodperc alatt! Találat +10, tévedés −5 pont.",
+    href: routes.spotGame,
+    picture: "/jatekok/szemfules/tea-party-1.jpg",
+    badge: "Új",
+  },
+  {
     id: "quiz",
     name: "Kvíz",
     blurb: "Szabályok, hősök, sebzésszámítás: egyre nehezedő szintek. Hamarosan.",
