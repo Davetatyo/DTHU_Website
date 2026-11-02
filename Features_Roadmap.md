@@ -424,9 +424,30 @@ DTHU before (e.g. after Kilépés, or on a new browser).
 
 ---
 
+### R9 · Linkek managed by admins (Linkek kezelése)
+
+**Status:** Built on `feature/links` (2026-11-03, not merged yet; see
+`src/features/links/README.md`). · **Feature id:** `links` · **Depends on:** nothing
+
+Admins add, edit, reorder, hide and delete the Linkek page's links, with or without a
+picture. Owner (2026-11-03): keep it simple, same logic as the other editors; the editor sits
+on Admin felület under the Eseménynaptár card. No drafts or scheduling: a link shows as soon
+as it's saved; "Látható" off hides it.
+
+**Data:** `links` table (title, url, description, image_path, sort_order, visible) with the
+four former links; pictures in the `link-images` bucket (migration 0006).
+
+**Open questions:** none.
+
+---
+
 ## Built
 
-_Nothing from this list yet._ Format: `R# · name · version · date · one line`.
+Format: `R# · name · version · date · one line`. (Built items keep their full entry above
+while their docs point there.)
+
+- R2 · Events (Eseménynaptár) · v2.3–v2.4 · 2026-11-03 · real events, admin editor, event pages.
+- R2 · News (Hírek) + Szavazás · v2.5–v2.6 · 2026-11-03 · news admin, rich articles, polls.
 
 ## Dropped
 

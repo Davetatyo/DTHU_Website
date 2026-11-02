@@ -96,6 +96,16 @@ export default async function AdminPage({
         </Link>
       </section>
 
+      <section className="card flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 className="font-bold">Linkek</h2>
+          <p className="muted text-sm">A Linkek oldal csempéi: új link, kép, sorrend, elrejtés.</p>
+        </div>
+        <Link href={routes.adminLinks} className="btn btn-secondary">
+          Linkek kezelése ›
+        </Link>
+      </section>
+
       {tournament && round && reminder && (
         <section className="card flex flex-wrap items-center justify-between gap-3" style={{ borderColor: "var(--accent)" }}>
           <div>
