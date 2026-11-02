@@ -59,6 +59,21 @@ export function eventToItem(e: EventRow, timeZone: string, now: Date): CalendarI
 }
 
 /**
+ * Published events by id, ready to show as "Esemény kártya" blocks in news articles. Drafts and
+ * scheduled events are left out, so an article never links to an event that isn't out yet.
+ */
+export async function getEventCards(ids: string[], timeZone: string): Promise<Record<string, CalendarItem>> {
+  if (!ids.length) return {};
+  const { data, error } = await createAdminClient().from("events").select("*").in("id", ids);
+  const now = new Date();
+  const cards: Record<string, CalendarItem> = {};
+  for (const e of error ? [] : ((data ?? []) as EventRow[])) {
+    if (publishState(e.published_at, now) === "live") cards[e.id] = eventToItem(e, timeZone, now);
+  }
+  return cards;
+}
+
+/**
  * Everything the calendar shows: published events (scheduled ones appear by themselves once
  * their go-live time passes) and the active tournament's online rounds, which come from the
  * Időpontfoglaló so nobody types them in twice. Cached per request (page + season timeline).

@@ -1,33 +1,54 @@
-# Hírek (home)
+# Hírek (home page and news)
 
 | | |
 |---|---|
 | Folder | `src/features/landing-page/` |
 | Branch | `feature/landing-page` |
-| Route | `/` (pages in `src/app/(site)/page.tsx`) |
-| Status | **preview**: built from the prototype; admins only until the full site opens (keep in sync with `src/features/registry.ts` and STATE.md) |
+| Roadmap | R2 (News and events management): the news half |
+| Routes | `/` (home), `/hirek` (all news, `?rovat=` filter, `?oldal=` paging), `/hirek/<slug>` (article); admin: `/meccsszervezo/admin/hirek` (list), `…/uj` (new), `…/<id>` (edit) |
+| Database | `supabase/migrations/0004_news.sql`: table `news`, storage bucket `news-images` |
+| Status | **preview**: admins only until the full site opens |
 
-## What it is
+## What it does
 
-The site's front page: the current tournament as a banner (like the Meccsszervező overview), news cards, today's matches, a short power ranking and tiles to tickets/shop.
+**Home page (`/`).** The tournament banner and the match schedule (real Időpontfoglaló data),
+the **latest 4 news** (pinned first) with "Minden hír ›", the power ranking and the ticket tile
+(still sample data, see `rankings`, `tickets`).
 
-## What's built
+**News list (`/hirek`).** Every published article, pinned first, then newest; category filter
+(Bajnokság, Közösség, Élő esemény, Oldal / fejlesztés) and 12 per page ("Régebbi hírek").
 
-Page `src/app/(site)/page.tsx`. Real data: the tournament banner (name, players, played/real, countdown) and the upcoming confirmed matches come from the Meccsszervező. Sample data: news (`data/news.ts`), the power ranking and the ticket count.
+**Article (`/hirek/<slug>`).** Cover, category, title, author with profile picture, date,
+"Frissítve" (saved again 10+ minutes after going live), the bevezető in bold, the content
+blocks, previous/next article. Share previews (Open Graph: cover, title, bevezető) for
+Facebook and Discord, readable once the site is public. Admins can open drafts and scheduled
+articles with a notice.
 
-## Design
+**Admin** (every admin): Admin felület → "Hírek kezelése" (above the Eseménynaptár card). New
+articles are drafts; edit page: card picture (16:9 crop), title, category, author (any
+admin), bevezető, pin (until unpinned), content, then Mentés / Közzététel most / Időzített
+közzététel / Visszavonás piszkozatba / Törlés.
 
-Prototype: `reference/artifact/index.html` → Hírek view (V3): `hero3` banner, `news4` cards, schedule rows, power-ranking side panel.
+**Content blocks** (all of them, `src/lib/content-blocks.ts`): Alcím, Bekezdés, Felsorolás
+(bullets or numbers), Idézet, Kiemelt doboz (info / warning), Kép, Galéria (grid, tap to
+enlarge), Videó (YouTube via youtube-nocookie, Twitch videos and channels), Link, Esemény
+kártya (a published event; the event page lists the article under "Kapcsolódó hírek"),
+Elválasztó. Text blocks support **bold**, *italic* and [links](https://…) from the B / I / 🔗
+buttons; stored as marks, shown as React elements, never HTML.
 
-## Data
+## Code
 
-News items (title, date, category, image, link). Reuses the Meccsszervező data for the banner and today's matches, and `rankings` for the side panel.
+- `lib/news.ts` (pure, tested): categories, the admin form, block rules, "Frissítve".
+- `lib/news-data.ts` (server): reads, paging, previous/next, authors, articles about an event.
+- `actions/news.ts`: create, save/publish, delete, picture upload/remove (admin only).
+- `components/NewsCard.tsx`, `components/NewsFormFields.tsx`.
+- Shared with events: `src/lib/publishing.ts` (draft/scheduled/live, slugs, safe links),
+  `src/lib/content-blocks.ts` + `src/lib/inline-format.ts` (blocks, tested),
+  `src/lib/content-images.ts` (storage), `src/components/content/` (CoverEditor,
+  BlocksEditor, ContentBody, Gallery, InlineText).
 
-## Open questions (ask the owner before going live)
+## Later
 
-- Where does news come from: a `news` table edited on an admin page, or pulled from Discord/Facebook?
-- Which blocks are needed for launch, and which can wait for other features?
-
-## Folder layout
-
-See [`../_template/README.md`](../_template/README.md).
+- Reactions / "read it" confirmation with an emoji that earns XP (roadmap R2 and R4).
+- Automatic Discord/Facebook announcement through a separate webhook.
+- The "Jegyek & Bolt" category (already allowed in the database) once those features exist.

@@ -2,6 +2,7 @@
 // Pure functions only (no database), so they are unit-tested and usable in the browser.
 
 import { dayKey, wallTimeToUtc } from "@/features/match-organizer/lib/time";
+import { parseBlocks as parseContentBlocks, SIMPLE_BLOCKS, type ContentBlock } from "@/lib/content-blocks";
 
 /** Storage bucket for event pictures (supabase/migrations/0003_events.sql). */
 export const EVENT_IMAGE_BUCKET = "event-images";
@@ -53,17 +54,9 @@ export type EventRow = {
   updated_at: string;
 };
 
-// ---------- publishing ----------
+// ---------- publishing (shared with news, see src/lib/publishing.ts) ----------
 
-export type PublishState = "draft" | "scheduled" | "live";
-
-/** Draft until an admin publishes; scheduled while the go-live time is in the future. */
-export function publishState(publishedAt: string | null, now: Date = new Date()): PublishState {
-  if (!publishedAt) return "draft";
-  return new Date(publishedAt).getTime() > now.getTime() ? "scheduled" : "live";
-}
-
-export const PUBLISH_LABELS: Record<PublishState, string> = { draft: "Piszkozat", scheduled: "Időzítve", live: "Közzétéve" };
+export { publishState, PUBLISH_LABELS, type PublishState } from "@/lib/publishing";
 
 // ---------- dates ----------
 
@@ -96,101 +89,18 @@ export function formatEventDate(start: string, end: string | null, allDay: boole
   return sameDay ? `${day(start)} ${time(start)} – ${time(end)}` : `${day(start)} ${time(start)} – ${day(end)} ${time(end)}`;
 }
 
-// ---------- slugs ----------
+// ---------- slugs, links and content blocks (shared, see src/lib) ----------
 
-/** "Őszi Asztali Nap!" → "oszi-asztali-nap" (address part of the event page). */
-export function slugify(title: string): string {
-  const slug = title
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 60)
-    .replace(/-+$/, "");
-  return slug || "esemeny";
-}
+export { slugify, uniqueSlug, safeUrl } from "@/lib/publishing";
+export { imagePathsInUse, isOwnImagePath, type ContentImageResult as EventImageResult } from "@/lib/content-blocks";
 
-/** The slug, or slug-2, slug-3 … when it's taken. */
-export function uniqueSlug(base: string, taken: Set<string>): string {
-  if (!taken.has(base)) return base;
-  for (let i = 2; ; i++) if (!taken.has(`${base}-${i}`)) return `${base}-${i}`;
-}
+/** Events use the simple blocks only (owner, 2026-11-03). */
+export type EventBlock = Extract<ContentBlock, { t: "h" | "p" | "img" | "link" }>;
 
-// ---------- content blocks ----------
-
-export type EventBlock =
-  | { t: "h"; text: string }
-  | { t: "p"; text: string }
-  | { t: "img"; path: string; caption?: string }
-  | { t: "link"; url: string; label?: string };
-
-const MAX_BLOCKS = 100;
-const MAX_TEXT = 5000;
-
-/** Only http(s) links (no javascript: and the like). Returns the normalised URL or null. */
-export function safeUrl(value: unknown): string | null {
-  if (typeof value !== "string" || !value.trim()) return null;
-  try {
-    const url = new URL(value.trim());
-    return url.protocol === "https:" || url.protocol === "http:" ? url.toString() : null;
-  } catch {
-    return null;
-  }
-}
-
-/** A picture path of this event in the event-images bucket: "<event id>/<file>". */
-export function isOwnImagePath(path: unknown, eventId: string): path is string {
-  return typeof path === "string" && new RegExp(`^${eventId}/[A-Za-z0-9._-]+$`).test(path);
-}
-
-const text = (v: unknown) => (typeof v === "string" ? v.trim().slice(0, MAX_TEXT) : "");
-
-/**
- * Checks the block list the editor sends (JSON). Empty text blocks are dropped; links must be
- * http(s); pictures must belong to this event. Returns the clean list or a Hungarian error.
- */
+/** Checks an event's block list: the simple blocks, pictures from the event's own folder. */
 export function parseBlocks(input: unknown, eventId: string): { ok: true; blocks: EventBlock[] } | { ok: false; error: string } {
-  let raw = input;
-  if (typeof raw === "string") {
-    try {
-      raw = JSON.parse(raw || "[]");
-    } catch {
-      return { ok: false, error: "A tartalom nem olvasható, töltsd újra az oldalt." };
-    }
-  }
-  if (!Array.isArray(raw)) return { ok: false, error: "A tartalom nem olvasható, töltsd újra az oldalt." };
-  if (raw.length > MAX_BLOCKS) return { ok: false, error: `Legfeljebb ${MAX_BLOCKS} blokk lehet egy eseményben.` };
-
-  const blocks: EventBlock[] = [];
-  for (const b of raw as Record<string, unknown>[]) {
-    if (!b || typeof b !== "object") continue;
-    if (b.t === "h" || b.t === "p") {
-      const t = text(b.text);
-      if (t) blocks.push({ t: b.t, text: t });
-    } else if (b.t === "img") {
-      if (!isOwnImagePath(b.path, eventId)) return { ok: false, error: "Egy kép hibás, töröld és töltsd fel újra." };
-      const caption = text(b.caption);
-      blocks.push(caption ? { t: "img", path: b.path, caption } : { t: "img", path: b.path });
-    } else if (b.t === "link") {
-      const url = safeUrl(b.url);
-      if (!url) return { ok: false, error: "Egy link hibás: http:// vagy https:// kezdetű címet adj meg." };
-      const label = text(b.label);
-      blocks.push(label ? { t: "link", url, label } : { t: "link", url });
-    }
-  }
-  return { ok: true, blocks };
-}
-
-/** What the picture upload actions return to the editors in the browser. */
-export type EventImageResult = { path: string | null; error: string | null };
-
-/** Pictures the event still uses (card picture + pictures in the content). */
-export function imagePathsInUse(coverPath: string | null, blocks: EventBlock[]): Set<string> {
-  const used = new Set<string>();
-  if (coverPath) used.add(coverPath);
-  for (const b of blocks) if (b.t === "img") used.add(b.path);
-  return used;
+  const r = parseContentBlocks(input, eventId, SIMPLE_BLOCKS);
+  return r.ok ? { ok: true, blocks: r.blocks as EventBlock[] } : r;
 }
 
 // ---------- calendar view model ----------

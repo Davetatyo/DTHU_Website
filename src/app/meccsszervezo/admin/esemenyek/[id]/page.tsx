@@ -6,11 +6,12 @@ import { routes } from "@/lib/routes";
 import { InfoTip } from "@/components/InfoTip";
 import { SubmitButton } from "@/components/SubmitButton";
 import { deleteEvent, removeEventCover, saveEvent, uploadEventImage } from "@/features/timetables/actions/events";
-import { BlocksEditor } from "@/features/timetables/components/BlocksEditor";
-import { CoverEditor } from "@/features/timetables/components/CoverEditor";
+import { BlocksEditor } from "@/components/content/BlocksEditor";
+import { CoverEditor } from "@/components/content/CoverEditor";
+import { SIMPLE_BLOCKS } from "@/lib/content-blocks";
 import { EventFormFields } from "@/features/timetables/components/EventFormFields";
 import { eventFormDefaults } from "@/features/timetables/lib/event-form";
-import { parseBlocks, PUBLISH_LABELS, publishState } from "@/features/timetables/lib/events";
+import { EVENT_IMAGE_BUCKET, parseBlocks, PUBLISH_LABELS, publishState } from "@/features/timetables/lib/events";
 import { eventImageUrl, getEventById } from "@/features/timetables/lib/events-data";
 import { formatDateTime, utcToWallTime } from "@/features/match-organizer/lib/time";
 
@@ -69,7 +70,14 @@ export default async function EditEventPage({
           Kártya kép
           <InfoTip text="A naptár kártyáján és az esemény oldalának tetején jelenik meg. Feltöltés előtt a kártya alakjára vághatod; azonnal mentődik." />
         </h2>
-        <CoverEditor eventId={event.id} currentUrl={eventImageUrl(event.cover_path)} upload={uploadEventImage} remove={removeEventCover} />
+        <CoverEditor
+          ownerField="event_id"
+          ownerId={event.id}
+          currentUrl={eventImageUrl(event.cover_path)}
+          emptyText="Nincs kép: a kártya az esemény fajtájának színeit mutatja."
+          upload={uploadEventImage}
+          remove={removeEventCover}
+        />
       </section>
 
       <form action={saveEvent} className="space-y-4">
@@ -96,7 +104,14 @@ export default async function EditEventPage({
             Az esemény oldala
             <InfoTip text="Alcímek, bekezdések, képek és linkek tetszőleges sorrendben. „Csak kártya” eseménynél nem jelenik meg." />
           </h2>
-          <BlocksEditor eventId={event.id} initial={blocks} upload={uploadEventImage} />
+          <BlocksEditor
+            ownerField="event_id"
+            ownerId={event.id}
+            bucket={EVENT_IMAGE_BUCKET}
+            initial={blocks}
+            allowed={SIMPLE_BLOCKS}
+            upload={uploadEventImage}
+          />
         </section>
 
         <section className="card space-y-3">
