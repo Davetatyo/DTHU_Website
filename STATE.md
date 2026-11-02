@@ -1,6 +1,6 @@
 # Project state: DTHU website
 
-**Current version: v2.13** (2026-11-03). Live: https://dthu.hu builds from this repository's
+**Current version: v2.14** (2026-11-03). Live: https://dthu.hu builds from this repository's
 `main` (the owner moved Vercel over around 2026-11-01; checked live 2026-11-02). Every push to
 `main` deploys within a minute.
 **Launch phase: 1**: the public sees only the Meccsszervező; the whole site from the prototype
@@ -175,6 +175,18 @@ quiz) are in
 ## Handover log
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
+
+### 2026-11-03 (end) · Kockázat: 3D tumble fixed, how-to guide (feature/games, v2.14)
+
+- Owner: the dice didn't roll in 3D; add a short how-to-play (max 3 cards).
+- Cause: each roll re-created the die element (`key={spin}`), so the cube jumped to its new
+  face without a turn, and the perspective sat on the tray (two levels up), so the cube was
+  drawn flat. Fix in `DiceGame.tsx`/`kockazat.css`: stable element, hop restarted by
+  alternating `kz-hop-a`/`kz-hop-b`, `perspective` on `.kz-hop`.
+- New `HowToPlay` (3 cards: dobj és tarts meg; írd be egy mezőbe; győzd le a Barbárt) from
+  the intro link and a "?" in the score bar.
+- Verified: types, lint, tests; browser with TEMP-PREVIEW (reverted): cube transform measured
+  at 150/300/500 ms (3D rotation) and a mid-roll picture; guide clicked through.
 
 ### 2026-11-03 (very late) · Kockázat (feature/games, v2.13)
 
@@ -653,6 +665,13 @@ webhook, no cron secret), so nothing local can post to Discord.
 ---
 
 ## Changelog
+
+### v2.14 · 2026-11-03 · merge of `feature/games`
+**Changed (admins only, phase 1):** Kockázat: the dice now really tumble in 3D (they only
+hopped before); new "Hogyan játssz?" guide (3 cards) from the intro and the "?" in the game.
+**Players:** nothing changes in the Időpontfoglaló.
+**Manual steps:** none.
+**Verified:** types, lint, tests; browser: rotation measured mid-roll, guide clicked through.
 
 ### v2.13 · 2026-11-03 · merge of `feature/games`
 **Changed (admins only, phase 1):** new game on the Játékok page: **Kockázat**, dice poker

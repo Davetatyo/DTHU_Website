@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   bonus,
   BONUS_AT,
@@ -53,11 +53,13 @@ const SHOW: Record<number, [number, number]> = { 1: [0, 0], 6: [0, 180], 2: [0, 
 const pick = <T,>(a: T[]) => a[Math.floor(Math.random() * a.length)];
 const wait = (ms: number) => new Promise((r) => window.setTimeout(r, ms));
 
-function Die({ value, spin, held, onClick, disabled }: { value: number; spin: number; held: boolean; onClick: () => void; disabled: boolean }) {
+function Die({ value, spin, hop, held, onClick, disabled }: { value: number; spin: number; hop: number; held: boolean; onClick: () => void; disabled: boolean }) {
   const [x, y] = SHOW[value];
   return (
     <button type="button" className={`kz-die${held ? " held" : ""}`} onClick={onClick} disabled={disabled} aria-pressed={held} aria-label={`${value}${held ? ", megtartva" : ""}`}>
-      <span className="kz-hop" key={spin}>
+      {/* Same element every roll (a new one wouldn't animate); the hop restarts by switching
+          between two identical animations. */}
+      <span className="kz-hop" style={{ animationName: hop === 0 ? "none" : hop % 2 ? "kz-hop-a" : "kz-hop-b" }}>
         <span className="kz-cube" style={{ transform: `rotateX(${x + spin * 360}deg) rotateY(${y + spin * 360}deg) rotateZ(${spin * 90}deg)` }}>
           {[1, 2, 3, 4, 5, 6].map((f) => (
             <span key={f} className="kz-face" style={{ transform: `${FACE_AT[f]} translateZ(var(--half))` }}>
@@ -70,6 +72,95 @@ function Die({ value, spin, held, onClick, disabled }: { value: number; spin: nu
       </span>
       <span className="kz-tag">{held ? "megtartva" : ""}</span>
     </button>
+  );
+}
+
+/** A flat die face for the how-to cards. */
+function MiniDie({ value, held }: { value: number; held?: boolean }) {
+  return (
+    <span className={`kz-mini${held ? " held" : ""}`} aria-hidden>
+      {Array.from({ length: 9 }, (_, k) => (
+        <i key={k} className={PIPS[value].includes(k + 1) ? "on" : ""} />
+      ))}
+    </span>
+  );
+}
+
+const HOW_TO: { title: string; text: string; show: React.ReactNode }[] = [
+  {
+    title: "Dobj, és tartsd meg a jókat",
+    text: "Körönként legfeljebb 3-szor dobhatsz az 5 kockával. Dobás után koppints azokra, amiket megtartasz: aranyszínűek lesznek, és a következő dobásnál a helyükön maradnak.",
+    show: (
+      <div className="kz-how-dice">
+        <MiniDie value={5} held />
+        <MiniDie value={5} held />
+        <MiniDie value={2} />
+        <MiniDie value={5} held />
+        <MiniDie value={1} />
+      </div>
+    ),
+  },
+  {
+    title: "Írd be egy mezőbe",
+    text: "Bármelyik dobás után választhatsz egy mezőt: a kártyán látod, mennyit érne. Minden mező csak egyszer tölthető ki; ha semmi sem jött ki, egy mezőbe 0-t is írhatsz.",
+    show: (
+      <ul className="kz-how-list">
+        <li><span>Full</span><b>25</b></li>
+        <li><span>Kis sor</span><b>30</b></li>
+        <li><span>Nagy sor</span><b>40</b></li>
+        <li><span>Ultimate</span><b>50</b></li>
+      </ul>
+    ),
+  },
+  {
+    title: "Győzd le a Barbárt",
+    text: "Utánad a Barbár dob (közben neked szurkol…). Ha minden mező betelt, a több pont nyer. A teljes játékban a felső rész 63 pontja +35 bónuszt ér.",
+    show: (
+      <div className="kz-how-score">
+        <span><small>Te</small><b>187</b></span>
+        <span><small>Barbár</small><b>164</b></span>
+      </div>
+    ),
+  },
+];
+
+/** "Hogyan játssz?": three cards to click through. */
+function HowToPlay({ onClose }: { onClose: () => void }) {
+  const [step, setStep] = useState(0);
+  const card = HOW_TO[step];
+  const last = step === HOW_TO.length - 1;
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [onClose]);
+  return (
+    <div className="kz-how" role="dialog" aria-modal="true" aria-label="Hogyan játssz?" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
+      <div className="kz-how-card" key={step}>
+        <button type="button" className="kz-how-x" onClick={onClose} aria-label="Bezárás">
+          ×
+        </button>
+        <span className="kz-how-step">
+          {step + 1} / {HOW_TO.length}
+        </span>
+        <h2>{card.title}</h2>
+        {card.show}
+        <p>{card.text}</p>
+        <div className="kz-how-nav">
+          <button type="button" className="kz-how-back" onClick={() => setStep(step - 1)} disabled={step === 0}>
+            ‹ Vissza
+          </button>
+          <span className="kz-how-dots" aria-hidden>
+            {HOW_TO.map((_, i) => (
+              <i key={i} className={i === step ? "on" : ""} />
+            ))}
+          </span>
+          <button type="button" className="kz-how-next" onClick={() => (last ? onClose() : setStep(step + 1))}>
+            {last ? "Értem!" : "Tovább ›"}
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -88,9 +179,12 @@ export function DiceGame() {
   const [dice, setDice] = useState([1, 2, 3, 4, 5]);
   const [held, setHeld] = useState([false, false, false, false, false]);
   const [spin, setSpin] = useState([0, 0, 0, 0, 0]);
+  const [hops, setHops] = useState([0, 0, 0, 0, 0]);
   const [rollsLeft, setRollsLeft] = useState(3);
   const [rolling, setRolling] = useState(false);
   const [remark, setRemark] = useState("");
+  const [howTo, setHowTo] = useState(false);
+  const closeHowTo = useCallback(() => setHowTo(false), []);
   const alive = useRef(true);
   useEffect(() => () => void (alive.current = false), []);
 
@@ -105,6 +199,7 @@ export function DiceGame() {
     setRolling(true);
     setDice(next);
     setSpin((s) => s.map((v, i) => (keep[i] ? v : v + 2 + Math.floor(Math.random() * 2))));
+    setHops((h) => h.map((v, i) => (keep[i] ? v : v + 1)));
     buzz([10, 60, 10]);
     await wait(reduced ? 0 : ROLL_MS);
     setRolling(false);
@@ -230,6 +325,9 @@ export function DiceGame() {
             <button type="button" className="btn kz-go" onClick={start} disabled={!intro.done}>
               Harcra fel!
             </button>
+            <button type="button" className="kz-howto-link" onClick={() => setHowTo(true)}>
+              Hogyan játssz?
+            </button>
           </div>
         </div>
       )}
@@ -262,10 +360,13 @@ export function DiceGame() {
               </span>
               <span className={turn === "you" ? "now" : ""}>Te {myTotal}</span>
               <span className={turn === "him" ? "now" : ""}>Barbár {hisTotal}</span>
+              <button type="button" className="kz-help" onClick={() => setHowTo(true)} aria-label="Hogyan játssz?">
+                ?
+              </button>
             </div>
             <div className={`kz-tray${turn === "him" ? " his" : ""}`}>
               {dice.map((v, i) => (
-                <Die key={i} value={v} spin={spin[i]} held={held[i]} onClick={() => toggle(i)} disabled={!yourTurn || !rolled || rollsLeft === 0} />
+                <Die key={i} value={v} spin={spin[i]} hop={hops[i]} held={held[i]} onClick={() => toggle(i)} disabled={!yourTurn || !rolled || rollsLeft === 0} />
               ))}
             </div>
             <button type="button" className="kz-roll" onClick={yourRoll} disabled={!yourTurn || rollsLeft === 0}>
@@ -297,6 +398,8 @@ export function DiceGame() {
           </div>
         </div>
       )}
+
+      {howTo && <HowToPlay onClose={closeHowTo} />}
 
       {phase === "end" && (
         <div className="kz-end">
