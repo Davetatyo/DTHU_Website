@@ -11,7 +11,8 @@ export const routes = {
   // Full-site pages (phase 1: admins only, see lib/site-mode.ts)
   rankings: "/ranglista",
   timetables: "/versenynaptar",
-  tickets: "/jegyek",
+  tickets: "/sorsolas",
+  ticketsAdmin: "/sorsolas/admin",
   shop: "/bolt",
   rulebook: "/szabalytar",
   rule: (id: string) => `/szabalytar/${id}`,

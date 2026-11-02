@@ -81,7 +81,7 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 | `landing-page` Hírek (home) | `/` | in-progress | placeholder page only; needs news source (DB table or Discord/Facebook import?) |
 | `rankings` Ranglista / Power Ranking | `/ranglista` | planned | needs results: Karnyx has no API, so manual entry or import format to agree |
 | `timetables` Versenynaptár | `/versenynaptar` | planned | events (online rounds, live days); could reuse tournaments/rounds tables |
-| `tickets` Jegyek | `/jegyek` | planned | reward points per match/event; needs a ledger table and rules sign-off |
+| `tickets` Sorsolás (ticket draws) | `/sorsolas` (+ `/sorsolas/admin`) | preview (branch `feature/tickets`, not merged) | ticket ledger, admin awards (podium + manual), draws with ticket-weighted entries, automatic close + draw in the hourly cron. **Needs migration 0002** before deploy |
 | `shop` Bolt | `/bolt` | planned | spend tickets; wishlist first ("Érdekel"), real redeeming later |
 | `rulebook` Szabálytár | `/szabalytar` | planned | rules content exists in the prototype (Rulepop HU fan translation, summarised) |
 | `faq` GYIK (site-wide) | `/gyik` | planned | general FAQ; the Meccsszervező keeps its own |
@@ -90,6 +90,11 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 
 ## Needs the owner
 
+0. **Sorsolás (feature/tickets): run `supabase/migrations/0002_ticket_draws.sql`** in the
+   Supabase SQL Editor *before* this branch is deployed (the developer who built it has no
+   Supabase access). No new cron job needed: the existing hourly `dt-reminders` call holds the
+   draws; its response becomes `{"warnings":0,"draws":0}`. Then confirm the open questions in
+   `src/features/tickets/README.md` (ticket amounts, automatic match tickets, expiry).
 1. **Review v2.0** (restructure + new design) and give the go-ahead to push to
    github.com/Davetatyo/DTHU_Website. Then follow the Launch plan.
 2. Carried over from DT_Match_Organizer `state.md` (2026-10-30), status unknown here, please
@@ -146,6 +151,28 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 ## Handover log
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
+
+### 2026-11-02 · Sorsolás (ticket draws) on `feature/tickets` (not committed)
+
+**Done:** the Jegyek tab became **Sorsolás** (`/sorsolas`, `/jegyek` redirects permanently).
+Migration `supabase/migrations/0002_ticket_draws.sql`: `ticket_ledger`, `ticket_draws`,
+`ticket_draw_entries`, `ticket_draw_winners` + functions `ticket_award`, `ticket_draw_enter`,
+`ticket_draw_complete`, `ticket_draw_close_now`, `ticket_draw_cancel` (service role only).
+Player page: real balance, open/closing draws with entry form, past draws with winners, own
+ticket history. Admin page `/sorsolas/admin`: podium award (1–3rd), single +/− booking,
+create draw (title, prize, closing time, winner count, optional cap), "Sorsolás most",
+"Elmarad" (refund), balances, recent ledger. Hourly cron route also holds closed draws and
+posts the result to Discord. Rules: `src/features/tickets/README.md`.
+**Verified:** 70 unit tests (9 new: weighted draw, phases, caps, amount parsing), types, lint.
+Both migrations run on an in-memory Postgres (PGlite) with stubbed `auth` schema/roles; every
+function exercised (balance floor, cap, entry after close refused, double completion, refund,
+empty draw, anon can't execute). This machine has no `.env.local`, so pages were rendered
+against a local mock of the Supabase REST API with sample data + the TEMP-PREVIEW fake admin
+(reverted, grep clean): `/sorsolas` and `/sorsolas/admin` desktop screenshots OK (light theme).
+**Not verified:** real Supabase, real login, Discord post, true 375 px (headless Edge has a
+~500 px minimum window), dark theme screenshots.
+**Next:** owner runs migration 0002 (on a test basis: create a draw closing in a few minutes,
+award yourself tickets, enter, wait for the hourly run or press "Sorsolás most"); review; commit.
 
 ### 2026-10-30 · v2.0 restructure and redesign (not pushed)
 

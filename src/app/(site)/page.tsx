@@ -143,7 +143,7 @@ export default async function NewsPage() {
           <Link href={routes.tickets} className="tile block" style={{ minHeight: 150 }}>
             <Art spec={{ c1: "#e0b24a", c2: "#7a2fb0", g: "ticket", prompt: "glowing golden tickets, esports reward banner" }} />
             <div className="in">
-              <span className="k">Jegyek</span>
+              <span className="k">Sorsolás</span>
               <h3>{myTickets !== undefined ? `${myTickets} jegyed van` : "Gyűjts jegyet minden meccsért"}</h3>
             </div>
           </Link>

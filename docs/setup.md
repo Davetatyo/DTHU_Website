@@ -32,7 +32,8 @@ Discord channel webhook · Supabase pg_cron for reminders.
 ### 1. Supabase
 
 1. Create a project at [supabase.com](https://supabase.com).
-2. **SQL Editor** → paste [supabase/migrations/0001_init.sql](../supabase/migrations/0001_init.sql) → Run.
+2. **SQL Editor** → paste and run each file in [supabase/migrations/](../supabase/migrations/) in order
+   (`0001_init.sql`, `0002_ticket_draws.sql`, …).
 3. **Project Settings → API**: copy the Project URL, `anon` key and `service_role` key.
 
 ### 2. Discord login
@@ -107,12 +108,13 @@ select jobname, schedule, active from cron.job;                                -
 select status, return_message, start_time from cron.job_run_details
   order by start_time desc limit 5;                                             -- hourly runs (UTC)
 select status_code, content, error_msg, created from net._http_response
-  order by created desc limit 5;                                                -- expect 200 {"warnings":0}
+  order by created desc limit 5;                                                -- expect 200 {"warnings":0,"draws":0}
 ```
 
 `401` means the Vault secret doesn't match `CRON_SECRET`
 (fix: `select vault.update_secret((select id from vault.secrets where name = 'dt_cron_secret'), 'VALUE');`).
-Stop the job with `select cron.unschedule('dt-reminders');`.
+The same hourly call also holds the Sorsolás ticket draws whose closing time has passed
+(`src/features/tickets/lib/run.ts`), so stopping it stops those too. Stop the job with `select cron.unschedule('dt-reminders');`.
 
 ## Running a tournament
 

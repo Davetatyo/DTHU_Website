@@ -1,33 +1,58 @@
-# Jegyek
+# Sorsolás (ticket draws)
 
 | | |
 |---|---|
-| Folder | `src/features/tickets/` |
+| Folder | `src/features/tickets/` (id stays `tickets`) |
 | Branch | `feature/tickets` |
-| Route | `/jegyek` (pages in `src/app/(site)/jegyek/`) |
-| Status | **preview**: built from the prototype; admins only until the full site opens (keep in sync with `src/features/registry.ts` and STATE.md) |
+| Route | `/sorsolas` (player page), `/sorsolas/admin` (admins). Old `/jegyek` redirects. Pages in `src/app/(site)/sorsolas/` |
+| Status | **preview**: admins only until the full site opens (keep in sync with `src/features/registry.ts` and STATE.md) |
+| Database | `supabase/migrations/0002_ticket_draws.sql` (**must be run by the owner before deploy**) |
 
 ## What it is
 
-Reward points ("jegyek") for taking part: played match, win, full tournament, live event, podium, helping organise. Shows the player's balance and history.
+Players collect **tickets** (jegyek): podium places at online or live tournaments, live events,
+helping organise, or anything an admin decides. During the year admins open **draws**
+(sorsolások). A player enters a draw with as many tickets as they want (1 ticket = 1 entry, so
+more tickets = better chance). At the closing time entries stop automatically and the winners
+are drawn at random.
 
-## What's built
+## Rules (built this way, confirm with the owner)
 
-Page `src/app/(site)/jegyek/`. Balance is SAMPLE data from the sample ranking; the earning rules (`data/earn.ts`) are the prototype's.
+- **Earning:** admins book tickets on `/sorsolas/admin`: the "Dobogó" form (1st/2nd/3rd of a
+  tournament, defaults +3/+2/+1, agreed 2026-11-02) or a single +/− booking with a reason. Nothing is automatic
+  yet, since results live in Karnyx. Tickets belong to a **profile** (Discord login), so a
+  player must log in once before they can receive tickets.
+- **Balance** = sum of the ledger (`ticket_ledger`). Rows are never edited; corrections are
+  negative bookings. The balance can never go below zero (checked in the database).
+- **Entering:** signed-in players on `/sorsolas`, any number of tickets up to their balance and
+  the draw's optional per-player cap; they can add more later. Spent tickets are gone, unless
+  the admin cancels the draw ("Elmarad"), which refunds everyone.
+- **Closing and drawing:** at `closes_at` the database refuses new entries. The hourly cron
+  (`/api/cron/reminders`, already scheduled in Supabase) then holds every closed draw; an
+  admin can also press "Sorsolás most" (closes and draws immediately). The result is posted
+  to Discord (winners pinged if logged in) and shown on the page.
+- **Randomness:** `lib/draw.ts` `drawWinners` with Node's `crypto.randomInt`: ticket-weighted,
+  each player wins at most once, winners in place order. The database function
+  `ticket_draw_complete` accepts only the first result and checks the entries didn't change.
 
-## Design
+## Code
 
-Prototype: `reference/artifact/index.html` → Jegyek view (V2 wallet tile + earning tiles).
+```
+lib/draw.ts       pure rules: drawWinners, drawPhase, maxEntry, parseTicketAmount (tested)
+lib/data.ts       reads (service client); TicketsNotReady when migration 0002 is missing
+lib/stats.ts      per-draw stats for the cards
+lib/run.ts        holdDraw / runDueDraws (cron + admin button), Discord announcement
+lib/errors.ts     database error codes → Hungarian messages
+actions/draws.ts  enterDraw (players); awardTickets, awardPodium, createDraw, drawNow, cancelDraw (admins)
+components/       DrawCard, LedgerList
+data/earn.ts      "Így szerzel jegyet" tiles (prototype values)
+```
 
-## Data
+## Open questions (ask the owner)
 
-A ticket ledger table (profile, amount, reason, date) and rules for awarding (automatic from match status, manual by admins).
-
-## Open questions (ask the owner before going live)
-
-- Exact earning rules and whether they are retroactive.
-- Who can correct a balance.
-
-## Folder layout
-
-See [`../_template/README.md`](../_template/README.md).
+- Exact ticket amounts per placement/activity (`data/earn.ts` still shows the prototype's
+  list, including "+1 per played match", which is **not** automatic).
+- Should played/won Meccsszervező matches give tickets automatically?
+- Do tickets expire (e.g. at season end)?
+- Should players see each other's balances / a ticket leaderboard?
+- The Bolt (shop) can later spend tickets through the same ledger (new `kind`).

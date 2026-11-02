@@ -11,6 +11,8 @@ const nextConfig: NextConfig = {
       { source: "/admin/:path*", destination: "/meccsszervezo/admin/:path*", permanent: true },
       { source: "/profil", destination: "/meccsszervezo/profil", permanent: true },
       { source: "/login", destination: "/meccsszervezo/login", permanent: true },
+      // Jegyek became Sorsolás (ticket draws) before the full site opened.
+      { source: "/jegyek", destination: "/sorsolas", permanent: true },
       // /gyik is the site-wide FAQ now; in phase 1 the middleware sends visitors who can't see
       // it to the Meccsszervező FAQ (lib/site-mode.ts → phase1Fallback).
     ];

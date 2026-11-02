@@ -1,0 +1,150 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { Art } from "@/components/Art";
+import type { IconId } from "@/components/Icon";
+import { DrawCard } from "@/features/tickets/components/DrawCard";
+import { LedgerList } from "@/features/tickets/components/LedgerList";
+import { EARN } from "@/features/tickets/data/earn";
+import { getBalance, getDraws, getLedger, TicketsNotReady } from "@/features/tickets/lib/data";
+import { drawPhase } from "@/features/tickets/lib/draw";
+import { loadDrawStats } from "@/features/tickets/lib/stats";
+import { getCurrentProfile } from "@/lib/auth";
+import { routes } from "@/lib/routes";
+import "@/features/tickets/tickets.css";
+
+export const metadata: Metadata = { title: "Sorsolás" };
+
+const ICONS: IconId[] = ["swords", "trophy", "scroll", "die", "gem", "link"];
+const COLORS = ["#a8322b", "#d4ab52", "#4f8fe0", "#5eae4a", "#8b55d6", "#3fb39a"];
+
+export default async function TicketDrawPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ uzenet?: string; hiba?: string }>;
+}) {
+  const { uzenet, hiba } = await searchParams;
+  const viewer = await getCurrentProfile();
+  const tz = viewer?.timezone;
+
+  let data;
+  try {
+    const draws = await getDraws();
+    const [stats, balance, ledger] = await Promise.all([
+      loadDrawStats(draws, viewer?.id ?? null),
+      viewer ? getBalance(viewer.id) : Promise.resolve(null),
+      viewer ? getLedger(viewer.id, 30) : Promise.resolve([]),
+    ]);
+    data = { draws, stats, balance, ledger };
+  } catch (err) {
+    if (!(err instanceof TicketsNotReady)) throw err;
+    data = null;
+  }
+
+  const active = data?.draws.filter((d) => ["open", "closing"].includes(drawPhase(d))).reverse() ?? [];
+  const past = data?.draws.filter((d) => !["open", "closing"].includes(drawPhase(d))) ?? [];
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <div className="sec-h">
+          <h1>Sorsolás</h1>
+          {viewer?.is_admin && (
+            <Link href={routes.ticketsAdmin} className="btn btn-admin btn-sm">
+              Sorsolások kezelése
+            </Link>
+          )}
+        </div>
+        <p className="lead">
+          Jegyeket versenyeken és a közösségért szerezhetsz. Az év során több sorsolás is lesz: annyi jeggyel nevezel,
+          amennyivel szeretnél, és minden jegy egy esély a nyereményre.
+        </p>
+      </div>
+      {uzenet && <p className="alert-ok">{uzenet}</p>}
+      {hiba && <p className="alert-error">{hiba}</p>}
+      {!data && (
+        <p className="alert-error">
+          A sorsolás adatbázisa még nincs beállítva (supabase/migrations/0002_ticket_draws.sql). Amíg nem fut le, ez az
+          oldal üres.
+        </p>
+      )}
+
+      <div className="tile wallettile">
+        <Art spec={{ c1: "#e0b24a", c2: "#7a2fb0", g: "ticket", prompt: "magic wallet overflowing with glowing golden tickets, fantasy UI hero image" }} />
+        <div className="in">
+          {viewer ? (
+            <>
+              <span className="k">{viewer.karnyx_name ?? viewer.display_name} egyenlege</span>
+              <div className="big">{data?.balance ?? 0}</div>
+              <span className="sub">jegy · nevezz vele egy sorsolásra lent</span>
+            </>
+          ) : (
+            <>
+              <span className="k">Sorsolás</span>
+              <h3 className="text-3xl">Gyűjts jegyet, nevezz, nyerj</h3>
+              <Link href={routes.login} className="btn btn-discord self-start">
+                Belépés Discorddal
+              </Link>
+            </>
+          )}
+        </div>
+      </div>
+
+      <div>
+        <div className="rowh">
+          <h2>Aktuális sorsolások</h2>
+        </div>
+        {active.length === 0 ? (
+          <p className="muted">Most nincs nyitott sorsolás. Gyűjtsd a jegyeidet a következőre!</p>
+        ) : (
+          <div className="draw-grid">
+            {active.map((d) => (
+              <DrawCard key={d.id} draw={d} stats={data!.stats.get(d.id)!} balance={data!.balance} timeZone={tz} />
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div>
+        <div className="rowh">
+          <h2>Így szerzel jegyet</h2>
+        </div>
+        <p className="lead">A jegyeket a szervezők írják jóvá a versenyek után (online és élő eseményeken is).</p>
+        <div className="cards sm">
+          {EARN.map(([t, n], i) => (
+            <div key={t} className="tile earn">
+              <Art spec={{ c1: COLORS[i], c2: "#15131c", g: ICONS[i], prompt: t }} />
+              <div className="in">
+                <span className="plus">{n}</span>
+                <span className="sub" style={{ color: "#f4ecda" }}>
+                  {t}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {past.length > 0 && (
+        <div>
+          <div className="rowh">
+            <h2>Korábbi sorsolások</h2>
+          </div>
+          <div className="draw-grid">
+            {past.map((d) => (
+              <DrawCard key={d.id} draw={d} stats={data!.stats.get(d.id)!} balance={data!.balance} timeZone={tz} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {viewer && data && (
+        <div>
+          <div className="rowh">
+            <h2>Jegyeim</h2>
+          </div>
+          <LedgerList rows={data.ledger} timeZone={tz} />
+        </div>
+      )}
+    </div>
+  );
+}
