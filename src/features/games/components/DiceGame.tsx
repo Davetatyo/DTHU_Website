@@ -20,6 +20,7 @@ import {
   type Category,
   type Variant,
 } from "../lib/dice";
+import { cubeAngles, cubeTransform, FACE_PLACEMENT, faceTransform } from "../lib/dice-cube";
 import { buzz, useReducedMotion, useStage, useTyped } from "./stage";
 import "../kockazat.css";
 
@@ -39,30 +40,18 @@ const ROLL_MS = 950;
 
 /** Which pip spots (1–9, row by row) a face shows. */
 const PIPS: Record<number, number[]> = { 1: [5], 2: [3, 7], 3: [3, 5, 7], 4: [1, 3, 7, 9], 5: [1, 3, 5, 7, 9], 6: [1, 3, 4, 6, 7, 9] };
-/** Each face's place on the cube, and the turn that brings it to the front. */
-const FACE_AT: Record<number, string> = {
-  1: "rotateY(0deg)",
-  6: "rotateY(180deg)",
-  2: "rotateY(90deg)",
-  5: "rotateY(-90deg)",
-  3: "rotateX(90deg)",
-  4: "rotateX(-90deg)",
-};
-const SHOW: Record<number, [number, number]> = { 1: [0, 0], 6: [0, 180], 2: [0, -90], 5: [0, 90], 3: [-90, 0], 4: [90, 0] };
-
 const pick = <T,>(a: T[]) => a[Math.floor(Math.random() * a.length)];
 const wait = (ms: number) => new Promise((r) => window.setTimeout(r, ms));
 
 function Die({ value, spin, hop, held, onClick, disabled }: { value: number; spin: number; hop: number; held: boolean; onClick: () => void; disabled: boolean }) {
-  const [x, y] = SHOW[value];
   return (
     <button type="button" className={`kz-die${held ? " held" : ""}`} onClick={onClick} disabled={disabled} aria-pressed={held} aria-label={`${value}${held ? ", megtartva" : ""}`}>
       {/* Same element every roll (a new one wouldn't animate); the hop restarts by switching
           between two identical animations. */}
       <span className="kz-hop" style={{ animationName: hop === 0 ? "none" : hop % 2 ? "kz-hop-a" : "kz-hop-b" }}>
-        <span className="kz-cube" style={{ transform: `rotateX(${x + spin * 360}deg) rotateY(${y + spin * 360}deg) rotateZ(${spin * 90}deg)` }}>
+        <span className="kz-cube" style={{ transform: cubeTransform(cubeAngles(value, spin)) }}>
           {[1, 2, 3, 4, 5, 6].map((f) => (
-            <span key={f} className="kz-face" style={{ transform: `${FACE_AT[f]} translateZ(var(--half))` }}>
+            <span key={f} className="kz-face" style={{ transform: `${faceTransform(FACE_PLACEMENT[f])} translateZ(var(--half))` }}>
               {Array.from({ length: 9 }, (_, k) => (
                 <i key={k} className={PIPS[f].includes(k + 1) ? "on" : ""} />
               ))}
