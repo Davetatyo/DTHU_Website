@@ -16,6 +16,8 @@ export type HeroFact = {
   complexity: string;
   /** Token names as the hero page lists them, e.g. "Wound (Seb)". */
   tokens: string[];
+  /** The same tokens' ids, e.g. "wound". */
+  tokenIds: string[];
 };
 
 export type TokenFact = {
@@ -71,6 +73,7 @@ export function glossary(): { heroes: HeroFact[]; tokens: TokenFact[] } {
         weapon: text(/<dfn>Választott fegyver:<\/dfn>([\s\S]*?)<\/p>/, e.bodyHtml),
         complexity: /alt="Bonyolultság (\d+)"/.exec(e.bodyHtml)?.[1] ?? "",
         tokens: [...tokenList.matchAll(/<a\b[^>]*>([\s\S]*?)<\/a>/g)].map((m) => plainText(m[1])),
+        tokenIds: [...tokenList.matchAll(/<a\b[^>]*href="\/szabalytar\/tokenek\/([^"]+)"/g)].map((m) => m[1]),
       };
     });
   const tokenNames = listLabels(renderEntry({ kind: "rule", id: "tokens" }).bodyHtml);

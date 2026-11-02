@@ -21,6 +21,8 @@ const nextConfig: NextConfig = {
       // tournaments).
       { source: "/versenynaptar", destination: "/esemenynaptar", permanent: true },
       { source: "/versenynaptar/:path*", destination: "/esemenynaptar/:path*", permanent: true },
+      // The Jegyek page was removed (2026-11-03); the Bolt still shows the ticket balance.
+      { source: "/jegyek", destination: "/bolt", permanent: true },
       // /gyik is the site-wide FAQ now; in phase 1 the middleware sends visitors who can't see
       // it to the Meccsszervező FAQ (lib/site-mode.ts → phase1Fallback).
     ];

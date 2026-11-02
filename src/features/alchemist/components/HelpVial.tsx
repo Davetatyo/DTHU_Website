@@ -35,7 +35,8 @@ export function HelpVial() {
     return () => document.removeEventListener("keydown", onKey);
   }, [open]);
 
-  if (path === routes.alchemist) return null;
+  // Not on the chat page itself, nor in games (it would cover the answer buttons on phones).
+  if (path === routes.alchemist || path.startsWith(`${routes.games}/`)) return null;
 
   return open ? (
     <div className="alch" onClick={(e) => e.target === e.currentTarget && setOpen(false)}>

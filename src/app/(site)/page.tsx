@@ -8,13 +8,13 @@ import { DEFAULT_TIMEZONE, timeLeft } from "@/features/match-organizer/lib/time"
 import { NewsCard } from "@/features/landing-page/components/NewsCard";
 import { getPublishedNews } from "@/features/landing-page/lib/news-data";
 import { PowerRanking } from "@/features/rankings/components/PowerRanking";
-import { loadRanking, rowOf } from "@/features/rankings/lib/load";
+import { loadRanking } from "@/features/rankings/lib/load";
 import { getCurrentProfile, sameName } from "@/lib/auth";
 import { routes } from "@/lib/routes";
 import "@/features/landing-page/news.css";
 
 // Site home ("Hírek"), prototype V3. The tournament banner, the match schedule and the latest
-// news are real data; ranking numbers and tickets are sample data for now.
+// news are real data; ranking numbers are sample data for now.
 export default async function NewsPage() {
   const viewer = await getCurrentProfile();
   const tz = viewer?.timezone ?? DEFAULT_TIMEZONE;
@@ -30,7 +30,6 @@ export default async function NewsPage() {
   const upcoming = matches.filter((m) => m.status === "confirmed" && m.scheduled_at && Date.parse(m.scheduled_at) > Date.now() - 86_400_000);
   const ranking = await loadRanking();
   const { rows: news } = await getPublishedNews({ perPage: 4 });
-  const myTickets = rowOf(ranking, viewer?.karnyx_name)?.tix;
 
   return (
     <div className="space-y-7">
@@ -140,11 +139,11 @@ export default async function NewsPage() {
               <PowerRanking rows={ranking} limit={8} me={viewer?.karnyx_name} />
             </div>
           </div>
-          <Link href={routes.tickets} className="tile block" style={{ minHeight: 150 }}>
-            <Art spec={{ c1: "#e0b24a", c2: "#7a2fb0", g: "ticket", prompt: "glowing golden tickets, esports reward banner" }} />
+          <Link href={routes.tacticianGame} className="tile block" style={{ minHeight: 150 }}>
+            <Art spec={{ img: "/jatekok/hadvezer-portre.jpg", pos: "center 30%" }} />
             <div className="in">
-              <span className="k">Jegyek</span>
-              <h3>{myTickets !== undefined ? `${myTickets} jegyed van` : "Gyűjts jegyet minden meccsért"}</h3>
+              <span className="k">Játékok</span>
+              <h3>Taktikai Előny: kitalálja a Hadvezér, kire gondolsz?</h3>
             </div>
           </Link>
         </aside>
