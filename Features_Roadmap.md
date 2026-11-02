@@ -360,6 +360,31 @@ answer, explanation, active), `quiz_attempts` (user, question or quiz, correct, 
 - Who writes the first question pool, and how many questions per category to launch with?
   Can players suggest questions for admins to approve?
 
+### R8 · Discord login without the repeated Authorize screen (Belépés)
+
+**Status:** Ready to plan (the owner wants it, not now; added 2026-11-02) · **Feature id:**
+none, a small fix to `match-organizer` login (branch `fix/discord-prompt`) · **Depends on:**
+nothing
+
+Today Discord shows its **"Authorize" screen on every login**, even to players who approved
+DTHU before (e.g. after Kilépés, or on a new browser).
+
+- **Cause:** the login request doesn't send Discord's `prompt` setting, and Discord's default
+  is to ask every time. See `signInWithOAuth` in `src/app/meccsszervezo/login/page.tsx`.
+- **Fix:** add `queryParams: { prompt: "none" }` to the `signInWithOAuth` options. Discord then
+  skips the screen for players who already authorised the app. First-time players should
+  still see it once; confirm this with a fresh Discord account.
+- **A cookie on our side can't solve this:** the screen is Discord's, shown before anything
+  reaches dthu.hu. Our Supabase session cookie already keeps players logged in until they
+  click Kilépés.
+- **Not affected by the fix:** players who aren't logged in to Discord in that browser still
+  get Discord's own login page. In-app browsers (Facebook, Discord) keep their own cookies,
+  so players log in there once separately.
+- **Testing:** Discord login only works on dthu.hu and `localhost:3000`. After deploying:
+  log out, log in again, and check that the Authorize screen is skipped.
+
+**Open questions:** none.
+
 ---
 
 ## Built

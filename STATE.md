@@ -159,6 +159,18 @@ quiz) are in
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
 
+### 2026-11-02 (later) · Roadmap R8: Discord login without the Authorize screen
+
+- Owner asked why Discord shows "Authorize" on every re-login. Cause: the login doesn't send
+  Discord's `prompt` setting (default: ask every time). Fix is one line (`prompt: "none"`),
+  written down as **R8** in [Features_Roadmap.md](Features_Roadmap.md). The owner said **not to
+  build it yet**.
+- Also checked live (anonymous visitor): every hidden page redirects to `/meccsszervezo`, then
+  to `/regisztracio`; the calendar feed still answers 200. Noticed, not changed: a logged-out
+  player opening a Discord match link lands on the overview after login, not on the match
+  (no return path through login).
+- Docs only.
+
 ### 2026-11-02 · Registration page merged to main, login flow fixes
 
 - **Merged** `feature/register-page` into `main` (`ff34109`). The feature is now live.
