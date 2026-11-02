@@ -57,7 +57,10 @@ The Játékok menu tab (after Bolt): a hub with one card per game (`lib/hub.ts`)
   link and the "?" in the score bar.
 - 3D dice: each die keeps the same element between rolls (a new element wouldn't animate its
   turn) and its hop restarts by switching between two identical keyframes; the perspective
-  sits on the die's own wrapper (`.kz-hop`), otherwise the cube renders flat.
+  sits on the die's own wrapper (`.kz-hop`), otherwise the cube renders flat. Which face shows
+  is computed in `lib/dice-cube.ts`: the screen spin (rotateZ) must come first in the transform
+  list, or the side faces 2–5 get swapped; `dice-cube.test.ts` checks every value at every
+  spin with the same matrix maths as the browser.
 - `components/stage.ts`: shared by both games (typed speech, vibration, sizing and centring
   the stage below the top bar).
 - Pictures: `public/jatekok/barbar-harcos.jpg`, `barbar-rajongo.jpg`.

@@ -1,6 +1,6 @@
 # Project state: DTHU website
 
-**Current version: v2.14** (2026-11-03). Live: https://dthu.hu builds from this repository's
+**Current version: v2.15** (2026-11-03). Live: https://dthu.hu builds from this repository's
 `main` (the owner moved Vercel over around 2026-11-01; checked live 2026-11-02). Every push to
 `main` deploys within a minute.
 **Launch phase: 1**: the public sees only the Meccsszervező; the whole site from the prototype
@@ -175,6 +175,16 @@ quiz) are in
 ## Handover log
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
+
+### 2026-11-03 (final) · Kockázat dice showed wrong faces (feature/games, v2.15)
+
+- Owner's screenshot: dice showed 2-4-3-5-6 but Nagy sor scored 0 (Esély said 22, the dice
+  summed to 20). Cause: v2.14 put `rotateZ` last in the cube transform, so CSS applied it
+  first, in the cube's own space, which swaps the side faces (2–5). Fix: new
+  `lib/dice-cube.ts` (rotateZ first in the list) used by `DiceGame.tsx`;
+  `lib/dice-cube.test.ts` checks every value × spin with CSS rotation matrices (verified it
+  fails with the old order). Browser check (TEMP-PREVIEW, reverted): faces read from the
+  computed transforms add up to the Esély preview on every roll.
 
 ### 2026-11-03 (end) · Kockázat: 3D tumble fixed, how-to guide (feature/games, v2.14)
 
@@ -665,6 +675,15 @@ webhook, no cron secret), so nothing local can post to Discord.
 ---
 
 ## Changelog
+
+### v2.15 · 2026-11-03 · merge of `feature/games`
+**Fixed (admins only, phase 1):** Kockázat sometimes drew the dice with the wrong faces
+(2–5 could swap) while scoring the real roll, so a straight on screen didn't score (owner's
+report). The dice now always show what is scored.
+**Players:** nothing changes in the Időpontfoglaló.
+**Manual steps:** none.
+**Verified:** new test of every face at every spin (fails with the old order); browser: shown
+faces add up to the Esély box on every roll.
 
 ### v2.14 · 2026-11-03 · merge of `feature/games`
 **Changed (admins only, phase 1):** Kockázat: the dice now really tumble in 3D (they only
