@@ -1,25 +1,45 @@
 import Link from "next/link";
-import { PHASES } from "../data/events";
+import { getCurrentProfile } from "@/lib/auth";
+import { routes } from "@/lib/routes";
+import { DEFAULT_TIMEZONE } from "@/features/match-organizer/lib/time";
+import { getCalendarItems } from "../lib/events-data";
 
-const md = (s: string) => s.slice(5).replace("-", ".") + ".";
+const md = (day: string) => day.slice(5).replace("-", ".") + ".";
 
-/** The season plan as a timeline (shown under the header on every full-site page). */
-export function SeasonPhases() {
+/**
+ * The season as a timeline under the header on every full-site page: the latest finished
+ * entry and the next ones from the Eseménynaptár (events + online rounds), oldest first.
+ */
+export async function SeasonPhases() {
+  const viewer = await getCurrentProfile();
+  const items = await getCalendarItems(viewer?.timezone ?? DEFAULT_TIMEZONE);
+  const byStart = [...items].sort((a, b) => a.startMs - b.startMs);
+  const firstOpen = byStart.findIndex((i) => !i.past);
+  const from = firstOpen === -1 ? Math.max(0, byStart.length - 1) : Math.max(0, firstOpen - 1);
+  const shown = byStart.slice(from, from + 6);
+  if (shown.length === 0) return null;
   const now = Date.now();
+
   return (
     <nav className="phases" aria-label="Szezon fázisai">
-      {PHASES.map((p) => {
-        const a = new Date(`${p.a}T00:00:00`).getTime();
-        const b = new Date(`${p.b}T23:59:59`).getTime();
-        const st = now > b ? "done" : now >= a ? "now" : "";
-        const pct = st === "now" ? Math.round(((now - a) / (b - a)) * 100) : 0;
-        return (
-          <Link key={p.t} href={p.h} className={`ph-i ${st}`}>
-            <b>{p.t}</b>
-            <small>{p.a === p.b ? md(p.a) : `${md(p.a)} – ${md(p.b)}`}</small>
+      {shown.map((p) => {
+        const st = p.past ? "done" : p.ongoing ? "now" : "";
+        const body = (
+          <>
+            <b>{p.title}</b>
+            <small>{p.startDay === p.endDay ? md(p.startDay) : `${md(p.startDay)} – ${md(p.endDay)}`}</small>
             <span className="bar2">
-              <i style={{ width: `${pct}%` }} />
+              <i style={{ width: st === "now" ? `${Math.round(((now - p.startMs) / Math.max(1, p.endMs - p.startMs)) * 100)}%` : 0 }} />
             </span>
+          </>
+        );
+        return p.href && p.external ? (
+          <a key={p.key} href={p.href} target="_blank" rel="noopener noreferrer" className={`ph-i ${st}`}>
+            {body}
+          </a>
+        ) : (
+          <Link key={p.key} href={p.href ?? routes.timetables} className={`ph-i ${st}`}>
+            {body}
           </Link>
         );
       })}

@@ -10,7 +10,9 @@ export const routes = {
 
   // Full-site pages (phase 1: admins only, see lib/site-mode.ts)
   rankings: "/ranglista",
-  timetables: "/versenynaptar",
+  timetables: "/esemenynaptar",
+  /** An event's own page (Eseménynaptár). */
+  event: (slug: string) => `/esemenynaptar/${slug}`,
   tickets: "/jegyek",
   shop: "/bolt",
   rulebook: "/szabalytar",
@@ -27,6 +29,9 @@ export const routes = {
   register: "/regisztracio",
   admin: `${MO}/admin`,
   adminUser: (id: string) => `${MO}/admin/felhasznalo/${id}`,
+  adminEvents: `${MO}/admin/esemenyek`,
+  adminEventNew: `${MO}/admin/esemenyek/uj`,
+  adminEvent: (id: string) => `${MO}/admin/esemenyek/${id}`,
 
   // Account pages. They live in the Meccsszervező until the full site gets its own account area.
   login: `${MO}/login`,

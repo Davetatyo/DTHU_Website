@@ -1,6 +1,6 @@
 # Project state: DTHU website
 
-**Current version: v2.2** (2026-11-02). Live: https://dthu.hu builds from this repository's
+**Current version: v2.3** (2026-11-03). Live: https://dthu.hu builds from this repository's
 `main` (the owner moved Vercel over around 2026-11-01; checked live 2026-11-02). Every push to
 `main` deploys within a minute.
 **Launch phase: 1**: the public sees only the Meccsszervező; the whole site from the prototype
@@ -83,7 +83,7 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 | `match-organizer` Meccsszervező | `/meccsszervezo` | **live** (v1.2 old design on dthu.hu; v2.0 ready) | all real | Launch plan |
 | `landing-page` Hírek (home) | `/` | preview | banner + upcoming matches real; news sample | decide the news source (table + admin page?) |
 | `rankings` Ranglista | `/ranglista` | preview | names/heroes real; points, records, movement sample | results source (Karnyx copy-paste? results on "Lejátszottuk"?) |
-| `timetables` Versenynaptár | `/versenynaptar` | preview | confirmed matches real; events + season plan sample | events table, rounds from the Meccsszervező |
+| `timetables` Eseménynaptár (was Versenynaptár) | `/esemenynaptar` (+ `/esemenynaptar/<slug>`, admin `/meccsszervezo/admin/esemenyek`) | preview (admins only), **on `main` since v2.3** | all real: events table (migration 0003) + online rounds; sample data removed | owner tests live; then phase 5 (calendar feed, Hírek tiles, Discord later) |
 | `tickets` Jegyek | `/jegyek` | preview | balance sample (from sample ranking) | ticket ledger table + earning rules sign-off |
 | `shop` Bolt | `/bolt` | preview | items sample; wishlist only in the browser | shared wishlist, then redeeming (needs tickets) |
 | `rulebook` Szabálytár | `/szabalytar` | preview | content is final text from the prototype | credit/permission wording for Rulepop |
@@ -95,6 +95,12 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 
 ## Needs the owner
 
+0. **Eseménynaptár (v2.3, live for admins):** run
+   `supabase/migrations/0003_events.sql` in the Supabase SQL Editor if not done yet (new
+   `events` table and `event-images` bucket; only adds things). Then on dthu.hu as admin: Admin felület →
+   Események kezelése → Új esemény → card picture, content blocks → publish now / scheduled /
+   back to draft; check `/esemenynaptar` (tiles, month view, archive) and the event page.
+   Events created while testing are real rows: delete them afterwards (Törlés).
 1. **Follow [docs/vercel.md](docs/vercel.md)**: new Vercel project for DTHU_Website, test on its
    address (admin + player login), then move dthu.hu over between rounds.
 2. Carried over from DT_Match_Organizer `state.md` (2026-10-30), status unknown here, please
@@ -160,6 +166,35 @@ quiz) are in
 ## Handover log
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
+
+### 2026-11-03 · Eseménynaptár: rename, events table, admin events, event pages (feature/timetables)
+
+- **Merged to `main` and pushed as v2.3** at the owner's request: local login still didn't
+  work, so he tests live (now the default, see CLAUDE.md → Verifying changes). The analytics
+  work is committed separately on `feature/analytics` (`3f44c73`, not pushed, not merged).
+- Owner decisions (2026-11-03): event kinds as proposed; stays admin-only (phase 1); every
+  admin edits; simple content blocks; past events in a greyed archive at the bottom (links
+  live); drafts by default, publish now or scheduled; Discord announcements later via a
+  separate webhook/channel.
+- Phase 1: Versenynaptár → **Eseménynaptár**, `/esemenynaptar`, permanent redirects from
+  `/versenynaptar(/…)`, Alkimista answer and sample news text updated; internal id stays
+  `timetables`.
+- Phase 2: migration `0003_events.sql`; `lib/events.ts` (+ tests), `lib/events-data.ts`;
+  calendar page and the season timeline read published events + online rounds; the prototype's
+  sample events (`data/events.ts`) are deleted.
+- Phase 3: admin `…/admin/esemenyek` (list), `/uj` (new draft), `/<id>` (edit: cover cropper,
+  fields, block editor, publish buttons, delete); link card on Admin felület; `lib/event-form.ts`
+  (+ tests); `SubmitButton` got `name`/`value` for several buttons in one form.
+- Phase 4: `/esemenynaptar/<slug>` event page; admins can preview drafts/scheduled events.
+- Shared helpers: `src/lib/image-type.ts` (moved from profile), `src/lib/storage-url.ts`,
+  `cropToBlob` / `fitImageBlob` in `src/lib/image-crop.ts`; `Art` got `plain` (no "AI-kép
+  helye" tag); `.danger-zone` moved to globals.css.
+- Verified: types, lint, 110 tests, production build (in a temporary copy, because the owner's
+  dev server used `.next/`); screenshots with TEMP-PREVIEW sample events and fake login
+  (reverted, grep clean): tiles + archive and month view (desktop dark), event page, admin list
+  (desktop dark), edit page with blocks (375 px light). Fixed: multi-day bars disappeared on
+  days after the first in the month view. **Not verified:** real create/publish/upload (needs
+  migration 0003 and a real admin login).
 
 ### 2026-11-02 (night) · Profile pictures opened to everyone (v2.2)
 
@@ -410,6 +445,21 @@ webhook, no cron secret), so nothing local can post to Discord.
 ---
 
 ## Changelog
+
+### v2.3 · 2026-11-03 · merge of `feature/timetables`
+**Changed (admins only, phase 1):**
+- Versenynaptár is now **Eseménynaptár** at `/esemenynaptar` (old links redirect).
+- Real events instead of the prototype's samples: online rounds come from the Időpontfoglaló,
+  other events from the new `events` table; pinned first; past events greyed out in "Elmúlt
+  események"; the season timeline uses the same data.
+- Admin felület → Események kezelése: new events are drafts; card picture with crop, content
+  blocks, publish now, scheduled publish, back to draft, delete.
+- Event pages `/esemenynaptar/<slug>`.
+**Players:** nothing changes in the Időpontfoglaló (one new card on the admin page only).
+**Manual steps:** run `supabase/migrations/0003_events.sql` (new table + `event-images`
+bucket). The pages work without it (empty), but saving events needs it.
+**Verified:** types, lint, 110 tests, production build, screenshots with sample events (desktop
++ 375 px, dark + light). Real create/publish/upload: owner tests live.
 
 ### v2.2 · 2026-11-02 · merge of `feature/profile`
 **Changed:**

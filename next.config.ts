@@ -11,6 +11,10 @@ const nextConfig: NextConfig = {
       { source: "/admin/:path*", destination: "/meccsszervezo/admin/:path*", permanent: true },
       { source: "/profil", destination: "/meccsszervezo/profil", permanent: true },
       { source: "/login", destination: "/meccsszervezo/login", permanent: true },
+      // Versenynaptár was renamed to Eseménynaptár (it lists every kind of event, not only
+      // tournaments).
+      { source: "/versenynaptar", destination: "/esemenynaptar", permanent: true },
+      { source: "/versenynaptar/:path*", destination: "/esemenynaptar/:path*", permanent: true },
       // /gyik is the site-wide FAQ now; in phase 1 the middleware sends visitors who can't see
       // it to the Meccsszervező FAQ (lib/site-mode.ts → phase1Fallback).
     ];

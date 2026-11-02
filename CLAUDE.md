@@ -144,6 +144,11 @@ the flag in `.env.local` to see the hidden pages without logging in.
 - Browser checks: start the dev server from a shell (`npx next dev -p <port>`); the desktop
   app's preview launcher can't start it in this folder. Login only works on port 3000. Run only
   **one** dev server at a time here: two share `.next/` and serve random 404s.
+- **The owner's test is live** (his choice, 2026-11-03): once your checks pass, the feature is
+  committed on its branch, merged to `main` and pushed (with his OK), and he tests it on
+  dthu.hu. Admin-only pages are hidden from the public in phase 1 anyway; say clearly when a
+  change is visible to players (the Időpontfoglaló). Any migration must be run before the push.
+  Local Discord login needs `http://localhost:3000/auth/callback` in Supabase's Redirect URLs.
 - **Logged-in pages without logging in:** temporarily make `getCurrentProfile()` in
   `src/lib/auth.ts` return a fake profile when there's no user, marked `// TEMP-PREVIEW`. Look
   only (real database!), revert immediately, and check `grep -rn TEMP-PREVIEW src` prints
