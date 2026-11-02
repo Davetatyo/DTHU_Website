@@ -1,6 +1,6 @@
 # Project state: DTHU website
 
-**Current version: v2.4** (2026-11-03). Live: https://dthu.hu builds from this repository's
+**Current version: v2.5** (2026-11-03). Live: https://dthu.hu builds from this repository's
 `main` (the owner moved Vercel over around 2026-11-01; checked live 2026-11-02). Every push to
 `main` deploys within a minute.
 **Launch phase: 1**: the public sees only the Meccsszervező; the whole site from the prototype
@@ -81,7 +81,7 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 | Feature (folder / branch `feature/<id>`) | Route | Status | Real data / still sample | Next step |
 |---|---|---|---|---|
 | `match-organizer` Meccsszervező | `/meccsszervezo` | **live** (v1.2 old design on dthu.hu; v2.0 ready) | all real | Launch plan |
-| `landing-page` Hírek (home) + news | `/`, `/hirek`, `/hirek/<slug>`, admin `/meccsszervezo/admin/hirek` | preview, **built on `feature/landing-page`, committed, not merged** | news real (table `news`, migration 0004); banner + matches real; ranking and tickets sample | owner runs migration 0004, tests live after the push |
+| `landing-page` Hírek (home) + news | `/`, `/hirek`, `/hirek/<slug>`, admin `/meccsszervezo/admin/hirek` | preview (admins only), **on `main` since v2.5** | news real (table `news`, migration 0004); banner + matches real; ranking and tickets sample | owner runs migration 0004, tests live after the push |
 | `rankings` Ranglista | `/ranglista` | preview | names/heroes real; points, records, movement sample | results source (Karnyx copy-paste? results on "Lejátszottuk"?) |
 | `timetables` Eseménynaptár (was Versenynaptár) | `/esemenynaptar` (+ `/esemenynaptar/<slug>`, admin `/meccsszervezo/admin/esemenyek`) | preview (admins only), **on `main` since v2.3** | all real: events table (migration 0003) + online rounds; sample data removed | owner tests live; then phase 5 (calendar feed, Hírek tiles, Discord later) |
 | `tickets` Jegyek | `/jegyek` | preview | balance sample (from sample ranking) | ticket ledger table + earning rules sign-off |
@@ -95,9 +95,7 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 
 ## Needs the owner
 
-0. **Hírek:** run `supabase/migrations/0004_news.sql` in the Supabase SQL Editor (new `news`
-   table and `news-images` bucket; only adds things) before the branch is pushed to `main`.
-   Then on dthu.hu as admin: Admin felület → Hírek kezelése → Új hír → card picture, blocks
+0. **Hírek (v2.5, migration 0004 run by the owner):** on dthu.hu as admin: Admin felület → Hírek kezelése → Új hír → card picture, blocks
    (try formatting, list, gallery, a YouTube link, an event card) → publish now / scheduled →
    check `/`, `/hirek` and the article; delete test articles afterwards.
 1. **Follow [docs/vercel.md](docs/vercel.md)**: new Vercel project for DTHU_Website, test on its
@@ -169,7 +167,8 @@ Newest first. Each session adds an entry (see CLAUDE.md → "End of every sessio
 ### 2026-11-03 (night) · Hírek built (feature/landing-page)
 
 - Built the news half of roadmap R2 on `feature/landing-page` (fast-forwarded to `main`
-  first), in the four planned phases; **committed on the branch, not pushed or merged**.
+  first), in the four planned phases. The owner ran migration 0004; merged to `main` and
+  pushed as v2.5 for his live test.
 - Shared first, so events and news use the same code: `src/lib/publishing.ts`,
   `src/lib/content-blocks.ts` (11 block types, `SIMPLE_BLOCKS` for events, `ALL_BLOCKS` for
   news, YouTube/Twitch parsing), `src/lib/inline-format.ts` (bold/italic/links, never HTML),
@@ -492,6 +491,20 @@ webhook, no cron secret), so nothing local can post to Discord.
 ---
 
 ## Changelog
+
+### v2.5 · 2026-11-03 · merge of `feature/landing-page`
+**Changed (admins only, phase 1):**
+- Hírek: real news instead of the prototype's samples. Admin felület → Hírek kezelése (drafts,
+  publish now / scheduled, pin, delete), rich content (formatting, list, quote, info box,
+  picture, gallery, YouTube/Twitch video, link, event card, divider).
+- Home shows the latest 4 news; `/hirek` list with category filter and paging; article pages
+  with author picture, "Frissítve", previous/next and share previews.
+- Event pages list "Kapcsolódó hírek"; the event editor now uses the shared editor (same 4
+  blocks as before).
+**Players:** nothing changes in the Időpontfoglaló.
+**Manual steps:** `supabase/migrations/0004_news.sql` (run by the owner before the push).
+**Verified:** types, lint, 124 tests, production build, screenshots with sample news (desktop
+dark, 375 px light). Real saving and uploads: owner tests live.
 
 ### v2.4 · 2026-11-03 · merge of `fix/event-card-label`
 **Changed (admins only):** Eseménynaptár cards show short kind tags ("Közösségi játék",
