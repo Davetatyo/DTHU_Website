@@ -327,3 +327,24 @@ svg[class*=key] { filter: drop-shadow(0 2px 2px hsl(0 0% 0% / .1)); }
 
 .passive-ability { display: flex; align-items: flex-start; }
 .passive-ability img { width: 50px; margin: 0 0 0 .5em; flex: none; }
+
+/* ==== From dice-throne.rulepop.com for the newer heroes (Forgemaster's crafting lines, icon colours) ==== */
+.rp .craft { margin-bottom: 1rem; container-type: inline-size; }
+.rp .craft .craft-line { --art: 4.5rem; --arrow: 1.75rem; --line-gap: 1.5rem; display: grid; gap: var(--line-gap); margin: 0; padding: 0; list-style: none; }
+.rp .craft .craft-line .tier { position: relative; display: grid; grid-template-columns: var(--art) 1fr; align-items: center; gap: 0.5rem 1rem; margin: 0; }
+.rp .craft .craft-line .tier .art { display: grid; place-items: center; block-size: var(--art); }
+.rp .craft .craft-line .tier .art img { block-size: var(--art); inline-size: auto; max-inline-size: 100%; }
+.rp .craft .craft-line .tier .detail :is(h4, p) { margin: 0; }
+.rp .craft .craft-line .tier .prog-arrow { position: absolute; top: calc(var(--line-gap) / -2); left: calc(var(--art) / 2); inline-size: var(--arrow); aspect-ratio: 500 / 226; pointer-events: none; transform: translate(-50%, -50%) rotate(90deg); }
+@container (width >= 30rem) {
+  .rp .craft .craft-line { grid-template-columns: repeat(3, 1fr); grid-template-rows: auto auto; align-items: start; gap: 0 var(--line-gap); }
+  .rp .craft .craft-line .tier { grid-row: span 2; grid-template-rows: subgrid; grid-template-columns: none; place-items: start center; gap: 0.5rem; text-align: center; }
+  .rp .craft .craft-line .tier .art { grid-row: 1; }
+  .rp .craft .craft-line .tier .detail { grid-row: 2; }
+  .rp .craft .craft-line .tier .prog-arrow { top: calc(var(--art) / 2); left: calc(var(--line-gap) / -2); transform: translate(-50%, -50%); }
+}
+.rp .shadow { filter: drop-shadow(0 2.5px 5px rgb(0 0 0 / 0.1)); }
+use[href="#se-regenerate"] { --bkg: #dde24b; --tree: #4f753e; --underbrush: white; }
+use[href="#se-regenerate-1"] { --bkg: #4f753e; --tree: white; --underbrush: #dde24b; }
+use[href="#se-regenerate-2"] { --bkg: #dde24b; --tree: #4f753e; --underbrush: white; }
+use[href="#se-wound"] { --bkg: #c63f6c; }

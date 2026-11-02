@@ -1,6 +1,6 @@
 # Project state: DTHU website
 
-**Current version: v2.8** (2026-11-03). Live: https://dthu.hu builds from this repository's
+**Current version: v2.9** (2026-11-03). Live: https://dthu.hu builds from this repository's
 `main` (the owner moved Vercel over around 2026-11-01; checked live 2026-11-02). Every push to
 `main` deploys within a minute.
 **Launch phase: 1**: the public sees only the Meccsszervező; the whole site from the prototype
@@ -86,7 +86,7 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 | `timetables` Eseménynaptár (was Versenynaptár) | `/esemenynaptar` (+ `/esemenynaptar/<slug>`, admin `/meccsszervezo/admin/esemenyek`) | preview (admins only), **on `main` since v2.3** | all real: events table (migration 0003) + online rounds; sample data removed | owner tests live; then phase 5 (calendar feed, Hírek tiles, Discord later) |
 | `tickets` Jegyek | `/jegyek` | preview | balance sample (from sample ranking) | ticket ledger table + earning rules sign-off |
 | `shop` Bolt | `/bolt` | preview | items sample; wishlist only in the browser | shared wishlist, then redeeming (needs tickets) |
-| `rulebook` Szabálytár | `/szabalytar` | preview; **RulePop rebuild on `feature/rulebook`** (roadmap R10, phase 1 of 6) | the owner's Hungarian RulePop imported (36 sections, 40 heroes, 123 tokens), popups + own links | owner reviews phase 1; missing rulepop.com content to translate (phase 5) |
+| `rulebook` Szabálytár | `/szabalytar` | preview (admins only), **RulePop version on `main` since v2.8** (roadmap R10) | the owner's Hungarian RulePop imported (36 sections, 40 heroes, 123 tokens) + the 5 newer heroes and 13 tokens translated (v2.9); popups + own links | owner reviews the new translations; ~20 core pages still to translate |
 | `faq` GYIK (site-wide) | `/gyik` | preview | content from the prototype | review texts |
 | `links` Linkek | `/linkek`, admin `/meccsszervezo/admin/linkek` | preview (admins only), **admin editor on `main` since v2.7** | links from the `links` table (migration 0006) | owner runs migration 0006, tests live |
 | `alchemist` Alkimista | `/alkimista` + help vial | preview | knowledge base from the prototype; unanswered questions only in the browser | admin inbox for unanswered questions |
@@ -175,6 +175,26 @@ quiz) are in
 ## Handover log
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
+
+### 2026-11-03 (later) · Szabálytár: the 5 newer heroes translated (feature/rulebook, v2.9)
+
+- Owner: add the characters missing compared to rulepop.com. Drafted Hungarian pages for
+  Druid, Duelist, Forgemaster, Mystic Brawler, Sun Elf (`content/hero/`) and their 13 tokens
+  (`content/token/`: armor, charged-gem, disarm, footwork, ore, regenerate, shape-shift,
+  strength-of-the-mountain/-ocean/-sky, sun-dial, sun-marked, wound), following the existing
+  wording (token names "English (Magyar)", ability names in English, "Hős Előkészület",
+  "Halmozási limit", "Maradandó"). Added to the Hősök and Tokenek lists (hero filter flags
+  h-dru, h-dul, h-frg, h-mbr, h-sun); Guard Break, Concussion and Cleanse now also list
+  their new heroes. 9 icons copied into `public/szabalytar/sprites.svg` from rulepop.com
+  (with their colour rules), 23 pictures into `public/szabalytar/img/`, Forgemaster's crafting
+  layout added to `rulepop.css`.
+- **Owner to review:** hero names (Druida, Párbajhős, Kovácsmester, Misztikus Bunyós,
+  Nap-tündér), token names (Páncél, Érc, Alakváltás, Regenerálódás, Seb, Lábmunka,
+  Lefegyverzés, A Hegy/Az Óceán/Az Ég Ereje, Napóra, Feltöltött Drágakő, Napbélyeg) and the
+  texts.
+- Verified: tests (content counts 45 heroes / 136 tokens, no broken links), types, lint;
+  browser (TEMP-PREVIEW, reverted): Hősök grid, Druida popup, Regenerate, Armor (crafting
+  lines), Misztikus Bunyós.
 
 ### 2026-11-03 (after Linkek) · Szabálytár = the Hungarian RulePop, phase 1 (feature/rulebook, v2.8)
 
@@ -564,6 +584,14 @@ webhook, no cron secret), so nothing local can post to Discord.
 ---
 
 ## Changelog
+
+### v2.9 · 2026-11-03 · merge of `feature/rulebook`
+**Changed (admins only, phase 1):** Szabálytár: the 5 newer heroes from rulepop.com (Druida,
+Párbajhős, Kovácsmester, Misztikus Bunyós, Nap-tündér) and their 13 tokens, translated in the
+style of the existing pages, with icons and pictures; they are in the Hősök and Tokenek lists.
+**Players:** nothing changes in the Időpontfoglaló.
+**Manual steps:** none.
+**Verified:** types, lint, tests (no broken links), browser check of the new pages.
 
 ### v2.8 · 2026-11-03 · merge of `feature/rulebook`
 **Changed (admins only, phase 1):** Szabálytár is now the Hungarian RulePop: start page with

@@ -8,8 +8,8 @@ describe("Szabálytár content", () => {
   const entries = allEntries();
 
   it("has the rules, heroes and tokens", () => {
-    expect(knownIds().heroes.size).toBeGreaterThanOrEqual(40);
-    expect(knownIds().tokens.size).toBeGreaterThanOrEqual(123);
+    expect(knownIds().heroes.size).toBeGreaterThanOrEqual(45);
+    expect(knownIds().tokens.size).toBeGreaterThanOrEqual(136);
     expect(entries.length).toBe(Object.keys(RULE_PAGES).length + knownIds().heroes.size + knownIds().tokens.size);
   });
 

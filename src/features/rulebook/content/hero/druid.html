@@ -1,0 +1,64 @@
+<h2 slot="header">Druida</h2>
+<ul slot="header" class="see-also">
+	<li><a href="#heroes">Hősök</a></li></ul>
+<div class="hero-basics float-right">
+	<img class="portrait" src="/szabalytar/img/heroes/druid.webp" alt="Druida" width="300" height="300">
+	<img class="complexity" src="/szabalytar/img/heroes/complexity-4.webp" alt="Bonyolultság 4" width="213" height="72">
+</div>
+<p class="bio">Amikor az erdő sír, ki törli le a könnyeit? A hatalmas Druida. Amikor az erdő teremtményei bajba kerülnek, ki nyújt nekik mancsot? A hatalmas Medve. Amikor a gonoszság igazságtalanságot hoz, ki lép közbe? A hatalmas Macska. Bármi legyen is a baj, a Druida meghallja a hívást.</p>
+<p><dfn>Választott fegyver:</dfn> Állatformák</p>
+<h3>Tokenek</h3>
+<ul class="grid tokens">
+	<li><a href="#token/shape-shift"><img src="/szabalytar/img/components/token-shape-shift.webp" alt="Shape Shift" width="200" height="196"> Shape Shift (Alakváltás)</a></li>
+	<li><a href="#token/regenerate"><svg viewBox="0 0 500 500"><use href="#se-regenerate"/></svg> Regenerate (Regenerálódás)</a></li>
+	<li><a href="#token/wound"><svg viewBox="0 0 500 500"><use href="#se-wound"/></svg> Wound (Seb)</a></li>
+</ul>
+<h3>Hős Előkészület</h3>
+<p>Kezdd a játékot <i>Druida formában</i> (Druid Form). A Macska / Medve forma rátétet (Cat / Bear Form Overlay) tedd a <a href="#hero-board">Hős Táblád</a> mellé.</p>
+<h3>Szabálytisztázások</h3>
+<details>
+	<summary><i>Macska forma</i> (Cat Form) aktív hatása</summary>
+	<div>
+		<p>A <i>Macska forma</i> aktiválási bónusza csak akkor lép életbe, ha sikeresen aktiválsz egy <a href="#attack">Támadást</a>, és a <a href="#offensive-roll-phase">Támadó dobási fázisod</a> végén <i>Macska formában</i> vagy.</p>
+		<p>Ha a <a href="#attack">Támadás</a> aktiválásakor szerzel egy <a href="#token/shape-shift">Shape Shift</a> <img class="◊" src="/szabalytar/img/components/token-shape-shift.webp" alt="Shape Shift" width="200" height="196"> jelzőt, elköltheted, hogy <i>Macska formába</i> változz, és így is megkapod a Támadás aktiválási bónuszát.</p>
+		<p>Ha <i>Macska formában</i> voltál, de a <a href="#defensive-roll-phase">Védekező dobási fázis</a> során elköltöttél egy <a href="#token/shape-shift">Shape Shift</a> <img class="◊" src="/szabalytar/img/components/token-shape-shift.webp" alt="Shape Shift" width="200" height="196"> jelzőt, a Támadásodhoz továbbra is hozzáadod a <svg class="◊" viewBox="0 0 500 500"><use href="#i-dmg-2"/></svg> sebzést, és a megcélzott ellenfeledre továbbra is <a href="#token/wound">Wound</a> <svg class="◊" viewBox="0 0 500 500"><use href="#se-wound"/></svg> jelzőt raksz.</p>
+	</div>
+</details>
+<details>
+	<summary><i>Medve forma</i> (Bear Form) aktív hatása</summary>
+	<div>
+		<p>A <i>Medve forma</i> aktiválási bónusza csak akkor lép életbe, ha <i>Medve formában</i> sikeresen aktiválod a <a href="#defensive-ability">Védekező Képességedet</a>.</p>
+		<p>Ha eredetileg <i>Druida</i> vagy <i>Macska formában</i> voltál, de a Védekező Képességed dobása után elköltöttél egy <a href="#token/shape-shift">Shape Shift</a> <img class="◊" src="/szabalytar/img/components/token-shape-shift.webp" alt="Shape Shift" width="200" height="196"> jelzőt, már nem dobhatsz a 2 extra kockával. A képesség sebzésmegakadályozó hatásait viszont így is használhatod (de csak a 2 eldobott kockára).</p>
+	</div>
+</details>
+<details>
+	<summary>Shape Shift (Alakváltás) <img class="◊" src="/szabalytar/img/components/token-shape-shift.webp" alt="Shape Shift" width="200" height="196"></summary>
+	<div>
+		<p>Ha a Halmozási Limiten felül szereznél újabb <a href="#token/shape-shift">Shape Shift</a> <img class="◊" src="/szabalytar/img/components/token-shape-shift.webp" alt="Shape Shift" width="200" height="196"> jelzőt, elkölthetsz egyet, hogy helyet csinálj a bejövő jelzőknek, mivel az állapotjelzők elköltése <a href="#action-cards">Azonnali Akciónak</a> minősül.</p>
+	</div>
+</details>
+<details>
+	<summary>Formaváltás</summary>
+	<div>
+		<p>Az állapotjelzők nem kerülnek le, amikor formát váltasz.</p>
+		<p>A „Ha <i>Macska forma</i>” (If <i>Cat Form</i>) vagy „Ha <i>Medve forma</i>” (If <i>Bear Form</i>) feliratú kártyákat csak akkor játszhatod ki, ha éppen abban a <i>formában</i> vagy. A kártyák hatásai akkor is érvényesek maradnak, ha a sikeres kijátszásuk után egy <a href="#token/shape-shift">Shape Shift</a> <img class="◊" src="/szabalytar/img/components/token-shape-shift.webp" alt="Shape Shift" width="200" height="196"> jelzővel másik <i>formába</i> váltasz.</p>
+	</div>
+</details>
+<details>
+	<summary>Maul</summary>
+	<div>
+		<p>Ezt a képességet aktiválhatod <i>Medve formában</i>, és használhatod a „Ha <i>Medve forma</i>, dobj újra egy kockát” hatást, majd utána elkölthetsz egy <a href="#token/shape-shift">Shape Shift</a> <img class="◊" src="/szabalytar/img/components/token-shape-shift.webp" alt="Shape Shift" width="200" height="196"> jelzőt, és megkapod a <i>Macska forma</i> aktiválási bónuszát.</p>
+	</div>
+</details>
+<details>
+	<summary>Wild Realignment</summary>
+	<div>
+		<p>A képességből szerzett <a href="#token/shape-shift">Shape Shift</a> <img class="◊" src="/szabalytar/img/components/token-shape-shift.webp" alt="Shape Shift" width="200" height="196"> jelzők egyikét (vagy egy, a képesség aktiválása előtt szerzett Shape Shift <img class="◊" src="/szabalytar/img/components/token-shape-shift.webp" alt="Shape Shift" width="200" height="196"> jelzőt) elköltheted, hogy visszatérj <i>Druida formába</i>, és használd a képesség „Ha <i>Druida forma</i>, húzz <svg class="◊" viewBox="0 0 360 500"><use href="#i-cards-1"/></svg>” hatását.</p>
+	</div>
+</details>
+<details>
+	<summary>Regenerate (Regenerálódás) <svg class="◊" viewBox="0 0 500 500"><use href="#se-regenerate"/></svg> átadása</summary>
+	<div>
+		<p>Ha egy <a href="#token/regenerate">Regenerate</a> <svg class="◊" viewBox="0 0 500 500"><use href="#se-regenerate"/></svg> jelzőt átadnak, a jelző ugyanazzal az oldalával felfelé kerül le, amelyikkel az átadás előtt állt.</p>
+	</div>
+</details>
