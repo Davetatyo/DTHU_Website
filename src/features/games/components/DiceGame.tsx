@@ -342,17 +342,31 @@ export function DiceGame() {
           <div className="kz-say" key={remark} aria-live="polite">
             {remark}
           </div>
-          <div className="kz-board">
-            <div className="kz-status">
+          {/* Scoreboard (owner's choice "A"): outside the board, big, the leader in gold. */}
+          <div className="kz-score" aria-live="polite">
+            <div className={`kz-side${myTotal > hisTotal ? " ahead" : ""}${turn === "you" ? " turn" : ""}`}>
+              <small>
+                Te<span className="kz-turnword">{turn === "you" ? " · dobsz" : ""}</span>
+              </small>
+              <b key={myTotal}>{myTotal}</b>
+            </div>
+            <div className="kz-mid">
               <span>
                 {round}. kör / {boxes.length}
+                <button type="button" className="kz-help" onClick={() => setHowTo(true)} aria-label="Hogyan játssz?">
+                  ?
+                </button>
               </span>
-              <span className={turn === "you" ? "now" : ""}>Te {myTotal}</span>
-              <span className={turn === "him" ? "now" : ""}>Barbár {hisTotal}</span>
-              <button type="button" className="kz-help" onClick={() => setHowTo(true)} aria-label="Hogyan játssz?">
-                ?
-              </button>
+              <b>{myTotal === hisTotal ? "Fej fej mellett" : myTotal > hisTotal ? `Te vezetsz +${myTotal - hisTotal}` : `A Barbár vezet +${hisTotal - myTotal}`}</b>
             </div>
+            <div className={`kz-side${hisTotal > myTotal ? " ahead" : ""}${turn === "him" ? " turn" : ""}`}>
+              <small>
+                Barbár<span className="kz-turnword">{turn === "him" ? " · dob" : ""}</span>
+              </small>
+              <b key={hisTotal}>{hisTotal}</b>
+            </div>
+          </div>
+          <div className="kz-board">
             <div className={`kz-tray${turn === "him" ? " his" : ""}`}>
               {dice.map((v, i) => (
                 <Die key={i} value={v} spin={spin[i]} hop={hops[i]} held={held[i]} onClick={() => toggle(i)} disabled={!yourTurn || !rolled || rollsLeft === 0} />

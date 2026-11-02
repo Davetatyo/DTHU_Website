@@ -1,6 +1,6 @@
 # Project state: DTHU website
 
-**Current version: v2.15** (2026-11-03). Live: https://dthu.hu builds from this repository's
+**Current version: v2.16** (2026-11-03). Live: https://dthu.hu builds from this repository's
 `main` (the owner moved Vercel over around 2026-11-01; checked live 2026-11-02). Every push to
 `main` deploys within a minute.
 **Launch phase: 1**: the public sees only the Meccsszervező; the whole site from the prototype
@@ -175,6 +175,15 @@ quiz) are in
 ## Handover log
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
+
+### 2026-11-03 (final+) · Kockázat scoreboard (feature/games, v2.16)
+
+- Owner: the two scores were hard to read; showed three mock-ups (A strip, B tug-of-war,
+  C badges on the scene); owner chose A. Built `.kz-score` above `.kz-board` in
+  `DiceGame.tsx`/`kockazat.css`; the old small score row is gone, the "?" sits next to the
+  round. Found on the way: a class named `lead` picked up the site's `.lead` paragraph style
+  (18 px margin), renamed to `ahead`. Phones hide the "· dobsz" word (the green dot stays).
+- Verified with TEMP-PREVIEW (reverted): desktop and 375 px.
 
 ### 2026-11-03 (final) · Kockázat dice showed wrong faces (feature/games, v2.15)
 
@@ -675,6 +684,14 @@ webhook, no cron secret), so nothing local can post to Discord.
 ---
 
 ## Changelog
+
+### v2.16 · 2026-11-03 · merge of `feature/games`
+**Changed (admins only, phase 1):** Kockázat: the scores moved out of the game box into a big
+scoreboard above it (owner's pick "A" of three mock-ups): leader in gold, whose turn it is,
+the round and the lead in the middle.
+**Players:** nothing changes in the Időpontfoglaló.
+**Manual steps:** none.
+**Verified:** types, lint, tests; browser desktop + 375 px (equal box heights, one line).
 
 ### v2.15 · 2026-11-03 · merge of `feature/games`
 **Fixed (admins only, phase 1):** Kockázat sometimes drew the dice with the wrong faces
