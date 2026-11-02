@@ -7,7 +7,7 @@
 | Roadmap | R3 (Profile page upgrade) in `Features_Roadmap.md`: the avatar part |
 | Pages | `/meccsszervezo/profil` (Profilom), `/meccsszervezo/admin/felhasznalo/<id>` (admin "Profil szerkesztése") |
 | Database | `supabase/migrations/0002_profile_avatars_and_bans.sql` (run by the owner before deploying) |
-| Status | **test phase**: only the owner (`BOOTSTRAP_ADMIN_DISCORD`) can upload their own picture |
+| Status | **live** (v2.1, 2026-11-02); uploads open to every logged-in user since v2.2 (`AVATAR_TEST_MODE = false`) |
 
 ## What it does
 
@@ -49,12 +49,11 @@ Bucket `avatars`, public read (the URL contains the user's random ID), writes on
 server. Files: `<user id>/<timestamp>.webp`, a new name on every upload so caches never show an
 old picture; the previous file is deleted.
 
-## Opening it to everyone
+## Test phase switch
 
-Set `AVATAR_TEST_MODE = false` in `lib/access.ts`. Nothing else changes.
+`AVATAR_TEST_MODE` in `lib/access.ts`: `true` limits uploads to the owner (used for the first
+live test), `false` (current) lets every logged-in user upload.
 
 ## Open questions
 
 - Badge ring around the picture (R3/R4): goes into `HeroAvatar` when cosmetics exist.
-- Should players see someone's picture in their own match list before the feature opens? (Owner:
-  yes, show right away.)

@@ -116,8 +116,8 @@ pinned, published flag, author, timestamps). Events also get a start/end, a plac
 
 ### R3 · Profile page upgrade and settings (Profil, Profilbeállítások)
 
-**Status:** Avatar part **in progress** on branch `feature/profile` (2026-11-02: upload with
-crop, shown everywhere, admin remove/replace, plus admin "Profil szerkesztése" and bans; see
+**Status:** Avatar part **built and live for everyone** (v2.2, 2026-11-02: upload with crop,
+shown everywhere, admin remove/replace, plus admin "Profil szerkesztése" and bans; see
 `src/features/profile/README.md`). The cosmetics collection is still in discussion with R4. ·
 **Feature id:** `profile` (today the profile page lives in the Meccsszervező at
 `/meccsszervezo/profil`) · **Depends on:** the image upload foundation, the cosmetics

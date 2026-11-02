@@ -4,12 +4,12 @@ import { isBootstrapAdmin } from "@/lib/auth";
 import type { Profile } from "@/lib/types";
 
 /**
- * Test phase: only the bootstrap admin (BOOTSTRAP_ADMIN_DISCORD, i.e. the owner) can upload
- * their own picture. Set to false to open uploads to every logged-in user. Admins can always
- * remove or replace a picture on the admin "Profil szerkesztése" page.
+ * Test phase switch. true: only the bootstrap admin (BOOTSTRAP_ADMIN_DISCORD, i.e. the owner)
+ * can upload their own picture. false (since v2.2, 2026-11-02): every logged-in user can.
+ * Admins can always remove or replace a picture on the admin "Profil szerkesztése" page.
  */
-export const AVATAR_TEST_MODE = true;
+export const AVATAR_TEST_MODE = false;
 
-export function canUploadOwnAvatar(profile: Pick<Profile, "discord_username">): boolean {
-  return !AVATAR_TEST_MODE || isBootstrapAdmin(profile.discord_username);
+export function canUploadOwnAvatar(profile: Pick<Profile, "discord_username">, testMode = AVATAR_TEST_MODE): boolean {
+  return !testMode || isBootstrapAdmin(profile.discord_username);
 }
