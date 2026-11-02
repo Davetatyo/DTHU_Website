@@ -87,8 +87,17 @@ works.
 
 ### R2 · News and events management (Hírek és események kezelése)
 
-**Status:** Idea · **Feature ids:** extends `landing-page` (Hírek) and `timetables`
-(Versenynaptár) · **Depends on:** R5 Admin area, the image upload foundation
+**Status:** Events half **built on `feature/timetables`** (2026-11-03, not merged yet: see
+`src/features/timetables/README.md`); news half still Idea. · **Feature ids:** extends
+`landing-page` (Hírek) and `timetables` (Eseménynaptár, renamed from Versenynaptár) ·
+**Depends on:** the image upload foundation (built). The admin pages live under today's Admin
+felület until R5.
+
+**Decisions (owner, 2026-11-03, events):** kinds Online bajnokság (rounds automatic) / Élő
+verseny / Asztali nap / közösségi játék / Egyéb + "Ötlet / tervezett"; admin-only until the
+full site opens; every admin edits; simple blocks; past events greyed in an archive at the
+bottom; drafts by default, publish now or scheduled; Discord announcements later via a
+separate webhook and channel.
 
 Admins can **add, edit, remove and pin** news posts and calendar events. A pinned item is
 shown first.
@@ -311,7 +320,7 @@ A new site section that keeps users engaged and coming back. It introduces games
   thinks of them.
 
 **Open questions:**
-- Is the hub a top-level menu item (next to Ranglista, Versenynaptár…) or under another one?
+- Is the hub a top-level menu item (next to Ranglista, Eseménynaptár…) or under another one?
 - Do signed-out visitors see the games, or only logged-in users? Do they play without saving
   progress or XP?
 - Show leaderboards per game (e.g. quiz points this week), or keep it personal?

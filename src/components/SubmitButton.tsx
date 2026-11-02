@@ -10,18 +10,25 @@ export function SubmitButton({
   className = "btn",
   disabled,
   confirm,
+  name,
+  value,
 }: {
   children: React.ReactNode;
   className?: string;
   disabled?: boolean;
   /** Asks for confirmation before submitting (for actions that ping or delete). */
   confirm?: string;
+  /** Sent with the form, so one form can have several buttons (e.g. name="intent"). */
+  name?: string;
+  value?: string;
 }) {
   const { pending } = useFormStatus();
   return (
     <>
       <button
         type="submit"
+        name={name}
+        value={value}
         className={className}
         disabled={disabled || pending}
         aria-busy={pending}
