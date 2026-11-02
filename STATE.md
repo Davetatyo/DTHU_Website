@@ -1,6 +1,6 @@
 # Project state: DTHU website
 
-**Current version: v2.3** (2026-11-03). Live: https://dthu.hu builds from this repository's
+**Current version: v2.4** (2026-11-03). Live: https://dthu.hu builds from this repository's
 `main` (the owner moved Vercel over around 2026-11-01; checked live 2026-11-02). Every push to
 `main` deploys within a minute.
 **Launch phase: 1**: the public sees only the Meccsszervező; the whole site from the prototype
@@ -455,6 +455,12 @@ webhook, no cron secret), so nothing local can post to Discord.
 ---
 
 ## Changelog
+
+### v2.4 · 2026-11-03 · merge of `fix/event-card-label`
+**Changed (admins only):** Eseménynaptár cards show short kind tags ("Közösségi játék",
+"Tervezett" …) that never cover the date badge.
+**Manual steps:** none.
+**Verified:** gap measured on every card at 1280 px and 375 px; types, lint, 110 tests.
 
 ### v2.3 · 2026-11-03 · merge of `feature/timetables`
 **Changed (admins only, phase 1):**
