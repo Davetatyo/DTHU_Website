@@ -1,0 +1,10 @@
+/* Header wallet: one capsule, same height and border as the profile chip (.tb-user), split
+   into a coin half and a ticket half. The top bar stays dark in both themes. */
+.tb-wallet { display: inline-flex; align-items: stretch; height: 32px; border-radius: 99px; border: 1px solid #2c2c36; background: #15151b; overflow: hidden; }
+.tb-wallet .seg { display: inline-flex; align-items: center; gap: 6px; padding: 0 11px 0 7px; color: var(--topbar-fg); font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.tb-wallet .seg + .seg { border-left: 1px solid #2c2c36; padding-left: 9px; }
+.tb-wallet .seg:hover { background: #1d1d25; color: #fff; }
+.tb-wallet .seg:focus-visible { outline: 2px solid var(--gold); outline-offset: -2px; }
+.tb-wallet .seg svg:first-child { flex: none; }
+.tb-wallet .tk { width: 18px; height: 18px; color: #e0b24a; }
+.tb-wallet:hover { border-color: var(--gold-dim); }

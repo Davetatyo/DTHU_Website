@@ -3,3 +3,13 @@
 .pill b { color: var(--gold); }
 .price { display: inline-flex; align-items: center; gap: 6px; background: rgba(10, 8, 14, 0.7); border: 1px solid var(--gold-dim); border-radius: 99px; padding: 2px 10px; font-family: var(--font-px); font-size: 20px; color: #e0b24a; }
 .price .tok { width: 18px; height: 18px; color: #e0b24a; }
+
+/* DTHU coin amounts and the ticket offer */
+.coinamt { display: inline-flex; align-items: center; gap: 5px; font-weight: 800; white-space: nowrap; }
+.coinamt svg { flex-shrink: 0; filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.35)); }
+.coinamt.gold { color: var(--gold); }
+.price .coinamt { font-family: var(--font-px); font-weight: 400; font-size: 22px; color: #f0c860; }
+.offer { width: 100%; max-width: 440px; min-height: 360px; }
+/* Keep the text clear of the price badge, however tall the form makes it. */
+.offer .in { margin-top: 64px; }
+.offer .label { color: #f4ecda; }

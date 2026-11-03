@@ -84,9 +84,9 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 | `landing-page` Hírek (home) + news | `/`, `/hirek`, `/hirek/<slug>`, admin `/meccsszervezo/admin/hirek` | preview (admins only), **on `main` since v2.5** | news real (table `news`, migration 0004); banner + matches real; ranking and tickets sample | owner runs migration 0004, tests live after the push |
 | `rankings` Ranglista | `/ranglista` | preview | names/heroes real; points, records, movement sample | results source (Karnyx copy-paste? results on "Lejátszottuk"?) |
 | `timetables` Eseménynaptár (was Versenynaptár) | `/esemenynaptar` (+ `/esemenynaptar/<slug>`, admin `/meccsszervezo/admin/esemenyek`) | preview (admins only), **on `main` since v2.3** | all real: events table (migration 0003) + online rounds; sample data removed | owner tests live; then phase 5 (calendar feed, Hírek tiles, Discord later) |
-| `tickets` Sorsolás (ticket draws) | `/sorsolas`, admin `/sorsolas/admin` | preview (admins only), **on `feature/tickets`, not merged** (merged with `main` v2.18 on 2026-11-03) | all real once migration 0008 runs: ticket ledger, draws, entries, winners; only podium places earn tickets (+3/+2/+1, booked by admins) | owner runs migration 0008 before the merge; test live |
+| `tickets` Sorsolás (ticket draws) | `/sorsolas`, admin `/sorsolas/admin` | preview (admins only), **on `main`** (pull request #2, 2026-11-03) | all real once migration 0008 runs: ticket ledger, draws, entries, winners; podium places earn tickets (+3/+2/+1, booked by admins), and since `feature/shop` they can also be bought for DTHU coins | confirm migration 0008 was run; test live |
 | `games` Játékok | `/jatekok`, `/jatekok/taktikai-elony`, `/jatekok/kockazat`, `/jatekok/szemfules` | preview (admins only), **on `main` since v2.11** (Kockázat v2.13, Szemfüles v2.17, Trick or Treat v2.20, Black Friday Shopping v2.21, ARRRrrrrrrrrr v2.22) | Taktikai Előny: static data from the Szabálytár + `lib/tactician-traits.ts`; Kockázat: all in the browser; no database | owner reviews the hero facts table; Kvíz parked |
-| `shop` Bolt | `/bolt` | preview | items sample; wishlist only in the browser; ticket balance sample (the Jegyek page was removed in v2.11, `/jegyek` redirects here; real balances come with Sorsolás, `feature/tickets`) | shared wishlist, then redeeming (needs a ticket ledger) |
+| `shop` Bolt + DTHU coin | `/bolt`, admin `/bolt/admin`; wallet in the header | preview (admins only), **on `feature/shop`, not merged** | all real once migration 0009 runs: DTHU coin ledger; the only item is a Sorsolás ticket for 3500 coins; coins only from admins so far; header wallet (coins + tickets) shown wherever the full site is | owner runs 0008 then 0009; how players earn coins (owner to describe) |
 | `rulebook` Szabálytár | `/szabalytar` | preview (admins only), **RulePop version on `main` since v2.8** (roadmap R10) | the owner's Hungarian RulePop imported (36 sections, 40 heroes, 123 tokens) + the 5 newer heroes and 13 tokens translated (v2.9); popups + own links | owner reviews the new translations; ~20 core pages still to translate |
 | `faq` GYIK (site-wide) | `/gyik` | preview | content from the prototype | review texts |
 | `links` Linkek | `/linkek`, admin `/meccsszervezo/admin/linkek` | preview (admins only), **admin editor on `main` since v2.7** | links from the `links` table (migration 0006) | owner runs migration 0006, tests live |
@@ -103,8 +103,9 @@ local development uses the live data too (see CLAUDE.md, golden rule 1).
 **Migrations** (`supabase/migrations/`, run by hand in the Supabase SQL Editor, in order):
 0001 init · 0002 profile pictures and bans · 0003 events · 0004 news · 0005 polls · 0006 links ·
 0007 match play modes. **0001–0007 are applied** on the live database (checked 2026-11-03). **0008 ticket draws**
-(Sorsolás, branch `feature/tickets`) is **not applied yet**: run it before that branch is merged.
-A new change gets the next number (0009…) and is
+(Sorsolás, on `main`) was **not applied** when last checked: confirm it ran. **0009 DTHU coins** (Bolt,
+branch `feature/shop`, needs 0008) is **not applied**: run it before that branch is merged.
+A new change gets the next number (0010…) and is
 run *before* the code that needs it is deployed.
 
 **Access model:** row level security is on for every table. The website reads and writes
@@ -113,7 +114,8 @@ through the server with the service-role key and checks permissions in code
 `profiles` for signed-in users); the newer tables have **no policies**, so the browser can't
 read them directly at all. There are no database functions or triggers of our own yet; migration 0008 adds five
 (`ticket_award`, `ticket_draw_enter`, `ticket_draw_complete`, `ticket_draw_close_now`,
-`ticket_draw_cancel`), callable only with the service role. They keep balances >= 0 and refuse
+`ticket_draw_cancel`) and migration 0009 two (`coin_award`, `shop_buy_tickets`), callable only
+with the service role. They keep balances >= 0 and refuse
 entries after a draw closes.
 
 ### Tables
@@ -136,6 +138,7 @@ entries after a draw closes.
 | `ticket_ledger` *(0008)* | Every ticket change; balance = sum | `profile_id`, `amount` (not 0), `kind` (award/draw_entry/draw_refund), `reason`, `draw_id`, `created_by` | – |
 | `ticket_draw_entries` *(0008)* | Tickets a player put into a draw | primary key (`draw_id`, `profile_id`), `tickets` | – |
 | `ticket_draw_winners` *(0008)* | Draw results | primary key (`draw_id`, `place`), `profile_id` (unique per draw) | – |
+| `coin_ledger` *(0009, not applied)* | Every DTHU coin change; balance = sum. A shop purchase writes a coin row (− price) and a `ticket_ledger` row (kind `shop_purchase`, added to its allowed kinds by 0009) together | `profile_id`, `amount` (not 0), `kind` (award/shop_purchase), `reason`, `created_by` | – |
 
 \*Row counts on 2026-11-03, for scale only.
 
@@ -176,16 +179,21 @@ erDiagram
 ### Not in the database
 
 Szabálytár content (files in `src/features/rulebook/content/`), the games' data (code), the
-Alchemist's answers (code). Kept only in the player's browser (`localStorage`): Bolt wishlist,
-the Alchemist's unanswered questions, Szemfüles best scores. Ranking and shop data are
-still sample data (no tables yet; tickets become real with migration 0008, Sorsolás; ideas in the roadmap: R4 `xp_events`, R7
+Alchemist's answers (code). Kept only in the player's browser (`localStorage`):
+the Alchemist's unanswered questions, Szemfüles best scores. Ranking data is still
+sample data (no tables yet; tickets and coins become real with migrations 0008 and 0009; ideas in the roadmap: R4 `xp_events`, R7
 `quiz_*`).
 
 ## Needs the owner
 
-0. **Sorsolás (`feature/tickets`, agreed with the owner 2026-11-03): run
-   `supabase/migrations/0008_ticket_draws.sql`** in the Supabase SQL Editor *before* merging the
-   branch to `main`. No new cron job: the hourly `dt-reminders` call also holds closed draws
+0. **Bolt + DTHU coin (`feature/shop`, not merged): run `supabase/migrations/0009_dthu_coins.sql`**
+   in the Supabase SQL Editor *after* 0008 and *before* merging the branch. Only adds things (the
+   `coin_ledger` table, two functions, a `shop_purchase` kind for `ticket_ledger`), no data; safe
+   to run twice, one transaction. Check: `coin_ledger` exists and `coin_award`, `shop_buy_tickets`
+   are listed under functions. Then: describe how players earn coins (for now only admins give them).
+0. **Sorsolás (on `main` since pull request #2, agreed with the owner 2026-11-03): confirm
+   `supabase/migrations/0008_ticket_draws.sql`** was run in the Supabase SQL Editor (until it is,
+   the pages show a notice). No new cron job: the hourly `dt-reminders` call also holds closed draws
    (response becomes `{"warnings":0,"draws":0}`). Tested locally first (see Handover log).
    The developer sent the other developer (who has Supabase access) a short Hungarian guide:
    run the file once, check query (`ticket_%` tables = 4, functions = 5), rollback SQL if needed.
@@ -269,6 +277,39 @@ quiz) are in
 ## Handover log
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
+
+### 2026-11-03 · Bolt: DTHU coin, ticket purchase, header wallet (feature/shop, not merged)
+
+- Owner: the only item in the Bolt for now is a Sorsolás ticket for **3500 DTHU coins**; a new
+  currency, the DTHU coin, with its own icon; coins and tickets always visible in the header.
+  How players earn coins is still to be described by the owner (for now admins give them).
+- Coin icon: `src/components/DthuCoin.tsx`, full-colour SVG (gold, ridged rim, embossed DTHU
+  die), checked from 16 to 200 px on dark and light.
+- Migration **0009_dthu_coins.sql** (needs 0008): `coin_ledger`, `coin_award`, `shop_buy_tickets`
+  (takes the coins and adds the tickets in one step, refuses a too-low balance, banned players
+  can't buy, max 100 per purchase), `ticket_ledger` gains kind `shop_purchase`. Same safety as
+  0008: safe to run twice, one transaction, fixed `search_path`, service role only, no data.
+- `/bolt`: coin and ticket balances (no history for players), the ticket offer with a quantity
+  field (`lib/catalog.ts`: `TICKET_PRICE`). Sample items and the "Érdekel" wishlist removed.
+  `/bolt/admin` ("Bolt kezelése"): give/take coins with a reason, balances, recent coin ledger.
+  `LedgerList` (tickets) now also renders coin rows.
+- Header wallet `features/shop/components/HeaderWallet.tsx`: one capsule [coins | tickets]
+  before the profile chip, coins link to the Bolt, tickets to Sorsolás. Passed in by the two
+  layouts (`SiteHeader` got a `wallet` slot; components may not import features). Shown only
+  where the full site is (phase 1: admins in admin view), hidden if the balances can't be read,
+  so the live Időpontfoglaló header can't break.
+- `feature/shop` was fast-forwarded to `main` (v2.20) first; later `main` (v2.21, then v2.22) was merged in
+  (only STATE.md conflicted; resolved by re-adding these notes on top of main's version).
+- The developer's Hungarian Supabase guide for the other developer now covers 0008 and 0009
+  (order, check queries, rollback SQL, all re-run on a local copy), plus a short note asking
+  for 0009.
+- **Verified:** types, lint, 195 tests (new `shop/lib/catalog.test.ts`). Migrations 0001-0009 on
+  an in-memory Postgres (PGlite): purchase, too-low balance, banned player, bought tickets entered
+  into a draw, anon can't call, run twice. Local fake Supabase + TEMP-PREVIEW test users: Bolt as
+  admin and players, purchase clicked through by the developer, admin page, header at desktop and
+  375 px (player and admin). TEMP-PREVIEW code removed before the commit.
+- **Next:** the owner runs 0009 (after 0008), reviews, merges; the owner's description of how
+  coins are earned is the next piece of work.
 
 ### 2026-11-03 · Szemfüles: fourth picture "ARRRrrrrrrrrr" (feature/games, v2.22)
 

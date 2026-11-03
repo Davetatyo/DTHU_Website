@@ -2,6 +2,7 @@ import { DevPreviewBanner } from "@/components/site/DevPreviewBanner";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { HelpVial } from "@/features/alchemist/components/HelpVial";
+import { HeaderWallet } from "@/features/shop/components/HeaderWallet";
 import { SeasonPhases } from "@/features/timetables/components/SeasonPhases";
 import { getAdminView } from "@/lib/auth";
 import { siteMenu } from "@/lib/navigation";
@@ -13,7 +14,7 @@ export default async function SiteLayout({ children }: Readonly<{ children: Reac
   const adminView = await getAdminView();
   return (
     <>
-      <SiteHeader tabs={siteMenu} />
+      <SiteHeader tabs={siteMenu} wallet={<HeaderWallet />} />
       <div className="wrap space-y-3 pb-0">
         {isDevPreview(adminView) && <DevPreviewBanner />}
         <SeasonPhases />

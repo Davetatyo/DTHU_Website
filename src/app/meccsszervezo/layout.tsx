@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { DevPreviewBanner } from "@/components/site/DevPreviewBanner";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
+import { HeaderWallet } from "@/features/shop/components/HeaderWallet";
 import { getAdminView } from "@/lib/auth";
 import { organizerTabs, siteMenu } from "@/lib/navigation";
 import { isDevPreview, seesFullSite } from "@/lib/site-mode";
@@ -20,7 +21,9 @@ export default async function OrganizerLayout({ children }: Readonly<{ children:
 
   return (
     <>
-      <SiteHeader tabs={full ? siteMenu : organizerTabs} subTabs={full ? organizerTabs : undefined} section="Időpontfoglaló" />
+      <SiteHeader tabs={full ? siteMenu : organizerTabs} subTabs={full ? organizerTabs : undefined} section="Időpontfoglaló"
+        wallet={<HeaderWallet />}
+      />
       <main className="wrap page-fade">
         {isDevPreview(adminView) && (
           <div className="mb-4">

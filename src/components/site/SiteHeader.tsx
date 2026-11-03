@@ -11,9 +11,20 @@ import { ThemeToggle } from "./ThemeToggle";
 /**
  * Sticky site header: brand, theme switch, admin button + view switch (admins) and account on
  * the first row, page tabs below. A section (e.g. the Meccsszervező) can add its own second
- * tab row with `subTabs`.
+ * tab row with `subTabs`. `wallet` (the coin and ticket balances, from the shop feature via
+ * the layout) sits before the account chip for signed-in visitors.
  */
-export async function SiteHeader({ tabs, subTabs, section }: { tabs: NavItem[]; subTabs?: NavItem[]; section?: string }) {
+export async function SiteHeader({
+  tabs,
+  subTabs,
+  section,
+  wallet,
+}: {
+  tabs: NavItem[];
+  subTabs?: NavItem[];
+  section?: string;
+  wallet?: React.ReactNode;
+}) {
   const profile = await getCurrentProfile();
   const adminView = await getAdminView();
   const name = profile ? (profile.karnyx_name ?? profile.display_name ?? "Profil") : null;
@@ -43,6 +54,7 @@ export async function SiteHeader({ tabs, subTabs, section }: { tabs: NavItem[]; 
                   <ViewAsToggle playerView={!adminView} />
                 </>
               )}
+              {wallet}
               <Link href={routes.profile} className="tb-user" title="Profilom">
                 {avatar ? (
                   <span className="ini" style={{ backgroundImage: `url(${avatar})`, backgroundSize: "cover", backgroundPosition: "center" }} aria-hidden />
