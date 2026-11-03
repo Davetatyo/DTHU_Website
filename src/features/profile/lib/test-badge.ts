@@ -5,7 +5,7 @@
 // collection (R3 Gyűjtemény) later.
 
 import { cookies } from "next/headers";
-import { getCurrentProfile } from "@/lib/auth";
+import { getCurrentProfile, sameName } from "@/lib/auth";
 import { findBadge, type Badge } from "./badges";
 
 export const TEST_BADGE_COOKIE = "teszt_jelveny";
@@ -15,4 +15,13 @@ export async function getTestBadge(): Promise<Badge | null> {
   const profile = await getCurrentProfile();
   if (!profile?.is_admin) return null;
   return findBadge((await cookies()).get(TEST_BADGE_COOKIE)?.value);
+}
+
+/** The admin's test badge when `karnyxName` is the admin themself, so lists show it only on
+ *  their own picture and only to them. */
+export async function getOwnTestBadge(karnyxName: string | null): Promise<Badge | null> {
+  if (!karnyxName) return null;
+  const profile = await getCurrentProfile();
+  if (!profile?.is_admin || !sameName(profile.karnyx_name, karnyxName)) return null;
+  return getTestBadge();
 }

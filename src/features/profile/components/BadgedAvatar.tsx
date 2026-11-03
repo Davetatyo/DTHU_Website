@@ -38,3 +38,21 @@ export function BadgedAvatar({
     </span>
   );
 }
+
+/**
+ * Puts a badge around an existing round avatar (e.g. HeroAvatar) without changing the space it
+ * takes: the badge is a bit larger than the avatar's footprint and overflows evenly, and the
+ * picture shrinks to fit the badge's hole. `footprint` = the avatar's normal size (px).
+ */
+export function BadgeOverlay({ badge, footprint, children }: { badge: Badge; footprint: number; children: React.ReactNode }) {
+  const ring = Math.round(footprint * 1.4);
+  const small = ring < 70;
+  const picture = Math.round(ring * 2 * (small ? badge.holeSmall : badge.hole));
+  return (
+    <span className="badge-wrap" style={{ width: footprint, height: footprint, ["--pic" as string]: `${picture + 1}px` }}>
+      {children}
+      {/* eslint-disable-next-line @next/next/no-img-element -- fixed-size decorative ring */}
+      <img className="badge-wrap-ring" src={small ? badge.srcSmall : badge.src} alt="" width={ring} height={ring} draggable={false} />
+    </span>
+  );
+}
