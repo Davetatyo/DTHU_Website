@@ -22,15 +22,16 @@ export type Feature = {
 
 export const FEATURES: Feature[] = [
   { id: "landing-page", label: "Hírek", route: "/", status: "preview" },
-  { id: "match-organizer", label: "Meccsszervező", route: "/meccsszervezo", status: "live" },
+  { id: "match-organizer", label: "Időpontfoglaló", route: "/meccsszervezo", status: "live" },
   { id: "rankings", label: "Ranglista", route: "/ranglista", status: "preview" },
-  { id: "timetables", label: "Versenynaptár", route: "/versenynaptar", status: "preview" },
+  { id: "timetables", label: "Eseménynaptár", route: "/esemenynaptar", status: "preview" },
   { id: "tickets", label: "Sorsolás", route: "/sorsolas", status: "preview", badge: "ÚJ" },
-  { id: "shop", label: "Bolt", route: "/bolt", status: "planned", badge: "ÚJ" },
-  { id: "rulebook", label: "Szabálytár", route: "/szabalytar", status: "planned" },
-  { id: "faq", label: "GYIK", route: "/gyik", status: "planned" },
-  { id: "links", label: "Linkek", route: "/linkek", status: "planned" },
-  { id: "alchemist", label: "Alkimista", route: "/alkimista", status: "planned" },
+  { id: "shop", label: "Bolt", route: "/bolt", status: "preview", badge: "ÚJ" },
+  { id: "games", label: "Játékok", route: "/jatekok", status: "preview", badge: "ÚJ" },
+  { id: "rulebook", label: "Szabálytár", route: "/szabalytar", status: "preview" },
+  { id: "faq", label: "GYIK", route: "/gyik", status: "preview" },
+  { id: "links", label: "Linkek", route: "/linkek", status: "preview" },
+  { id: "alchemist", label: "Alkimista", route: "/alkimista", status: "preview" },
 ];
 
 /** Features that appear in the full-site menu (the Alchemist opens from its help vial instead). */

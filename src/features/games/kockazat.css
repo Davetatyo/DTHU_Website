@@ -1,0 +1,150 @@
+/* Kockázat. The Barbarian's cave: warm and dark in both themes. */
+.kz { --kz-gold: #ffcf6b; --die: 50px; --half: 25px; position: relative; isolation: isolate; overflow: hidden; height: max(520px, min(760px, calc(100svh - var(--stage-top, 120px) - 20px))); border-radius: 12px; border: 1px solid #5c2a12; background: radial-gradient(ellipse at 50% 25%, #7a3412 0%, #3a1608 55%, #170803 100%); color: #fbeedd; display: flex; flex-direction: column; }
+
+/* The two Barbarians: the warrior greets you, then cross-fades into the fan. */
+.kz-bg { position: absolute; inset: 0; z-index: -2; }
+.kz-bg img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 22%; transition: opacity 1.1s ease, filter 1.4s ease, transform 1.6s cubic-bezier(.2,.7,.2,1); -webkit-mask-image: radial-gradient(ellipse 80% 75% at 50% 35%, #000 50%, transparent 100%); mask-image: radial-gradient(ellipse 80% 75% at 50% 35%, #000 50%, transparent 100%); }
+.kz-warrior { animation: kz-rise .9s cubic-bezier(.2,.8,.2,1) both; }
+.kz-fanboy { opacity: 0; }
+.kz.fan .kz-warrior { opacity: 0; }
+.kz.fan .kz-fanboy { opacity: 1; }
+.kz-flash { position: absolute; inset: 0; background: radial-gradient(circle at 50% 40%, rgb(255 230 160 / .85), transparent 60%); opacity: 0; pointer-events: none; }
+.kz.fan .kz-flash { animation: kz-flash .9s ease-out; }
+/* While playing, he steps back so the dice take the stage. */
+.kz[data-phase="play"] .kz-bg img { inset: 0 auto auto 50%; width: auto; max-width: none; height: 62%; translate: -50% 0; aspect-ratio: 2000 / 1911; object-fit: cover; object-position: center top; filter: brightness(.8) saturate(1.1); -webkit-mask-image: radial-gradient(ellipse 60% 70% at 50% 42%, #000 50%, transparent 100%); mask-image: radial-gradient(ellipse 60% 70% at 50% 42%, #000 50%, transparent 100%); }
+.kz[data-phase="end"] .kz-bg img { filter: brightness(.6) saturate(1.1); }
+
+.kz-embers { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+.kz-embers span { position: absolute; bottom: -10px; width: 4px; height: 4px; border-radius: 50%; background: #ffb35c; box-shadow: 0 0 6px 2px rgb(255 140 60 / .6); opacity: 0; animation: kz-ember linear infinite; }
+
+/* Speech. */
+.kz-intro, .kz-end { margin-top: auto; display: grid; justify-items: center; gap: 12px; padding: 16px; text-align: center; }
+.kz-bubble { position: relative; max-width: 560px; padding: 14px 18px; border-radius: 14px; background: #fff7ea; color: #3a1405; font-size: 18px; font-weight: 700; line-height: 1.4; box-shadow: 0 10px 30px rgb(0 0 0 / .45); animation: kz-pop .5s .4s cubic-bezier(.3,1.5,.5,1) both; }
+.kz-bubble::before { content: ""; position: absolute; left: 50%; top: -9px; translate: -50% 0; border: 10px solid transparent; border-top: 0; border-bottom-color: #fff7ea; }
+.kz-caret { color: #a8322b; }
+.kz-start, .kz-choices { display: grid; justify-items: center; gap: 8px; opacity: 0; transform: translateY(8px); transition: opacity .4s, transform .4s; }
+.kz-start.show, .kz-choices.show { opacity: 1; transform: none; }
+.kz-hint { font-size: 14px; color: #f0d2b0; }
+.kz-go { min-width: 200px; min-height: 48px; font-size: 17px; }
+.kz-choices { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); width: min(560px, 100%); }
+.kz-choice { display: grid; gap: 2px; padding: 12px 14px; border-radius: 12px; border: 1px solid rgb(255 207 107 / .5); background: rgb(30 10 4 / .8); color: #fff; cursor: pointer; transition: transform .08s, border-color .15s; }
+.kz-choice:hover:not(:disabled) { border-color: var(--kz-gold); }
+.kz-choice:active { transform: scale(.97); }
+.kz-choice small { color: #f0d2b0; }
+
+/* Play. */
+.kz-play { display: flex; flex-direction: column; min-height: 0; flex: 1; padding: 12px; gap: 8px; }
+.kz-say { align-self: center; max-width: 520px; padding: 8px 14px; border-radius: 12px; background: #fff7ea; color: #3a1405; font-weight: 700; font-size: 15px; text-align: center; box-shadow: 0 6px 18px rgb(0 0 0 / .4); animation: kz-pop .35s cubic-bezier(.3,1.5,.5,1) both; }
+.kz-board { display: flex; flex-direction: column; gap: 8px; min-height: 0; width: min(640px, 100%); align-self: center; padding: 10px; border-radius: 14px; background: rgb(24 8 3 / .82); border: 1px solid rgb(255 207 107 / .3); backdrop-filter: blur(6px); }
+/* Scoreboard above the board ("ahead", not "lead": that is a site-wide class): the leader glows gold, a dot marks whose turn it is. */
+.kz-score { display: grid; grid-template-columns: 1fr auto 1fr; align-items: stretch; gap: 10px; width: min(640px, 100%); align-self: center; margin-top: auto; }
+.kz-side { display: grid; justify-items: center; align-content: center; padding: 6px 10px; border-radius: 12px; background: rgb(24 8 3 / .82); border: 1px solid rgb(255 255 255 / .14); backdrop-filter: blur(6px); transition: border-color .3s, background .3s, box-shadow .3s; }
+.kz-side small { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #e6c79c; }
+.kz-side b { font-size: 34px; font-weight: 800; line-height: 1.05; color: #fff; animation: kz-count .45s cubic-bezier(.3,1.6,.5,1); }
+.kz-side.ahead { border-color: var(--kz-gold); background: rgb(70 40 8 / .88); box-shadow: 0 0 18px rgb(255 207 107 / .35); }
+.kz-side.ahead b { color: var(--kz-gold); }
+.kz-side.turn small { color: #fff; }
+.kz-side.turn small::before { content: ""; display: inline-block; width: 7px; height: 7px; margin-right: 6px; border-radius: 50%; background: #5fd17a; vertical-align: 1px; box-shadow: 0 0 6px #5fd17a; }
+.kz-mid { display: grid; justify-items: center; align-content: center; gap: 2px; padding: 6px 10px; border-radius: 12px; background: rgb(24 8 3 / .78); text-align: center; backdrop-filter: blur(6px); }
+.kz-mid span { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: #e6c79c; }
+.kz-mid b { font-size: 14px; font-weight: 800; color: var(--kz-gold); white-space: nowrap; }
+.kz-mid span { display: inline-flex; align-items: center; gap: 6px; }
+.kz-mid .kz-help { width: 20px; height: 20px; font-size: 12px; }
+@keyframes kz-count { from { transform: scale(1.35); } to { transform: none; } }
+
+/* The tray and the 3D dice. */
+.kz-tray { display: flex; justify-content: center; gap: 10px; padding: 14px 6px 4px; border-radius: 12px; background: radial-gradient(ellipse at 50% 0%, #6b3a1c, #2e1408); box-shadow: inset 0 4px 14px rgb(0 0 0 / .6); perspective: 600px; }
+.kz-tray.his { background: radial-gradient(ellipse at 50% 0%, #5a2a2a, #2a0e0e); }
+.kz-die { display: grid; justify-items: center; gap: 2px; padding: 0; border: 0; background: none; cursor: pointer; touch-action: manipulation; }
+.kz-die:disabled { cursor: default; }
+.kz-hop { display: block; width: var(--die); height: var(--die); perspective: 260px; transition: transform .2s ease; animation-duration: .95s; animation-timing-function: ease-out; }
+.kz-die.held .kz-hop { transform: translateY(-6px); }
+.kz-cube { display: block; position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform .95s cubic-bezier(.2,.8,.25,1); }
+.kz-face { position: absolute; inset: 0; display: grid; grid-template: repeat(3, 1fr) / repeat(3, 1fr); padding: 7px; border-radius: 10px; background: linear-gradient(145deg, #fffaf0, #e9dcc4); border: 1px solid #b89a6c; box-shadow: inset 0 -3px 6px rgb(120 80 30 / .25); backface-visibility: hidden; }
+.kz-face i { width: 9px; height: 9px; border-radius: 50%; place-self: center; }
+.kz-face i.on { background: radial-gradient(circle at 35% 35%, #c2332c, #6e0f0f); }
+.kz-die.held .kz-face { background: linear-gradient(145deg, #fff3c4, #f2c55a); border-color: #ffdf8a; box-shadow: 0 0 14px rgb(255 207 107 / .8), inset 0 -3px 6px rgb(140 90 10 / .3); }
+.kz-tag { height: 14px; font-size: 11px; font-weight: 700; color: var(--kz-gold); }
+.kz-roll { min-height: 50px; border-radius: 12px; border: 1px solid #f7dca0; background: linear-gradient(180deg, #f3cd7a, #c89b3c); color: #2a1606; font-size: 18px; font-weight: 800; box-shadow: 0 4px 0 #7a5a1c; cursor: pointer; transition: transform .08s, filter .15s; touch-action: manipulation; }
+.kz-roll:active:not(:disabled) { transform: translateY(2px) scale(.98); box-shadow: 0 2px 0 #7a5a1c; }
+.kz-roll:disabled { filter: grayscale(.6) brightness(.8); cursor: default; }
+.kz-upper { font-size: 12px; color: #e6c79c; text-align: center; }
+
+/* Scorecard: your score in the box, the Barbarian's in the corner. */
+.kz-card { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; overflow-y: auto; min-height: 0; padding: 2px; }
+.kz-box { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 6px; min-height: 46px; padding: 6px 30px 6px 10px; border-radius: 10px; border: 1px solid rgb(255 255 255 / .1); background: rgb(255 255 255 / .04); color: #fbeedd; text-align: left; cursor: default; }
+.kz-name { display: grid; font-size: 14px; font-weight: 700; line-height: 1.15; }
+.kz-name small { font-size: 11px; font-weight: 400; color: #cdb08a; }
+.kz-pts { font-size: 18px; font-weight: 800; min-width: 1.6em; text-align: right; }
+.kz-his { position: absolute; top: 4px; right: 6px; font-size: 11px; color: #c99d8a; }
+.kz-box.can { cursor: pointer; border-color: rgb(255 207 107 / .55); background: rgb(255 207 107 / .1); }
+.kz-box.can .kz-pts { color: var(--kz-gold); }
+.kz-box.can:hover { border-color: var(--kz-gold); }
+.kz-box.can:active { transform: scale(.97); }
+.kz-box.zero { border-style: dashed; border-color: rgb(255 255 255 / .2); background: transparent; }
+.kz-box.zero .kz-pts { color: #a88d7a; }
+.kz-box.done { opacity: .75; }
+
+/* How to play: three cards. */
+.kz-howto-link { border: 0; background: none; color: #f0d2b0; text-decoration: underline; text-underline-offset: 3px; font-size: 14px; cursor: pointer; }
+.kz-help { width: 24px; height: 24px; border-radius: 50%; border: 1px solid rgb(255 207 107 / .5); background: rgb(255 255 255 / .06); color: var(--kz-gold); font-weight: 800; line-height: 1; cursor: pointer; }
+.kz-how { position: absolute; inset: 0; z-index: 5; display: grid; place-items: center; padding: 16px; background: rgb(10 3 1 / .7); backdrop-filter: blur(3px); animation: kz-fade .2s ease both; }
+.kz-how-card { position: relative; display: grid; gap: 12px; width: min(420px, 100%); padding: 20px 18px 16px; border-radius: 16px; background: #fff7ea; color: #3a1405; box-shadow: 0 20px 60px rgb(0 0 0 / .6); animation: kz-slide .3s cubic-bezier(.2,.8,.2,1) both; }
+.kz-how-card h2 { font-size: 20px; font-weight: 800; }
+.kz-how-card p { font-size: 15px; line-height: 1.5; }
+.kz-how-step { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #a8322b; }
+.kz-how-x { position: absolute; top: 8px; right: 10px; width: 32px; height: 32px; border: 0; background: none; color: #7a4a2a; font-size: 24px; cursor: pointer; }
+.kz-how-dice { display: flex; justify-content: center; gap: 8px; padding: 12px; border-radius: 12px; background: radial-gradient(ellipse at 50% 0%, #6b3a1c, #2e1408); }
+.kz-mini { display: grid; grid-template: repeat(3, 1fr) / repeat(3, 1fr); width: 40px; height: 40px; padding: 5px; border-radius: 8px; background: linear-gradient(145deg, #fffaf0, #e9dcc4); border: 1px solid #b89a6c; }
+.kz-mini i { width: 7px; height: 7px; border-radius: 50%; place-self: center; }
+.kz-mini i.on { background: #a8322b; }
+.kz-mini.held { background: linear-gradient(145deg, #fff3c4, #f2c55a); border-color: #ffdf8a; box-shadow: 0 0 10px rgb(255 207 107 / .9); translate: 0 -4px; }
+.kz-how-list { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.kz-how-list li { display: flex; justify-content: space-between; padding: 8px 10px; border-radius: 10px; background: #f3e2c6; font-weight: 700; }
+.kz-how-list b { color: #a8322b; }
+.kz-how-score { display: flex; justify-content: center; gap: 10px; }
+.kz-how-score span { display: grid; min-width: 100px; padding: 8px 12px; border-radius: 10px; background: #2e1408; color: #fff; text-align: center; }
+.kz-how-score span:first-child { box-shadow: 0 0 0 2px #ffcf6b; }
+.kz-how-score small { color: #e6c79c; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; }
+.kz-how-score b { font-size: 26px; }
+.kz-how-nav { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 4px; }
+.kz-how-back, .kz-how-next { min-height: 42px; padding: 0 14px; border-radius: 10px; font-weight: 800; cursor: pointer; touch-action: manipulation; }
+.kz-how-back { border: 1px solid #d8bf9a; background: transparent; color: #7a4a2a; }
+.kz-how-back:disabled { visibility: hidden; }
+.kz-how-next { border: 1px solid #f7dca0; background: linear-gradient(180deg, #f3cd7a, #c89b3c); color: #2a1606; }
+.kz-how-dots { display: flex; gap: 6px; }
+.kz-how-dots i { width: 8px; height: 8px; border-radius: 50%; background: #e0c9a6; }
+.kz-how-dots i.on { background: #a8322b; }
+@keyframes kz-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes kz-slide { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: none; } }
+
+/* End. */
+.kz-final { display: flex; gap: 12px; }
+.kz-final div { display: grid; min-width: 120px; padding: 10px 16px; border-radius: 12px; background: rgb(24 8 3 / .82); border: 1px solid rgb(255 255 255 / .15); }
+.kz-final div.win { border-color: var(--kz-gold); box-shadow: 0 0 24px rgb(255 207 107 / .45); }
+.kz-final b { font-size: 34px; color: #fff; }
+.kz-final small { color: #e6c79c; text-transform: uppercase; letter-spacing: .06em; }
+
+@keyframes kz-rise { from { opacity: 0; transform: translateY(40px) scale(.97); } to { opacity: 1; transform: none; } }
+@keyframes kz-pop { from { opacity: 0; transform: scale(.85) translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes kz-flash { 0% { opacity: 0; } 25% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes kz-hop-a { 0% { translate: 0 0; } 35% { translate: 0 -24px; } 70% { translate: 0 2px; } 100% { translate: 0 0; } }
+@keyframes kz-hop-b { 0% { translate: 0 0; } 35% { translate: 0 -24px; } 70% { translate: 0 2px; } 100% { translate: 0 0; } }
+@keyframes kz-ember { 0% { opacity: 0; transform: translate(0, 0); } 10% { opacity: .9; } 100% { opacity: 0; transform: translate(-30px, -110vh); } }
+
+@media (max-width: 520px) {
+  .kz { --die: 44px; --half: 22px; }
+  .kz-tray { gap: 7px; }
+  .kz-face { padding: 6px; }
+  .kz-face i { width: 8px; height: 8px; }
+  .kz-name { font-size: 13px; }
+  .kz-name small { display: none; }
+  .kz-box { min-height: 40px; }
+  .kz-bubble { font-size: 16px; }
+  .kz-side b { font-size: 30px; }
+  .kz-turnword { display: none; }
+  .kz-mid b { font-size: 13px; white-space: normal; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .kz *, .kz { animation: none !important; transition: none !important; }
+}

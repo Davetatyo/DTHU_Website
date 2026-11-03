@@ -33,7 +33,7 @@ Discord channel webhook · Supabase pg_cron for reminders.
 
 1. Create a project at [supabase.com](https://supabase.com).
 2. **SQL Editor** → paste and run each file in [supabase/migrations/](../supabase/migrations/) in order
-   (`0001_init.sql`, `0002_ticket_draws.sql`, …).
+   (`0001_init.sql`, `0007_ticket_draws.sql`, …).
 3. **Project Settings → API**: copy the Project URL, `anon` key and `service_role` key.
 
 ### 2. Discord login

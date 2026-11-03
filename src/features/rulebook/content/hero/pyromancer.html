@@ -1,0 +1,42 @@
+<h2 slot="header">Piromancer</h2>
+<ul slot="header" class="see-also">
+	<li><a href="#heroes">Hősök</a></li></ul>
+<div class="hero-basics float-right">
+	<img class="portrait" src="/szabalytar/img/heroes/pyromancer.webp" alt="Piromancer" width="300" height="300">
+	<img class="complexity" src="/szabalytar/img/heroes/complexity-3.webp" alt="Bonyolultság 3" width="213" height="72">
+</div>
+<p class="bio">A Piromancernek csak egyetlen módja van az ellenségei kezelésére: gyors, forró pusztítás. Még a védekezése is támadó jellegű. Ő egy üvegágyú, aki hatalmas mennyiségű sebzést oszt ki, hamuvá változtatva ellenfeleit.</p>
+<p><dfn>Választott fegyver:</dfn> Tűz és robbanások</p>
+<h3>Tokenek</h3>
+<ul class="grid tokens">
+	<li><a href="#token/knockdown"><svg viewbox="0 0 500 500"><use href="#se-knockdown"/></svg> Knockdown (Földre vitel)</a></li>
+	<li><a href="#token/burn"><svg viewbox="0 0 500 500"><use href="#se-burn"/></svg> Burn (Égés)</a></li>
+	<li><a href="#token/fire-mastery"><svg viewbox="0 0 500 500"><use href="#se-fire-mastery"/></svg> Fire Mastery (Tűzuralom)</a></li>
+	<li><a href="#token/stun"><svg viewbox="0 0 500 500"><use href="#se-stun"/></svg> Stun (Kábítás)</a></li>
+</ul>
+<h3>Szabálytisztázások</h3>
+<details>
+	<summary>Stun (Kábítás) <svg class="◊" viewbox="0 0 500 500"><use href="#se-stun"/></svg></summary>
+	<div>
+		<p>Amíg <a href="#token/stun">kábult</a> vagy, nem hajthatsz végre semmilyen akciót. Még ha az ellenfelednek van is olyan képessége, állapotjelzője vagy kártyája, amely megakadályozhatna egy bejövő állapotjelzőt, a <a href="#token/stun">Stun <svg class="◊" viewbox="0 0 500 500"><use href="#se-stun"/></svg></a> kábítás még a sebzés kiosztása előtt rád kerül. Ugyanakkor egy csapattársad, aki nem kábult, végrehajthat olyan akciókat, amelyek eltávolítják a Stun <svg class="◊" viewbox="0 0 500 500"><use href="#se-stun"/></svg> kábítást.</p>
+		<p>Miután eltávolítottad a Stun <svg class="◊" viewbox="0 0 500 500"><use href="#se-stun"/></svg> kábítás jelzőt és új <a href="#offensive-roll-phase">Támadó Dobási Fázist</a> kezdesz, az ellenfeled már nem kábult, és a megszokott módon cselekedhet.</p>
+	</div>
+</details>
+<details>
+	<summary>Járulékos sebzés</summary>
+	<div>
+		<p>Amikor <svg class="◊ dmg-spcl" viewbox="0 0 500 500"><use href="#i-dmg-2"/></svg> <a href="#damage-types">járulékos sebzést</a> okozol az összes ellenfélnek egy 2v2 játékban, minden egyes ellenfél külön-külön kapja meg a sebzést (bár a közös életerő-készletet terhelik). A másik csapat így összesen <svg class="◊ dmg-spcl" viewbox="0 0 500 500"><use href="#i-dmg-4"/></svg> sebzést kapna (a képességből származó egyéb sebzéseken felül).</p>
+	</div>
+</details>
+<details>
+	<summary>Burning Soul II</summary>
+	<div>
+		<p>Ha <img class="◊" src="/szabalytar/img/icons/die-fiery-soul.webp" alt="Fiery Soul" width="33" height="39"><img class="◊" src="/szabalytar/img/icons/die-fiery-soul.webp" alt="Fiery Soul" width="33" height="39"><img class="◊" src="/szabalytar/img/icons/die-fiery-soul.webp" alt="Fiery Soul" width="33" height="39"><img class="◊" src="/szabalytar/img/icons/die-fiery-soul.webp" alt="Fiery Soul" width="33" height="39">-et dobsz, mindkét hatás aktiválódik, mivel mindkét feltételnek megfeleltél (kirovod a <a href="#token/burn">Burn <svg class="◊" viewbox="0 0 500 500"><use href="#se-burn"/></svg></a> égést és növeled a maximális <a href="#token/fire-mastery">Fire Mastery <svg class="◊" viewbox="0 0 500 500"><use href="#se-fire-mastery"/></svg></a> (Tűzuralom) Halmozási Limitedet).</p>
+	</div>
+</details>
+<details>
+	<summary>Fire Mastery (Tűzuralom) <svg class="◊" viewbox="0 0 500 500"><use href="#se-fire-mastery"/></svg></summary>
+	<div>
+		<p>Amikor a <a href="#token/fire-mastery">Fire Mastery <svg class="◊" viewbox="0 0 500 500"><use href="#se-fire-mastery"/></svg></a> <a href="#status-effects">Halmozási Limitje</a> megnövekszik, az a játék hátralévő részére érvényes marad.</p>
+	</div>
+</details>

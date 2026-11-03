@@ -1,0 +1,55 @@
+<h2 slot="header">Treant</h2>
+<ul slot="header" class="see-also">
+	<li><a href="#heroes">Hősök</a></li></ul>
+<div class="hero-basics float-right">
+	<img class="portrait" src="/szabalytar/img/heroes/treant.webp" alt="Treant" width="300" height="300">
+	<img class="complexity" src="/szabalytar/img/heroes/complexity-6.webp" alt="Bonyolultság 6" width="213" height="72">
+</div>
+<p class="bio">A Lombóriás a legidősebb a küzdők közül. Úgy döntött, nem akar többé földbe ragadt tuskó lenni, aki szomorúfűzek felett kesereg. Inkább úgy döntött, hogy új ágakat növeszt, hátrahagyva sűrűjét egy ragadós búcsúval. Mélyre ásott, bepakolta a törzsét, kicsinosította magát, és egyre közelebb cammogott a probléma valódi gyökeréhez – az Őrült Királyhoz.</p>
+<p><dfn>Választott fegyver:</dfn> Ágak</p>
+<h3>Szellemek (Spirits)</h3>
+<p>Körönként egyszer elölhetsz 1 szellemet mindegyik típusból, hogy megkapd az egyik hatást. A „Szellem növesztése” azt jelenti, hogy kapsz egy Seedling <img class="◊" src="/szabalytar/img/components/token-seedling-spirit.webp" alt="Seedling Spirit"> szellemet, <strong>vagy</strong> fejlesztesz egy már meglévő szellemet (Seedlingből <img class="◊" src="/szabalytar/img/components/token-seedling-spirit.webp" alt="Seedling Spirit"> Saplinggé <img class="◊" src="/szabalytar/img/components/token-sapling-spirit.webp" alt="Sapling Spirit">, vagy Saplingből <img class="◊" src="/szabalytar/img/components/token-sapling-spirit.webp" alt="Sapling Spirit"> Dryaddá <img class="◊" src="/szabalytar/img/components/token-dryad-spirit.webp" alt="Dryad Spirit">).</p>
+<h3>Tokenek</h3>
+<ul class="grid tokens">
+	<li><a href="#token/seedling-spirit"><img src="/szabalytar/img/components/token-seedling-spirit.webp" alt="Seedling Spirit" width="152" height="200"> Seedling Spirit (Csemete szellem)</a></li>
+	<li><a href="#token/sapling-spirit"><img src="/szabalytar/img/components/token-sapling-spirit.webp" alt="Sapling Spirit" width="169" height="200"> Sapling Spirit (Faonc szellem)</a></li>
+	<li><a href="#token/dryad-spirit"><img src="/szabalytar/img/components/token-dryad-spirit.webp" alt="Dryad Spirit" width="132" height="200"> Dryad Spirit (Driád szellem)</a></li>
+	<li><a href="#token/barbed-vine"><svg viewbox="0 0 500 500"><use href="#se-barbed-vine"/></svg> Barbed Vine (Tövises inda)</a></li>
+	<li><a href="#token/wellspring"><svg viewbox="0 0 500 500"><use href="#se-wellspring"/></svg> Wellspring (Forrás)</a></li>
+</ul>
+<h3>Szabálytisztázások</h3>
+<details>
+	<summary>Szellemek (Spirits)</summary>
+	<div>
+		<p>Nem számítanak <a href="#status-effects">állapotjelzőnek</a> (ők <a href="#companions">Társak</a>). Egy szellem elköltése <a href="#action-cards">Azonnali Akciónak</a> számít.</p>
+		<p>Mindegyik szellemtípus csak egyszer költhető el minden játékos köre során (kivéve az ellenfél <a href="#ultimate-ability">Végső képessége</a> alatt).</p>
+		<p>Ha egy képesség miatt „el kell dobnod” vagy „el kell távolítanod” egy szellemet, nem kapod meg a normál „elköltési” hatását.</p>
+	</div>
+</details>
+<details>
+	<summary>Dryad (Driád szellem) <img class="◊" src="/szabalytar/img/components/token-dryad-spirit.webp" alt="Dryad" width="132" height="200"></summary>
+	<div>
+		<p>A <a href="#token/dryad-spirit">Dryad <img class="◊" src="/szabalytar/img/components/token-dryad-spirit.webp" alt="Dryad" width="132" height="200"></a> elölhető arra, hogy megakadályozza, hogy a Lombóriás <a href="#token/stun">Stun <svg class="◊" viewbox="0 0 500 500"><use href="#se-stun"/></svg></a> (Kábítás) állapotot kapjon. A Dryad <img class="◊" src="/szabalytar/img/components/token-dryad-spirit.webp" alt="Dryad" width="132" height="200"> megakadályozza a bejövő <a href="#status-effects">állapotjelzőt</a> a <a href="#offensive-roll-phase">Támadó Dobási Fázis</a> lezárásakor; ezért a Stun <svg class="◊" viewbox="0 0 500 500"><use href="#se-stun"/></svg> kábítás jelző még nem került kirásra.</p>
+	</div>
+</details>
+<details>
+	<summary>Nature’s Grasp (A természet szorítása)</summary>
+	<div>
+		<p>Ha elköltesz egy szellemet a <a href="#attack">Támadásod</a> során, a sebzés nem csökken (mivel a kiosztott sebzés a képesség feloldása után közvetlenül meglévő szellemeid számán alapul, beleértve a 2 szellem növesztését is).</p>
+	</div>
+</details>
+<details>
+	<summary>Rooted (Gyökeret vert)</summary>
+	<div>
+		<p>Ha növesztesz egy <a href="#token/seedling-spirit">Seedling <img class="◊" src="/szabalytar/img/components/token-seedling-spirit.webp" alt="Seedling" width="152" height="200"></a> csemete szellemet, nem használhatod fel a <a href="#defensive-ability">Védekező Képességed</a> kockáinak egyikének újradobására.</p>
+		<p>Ha növesztesz egy <a href="#token/dryad-spirit">Dryad <img class="◊" src="/szabalytar/img/components/token-dryad-spirit.webp" alt="Dryad" width="132" height="200"></a> driád szellemet, nem költheted el egy bejövő <a href="#status-effects">állapotjelzőt</a> meggátolására (mivel azt a <a href="#offensive-roll-phase">Támadó Dobási Fázis</a> végén kell elkölteni).</p>
+		<p>Ha növesztesz egy <a href="#token/sapling-spirit">Sapling <img class="◊" src="/szabalytar/img/components/token-sapling-spirit.webp" alt="Sapling" width="169" height="200"></a> faonc szellemet, elköltheted, feltéve, hogy nem költöttél el egyet korábban ugyanebben a körben.</p>
+	</div>
+</details>
+<details>
+	<summary>Barbed Vine (Tövises inda) <svg class="◊" viewbox="0 0 500 500"><use href="#se-barbed-vine"/></svg></summary>
+	<div>
+		<p>Csak akkor kapsz sebzést, ha a <a href="#roll-phase">Dobási fázis</a> végén még mindig sújt a <a href="#token/barbed-vine">Barbed Vine <svg class="◊" viewbox="0 0 500 500"><use href="#se-barbed-vine"/></svg></a> jelző.</p>
+		<p>Ha az ellenfelednek <svg class="◊" viewbox="0 0 465 500"><use href="#i-health-1"/></svg> Életereje van, továbilyra is használhatja a <a href="#offensive-roll-phase">Támadó Dobási Fázisának</a> összes <a href="#roll-attempt">dobási kísérletét</a>, mivel a Barbed Vine <svg class="◊" viewbox="0 0 500 500"><use href="#se-barbed-vine"/></svg> jelzőből származó sebzés összeadódik minden más sebzéssel, és <a href="#final-dmg-total">egyidejűleg</a> kerül alkalmazásra a <a href="#roll-phase">Dobási fázis</a> lezárásakor.</p>
+	</div>
+</details>

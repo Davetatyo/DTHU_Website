@@ -1,0 +1,61 @@
+<h2 slot="header">Elátkozott Kalóz</h2>
+<ul slot="header" class="see-also">
+	<li><a href="#heroes">Hősök</a></li></ul>
+<div class="hero-basics float-right">
+	<img class="portrait" src="/szabalytar/img/heroes/cursed-pirate.webp" alt="Elátkozott Kalóz" width="300" height="300">
+	<img class="complexity" src="/szabalytar/img/heroes/complexity-4.webp" alt="Bonyolultság 4" width="213" height="72">
+</div>
+<p class="bio">A kalandok és a Hét Tenger iránti szenvedélye kimondhatatlan gazdagságot hozott neki. Sajnos a tettei egy olyan szörnyű átkot is hoztak rá, amellyel az élete hajszálon függ. Az Elátkozott Kalóz lelket hasító dühével való szembenézés valószínűleg egyirányú utat jelent Davey Jones ládájába.</p>
+<p><dfn>Választott fegyver:</dfn> Szablya</p>
+<h3>Tokenek</h3>
+<ul class="grid tokens">
+	<li><a href="#token/cursed-doubloon"><img src="/szabalytar/img/components/token-cursed-doubloon.webp" alt="Cursed Doubloon" width="200" height="200"> Cursed Doubloon (Elátkozott Dublon)</a></li>
+	<li><a href="#token/powder-keg"><svg viewbox="0 0 500 500"><use href="#se-powder-keg"/></svg> Powder Keg (Lőporos Hordó)</a></li>
+	<li><a href="#token/wither"><svg viewbox="0 0 500 500"><use href="#se-wither"/></svg> Wither (Sorvadás)</a></li>
+	<li><a href="#token/parlay"><svg viewbox="0 0 500 500"><use href="#se-parlay"/></svg> Parlay (Egyezkedés)</a></li>
+</ul>
+<h3>Szabálytisztázások</h3>
+<details>
+	<summary>Hős Tábla</summary>
+	<div>
+		<p>Mindig az „emberi” oldalával felfelé kezdesz. Miután átfordult az „elátkozott” oldalára, úgy marad a játék hátralévő részében.</p>
+	</div>
+</details>
+<details>
+	<summary>Cursed (Elátkozott)</summary>
+	<div>
+		<p>Amikor eltávolítod az utolsó <a href="#token/cursed-doubloon">Dublonodat</a>, nem fordítod meg a tábládat ugyanennek a körnek a végén.</p>
+		<p>A Kalóz „elátkozott” oldalának Passzív Képessége egy <a href="#token/powder-keg">Powder Keg <svg class="◊" viewbox="0 0 500 500"><use href="#se-powder-keg"/></svg></a> lőporos hordót ró ki az ellenfélre, ha az olyan képességet aktivál, ami csak járulékos sebzést okoz. Ez a Powder Keg <svg class="◊" viewbox="0 0 500 500"><use href="#se-powder-keg"/></svg> a <a href="#defensive-roll-phase">Védekező Dobási Fázis</a> kezdetén kerül kiróásra.</p>
+	</div>
+</details>
+<details>
+	<summary>Cursed Doubloon (Elátkozott Dublon) <img class="◊" src="/szabalytar/img/components/token-cursed-doubloon.webp" alt="Cursed Doubloon" width="200" height="200"></summary>
+	<div>
+		<p>Az ellenfél nem távolíthat el és nem ruházhat át <a href="#token/cursed-doubloon">Cursed Doubloon <img class="◊" src="/szabalytar/img/components/token-cursed-doubloon.webp" alt="Cursed Doubloon" width="200" height="200"></a> jelzőt a saját <a href="#hero-board">Hős Tábláján</a> lévő <a href="#action-cards">kártyával</a>, <a href="#status-effects">állapotjelzővel</a> vagy <a href="#ability">képességgel</a>.</p>
+	</div>
+</details>
+<details>
+	<summary>Kalóz tükörjáték</summary>
+	<div>
+		<p>If two or more Pirate’s are facing eachother, then each Pirate’s <a href="#token/cursed-doubloon">Cursed Doubloons <img class="◊" src="/szabalytar/img/components/token-cursed-doubloon.webp" alt="Cursed Doubloon" width="200" height="200"></a> are considered unique to each Pirate. They will be dealt <svg class="◊ dmg-spcl" viewBox="0 0 500 500"><use href="#i-dmg-1"/></svg> dmg if the other Pirate inflicts them with a Cursed Doubloon <img class="◊" src="/szabalytar/img/components/token-cursed-doubloon.webp" alt="Cursed Doubloon" width="200" height="200">, and they can only remove their own Cursed Doubloons <img class="◊" src="/szabalytar/img/components/token-cursed-doubloon.webp" alt="Cursed Doubloon" width="200" height="200"> with their own Shiver Me Timbers <a href="#offensive-ability">Offensive Ability</a>.</p>
+	</div>
+</details>
+<details>
+	<summary>Powder Keg (Lőporos Hordó) <svg class="◊" viewbox="0 0 500 500"><use href="#se-powder-keg"/></svg></summary>
+	<div>
+		<p>If the Pirate inflicts a <a href="#token/powder-keg">Powder Keg <svg class="◊" viewbox="0 0 500 500"><use href="#se-powder-keg"/></svg></a> with an <a href="#attack">Attack</a> when the opponent already has a Keg, the dmg is an isolated source of <a href="#damage-types">undefendable dmg</a>.
+		If the Pirate inflicts a <a href="#token/powder-keg">Powder Keg <svg class="◊" viewbox="0 0 500 500"><use href="#se-powder-keg"/></svg></a> with an <a href="#attack">Attack</a> when the opponent already has a Keg, the <svg class="◊ dmg-spcl" viewBox="0 0 500 500"><use href="#i-dmg-3"/></svg> isolated source of <a href="#damage-types">undefendable dmg</a> is dealt immediately outside of <a href="#final-dmg-total">normal damage calculation</a> at the end of the current Phase.</p>
+	</div>
+</details>
+<details>
+	<summary>Wither (Sorvadás) <svg class="◊" viewbox="0 0 500 500"><use href="#se-wither"/></svg></summary>
+	<div>
+		<p>A <a href="#token/wither">Wither <svg class="◊" viewbox="0 0 500 500"><use href="#se-wither"/></svg></a> csökkenti az aktivált <a href="#offensive-ability">Támadó Képességből</a> származó sima vagy kivédhetetlen <a href="#damage">sebzéstípusokat</a>. Nem csökkenti a járulékos, tiszta vagy Ultimate sebzést.</p>
+	</div>
+</details>
+<details>
+	<summary>Parlay (Egyezkedés) <svg class="◊" viewbox="0 0 500 500"><use href="#se-parlay"/></svg></summary>
+	<div>
+		<p>Ha az ellenfeled olyan <a href="#offensive-ability">Támadó Képességet</a> aktivál, amelynek sebzése egy <a href="#attack">Támadásból</a> származik, még mindig úgy tekintendő, hogy Támadást hajtott végre, azzal a különbséggel, hogy nem történik <a href="#defensive-roll-phase">védekezés</a>, és a többi hatás továbbra is érvényesül (lásd az <i>Elátkozott</i> Passzív Képességet). Az ellenfél Támadó Dobási Fázisán kívül kapott sebzéseket ez nem befolyásolja (pl. a <a href="#token/bleed">Bleed <svg class="◊" viewbox="0 0 500 500"><use href="#se-bleed"/></svg></a> (Vérzés) által kapott sebzés stb.).</p>
+	</div>
+</details>

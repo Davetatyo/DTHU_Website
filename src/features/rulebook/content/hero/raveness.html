@@ -1,0 +1,71 @@
+<h2 slot="header">Raveness</h2>
+<ul slot="header" class="see-also">
+	<li><a href="#heroes">Hősök</a></li></ul>
+<div class="hero-basics float-right">
+	<img class="portrait" src="/szabalytar/img/heroes/raveness.webp" alt="Raveness" width="300" height="300">
+	<img class="complexity" src="/szabalytar/img/heroes/complexity-3.webp" alt="Bonyolultság 3" width="213" height="72">
+</div>
+<div class="bio">
+	<p>Sohamár!</p>
+	<p>Mindazok hallják a halk kopogást, gyengéd koppanást, kopogást szobájuk ajtaján.</p>
+	<p>Kik Hollóját csak úgy ott találják magasan a díszes ajtó felett.</p>
+	<p>Ne nézz most a hölgyre, ki sosem törődve küldi hollóit, hogy felemésszék a gyengét és szegényt.</p>
+	<p>A Raveness most már rajtad áll, mindent felemésztő madárcsapat köröz feletted, a halál hálójába csalva téged, sohamár.</p>
+</div>
+<p><dfn>Választott fegyver:</dfn> Nevermore (Sohamár)</p>
+<h3>Tokenek</h3>
+<ul class="grid tokens">
+	<li><a href="#token/nevermore"><img src="/szabalytar/img/components/token-nevermore.webp" alt="Nevermore" width="200" height="200"> Nevermore</a></li>
+	<li><a href="#token/feather"><svg viewbox="0 0 500 500"><use href="#se-feather"/></svg> Feather (Toll)</a></li>
+	<li><a href="#token/hex"><svg viewbox="0 0 394 500"><use href="#se-hex"/></svg> Hex (Átok)</a></li>
+</ul>
+<h3>Hero Setup</h3>
+<p>Begin the game with <a href="#token/nevermore">Nevermore</a> on your <a href="#hero-board">Hero Board</a> set to 0.</p>
+<h3>Szabálytisztázások</h3>
+<details>
+	<summary>Nevermore tárcsa</summary>
+	<div>
+		<p>Az a játékos, akinek a tárcsa a <a href="#hero-board">Hős Tábláján</a> van, köteles beállítani a <a href="#token/nevermore">Nevermore</a> tárcsát.</p>
+		<p>A Nevermore továbbra is képes <a href="#token/nevermore">Absorb Vitality <img class="◊" src="/szabalytar/img/icons/vitality.webp" alt="Vitality" width="123" height="200"></a> (Életerő elnyelése) hatásra akkor is, ha a tárcsa a 3-as értéknél áll (bár a tárcsa értéke nem mehet 3 fölé).</p>
+		<p>A Nevermore-ból származó Gyógyulás azonnal megtörténik abban a <i>Fázisban</i>, amikor visszatér a Ravenesshez (például a <a href="#upkeep-phase"><i>Állapot fázis</i></a> során).</p>
+	</div>
+</details>
+<details>
+	<summary>Nevermore Activation</summary>
+	<div>
+		<p>When <a href="#activate">Activated</a> multiple times, the Raveness can choose either effect for each separate activation (i.e. they can choose to Absorb Vitality <img class="◊" src="/szabalytar/img/icons/vitality.webp" alt="Vitality" width="123" height="200"> for the first Activation, and then move <a href="#token/nevermore">Nevermore</a> for the second Activation). The Raveness may also choose neither option.</p>
+		<p>If the Nevermore Die Roll result is a 5, the Raveness will still gain <svg class="◊" viewbox="0 0 465 500"><use href="#i-cp-1" /></svg> even if her opponent did not lose <svg class="◊" viewbox="0 0 465 500"><use href="#i-cp-1" /></svg>.</p>
+	</div>
+</details>
+<details>
+	<summary>Nevermore és a vereség</summary>
+	<div>
+		<p>If an opponent who has <a href="#token/nevermore">Nevermore</a> is defeated, Nevermore is immediately returned to the Raveness.</p>
+		<p>If the Raveness is defeated, remove Nevermore from the game.</p>
+		<p>If both the Raveness and her opponent are defeated simultaneously, the Heal from Nevermore being returned to the Raveness would not resolve until after <a href="#final-dmg-total">damage calculations</a>. Therefore, the game would conclude in a tie.</p>
+	</div>
+</details>
+<details>
+	<summary>Raveness tükörjáték</summary>
+	<div>
+		<p>A <a href="#token/nevermore">Nevermore</a> mindegyik Raveness játékos számára egyedinek számít. A saját Nevermore-odhoz tartozó <i>Nevermore kockadobás</i> csak a saját <a href="#token/feather"><i>Feather</i> <svg class="◊" viewbox="0 0 500 500"><use href="#se-feather" /></svg></a> toll jelzőiddel módosítható.</p>
+	</div>
+</details>
+<details>
+	<summary>Feather (Toll) <svg class="◊" viewbox="0 0 500 500"><use href="#se-feather" /></svg></summary>
+	<div>
+		<p>Ha a <a href="#status-effects">Halmozási Limiten</a> felül szeretnél további <a href="#token/feather"><i>Feather</i> <svg class="◊" viewbox="0 0 500 500"><use href="#se-feather" /></svg></a> toll jelzőket szerezni, elölhetsz néhányat, hogy helyet csinálj a bejövő jelzőknek, mivel a jelzők elköltése <a href="#action-cards"><i>Azonnali Akciónak</i></a> minősül. Több <i>Feather</i> <svg class="◊" viewbox="0 0 500 500"><use href="#se-feather" /></svg> jelző is elkölthető ugyanabban a körben (azonos vagy különböző hatásokra).</p>
+	</div>
+</details>
+<details>
+	<summary>Hex (Átok) <svg class="◊" viewbox="0 0 394 500"><use href="#se-hex" /></svg></summary>
+	<div>
+		<p><a href="#token/hex"><i>Hex</i> <svg class="◊" viewbox="0 0 394 500"><use href="#se-hex" /></svg></a>: Az üres kockaoldal szimbólum és számérték nélkülinek tekintendő. Ha az ellenfeled öt 6-ost dob, nem tudja aktiválni a <a href="#ultimate-ability"><i>Végső képességét</i></a> (mivel minden kockaoldala üresnek tekintendő).</p>
+	</div>
+</details>
+<details>
+	<summary>Nevermore kockadobás</summary>
+	<div>
+		<p>A <a href="#token/nevermore">Nevermore kockadobás</a> körönként legfeljebb egyszer történhet meg.</p>
+	</div>
+</details>

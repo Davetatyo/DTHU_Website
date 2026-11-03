@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Art, heroArt } from "@/components/Art";
-import { HeroAvatar } from "@/components/HeroAvatar";
+import { PlayerAvatar } from "@/features/profile/components/PlayerAvatar";
 import { getCurrentProfile } from "@/lib/auth";
 import { loadRanking } from "@/features/rankings/lib/load";
 import { movement } from "@/features/rankings/lib/ranking";
@@ -37,7 +37,7 @@ export default async function RankingsPage() {
               <div key={r.p} className={`pr-big${i < 3 ? " top" : ""}${r.p === me ? " me" : ""}`}>
                 <span className="n">{i + 1}</span>
                 <span className={`mv ${cls}`}>{label}</span>
-                <HeroAvatar name={r.p} hero={r.hero} />
+                <PlayerAvatar name={r.p} hero={r.hero} />
                 <span className="min-w-0">
                   <b>{r.p}</b>
                   <br />

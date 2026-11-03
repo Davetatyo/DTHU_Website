@@ -75,7 +75,7 @@ export default async function TicketAdminPage({
       {hiba && <p className="alert-error">{hiba}</p>}
       {!data && (
         <p className="alert-error">
-          Futtasd le a supabase/migrations/0002_ticket_draws.sql fájlt a Supabase SQL Editorban, addig itt semmi sem
+          Futtasd le a supabase/migrations/0007_ticket_draws.sql fájlt a Supabase SQL Editorban, addig itt semmi sem
           működik.
         </p>
       )}

@@ -1,0 +1,51 @@
+<h2 slot="header">Misztikus Bunyós</h2>
+<ul slot="header" class="see-also">
+	<li><a href="#heroes">Hősök</a></li></ul>
+<div class="hero-basics float-right">
+	<img class="portrait" src="/szabalytar/img/heroes/mystic-brawler.webp" alt="Misztikus Bunyós" width="300" height="300">
+	<img class="complexity" src="/szabalytar/img/heroes/complexity-3.webp" alt="Bonyolultság 3" width="213" height="72">
+</div>
+<p class="bio">A Misztikus Bunyós a megtorlás hullámain lovagol, és az ég magasából zúdítja le ütéseit. Izmai úgy dagadnak, mint az óceán árja. Amikor lemegy a nap, előkerülnek az izmok, tele misztikus őseinek erejével!</p>
+<p><dfn>Választott fegyver:</dfn> Ököl</p>
+<h3>Erők (Strengths)</h3>
+<p>Valahányszor „szerzel 1 <i>Erőt</i>” (gain 1 <i>Strength</i>), válassz ki és szerezz meg egyet az alábbi három <i>Erő</i> közül.</p>
+<p>Ezek a jelzők semmilyen módon nem adhatók át (de eltávolíthatók).</p>
+<h3>Tokenek</h3>
+<ul class="grid tokens">
+	<li><a href="#token/strength-of-the-ocean"><svg viewBox="0 0 500 370"><use href="#i-soto"/></svg> Strength of the Ocean (Az Óceán Ereje)</a></li>
+	<li><a href="#token/strength-of-the-mountain"><svg viewBox="0 0 500 338"><use href="#i-sotm"/></svg> Strength of the Mountain (A Hegy Ereje)</a></li>
+	<li><a href="#token/strength-of-the-sky"><svg viewBox="0 0 500 340"><use href="#i-sots"/></svg> Strength of the Sky (Az Ég Ereje)</a></li>
+	<li><a href="#token/concussion"><svg viewBox="0 0 500 500"><use href="#se-concussion"/></svg> Concussion (Agyrázkódás)</a></li>
+</ul>
+<h3>Szabálytisztázások</h3>
+<details>
+	<summary>Strength of the Sky (Az Ég Ereje) <svg class="◊" viewBox="0 0 500 340"><use href="#i-sots"/></svg></summary>
+	<div>
+		<p>Két <a href="#token/strength-of-the-sky">Strength of the Sky</a> <svg class="◊" viewBox="0 0 500 340"><use href="#i-sots"/></svg> jelzővel 2 további védekező kockával dobhatsz. Ha a védekező dobásod után szerzel egyet, már nem dobhatsz egy további <a href="#defensive-ability">Védekező Képesség</a> kockával.</p>
+		<p>Ha egy <a href="#token/strength-of-the-sky">Strength of the Sky</a> <svg class="◊" viewBox="0 0 500 340"><use href="#i-sots"/></svg> jelzőt eltávolítanak, mielőtt aktiválnád a <a href="#defensive-ability">Védekező Képességedet</a> (pl. a <i>Buh, Bye!</i> kártyával), 1-gyel kevesebb védekező kockával dobsz.</p>
+	</div>
+</details>
+<details>
+	<summary>Strength of the Ocean (Az Óceán Ereje) <svg class="◊" viewBox="0 0 500 370"><use href="#i-soto"/></svg></summary>
+	<div>
+		<p>A <a href="#token/strength-of-the-ocean">Strength of the Ocean</a> <svg class="◊" viewBox="0 0 500 370"><use href="#i-soto"/></svg> két hatása közül körönként csak az egyiket aktiválhatod. Ez azt jelenti, hogy egy körben nem költhetsz el 2 jelzőt <svg class="◊" viewBox="0 0 465 500"><use href="#i-cp-2"/></svg> pontért, és nem költhetsz el 3 jelzőt sem.</p>
+	</div>
+</details>
+<details>
+	<summary>Strength of the Mountain (A Hegy Ereje) <svg class="◊" viewBox="0 0 500 338"><use href="#i-sotm"/></svg></summary>
+	<div>
+		<p>A <a href="#token/strength-of-the-mountain">Strength of the Mountain</a> <svg class="◊" viewBox="0 0 500 338"><use href="#i-sotm"/></svg> hatásából származó <svg class="◊" viewBox="0 0 500 500"><use href="#i-dmg-1"/></svg> sebzés a <a href="#roll-phase">Dobási fázis</a> sebzésszámításakor adódik hozzá. Ha a jelzőt ezen lépés előtt eltávolítják, már nem ad hozzá <svg class="◊" viewBox="0 0 500 500"><use href="#i-dmg-1"/></svg> sebzést.</p>
+	</div>
+</details>
+<details>
+	<summary>Tectonic Punch</summary>
+	<div>
+		<p>Ha úgy döntesz, hogy <a href="#token/strength-of-the-mountain">Strength of the Mountain</a> <svg class="◊" viewBox="0 0 500 338"><use href="#i-sotm"/></svg> jelzőt szerzel, az <svg class="◊" viewBox="0 0 500 500"><use href="#i-dmg-1"/></svg> sebzéssel növeli ennek a <a href="#attack">Támadásnak</a> a sebzését. Ha úgy döntesz, hogy eltávolítasz egy <a href="#token/strength-of-the-mountain">Strength of the Mountain</a> <svg class="◊" viewBox="0 0 500 338"><use href="#i-sotm"/></svg> jelzőt, csak a képességhatás <svg class="◊" viewBox="0 0 500 500"><use href="#i-dmg-3"/></svg> sebzését adod hozzá, a <a href="#token/strength-of-the-mountain">Strength of the Mountain</a> <svg class="◊" viewBox="0 0 500 338"><use href="#i-sotm"/></svg> hatás <svg class="◊" viewBox="0 0 500 500"><use href="#i-dmg-1"/></svg> sebzését nem.</p>
+	</div>
+</details>
+<details>
+	<summary>Strength of Strengths</summary>
+	<div>
+		<p>Legfeljebb annyi kockát dobhatsz újra, ahány <i>Erőd</i> van, és ugyanazt a kockát nem dobhatod újra többször. Például ha 2 <i>Erőd</i> van, ennek a <a href="#attack-modifiers">Támadásmódosító</a> kártyának az öt kezdeti kockájából 0, 1 vagy 2 kockát dobhatsz újra.</p>
+	</div>
+</details>

@@ -10,7 +10,7 @@ export function profileName(p: Pick<Profile, "karnyx_name" | "display_name" | "d
   return p?.karnyx_name ?? p?.display_name ?? p?.discord_username ?? "Ismeretlen";
 }
 
-/** Thrown when migration 0002 is not applied yet; pages catch it and show a notice. */
+/** Thrown when migration 0007 is not applied yet; pages catch it and show a notice. */
 export class TicketsNotReady extends Error {}
 
 function check<T>(res: { data: T | null; error: { code?: string; message?: string } | null }): T {

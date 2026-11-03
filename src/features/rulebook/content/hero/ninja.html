@@ -1,0 +1,52 @@
+<h2 slot="header">Ninja</h2>
+<ul slot="header" class="see-also">
+	<li><a href="#heroes">Hősök</a></li></ul>
+<div class="hero-basics float-right">
+	<img class="portrait" src="/szabalytar/img/heroes/ninja.webp" alt="Ninja" width="300" height="300">
+	<img class="complexity" src="/szabalytar/img/heroes/complexity-2.webp" alt="Bonyolultság 2" width="213" height="72">
+</div>
+<p class="bio">A Ninja tudja, hogy a győzelem soha nem teljesen biztos, ezért számtalan órát töltött mestersége csiszolásával. A ninjutsu mestereként hatalmas mennyiségű sebzést oszt ki szokatlan módszerekkel. Amikor felkészült, még a bejövő támadásokat is nagyobb következetességgel tudja elkerülni, mint bármely más hős.</p>
+<p><dfn>Választott fegyver:</dfn> Ninjatō (Nindzsató)</p>
+<h3>Tokenek</h3>
+<ul class="grid tokens">
+	<li><a href="#token/delayed-poison"><svg viewbox="0 0 500 500"><use href="#se-delayed-poison"/></svg> Delayed Poison (Késleltetett méreg)</a></li>
+	<li><a href="#token/smoke-bomb"><svg viewbox="0 0 500 500"><use href="#se-smoke-bomb"/></svg> Smoke Bomb (Füstbomba)</a></li>
+	<li><a href="#token/ninjutsu"><svg viewbox="0 0 500 500"><use href="#se-ninjutsu"/></svg> Ninjutsu</a></li>
+</ul>
+<h3>Szabálytisztázások</h3>
+<details>
+	<summary>Ninjutsu <svg class="◊" viewbox="0 0 500 500"><use href="#se-ninjutsu"/></svg></summary>
+	<div>
+		<p>A <a href="#token/ninjutsu">Ninjutsu <svg class="◊" viewbox="0 0 500 500"><use href="#se-ninjutsu"/></svg></a> elkölthető bármikor a <a href="#attack">Támadás</a> aktiválása után (beleértve a védekező dobás előtt vagy után is), de el kell költeni a sebzés kiosztása előtt.</p>
+		<p>Ha a <a href="#status-effects">Halmozási Limiten</a> felül szeretnél további Ninjutsu <svg class="◊" viewbox="0 0 500 500"><use href="#se-ninjutsu"/></svg> jelzőket szerezni, elölhetsz néhányat, hogy helyet csinálj a bejövő jelzőknek (mivel a jelzők elköltése <a href="#action-cards">Azonnali Akciónak</a> minősül).</p>
+		<p>Ha a Ninjutsu <svg class="◊" viewbox="0 0 500 500"><use href="#se-ninjutsu"/></svg> jelzőt azután költöd el, hogy az ellenfeled dobott a <a href="#defensive-ability">Védekező Képességével</a>, már nem teheted a <a href="#attack">Támadást</a> <a href="#damage-types">kivédhetetlenné</a>.</p>
+	</div>
+</details>
+<details>
+	<summary>Smoke Bomb (Füstbomba) <svg class="◊" viewbox="0 0 500 500"><use href="#se-smoke-bomb"/></svg> elköltése</summary>
+	<div>
+		<p>A <a href="#token/smoke-bomb">Smoke Bomb <svg class="◊" viewbox="0 0 500 500"><use href="#se-smoke-bomb"/></svg></a> nem használható egy <a href="#ultimate-ability">Végső képesség</a> <a href="#attack">Támadás</a> ellen, mivel az Ultimate sebzés semmilyen módon nem gátolható meg.</p>
+		<p>A <a href="#action-cards">kártyák</a> használhatók a Smoke Bomb <svg class="◊" viewbox="0 0 500 500"><use href="#se-smoke-bomb"/></svg> kockadobásának módosítására, feltéve, hogy a kártya kijátszása megengedett abban a Fázisban, amelyben éppen vagy.</p>
+		<p>Egyetlen Smoke Bomb <svg class="◊" viewbox="0 0 500 500"><use href="#se-smoke-bomb"/></svg> jelző elkerüli a Fázis során elszenvedett összes <a href="#final-dmg-total">összesített sebzést</a>.</p>
+		<p>Ha az első Smoke Bomb <svg class="◊" viewbox="0 0 500 500"><use href="#se-smoke-bomb"/></svg> sikertelen, egy további jelzőt is elkölthetsz ugyanabban a körben.</p>
+		<p>Ha a Smoke Bomb <svg class="◊" viewbox="0 0 500 500"><use href="#se-smoke-bomb"/></svg> sikeresen működik a normál <a href="#attack">Támadás</a> sebzése ellen, továbbra is aktiválhatod a <a href="#defensive-ability">Védekező Képességedet</a>.</p>
+	</div>
+</details>
+<details>
+	<summary>Smoke Bomb (Füstbomba) <svg class="◊" viewbox="0 0 500 500"><use href="#se-smoke-bomb"/></svg> megszerzése</summary>
+	<div>
+		<p>Ha már van egy Smoke Bomb <svg class="◊" viewbox="0 0 500 500"><use href="#se-smoke-bomb"/></svg> jelződ és kapnál egy másodikat, elölheted az elsőt, hogy helyet csinálj a second Smoke Bomb <svg class="◊" viewbox="0 0 500 500"><use href="#se-smoke-bomb"/></svg> (since spending állapotjelzős is an <a href="#action-cards">Instant Action</a>).</p>
+	</div>
+</details>
+<details>
+	<summary>Delayed Poison (Késleltetett méreg) <svg class="◊" viewbox="0 0 500 500"><use href="#se-delayed-poison"/></svg></summary>
+	<div>
+		<p>Ha az ellenfeled 2 <a href="#token/delayed-poison">Delayed Poison <svg class="◊" viewbox="0 0 500 500"><use href="#se-delayed-poison"/></svg></a> jelzővel van sújtva, <svg class="◊" viewbox="0 0 500 500"><use href="#i-dmg-6"/></svg> sebzést kap a köre lezárásakor (mivel a sebzés mindig <a href="#final-dmg-total">összeadódik</a> és a fázis végén oldódik fel, amelyben kiosztották).</p>
+	</div>
+</details>
+<details>
+	<summary>Walk the Line (Kötéltánc)</summary>
+	<div>
+		<p>A <a href="#action-cards">kártyák</a> használhatók a két kocka módosítására a képesség sebzésének kiszámításakor. Azonban, ha az érték rögzítésre került, már nem léphetsz vissza az eredmény megváltoztatására.</p>
+	</div>
+</details>

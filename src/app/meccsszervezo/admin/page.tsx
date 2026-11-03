@@ -76,6 +76,36 @@ export default async function AdminPage({
       {uzenet && <p className="alert-ok">{uzenet}</p>}
       {hiba && <p className="alert-error">{hiba}</p>}
 
+      <section className="card flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 className="font-bold">Hírek</h2>
+          <p className="muted text-sm">Hírek írása képekkel, galériával, videóval: piszkozat, közzététel, időzítés.</p>
+        </div>
+        <Link href={routes.adminNews} className="btn btn-secondary">
+          Hírek kezelése ›
+        </Link>
+      </section>
+
+      <section className="card flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 className="font-bold">Eseménynaptár</h2>
+          <p className="muted text-sm">Élő versenyek, asztali napok és egyéb események: piszkozat, közzététel, időzítés.</p>
+        </div>
+        <Link href={routes.adminEvents} className="btn btn-secondary">
+          Események kezelése ›
+        </Link>
+      </section>
+
+      <section className="card flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 className="font-bold">Linkek</h2>
+          <p className="muted text-sm">A Linkek oldal csempéi: új link, kép, sorrend, elrejtés.</p>
+        </div>
+        <Link href={routes.adminLinks} className="btn btn-secondary">
+          Linkek kezelése ›
+        </Link>
+      </section>
+
       {tournament && round && reminder && (
         <section className="card flex flex-wrap items-center justify-between gap-3" style={{ borderColor: "var(--accent)" }}>
           <div>
@@ -255,7 +285,7 @@ export default async function AdminPage({
       <section className="card space-y-3">
         <h2 className="text-lg font-bold">
           Felhasználók és adminok
-          <InfoTip text="Adminná csak olyat tehetsz, aki már belépett az oldalra: keresd Discord vagy Karnyx név alapján. A Karnyx név szerkesztésével bármely felhasználó nevét beállíthatod vagy javíthatod (például ha tévedésből a „Nem játszom”-ot választotta). A Név felszabadítása egy rosszul lefoglalt nevet ad vissza a listába." />
+          <InfoTip text="Adminná csak olyat tehetsz, aki már belépett az oldalra: keresd Discord vagy Karnyx név alapján. A Profil szerkesztése oldalon bármely felhasználó Karnyx nevét, Facebook nevét, időzónáját és profilképét javíthatod (például ha tévedésből a „Nem játszom”-ot választotta, vagy sértő a képe), és ott tilthatod ki a szabálysértőket. A Név felszabadítása egy rosszul lefoglalt nevet ad vissza a listába." />
         </h2>
         <form action={addAdmin} className="flex flex-wrap gap-2">
           <input name="query" className="input max-w-sm" placeholder="Discord vagy Karnyx név" required />
@@ -282,12 +312,13 @@ export default async function AdminPage({
                       </span>
                     )}
                     {p.is_admin && <span className="badge badge-confirmed ml-1">admin</span>}
+                    {p.banned_at && <span className="badge badge-pending ml-1">kitiltva</span>}
                   </td>
                   <td className="py-1.5 pr-2">{p.facebook_name ?? "—"}</td>
                   <td className="py-1.5 pr-2">{p.discord_username ?? "—"}</td>
                   <td className="flex flex-wrap justify-end gap-1 py-1.5">
                     <Link href={routes.adminUser(p.id)} className="btn btn-secondary btn-sm">
-                      Karnyx név szerkesztése
+                      Profil szerkesztése
                     </Link>
                     {p.karnyx_name && (
                       <form action={releaseNickname}>

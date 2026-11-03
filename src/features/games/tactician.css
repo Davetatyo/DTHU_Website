@@ -1,0 +1,78 @@
+/* Taktikai Előny. The stage stays dark red in both themes (it is the Hadvezér's war room). */
+.ta { --ta-gold: #f0c36a; position: relative; isolation: isolate; overflow: hidden; height: max(480px, min(720px, calc(100svh - var(--stage-top, 120px) - 20px))); border-radius: 12px; border: 1px solid #5a1416; background: radial-gradient(ellipse at 50% 30%, #5e0f12 0%, #2a0507 55%, #120203 100%); color: #f6ead8; display: flex; flex-direction: column; justify-content: flex-end; }
+
+/* Full figure: hidden at first, then fills the room behind the questions. */
+.ta-bg { position: absolute; inset: 0; z-index: -2; opacity: 0; transform: scale(1.25); transition: opacity 1.3s ease, transform 1.6s cubic-bezier(.2,.7,.2,1); }
+.ta-bg img { width: 100%; height: 100%; object-fit: cover; object-position: center 18%; filter: brightness(.62) saturate(1.05); -webkit-mask-image: radial-gradient(ellipse 75% 70% at 50% 38%, #000 45%, transparent 100%); mask-image: radial-gradient(ellipse 75% 70% at 50% 38%, #000 45%, transparent 100%); }
+.ta.started .ta-bg { opacity: 1; transform: scale(1.1); }
+.ta-glow { position: absolute; left: 50%; top: 30%; width: 70%; aspect-ratio: 1; translate: -50% -50%; border-radius: 50%; background: radial-gradient(circle, rgb(255 190 90 / .45), transparent 65%); opacity: .25; mix-blend-mode: screen; transition: opacity .4s; }
+.ta.thinking .ta-glow { opacity: .9; animation: ta-pulse .6s ease-in-out infinite alternate; }
+@media (prefers-reduced-motion: no-preference) { .ta.started .ta-bg img { animation: ta-breathe 7s ease-in-out infinite alternate; } }
+
+/* Embers drifting up. */
+.ta-embers { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+.ta-embers span { position: absolute; bottom: -10px; width: 4px; height: 4px; border-radius: 50%; background: #ffb35c; box-shadow: 0 0 6px 2px rgb(255 140 60 / .6); opacity: 0; animation: ta-ember linear infinite; }
+
+/* Intro: portrait + speech bubble. */
+.ta-intro { position: absolute; inset: 0; display: grid; grid-template-rows: 1fr auto auto; justify-items: center; gap: 12px; padding: 16px; transition: opacity .9s ease, transform 1.2s ease; }
+.ta-portrait { width: min(440px, 88%); height: 100%; min-height: 0; object-fit: cover; object-position: center 20%; -webkit-mask-image: radial-gradient(ellipse 60% 62% at 50% 45%, #000 55%, transparent 100%); mask-image: radial-gradient(ellipse 60% 62% at 50% 45%, #000 55%, transparent 100%); animation: ta-rise .9s cubic-bezier(.2,.8,.2,1) both; }
+.ta.started .ta-intro { opacity: 0; transform: scale(1.12); pointer-events: none; }
+.ta-bubble { position: relative; max-width: 560px; padding: 14px 18px; border-radius: 14px; background: #fff7ea; color: #2a0b0c; font-size: 18px; font-weight: 600; line-height: 1.4; box-shadow: 0 10px 30px rgb(0 0 0 / .45); animation: ta-pop .5s .5s cubic-bezier(.3,1.5,.5,1) both; }
+.ta-bubble::before { content: ""; position: absolute; left: 50%; top: -9px; translate: -50% 0; border: 10px solid transparent; border-top: 0; border-bottom-color: #fff7ea; }
+.ta-caret { color: #a8322b; }
+.ta-start { display: grid; justify-items: center; gap: 8px; opacity: 0; transform: translateY(8px); transition: opacity .4s, transform .4s; }
+.ta-start.show { opacity: 1; transform: none; }
+.ta-hint { font-size: 14px; color: #e8cfb4; text-align: center; }
+
+/* Play: remark + card. */
+.ta-play { display: grid; gap: 10px; padding: 16px; justify-items: center; }
+.ta-remark { min-height: 1.4em; font-style: italic; font-size: 16px; color: var(--ta-gold); text-shadow: 0 2px 8px #000; animation: ta-fadein .4s ease both; }
+.ta-card { width: min(620px, 100%); padding: 16px; border-radius: 14px; background: rgb(18 6 8 / .82); border: 1px solid rgb(240 195 106 / .35); box-shadow: 0 18px 50px rgb(0 0 0 / .55); backdrop-filter: blur(6px); animation: ta-card .45s cubic-bezier(.2,.8,.2,1) both; }
+.ta.thinking .ta-card { opacity: .55; transform: scale(.985); transition: opacity .2s, transform .2s; }
+.ta-meta { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 13px; letter-spacing: .04em; text-transform: uppercase; color: #d9b98a; }
+.ta-unsure { flex: none; padding: 5px 10px; border-radius: 8px; border: 1px solid rgb(240 195 106 / .35); background: rgb(255 255 255 / .04); color: #e8cfb4; font-size: 12px; font-weight: 700; letter-spacing: .03em; text-transform: none; cursor: pointer; transition: transform .08s, border-color .15s; touch-action: manipulation; }
+.ta-unsure:hover:not(:disabled) { border-color: var(--ta-gold); color: #fff; }
+.ta-unsure:active { transform: scale(.95); }
+.ta-sure { height: 6px; margin: 8px 0 12px; border-radius: 3px; background: rgb(255 255 255 / .1); overflow: hidden; }
+.ta-sure span { display: block; height: 100%; border-radius: 3px; background: linear-gradient(90deg, #a8322b, var(--ta-gold)); transition: width .6s cubic-bezier(.2,.8,.2,1); }
+.ta-q { font-size: 22px; font-weight: 800; line-height: 1.3; min-height: 2.6em; color: #fff; }
+.ta-answers { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+.ta-answers button { min-height: 56px; border-radius: 12px; font-size: 19px; font-weight: 800; cursor: pointer; transition: transform .08s ease, filter .15s, box-shadow .15s; touch-action: manipulation; }
+.ta-answers button:active { transform: scale(.95); }
+.ta-answers button:disabled { cursor: default; }
+.ta-yes { background: linear-gradient(180deg, #f3cd7a, #c89b3c); color: #2a1606; border: 1px solid #f7dca0; box-shadow: 0 4px 0 #7a5a1c; }
+.ta-no { background: rgb(255 255 255 / .06); color: #f6ead8; border: 1px solid rgb(240 195 106 / .5); box-shadow: 0 4px 0 rgb(0 0 0 / .4); }
+.ta-answers button:hover:not(:disabled) { filter: brightness(1.08); }
+.ta-go { min-width: 200px; min-height: 48px; font-size: 17px; }
+
+/* Guess and endings. */
+.ta-reveal { text-align: center; }
+.ta-hero { display: grid; justify-items: center; gap: 10px; margin: 10px 0 4px; text-align: center; }
+.ta-hero img { width: 150px; height: 150px; border-radius: 50%; object-fit: cover; border: 3px solid var(--ta-gold); box-shadow: 0 0 0 6px rgb(240 195 106 / .15), 0 10px 30px rgb(0 0 0 / .6); animation: ta-flip .8s cubic-bezier(.2,.8,.2,1) both; }
+.ta-hero h2 { font-size: 24px; font-weight: 800; color: #fff; }
+.ta-end { display: grid; justify-items: center; gap: 10px; text-align: center; }
+.ta-end.won .ta-hero img { animation: ta-flip .8s cubic-bezier(.2,.8,.2,1) both, ta-win 1.2s .8s ease-out; }
+.ta-sub { color: #d9b98a; }
+.ta-pick { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 8px; width: 100%; max-height: 46vh; overflow-y: auto; padding: 2px; }
+.ta-pick button { display: grid; justify-items: center; gap: 4px; padding: 6px 4px; border-radius: 10px; background: rgb(255 255 255 / .05); border: 1px solid transparent; color: #f6ead8; font-size: 12px; line-height: 1.2; cursor: pointer; }
+.ta-pick button:hover { border-color: var(--ta-gold); }
+.ta-pick img { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; }
+
+@keyframes ta-rise { from { opacity: 0; transform: translateY(40px) scale(.96); } to { opacity: 1; transform: none; } }
+@keyframes ta-pop { from { opacity: 0; transform: scale(.85) translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes ta-card { from { opacity: 0; transform: translateY(14px) scale(.98); } to { opacity: 1; transform: none; } }
+@keyframes ta-fadein { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+@keyframes ta-pulse { from { transform: scale(.95); } to { transform: scale(1.08); } }
+@keyframes ta-breathe { from { transform: scale(1); } to { transform: scale(1.04); } }
+@keyframes ta-flip { from { opacity: 0; transform: perspective(600px) rotateY(90deg) scale(.8); } to { opacity: 1; transform: none; } }
+@keyframes ta-win { 0% { box-shadow: 0 0 0 6px rgb(240 195 106 / .15); } 40% { box-shadow: 0 0 0 26px rgb(240 195 106 / 0), 0 0 60px 20px rgb(255 190 90 / .6); } 100% { box-shadow: 0 0 0 6px rgb(240 195 106 / .15); } }
+@keyframes ta-ember { 0% { opacity: 0; transform: translate(0, 0); } 10% { opacity: .9; } 100% { opacity: 0; transform: translate(30px, -110vh); } }
+
+@media (max-width: 520px) {
+  .ta-q { font-size: 19px; }
+  .ta-bubble { font-size: 16px; }
+  .ta-hero img { width: 120px; height: 120px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ta *, .ta { animation: none !important; transition: none !important; }
+}

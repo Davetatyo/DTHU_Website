@@ -1,4 +1,4 @@
-// Rows of the tables in supabase/migrations/0002_ticket_draws.sql.
+// Rows of the tables in supabase/migrations/0007_ticket_draws.sql.
 
 export type LedgerKind = "award" | "draw_entry" | "draw_refund";
 

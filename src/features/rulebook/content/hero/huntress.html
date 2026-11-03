@@ -1,0 +1,40 @@
+<h2 slot="header">Vadásznő</h2>
+<ul slot="header" class="see-also">
+	<li><a href="#heroes">Hősök</a></li></ul>
+<div class="hero-basics float-right">
+	<img class="portrait" src="/szabalytar/img/heroes/huntress.webp" alt="Vadásznő" width="300" height="300">
+	<img class="complexity" src="/szabalytar/img/heroes/complexity-5.webp" alt="Bonyolultság 5" width="213" height="72">
+</div>
+<p class="bio">A Vadásznőt még csecsemőként mentette meg Nyra (egy nőstény kardfogú tigris), és úgy fogadta be, mintha Nyra saját kölyke lenne. Kötelékük túlmutat az ember és kedvence közötti kapcsolaton. Lélektől lélekig kapcsolódnak össze. A vadság és fürgeség, amellyel harcolnak, megfélemlít mindenkit, aki merészelné kihívni őket.</p>
+<p><dfn>Választott fegyver:</dfn> Nyra</p>
+<h3>Tokenek</h3>
+<ul class="grid tokens">
+	<li><a href="#token/nyra"><img src="/szabalytar/img/components/token-nyra.webp" alt="Nyra" width="250" height="250"> Nyra</a></li>
+	<li><a href="#token/nyras-bond"><svg viewbox="0 0 500 500"><use href="#se-nyras-bond"/></svg> Nyra’s Bond (Nyra köteléke)</a></li>
+	<li><a href="#token/bleed"><svg viewbox="0 0 500 500"><use href="#se-bleed"/></svg> Bleed (Vérzés)</a></li>
+</ul>
+<h3>Szabálytisztázások</h3>
+<details>
+	<summary>Nyra (kiejtése: „Níra”)</summary>
+	<div>
+		<p><a href="#token/nyra">Nyra</a> nem számít játékosnak vagy ellenfélnek, ő egy <a href="#companions">Társ</a>.</p>
+		<p>Nyra maximum <a href="#health"><svg class="◊" viewbox="0 0 470 500"><use href="#i-health-7"/></svg> Életerővel</a> rendelkezik.</p>
+		<p>Nyra nem sújtható <a href="#status-effects">állapotjelzőkkel</a> és nem kaphat sebzést állapotjelzőktől. Nem kaphat <a href="#damage-types">járulékos</a> vagy <a href="#ultimate-ability">Ultimate</a> sebzést. Nyra nem kaphat sebzést, ha a Vadásznő kábult (a <a href="#token/stun">Stun <svg class="◊" viewbox="0 0 500 500"><use href="#se-stun"/></svg></a> állapotjelző miatt).</p>
+		<p>Ha Nyra több sebzést kap, mint amennyi életereje van, a sebzés fennmaradó része továbbra is Nyra-t éri, nem hárul át a Vadásznőre.</p>
+		<p>Ha Nyra gyógyulást kap a Vadásznő <a href="#defensive-roll-phase">védekezése</a> során, ez a Gyógyulás levonódik a Nyra-nak okozott sebzésből.</p>
+		<p>Amikor arról döntesz, hogy átirányítod-e a sebzést Nyra-ra, ezt a döntést csak a <a href="#defensive-roll-phase">Védekező Dobási Fázis</a> végén kell meghoznod, miután minden sebzést, <a href="#attack-modifiers">Támadásmódosítót</a> és megakadályozást kiszámítottál. A Vadásznő döntése soha nincs előre „kőbe vésve”, amikor arról dönt, hogy ő vagy Nyra kapja-e meg a bejövő Támadásból származó sebzés egészét vagy egy részét.</p>
+	</div>
+</details>
+<details>
+	<summary>Nyra’s Bond (Nyra köteléke) <svg class="◊" viewbox="0 0 500 500"><use href="#se-nyras-bond"/></svg></summary>
+	<div>
+		<p>A <a href="#token/nyras-bond">Nyra’s Bond <svg class="◊" viewbox="0 0 500 500"><use href="#se-nyras-bond"/></svg></a> elkölthető Nyra gyógyítására válaszul arra, ha az ellenfél megpróbálja eltávolítani vagy ellopni azt, kivéve, ha az eltávolítás/átadás forrása egy <a href="#action-cards">Azonnali Akció</a> vagy egy <a href="#status-effects">elkölthető állapotjelző</a> (lásd az <a href="#timing">Időzítési Szabályokat</a>). Az az ellenfél, akinél Nyra’s Bond <svg class="◊" viewbox="0 0 500 500"><use href="#se-nyras-bond"/></svg> jelző van, nem használhatja azt arra, hogy a sebzést Nyra-ra irányítsa át. Ha tükörjátékot játszol, az ellenfeled a megszokott módon elköltheti, de ez továbbra is csak a saját Nyrájára van hatással.</p>
+		<p>Ha a Vadásznő a Nyra’s Bond <svg class="◊" viewbox="0 0 500 500"><use href="#se-nyras-bond"/></svg> jelzőt használja Nyra gyógyítására, ez azonnal meggyógyítja Nyra-t <svg class="◊ heal" viewBox="0 0 19 20"><use href="#i-health-2"/></svg> életerővel, és nem vonódik le a bejövő sebzésből.</p>
+	</div>
+</details>
+<details>
+	<summary>Bleed (Vérzés) <svg class="◊" viewbox="0 0 500 500"><use href="#se-bleed"/></svg></summary>
+	<div>
+		<p>Minden <a href="#token/bleed">Bleed <svg class="◊" viewbox="0 0 500 500"><use href="#se-bleed"/></svg></a> jelzőre külön-külön dobj.</p>
+	</div>
+</details>

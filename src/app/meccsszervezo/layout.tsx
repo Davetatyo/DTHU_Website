@@ -2,28 +2,27 @@ import type { Metadata } from "next";
 import { DevPreviewBanner } from "@/components/site/DevPreviewBanner";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
-import { getCurrentProfile } from "@/lib/auth";
+import { getAdminView } from "@/lib/auth";
 import { organizerTabs, siteMenu } from "@/lib/navigation";
 import { isDevPreview, seesFullSite } from "@/lib/site-mode";
 
 export const metadata: Metadata = {
-  title: { default: "Meccsszervező", template: "%s · Meccsszervező · DTHU" },
+  title: { default: "Időpontfoglaló", template: "%s · Időpontfoglaló · DTHU" },
   description: "Dice Throne online bajnokság: ellenfél keresés és időpont egyeztetés.",
 };
 
-// Shell of the Meccsszervező, the site's "Meccsszervező" tab. Phase 1: the public sees only
+// Shell of the Meccsszervező, the site's "Időpontfoglaló" tab. Phase 1: the public sees only
 // this, with its own tabs as the main menu. Admins (and everyone in phase 2) see the site
 // menu on top and these tabs as a second row.
 export default async function OrganizerLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  const profile = await getCurrentProfile();
-  const tabs = organizerTabs(!!profile?.is_admin);
-  const full = seesFullSite(profile);
+  const adminView = await getAdminView();
+  const full = seesFullSite(adminView);
 
   return (
     <>
-      <SiteHeader tabs={full ? siteMenu : tabs} subTabs={full ? tabs : undefined} section="Meccsszervező" />
+      <SiteHeader tabs={full ? siteMenu : organizerTabs} subTabs={full ? organizerTabs : undefined} section="Időpontfoglaló" />
       <main className="wrap page-fade">
-        {isDevPreview(profile) && (
+        {isDevPreview(adminView) && (
           <div className="mb-4">
             <DevPreviewBanner />
           </div>

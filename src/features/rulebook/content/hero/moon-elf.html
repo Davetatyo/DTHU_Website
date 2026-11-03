@@ -1,0 +1,52 @@
+<h2 slot="header">Hold-tündér</h2>
+<ul slot="header" class="see-also">
+	<li><a href="#heroes">Hősök</a></li></ul>
+<div class="hero-basics float-right">
+	<img class="portrait" src="/szabalytar/img/heroes/moon-elf.webp" alt="Hold-tündér" width="300" height="300">
+	<img class="complexity" src="/szabalytar/img/heroes/complexity-2.webp" alt="Bonyolultság 2" width="213" height="72">
+</div>
+<p class="bio">A Hold-tündér sebzése talán nem vetekszik az ellenfeleiével. Azonban az a képessége, hogy ismételten elkerüli a támadásokat, miközben a hold erejével megvakítja és megbéklyózza ellenségeit, frusztrálóan veszélyes ellenféllé teszi őt.</p>
+<p><dfn>Választott fegyver:</dfn> Íj és nyilak</p>
+<h3>Tokenek</h3>
+<ul class="grid tokens">
+	<li><a href="#token/blind"><svg viewbox="0 0 500 500"><use href="#se-blind"/></svg> Blind (Vakság)</a></li>
+	<li><a href="#token/entangle"><svg viewbox="0 0 500 500"><use href="#se-entangle"/></svg> Entangle (Béklyó)</a></li>
+	<li><a href="#token/evasive"><svg viewbox="0 0 500 500"><use href="#se-evasive"/></svg> Evasive (Elkerülés)</a></li>
+	<li><a href="#token/targeted"><svg viewbox="0 0 500 500"><use href="#se-targeted"/></svg> Targeted (Célpont)</a></li>
+</ul>
+<h3>Szabálytisztázások</h3>
+<details>
+	<summary>Targeted (Célpont) <svg class="◊" viewbox="0 0 500 500"><use href="#se-targeted"/></svg></summary>
+	<div>
+		<p>A <a href="#token/targeted">Targeted <svg class="◊" viewbox="0 0 500 500"><use href="#se-targeted"/></svg></a> növeli a <a href="#attack">Támadásból</a> származó sebzést, de nem növeli a <a href="#damage-types">tiszta</a> vagy <a href="#damage-types">járulékos</a> sebzést. Minden sebzés <a href="#final-dmg-total">egyidejűleg kerül kiszámításra</a> a <a href="#roll-phase">Dobási fázis</a> végén.</p>
+	</div>
+</details>
+<details>
+	<summary>Evasive (Elkerülés) <svg class="◊" viewbox="0 0 500 500"><use href="#se-evasive"/></svg> elköltése</summary>
+	<div>
+		<p>Az <a href="#token/evasive">Evasive <svg class="◊" viewbox="0 0 500 500"><use href="#se-evasive"/></svg></a> nem használható egy <a href="#ultimate-ability">Végső képesség</a> <a href="#attack">Támadás</a> ellen, mivel az <a href="#damage-types">Ultimate sebzés</a> semmilyen módon nem gátolható meg.</p>
+		<p>A <a href="#hero-cards">kártyák</a> használhatók az Evasive <svg class="◊" viewbox="0 0 500 500"><use href="#se-evasive"/></svg> kockadobásának módosítására, feltéve, hogy a kártya kijátszása megengedett abban a Fázisban, amelyben éppen vagy.</p>
+		<p>Egyetlen Evasive <svg class="◊" viewbox="0 0 500 500"><use href="#se-evasive"/></svg> jelző elkerüli a Fázis során elszenvedett összes összesített sebzést.</p>
+		<p>Ha az első elkerülési kísérlet sikertelen, folytathatod a sebzés elkerülését annyi jelzőt használva, amennyi rendelkezésedre áll.</p>
+		<p>Ha sikeresen elkerülöd a normál Támadás sebzését, továbbra is aktiválhatod a <a href="#defensive-ability">Védekező Képességedet</a>.</p>
+	</div>
+</details>
+<details>
+	<summary>Blind (Vakság) <svg class="◊" viewbox="0 0 500 500"><use href="#se-blind"/></svg></summary>
+	<div>
+		<p>A <a href="#token/blind">Blind <svg class="◊" viewbox="0 0 500 500"><use href="#se-blind"/></svg></a> jelző nem állíthat meg egy <a href="#ultimate-ability">Végső képességet</a>. Ha egy Végső képesség aktiválódni készül, a Blind <svg class="◊" viewbox="0 0 500 500"><use href="#se-blind"/></svg> jelző egyszerűen eltávolításra kerül.</p>
+		<p>1–2-es dobás esetén a <a href="#offensive-roll-phase">Támadó Dobási Fázis</a> minden hatása meggátolásra kerül.</p>
+	</div>
+</details>
+<details>
+	<summary>Missed Me (Elvétettél)</summary>
+	<div>
+		<p>If you roll <img class="◊" src="/szabalytar/img/icons/die-foot.webp" alt="foot" width="33" height="39"><img class="◊" src="/szabalytar/img/icons/die-foot.webp" alt="foot" width="33" height="39"><img class="◊" src="/szabalytar/img/icons/die-foot.webp" alt="foot" width="33" height="39"><img class="◊" src="/szabalytar/img/icons/die-foot.webp" alt="foot" width="33" height="39">you do not halve <a href="#damage-types">incoming dmg</a> twice since the ability states “On” instead of “for every” 2 feet symbols.</p>
+	</div>
+</details>
+<details>
+	<summary>Exploding Arrow (Robbanó nyíl)</summary>
+	<div>
+		<p>Ha <img class="◊" src="/szabalytar/img/icons/die-moon.webp" alt="" width="33" height="39"> szimbólumot dobsz, a <a href="#combat-points"><svg class="◊" viewbox="0 0 500 500"><use href="#i-cp"/></svg></a> CP a <a href="#defensive-roll-phase">Védekező Dobási Fázis</a> kezdetén elveszik. Az ellenfeled azonban kijátszhat <a href="#action-cards">kártyákat</a> (pl. <i>Not This Time</i>) mielőtt a <svg class="◊" viewbox="0 0 500 500"><use href="#i-cp"/></svg> CP elveszne.</p>
+	</div>
+</details>

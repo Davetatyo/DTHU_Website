@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import Link from "next/link";
-import { HeroAvatar } from "@/components/HeroAvatar";
+import { PlayerAvatar } from "@/features/profile/components/PlayerAvatar";
 import { MatchList } from "@/features/match-organizer/components/MatchList";
 import { MatchupGrid } from "@/features/match-organizer/components/MatchupGrid";
 import { RoundTimeline } from "@/features/match-organizer/components/RoundTimeline";
@@ -18,7 +18,9 @@ import {
 import { isProfileComplete } from "@/features/match-organizer/lib/profile";
 import { DEFAULT_TIMEZONE, formatDateTime, timeLeft } from "@/features/match-organizer/lib/time";
 import { resolveView } from "@/features/match-organizer/lib/view";
+import { OnboardingOverlay } from "@/features/register-page/components/OnboardingOverlay";
 import { routes } from "@/lib/routes";
+import "@/features/register-page/register.css";
 
 // Players see the compact list by default; their choice is remembered in this cookie.
 const VIEW_COOKIE = "nezet";
@@ -93,15 +95,11 @@ export default async function OrganizerHomePage({
                 </span>
               </div>
               <div className="flex flex-wrap gap-2">
-                {myMatch ? (
+                {myMatch && (
                   <Link href={routes.match(myMatch.id)} className="btn">
                     Saját meccsem
                   </Link>
-                ) : !viewer ? (
-                  <Link href={routes.login} className="btn btn-discord">
-                    Belépés Discorddal
-                  </Link>
-                ) : null}
+                )}
                 <Link href={routes.schedule} className="btn btn-secondary">
                   Közelgő meccsek
                 </Link>
@@ -139,13 +137,13 @@ export default async function OrganizerHomePage({
                   <Link href={routes.match(myMatch.id)} className="panel3 block p-4 hover:border-[var(--gold-dim)]">
                     <div className="vsbox">
                       <div className="p">
-                        <HeroAvatar name={me?.karnyx_name ?? null} hero={me?.heroes[0]} size="md" />
+                        <PlayerAvatar name={me?.karnyx_name ?? null} hero={me?.heroes[0]} size="md" />
                         <b>{me?.karnyx_name}</b>
                         <small>{me?.heroes[0]}</small>
                       </div>
                       <span className="vsx">VS</span>
                       <div className="p">
-                        <HeroAvatar name={opponent?.karnyx_name ?? null} hero={opponent?.heroes[0]} size="md" />
+                        <PlayerAvatar name={opponent?.karnyx_name ?? null} hero={opponent?.heroes[0]} size="md" />
                         <b>{opponent?.karnyx_name ?? "Bye"}</b>
                         <small>{opponent?.heroes[0] ?? "nincs ellenfél"}</small>
                       </div>
@@ -161,15 +159,6 @@ export default async function OrganizerHomePage({
                         </span>
                       )}
                     </div>
-                  </Link>
-                </div>
-              )}
-
-              {!viewer && (
-                <div className="panel3 space-y-3 p-4">
-                  <p className="text-sm">Lépj be Discorddal, és rögtön látod, ki az ellenfeled, és egyeztethetitek az időpontot.</p>
-                  <Link href={routes.login} className="btn btn-discord w-full">
-                    Belépés Discorddal
                   </Link>
                 </div>
               )}
@@ -204,6 +193,7 @@ export default async function OrganizerHomePage({
           </div>
         </>
       )}
+      <OnboardingOverlay />
     </div>
   );
 }

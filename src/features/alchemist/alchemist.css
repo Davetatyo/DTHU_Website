@@ -1,0 +1,47 @@
+/* The Alchemist chat and the floating help vial (prototype). */
+.a-wrap { display: grid; grid-template-columns: minmax(0, 230px) minmax(0, 1fr); gap: 16px; align-items: start; }
+.a-side { position: sticky; top: 120px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 4px; border: 1px solid var(--line); border-radius: 12px; background: radial-gradient(circle at 50% 35%, color-mix(in srgb, #b06ae0 30%, transparent), transparent 65%), var(--panel); padding: 12px; }
+.a-side img { width: 100%; height: auto; max-width: 230px; filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.45)); }
+.a-name { font-weight: 800; font-size: 22px; color: var(--gold); }
+.a-chat { display: flex; flex-direction: column; border: 1px solid var(--gold-dim); border-radius: 12px; background: var(--panel); min-height: 520px; overflow: hidden; }
+.a-log { flex: 1; overflow-y: auto; max-height: 60vh; min-height: 320px; padding: 14px; display: flex; flex-direction: column; gap: 10px; background: repeating-linear-gradient(0deg, transparent 0 27px, color-mix(in srgb, var(--line) 35%, transparent) 27px 28px); }
+.a-msg { display: flex; gap: 8px; align-items: flex-end; max-width: 88%; }
+.a-msg.me { align-self: flex-end; flex-direction: row-reverse; }
+.a-av { width: 34px; height: 34px; flex: none; border-radius: 50%; border: 2px solid var(--gold); background: #2a1d38 url("/images/alchemist.webp") 38% 18% / 260% auto no-repeat; }
+.a-bub { background: var(--bg2); border: 1px solid var(--line); padding: 9px 12px; border-radius: 14px 14px 14px 4px; line-height: 1.45; min-width: 0; overflow-wrap: anywhere; }
+.a-msg.bot .a-bub { background: #fffdf6; color: #1e1726; border: 2px solid #1e1726; }
+.a-msg.bot .a-bub a { color: #7a2fb0; font-weight: 700; }
+.a-msg.me .a-bub { background: var(--gold); color: var(--on-gold); border-color: var(--gold); border-radius: 14px 14px 4px 14px; }
+.a-more { display: block; width: fit-content; margin-top: 6px; }
+.a-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.a-chip { font-size: 13px; font-weight: 600; border: 1px solid var(--gold-dim); background: var(--bg); color: var(--fg); padding: 4px 10px; border-radius: 99px; cursor: pointer; text-align: left; }
+.a-chip:hover { border-color: var(--gold); color: var(--gold); }
+.a-msg.bot .a-chip { background: #f1e9f7; color: #3a1f52; border-color: #b896d4; }
+.a-msg.bot .a-chip:hover { color: #7a2fb0; border-color: #7a2fb0; }
+.a-sug { display: flex; flex-wrap: wrap; gap: 6px; padding: 8px 12px; border-top: 1px solid var(--line); background: var(--bg2); }
+.a-form { display: flex; gap: 8px; padding: 10px 12px; border-top: 1px solid var(--line); }
+.a-dots { display: flex; gap: 4px; padding: 12px 14px; }
+.a-dots i { width: 7px; height: 7px; border-radius: 50%; background: #7a2fb0; opacity: 0.35; }
+@keyframes adot { 40% { opacity: 1; transform: translateY(-3px); } }
+@media (prefers-reduced-motion: no-preference) { .a-dots i { animation: adot 1s infinite; } .a-dots i:nth-child(2) { animation-delay: 0.15s; } .a-dots i:nth-child(3) { animation-delay: 0.3s; } }
+@media (max-width: 760px) { .a-wrap { grid-template-columns: minmax(0, 1fr); } .a-side { position: static; flex-direction: row; text-align: left; } .a-side img { width: 90px; } .a-log { max-height: 55vh; } }
+
+.vial { position: fixed; right: calc(18px + env(safe-area-inset-right, 0px)); bottom: calc(18px + env(safe-area-inset-bottom, 0px)); z-index: 35; width: 58px; height: 74px; padding: 0; border: 0; background: none; cursor: pointer; filter: drop-shadow(0 0 10px color-mix(in srgb, #7cf08a 55%, transparent)) drop-shadow(2px 3px 0 var(--shadow)); }
+.vial svg { width: 100%; height: 100%; display: block; }
+.vial:hover { filter: drop-shadow(0 0 16px #7cf08a) drop-shadow(2px 3px 0 var(--shadow)); }
+@keyframes bob { 0%, 100% { transform: translateY(0) rotate(-6deg); } 50% { transform: translateY(-8px) rotate(6deg); } }
+@media (prefers-reduced-motion: no-preference) { .vial { animation: bob 3s ease-in-out infinite; } }
+.alch { position: fixed; inset: 0; z-index: 45; background: rgba(10, 6, 16, 0.45); }
+.alch img { position: absolute; right: env(safe-area-inset-right, 0px); bottom: 0; height: clamp(240px, 52vh, 560px); width: auto; max-width: 96vw; object-fit: contain; object-position: right bottom; filter: drop-shadow(-6px 0 18px rgba(0, 0, 0, 0.45)); }
+.bubble { position: absolute; right: calc(min(clamp(240px, 52vh, 560px) * 1.17, 96vw) - 40px); bottom: calc(clamp(240px, 52vh, 560px) * 0.62); max-width: min(300px, calc(100vw - 32px)); background: #fffdf6; color: #1e1726; border: 3px solid #1e1726; border-radius: 22px; padding: 14px 16px; font-weight: 600; font-size: 18px; line-height: 1.35; box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.35); }
+.bubble::after { content: ""; position: absolute; right: -26px; bottom: 18px; border: 14px solid transparent; border-left: 28px solid #1e1726; border-right: 0; }
+.bubble::before { content: ""; position: absolute; right: -19px; bottom: 21px; border: 11px solid transparent; border-left: 22px solid #fffdf6; border-right: 0; z-index: 1; }
+.bubble a { color: #7a2fb0; font-weight: 800; text-decoration: underline; }
+.alch .x { position: absolute; top: calc(12px + env(safe-area-inset-top, 0px)); right: calc(12px + env(safe-area-inset-right, 0px)); font-family: var(--font-px); font-size: 20px; background: var(--panel); color: var(--fg); border: 1px solid var(--line); padding: 2px 10px; cursor: pointer; }
+@keyframes popup { from { transform: translateY(60%); } to { transform: none; } }
+@media (prefers-reduced-motion: no-preference) { .alch img { animation: popup 0.45s cubic-bezier(0.2, 1.4, 0.4, 1); } .alch .bubble { animation: fade-in 0.3s 0.3s both; } }
+@media (max-width: 620px) {
+  .bubble { right: auto; left: 16px; bottom: calc(clamp(240px, 52vh, 560px) + 18px); }
+  .bubble::after { right: 60px; bottom: -28px; border: 14px solid transparent; border-top: 28px solid #1e1726; border-bottom: 0; }
+  .bubble::before { right: 63px; bottom: -21px; border: 11px solid transparent; border-top: 22px solid #fffdf6; border-bottom: 0; }
+}

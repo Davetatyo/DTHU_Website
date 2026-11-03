@@ -7,12 +7,22 @@ const MO = "/meccsszervezo";
 export const routes = {
   /** Site home ("Hírek"). Phase 1: admins only, everyone else is sent to the Meccsszervező. */
   home: "/",
+  /** Every news article (list with category filter and paging) and one article. */
+  news: "/hirek",
+  newsArticle: (slug: string) => `/hirek/${slug}`,
+  newsCategory: (category: string) => `/hirek?rovat=${category}`,
 
   // Full-site pages (phase 1: admins only, see lib/site-mode.ts)
   rankings: "/ranglista",
-  timetables: "/versenynaptar",
+  timetables: "/esemenynaptar",
+  /** An event's own page (Eseménynaptár). */
+  event: (slug: string) => `/esemenynaptar/${slug}`,
   tickets: "/sorsolas",
   ticketsAdmin: "/sorsolas/admin",
+  games: "/jatekok",
+  tacticianGame: "/jatekok/taktikai-elony",
+  diceGame: "/jatekok/kockazat",
+  spotGame: "/jatekok/szemfules",
   shop: "/bolt",
   rulebook: "/szabalytar",
   rule: (id: string) => `/szabalytar/${id}`,
@@ -25,8 +35,18 @@ export const routes = {
   match: (id: string) => `${MO}/meccs/${id}`,
   schedule: `${MO}/menetrend`,
   organizerFaq: `${MO}/gyik`,
+  register: "/regisztracio",
   admin: `${MO}/admin`,
   adminUser: (id: string) => `${MO}/admin/felhasznalo/${id}`,
+  adminNews: `${MO}/admin/hirek`,
+  adminNewsNew: `${MO}/admin/hirek/uj`,
+  adminNewsItem: (id: string) => `${MO}/admin/hirek/${id}`,
+  adminEvents: `${MO}/admin/esemenyek`,
+  adminEventNew: `${MO}/admin/esemenyek/uj`,
+  adminEvent: (id: string) => `${MO}/admin/esemenyek/${id}`,
+  adminLinks: `${MO}/admin/linkek`,
+  adminLinkNew: `${MO}/admin/linkek/uj`,
+  adminLink: (id: string) => `${MO}/admin/linkek/${id}`,
 
   // Account pages. They live in the Meccsszervező until the full site gets its own account area.
   login: `${MO}/login`,

@@ -1,0 +1,48 @@
+<h2 slot="header">Nap-tündér</h2>
+<ul slot="header" class="see-also">
+	<li><a href="#heroes">Hősök</a></li></ul>
+<div class="hero-basics float-right">
+	<img class="portrait" src="/szabalytar/img/heroes/sun-elf.webp" alt="Nap-tündér" width="300" height="300">
+	<img class="complexity" src="/szabalytar/img/heroes/complexity-3.webp" alt="Bonyolultság 3" width="213" height="72">
+</div>
+<p class="bio">A Nap-tündér nem rejti szándékait holdfényes árnyak mögé, mint más, alantasabb lények. Fényt vet minden ellenségére, a hálátlan tömegre, amely a Nap erejéből él. Ezt az erőt pedig mintha ő maga irányítaná: magasra szólítja, és ott tartja, amíg meg nem engedi, hogy lenyugodjon.</p>
+<p><dfn>Választott fegyver:</dfn> A Nap</p>
+<h3>Tokenek</h3>
+<ul class="grid tokens">
+	<li><a href="#token/sun-dial"><img src="/szabalytar/img/components/sun-dial.webp" alt="Sun Dial" width="300" height="299"> Sun Dial (Napóra)</a></li>
+	<li><a href="#token/charged-gem"><img src="/szabalytar/img/components/token-charged-gem.webp" alt="Charged Gem" width="200" height="200"> Charged Gem (Feltöltött Drágakő)</a></li>
+	<li><a href="#token/sun-marked"><img src="/szabalytar/img/components/token-sun-marked.webp" alt="Sun Marked" width="200" height="200"> Sun Marked (Napbélyeg)</a></li>
+</ul>
+<h3>Hős Előkészület</h3>
+<p>Kezdd a játékot úgy, hogy a Napóra (Sun Dial) 0-n áll, az <i>Alkony</i> (Dusk) oldalával felfelé.</p>
+<h3>Szabálytisztázások</h3>
+<details>
+	<summary>Napóra: Alkony oldal</summary>
+	<div>
+		<p>A <a href="#token/sun-dial">Napóra</a> csak az Alkony oldalon nő 1-gyel az <a href="#upkeep-phase">Állapot fázisban</a>, a Hajnal (Dawn) oldalon nem.</p>
+	</div>
+</details>
+<details>
+	<summary>Napóra: Hajnal oldal</summary>
+	<div>
+		<p>A <a href="#token/sun-dial">Napóra</a> hatását (az értékének sebzésként való hozzáadását) bármikor használhatod egy <a href="#attack">Támadás</a> sikeres aktiválása után, a végső sebzésszámítás előtt.</p>
+		<p>A Napóra értéke abban a pillanatban adódik hozzá sebzésként, amikor bejelented, hogy használod ezt a hatást. Ha a Napóra értéke később, a <a href="#roll-phase">Dobási fázis</a> során nő vagy csökken, az már nem változtat a hozzáadott sebzésen.</p>
+		<p>A „csökkentsd a Napórát 4-gyel” a <a href="#defensive-roll-phase">Védekező dobási fázis</a> végén, a sebzésszámítás után történik, és csak akkor, ha a Napórát <a href="#attack-modifiers">Támadásmódosítóként</a> használtad. Akkor is 4-gyel csökken, ha <svg class="◊" viewBox="0 0 500 500"><use href="#i-dmg-4"/></svg>-nél kevesebb sebzést adtál hozzá a Támadásodhoz (nulla alá nem mehet).</p>
+	</div>
+</details>
+<details>
+	<summary>Napóra: oldalváltás</summary>
+	<div>
+		<p>Valahányszor a <a href="#token/sun-dial">Napóra</a> Hajnal oldala nullára csökken, azonnal át kell fordítani az Alkony oldalra. Ha az Alkony oldal csökken nullára, a Napóra az Alkony oldalon marad.</p>
+	</div>
+</details>
+<details>
+	<summary>Sun Marked (Napbélyeg) <img class="◊" src="/szabalytar/img/components/token-sun-marked.webp" alt="Sun Marked" width="200" height="200"></summary>
+	<div>
+		<p>Nem <a href="#health">Gyógyulsz</a> <svg class="◊ heal" viewBox="0 0 470 500"><use href="#i-health-2"/></svg>-t, ha olyan <a href="#offensive-ability">Támadó képességet</a> aktiválsz, amely csak <a href="#damage-types">tiszta</a> vagy <a href="#damage-types">járulékos</a> sebzést okoz (mivel ez <a href="#attack-modifiers">Támadásmódosító</a>).</p>
+		<p>Attól függetlenül <svg class="◊ heal" viewBox="0 0 470 500"><use href="#i-health-2"/></svg>-t Gyógyulsz, hogy mit tesz az ellenfél a védekezése során, akkor is, ha a teljes bejövő sebzést megakadályozza vagy elkerüli.</p>
+		<p>A Gyógyulás a <a href="#defensive-roll-phase">Védekező dobási fázis</a> során történik, miután egy <a href="#token/sun-marked">Sun Marked</a> <img class="◊" src="/szabalytar/img/components/token-sun-marked.webp" alt="Sun Marked" width="200" height="200"> jelzőt raktál az ellenfélre (vagyis miután sikeresen megcéloztál egy ellenfelet).</p>
+		<p>Ha a Sun Marked <img class="◊" src="/szabalytar/img/components/token-sun-marked.webp" alt="Sun Marked" width="200" height="200"> jelzőt a Védekező dobási fázis során közvetlenül a felrakása után eltávolítják (pl. a <i>Buh Bye!</i> <a href="#action-cards">Azonnali Akció</a> kártyával vagy a <a href="#token/cleanse">Cleanse</a> állapotjelzővel), nem történik Gyógyulás.</p>
+		<p>Ha a Védekező dobási fázis későbbi pontján távolítják el (pl. a Barbár <i>Thick Skin II</i> Védekező Képességével), a Gyógyulás már megtörtént, és nem vonható vissza.</p>
+	</div>
+</details>

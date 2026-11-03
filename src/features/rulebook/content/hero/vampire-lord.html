@@ -1,0 +1,61 @@
+<h2 slot="header">Vámpír Úr</h2>
+<ul slot="header" class="see-also">
+	<li><a href="#heroes">Hősök</a></li></ul>
+<div class="hero-basics float-right">
+	<img class="portrait" src="/szabalytar/img/heroes/vampire-lord.webp" alt="Vámpír Úr" width="300" height="300">
+	<img class="complexity" src="/szabalytar/img/heroes/complexity-4.webp" alt="Bonyolultság 4" width="213" height="72">
+</div>
+<p class="bio">A Vámpír Úr hatalma még a legbátrabb harcosokat is megbénítja. Nincs nála kegyetlenebb küzdő. Tépő karmai véresen és vérző állapotban hagyják az ellenfeleit. Mesmerizáló tekintetének ellenállni, vagy hatalmas vérmágiáját felülmúlni halálosnak bizonyul bárki számára, ki elég bolond ahhoz, hogy szembeszálljon vele!</p>
+<p><dfn>Választott fegyver:</dfn> Vérhatalom</p>
+<h3>Tokenek</h3>
+<ul class="grid tokens">
+	<li><a href="#token/blood-power"><svg viewbox="0 0 500 500"><use href="#se-blood-power"/></svg> Blood Power (Vérhatalom)</a></li>
+	<li><a href="#token/mesmerize"><svg viewbox="0 0 500 500"><use href="#se-mesmerize"/></svg> Mesmerize (Babonázás)</a></li>
+	<li><a href="#token/bleed"><svg viewbox="0 0 500 500"><use href="#se-bleed"/></svg> Bleed (Vérzés)</a></li>
+</ul>
+<h3>Szabálytisztázások</h3>
+<details>
+	<summary>Blood Power (Vérhatalom) <svg class="◊" viewbox="0 0 500 500"><use href="#se-blood-power"/></svg> megszerzése</summary>
+	<div>
+		<p>Ha a <a href="#status-effects">Halmozási Limiten</a> felül szeretnél <a href="#token/blood-power">Blood Power <svg class="◊" viewbox="0 0 500 500"><use href="#se-blood-power"/></svg></a>-t szerezni, elölhetsz néhányat, hogy helyet csinálj a bejövő Vérhatalom jelzőknek (mivel a jelzők elköltése <a href="#action-cards">Azonnali Akciónak</a> minősül).</p>
+		<p>Amikor Blood Power <svg class="◊" viewbox="0 0 500 500"><use href="#se-blood-power"/></svg> jelzőt szerzel, azokat egyszerre kapod meg, és azonnal helyet kell biztosítanod az összesnek, különben elveszíted a felesleget (pl. ha 3-at kapnál, nem választhatod azt, hogy csak 2-t kapsz meg, elköltesz 3-at, majd kapsz még 1-et).</p>
+	</div>
+</details>
+<details>
+	<summary>Blood Power (Vérhatalom) <svg class="◊" viewbox="0 0 500 500"><use href="#se-blood-power"/></svg> elköltése</summary>
+	<div>
+		<p>A „körönként egyszer” azt jelenti, hogy a te vagy az ellenfeled köre során.</p>
+		<p><b>1 Blood Power <svg class="◊" viewbox="0 0 500 500"><use href="#se-blood-power"/></svg> hatása:</b></p>
+		<ul>
+			<li>Bármikor elkölthető a <a href="#attack">Támadás</a> aktiválása után (beleértve a <a href="#defensive-roll-phase">védekező dobás</a> előtt vagy után is), de el kell költeni a sebzés kiosztása előtt.</li>
+		</ul>
+		<p><b>2 Blood Power <svg class="◊" viewbox="0 0 500 500"><use href="#se-blood-power"/></svg> hatása:</b></p>
+		<ul>
+			<li>Ennek a hatásnak az aktiválása <a href="#action-cards">Azonnali Akciónak</a> minősül (így az ellenfeled nem költheti el a választott állapotjelzőt a hatás feloldása előtt).</li>
+		</ul>
+		<p><b>4 Blood Power <svg class="◊" viewbox="0 0 500 500"><use href="#se-blood-power"/></svg> hatása:</b></p>
+		<ul>
+			<li><p>Bármikor aktiválhatod ezt a hatást a <a href="#attack">Támadás</a> aktiválása után (beleértve a <a href="#defensive-roll-phase">védekező dobás</a> előtt vagy után is), de el kell költeni a sebzés kiosztása előtt. A <a href="#health">Gyógyulás</a> azonban csak azután történik meg, miután a Támadásod sebzése <a href="#final-dmg-total">sikeresen kiosztásra került</a> az ellenfélnek.</p></li>
+			<li><p>If an opponent heals during their defense, this does not affect the dmg successfully dealt (however, damage prevention would affect it).</p></li>
+			<li><p>You still Heal equal to the total damage successfully dealt by your <a href="#attack">Attack</a>, even if your opponent’s health is less than this amount.</p></li>
+		</ul>
+	</div>
+</details>
+<details>
+	<summary>Ultimate</summary>
+	<div>
+		<p>If the card you put into your hand from your <cite>Exsanguinate</cite> Utimate Ability is a <a href="#action-cards">Dobási fázis Action</a> or <a href="#action-cards">Instant Action</a> card, you may play it immediately.</p>
+	</div>
+</details>
+<details>
+	<summary>Mesmerize (Babonázás) <svg class="◊" viewbox="0 0 500 500"><use href="#se-mesmerize"/></svg></summary>
+	<div>
+		<p>A <a href="#token/mesmerize">Mesmerize <svg class="◊" viewbox="0 0 500 500"><use href="#se-mesmerize"/></svg></a> bármelyik dobott kockára használható (beleértve az ellenfél <a href="#ultimate-ability">Végső képességét</a> is).</p>
+	</div>
+</details>
+<details>
+	<summary>Életerő lopása</summary>
+	<div>
+		<p>Mivel ez nem számít sebzés okozásának, nem gátolható meg vagy csökkenthető, és nem számít bele a <a href="#final-dmg-total">sebzésszámításokba</a>. Nem tudsz több életerőt <a href="#resolving-text">Lopni</a>, mint amennyivel az ellenfeled rendelkezik.</p>
+	</div>
+</details>

@@ -11,12 +11,15 @@ He reviews in small iterations, in English, and decides what ships.
 
 1. Read [STATE.md](STATE.md) top to bottom: version, launch phase, what each feature's status
    is, open owner tasks, known issues, and the **Handover log** (the last session's notes).
-2. Check the branch and working tree: `git status`, `git log --oneline -5`. Work on the
+2. Read [Features_Roadmap.md](Features_Roadmap.md): the owner's living list of future
+   features. Note items marked "Ready to plan" or whose dependencies are now built, and
+   suggest them as pickup points. Don't start one without the owner's OK.
+3. Check the branch and working tree: `git status`, `git log --oneline -5`. Work on the
    feature branch for what you're asked to do (see "Branches" below), never directly on `main`
    unless it's an agreed fix.
-3. If you touch the Meccsszervező, read [docs/match-organizer.md](docs/match-organizer.md)
+4. If you touch the Meccsszervező, read [docs/match-organizer.md](docs/match-organizer.md)
    (domain rules agreed with the owner). For services and env setup: [docs/setup.md](docs/setup.md).
-4. Run `npm test`, `npx tsc --noEmit`, `npm run lint` once to know the baseline.
+5. Run `npm test`, `npx tsc --noEmit`, `npm run lint` once to know the baseline.
 
 ## End of every session (handover)
 
@@ -25,7 +28,8 @@ Before you stop, even if the work is unfinished:
 1. Update [STATE.md](STATE.md): the feature table, "Needs the owner", "Known issues",
    "Technical debt", and add a dated entry at the top of the **Handover log**: what you did,
    what's half-done (branch + files), what you verified and how, what the next agent should do
-   first. Write it so someone with no memory of this session can continue.
+   first. Write it so someone with no memory of this session can continue. If you worked on
+   a roadmap item, or the owner changed one, update [Features_Roadmap.md](Features_Roadmap.md) too.
 2. If you shipped to production: bump the version and add a changelog entry (rules in STATE.md).
 3. Commit your work on its branch (only when the owner agreed to commits) with STATE.md in the
    same or the following commit. Never leave the owner's database or Discord in a state you
@@ -85,7 +89,8 @@ src/middleware.ts            phase-1 gate + Supabase session refresh
 supabase/migrations/         schema, applied by the owner in the Supabase SQL editor
 reference/artifact/          the design prototype (not built): source for the look and for
                              the content of features still to build
-docs/                        match-organizer.md (feature guide), setup.md (services, env, cron)
+docs/                        match-organizer.md (feature guide), setup.md (services, env, cron),
+                             vercel.md (deployment and the dthu.hu domain switch)
 ```
 
 **Dependency direction:** `app/` → `features/` → `components/`, `lib/`. A feature may use
@@ -100,8 +105,9 @@ registry).
 - Branches: `main` is production. Build a feature on `feature/<id>` (branched from `main`,
   merge `main` into it regularly). Small fixes to live code: `fix/<short-name>` from `main`.
   Merge into `main` only with the owner's OK (a pull request on GitHub is the norm).
-- A feature can be merged before it's public: keep its status `planned`/`in-progress` and it
-  stays out of the menu; the phase-1 gate hides every page outside `/meccsszervezo` anyway.
+- A feature can be merged before it's public: in phase 1 the gate shows every page outside
+  `/meccsszervezo` to admins only. Status `planned` keeps it out of the menu, `preview` shows
+  it to admins, `live` means the public uses it.
 - Starting a feature: copy `src/features/_template/`, fill its README (scope, route, data,
   open questions), add the registry entry and route constant, build pages under
   `src/app/(site)/<route>/`. The prototype's version of the feature is in `reference/artifact`.
@@ -110,11 +116,15 @@ registry).
 
 ## Launch phases
 
-`src/lib/site-mode.ts`. **Phase 1** (now): only `/meccsszervezo`, `/auth` and `/api` are
-public; everything else redirects to the Meccsszervező, whose tabs are the main menu.
-**Phase 2**: `NEXT_PUBLIC_FULL_SITE=1` in Vercel + redeploy opens the full site; the site menu
-appears on top and the Meccsszervező tabs become its second row. Locally, set the flag in
-`.env.local` to work on hidden pages.
+`src/lib/site-mode.ts`. **Phase 1** (now): the public sees only `/meccsszervezo` (plus `/auth`,
+`/api`), whose tabs are its main menu; every other page redirects there. **Signed-in admins**
+see the whole site as a developer preview: site menu on top, Meccsszervező tabs as a second
+row, a "fejlesztői előnézet" strip (middleware checks `profiles.is_admin`). Admins have an
+"Admin felület" button and an "Admin nézet / Játékos nézet" switch in the header
+(`lib/view-as.ts`): UI decisions use `getAdminView()`, permissions always `requireAdmin()`.
+**Phase 2**:
+`NEXT_PUBLIC_FULL_SITE=1` in Vercel + redeploy opens the full site to everyone. Locally, set
+the flag in `.env.local` to see the hidden pages without logging in.
 
 ## UI conventions
 
@@ -132,7 +142,13 @@ appears on top and the Meccsszervező tabs become its second row. Locally, set t
 - `npx tsc --noEmit`, `npm run lint`, `npm test` before every commit. Put logic in pure
   functions in a feature's `lib/` and unit-test it next to the file (`*.test.ts`).
 - Browser checks: start the dev server from a shell (`npx next dev -p <port>`); the desktop
-  app's preview launcher can't start it in this folder. Login only works on port 3000.
+  app's preview launcher can't start it in this folder. Login only works on port 3000. Run only
+  **one** dev server at a time here: two share `.next/` and serve random 404s.
+- **The owner's test is live** (his choice, 2026-11-03): once your checks pass, the feature is
+  committed on its branch, merged to `main` and pushed (with his OK), and he tests it on
+  dthu.hu. Admin-only pages are hidden from the public in phase 1 anyway; say clearly when a
+  change is visible to players (the Időpontfoglaló). Any migration must be run before the push.
+  Local Discord login needs `http://localhost:3000/auth/callback` in Supabase's Redirect URLs.
 - **Logged-in pages without logging in:** temporarily make `getCurrentProfile()` in
   `src/lib/auth.ts` return a fake profile when there's no user, marked `// TEMP-PREVIEW`. Look
   only (real database!), revert immediately, and check `grep -rn TEMP-PREVIEW src` prints

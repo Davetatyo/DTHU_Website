@@ -1,0 +1,43 @@
+<h2 slot="header">Szamuráj</h2>
+<ul slot="header" class="see-also">
+	<li><a href="#heroes">Hősök</a></li></ul>
+<div class="hero-basics float-right">
+	<img class="portrait" src="/szabalytar/img/heroes/samurai.webp" alt="Szamuráj" width="300" height="300">
+	<img class="complexity" src="/szabalytar/img/heroes/complexity-3.webp" alt="Bonyolultság 3" width="213" height="72">
+</div>
+<p class="bio">A becsület végtelen hajszájától vezérelve a Szamuráj semmitől sem riad vissza, hogy elűzze szem elől mindazokat, akik nem méltók rá. Szégyennel jelöli meg a kicsinyes, korlátolt és jelentéktelen ellenfeleket. Végül a szégyenteljeseket kardélre kell hányni, még akkor is, ha ez a saját életének feláldozásával jár.</p>
+<p><dfn>Választott fegyver:</dfn> Katana</p>
+<h3>Tokenek</h3>
+<ul class="grid tokens">
+	<li><a href="#token/shame"><svg viewbox="0 0 500 500"><use href="#se-shame"/></svg> Shame (Szégyen)</a></li>
+	<li><a href="#token/honor"><svg viewbox="0 0 500 500"><use href="#se-honor"/></svg> Honor (Becsület)</a></li>
+	<li><a href="#token/back-strike"><svg viewbox="0 0 500 500"><use href="#se-back-strike"/></svg> Back Strike (Hátbatámadás)</a></li>
+</ul>
+<h3>Szabálytisztázások</h3>
+<details>
+	<summary>Shame (Szégyen) <svg class="◊" viewbox="0 0 500 500"><use href="#se-shame"/></svg></summary>
+	<div>
+		<p>A <a href="#token/shame">Shame <svg class="◊" viewbox="0 0 500 500"><use href="#se-shame"/></svg></a> csökkenti a sima vagy kivédhetetlen sebzésű <a href="#attack">Támadásokból</a> származó sebzést. Nem csökkenti a tiszta sebzésű Támadások sebzését.</p>
+		<p>A Shame <svg class="◊" viewbox="0 0 500 500"><use href="#se-shame"/></svg> nem csökkentheti a Végső képességből származó sebzést. A Shame <svg class="◊" viewbox="0 0 500 500"><use href="#se-shame"/></svg> jelzők azonban továbbra is eltávolításra kerülnek (anélkül, hogy a sebzés csökkenne).</p>
+	</div>
+</details>
+<details>
+	<summary>Shame (Szégyen) <svg class="◊" viewbox="0 0 500 500"><use href="#se-shame"/></svg> eltávolítása</summary>
+	<div>
+		<p>Az ellenfelednek egy <a href="#attack">Támadást</a> kell aktiválnia ahhoz, hogy eltávolítson egy <a href="#token/shame">Shame <svg class="◊" viewbox="0 0 500 500"><use href="#se-shame"/></svg></a> jelzőt. Az a Támadó Képesség, amely csak járulékos vagy tiszta sebzést okoz, nem távolít el Shame jelzőt. Minden Shame <svg class="◊" viewbox="0 0 500 500"><use href="#se-shame"/></svg> jelző eltávolításra kerül akkor is, ha a Támadás csak sebzést okoz.</p>
+	</div>
+</details>
+<details>
+	<summary>Back Strike (Hátbatámadás) <svg class="◊" viewbox="0 0 500 500"><use href="#se-back-strike"/></svg></summary>
+	<div>
+		<p>A <a href="#token/back-strike">Back Strike <svg class="◊" viewbox="0 0 500 500"><use href="#se-back-strike"/></svg></a> nem költhető el válaszul az ellenfél Végső képességére. A Back Strike <svg class="◊" viewbox="0 0 500 500"><use href="#se-back-strike"/></svg> által okozott sebzés összeadódik minden más sebzéssel, és <a href="#final-dmg-total">egyidejűleg</a> kerül kiosztásra a <a href="#roll-phase">Dobási fázis</a> végén.</p>
+	</div>
+</details>
+<details>
+	<summary>Honor (Becsület) <svg class="◊" viewbox="0 0 500 500"><use href="#se-honor"/></svg></summary>
+	<div>
+		<p>Továbbra is kapsz <a href="#token/honor">Honor <svg class="◊" viewbox="0 0 500 500"><use href="#se-honor"/></svg></a>-t a <i>Bushido</i> Passzív Képességedből még akkor is, ha Negatív Állapotjelző (<a href="#token/entangle">Entangle <svg class="◊" viewbox="0 0 500 500"><use href="#se-entangle"/></svg></a>, <a href="#token/constrict">Constrict <svg class="◊" viewbox="0 0 500 500"><use href="#se-constrict"/></svg></a> stb.) miatt 3-nál kevesebb dobási kísérletet hajtottál végre, vagy ha az ellenfeled egy vagy több kockád újradobására kényszerít.</p>
+		<p>If you perform only one Roll Attempt, you still only gain one Honor <svg class="◊" viewbox="0 0 500 500"><use href="#se-honor"/></svg>.</p>
+		<p>If you are about to gain more Honor <svg class="◊" viewbox="0 0 500 500"><use href="#se-honor"/></svg> beyond the <a href="#status-effects">Stack Limit</a>, you can spend some to make room for the incoming Honor (since spending állapotjelző tokens is an <a href="#action-cards">Instant Action</a>).</p>
+	</div>
+</details>

@@ -16,6 +16,8 @@ export type ArtSpec = {
   prompt?: string;
   x?: string;
   y?: string;
+  /** Placeholder without the "AI-kép helye" tag (e.g. an event that simply has no picture). */
+  plain?: boolean;
 };
 
 export function Art({ spec }: { spec: ArtSpec }) {
@@ -33,9 +35,11 @@ export function Art({ spec }: { spec: ArtSpec }) {
       <div className="img ph" style={style}>
         <Icon id={spec.g ?? "die"} className="glyph" />
       </div>
-      <span className="phtag" title={`Prompt: ${spec.prompt ?? ""}`}>
-        AI-kép helye
-      </span>
+      {!spec.plain && (
+        <span className="phtag" title={`Prompt: ${spec.prompt ?? ""}`}>
+          AI-kép helye
+        </span>
+      )}
     </>
   );
 }

@@ -1,0 +1,5 @@
+.strip { display: flex; flex-wrap: wrap; gap: 8px; }
+.pill { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); background: var(--panel); border-radius: 99px; padding: 5px 12px; font-size: 14px; }
+.pill b { color: var(--gold); }
+.price { display: inline-flex; align-items: center; gap: 6px; background: rgba(10, 8, 14, 0.7); border: 1px solid var(--gold-dim); border-radius: 99px; padding: 2px 10px; font-family: var(--font-px); font-size: 20px; color: #e0b24a; }
+.price .tok { width: 18px; height: 18px; color: #e0b24a; }

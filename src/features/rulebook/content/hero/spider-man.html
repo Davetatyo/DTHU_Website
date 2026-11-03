@@ -1,0 +1,44 @@
+<h2 slot="header">Miles Morales - Pókember</h2>
+<ul slot="header" class="see-also">
+	<li><a href="#heroes">Hősök</a></li>
+</ul>
+<div class="hero-basics float-right">
+	<img class="portrait" src="/szabalytar/img/heroes/spider-man.webp" alt="Miles Morales - Pókember" width="300" height="300">
+	<img class="complexity" src="/szabalytar/img/heroes/complexity-2.webp" alt="Bonyolultság 2" width="213" height="72">
+</div>
+<p class="bio">Miután megmarta egy radioaktív pók, Miles Morales úgy döntött, hogy hősének, Pókembernek a nyomdokaiba lép. Hasonló képességekkel rendelkezik, mint az eredeti Pókember, valamint azzal a plusz képességgel, hogy láthatatlanná tud válni, Miles Brooklyn utcáin járőrözik, miközben továbbra is próbál leérettségizni a középiskolában!</p>
+<p><dfn>Választott fegyver:</dfn> Hálóvetők</p>
+<h3>Tokenek</h3>
+<ul class="grid tokens">
+	<li><a href="#token/combo"><svg viewBox="0 0 500 500"><use href="#se-combo"/></svg> Combo (Kombó)</a></li>
+	<li><a href="#token/webbed"><svg viewBox="0 0 500 500"><use href="#se-webbed"/></svg> Webbed (Bebálázva)</a></li>
+	<li><a href="#token/invisibility"><img src="/szabalytar/img/components/token-invisibility.webp" alt="Invisibility" width="182" height="200"> Invisibility (Láthatatlanság)</a></li>
+</ul>
+<h3>Szabálytisztázások</h3>
+<details>
+	<summary>Invisibility (Láthatatlanság) <img class="◊" src="/szabalytar/img/components/token-invisibility.webp" alt="Invisibility" width="182" height="200"> használata</summary>
+	<div>
+		<p>Elköltheted a <a href="#damage-types">tiszta sebzés</a> ellen is (mivel a tiszta sebzés továbbra is <a href="#attack">Támadásnak</a> számít). Nem költheted el azonban a <a href="#damage-types">járulékos sebzés</a> ellen (mivel a járulékos sebzés nem számít Támadásnak). Ha egy körben 2 <a href="#token/invisibility">Invisibility <img class="◊" src="/szabalytar/img/components/token-invisibility.webp" alt="Invisibility" width="182" height="200"></a> jelzőt is el tudsz költeni, nem aktiválhatsz <a href="#defensive-ability">Védekező Képességet</a> kétszer.</p>
+	</div>
+</details>
+<details>
+	<summary>Webbed (Bebálázva) <svg class="◊" viewBox="0 0 500 500"><use href="#se-webbed"/></svg></summary>
+	<div>
+		<p>Ha az <i>Ensnare</i> (kis / nagy sor) képességet egy olyan ellenfél ellen aktiválod, aki már meg van bálázva a <a href="#token/webbed">Webbed <svg class="◊" viewBox="0 0 500 500"><use href="#se-webbed"/></svg></a> jelzővel, az előző azonnal aktiválódik (a sebzést <a href="#damage-types">kivédhetetlenné</a> téve), majd a <a href="#final-dmg-total">sebzésszámítások</a> után az újabb kirásra kerül (további <svg class="◊ dmg-spcl" viewBox="0 0 500 500"><use href="#i-dmg-2"/></svg> sebzést okozva független forrású kivédhetetlen sebzésként).</p>
+		<p>Ha azonban az <i>Ensnare</i>-t olyan ellenfél ellen aktiválod, aki még nincs bebálázva a Webbed <svg class="◊" viewBox="0 0 500 500"><use href="#se-webbed"/></svg> jelzővel, a normál sebzés kivédhetetlenné válásának hatása nem következik be a jelenlegi <a href="#attack">Támadás</a> során (mivel a sebzésszámítás már befejeződött, a „<a href="#resolving-text">then</a>” (ezután) kulcsszó miatt).</p>
+		<p>Ha a <i>Venom Shockwave</i> (<a href="#ultimate-ability">Végső képesség</a>) képességet aktiválod egy olyan ellenfél ellen, aki már meg van bálázva a Webbed <svg class="◊" viewBox="0 0 500 500"><use href="#se-webbed"/></svg> jelzővel, az újabb Webbed <svg class="◊" viewBox="0 0 500 500"><use href="#se-webbed"/></svg> nem kerül alkalmazásra a <a href="#status-effects">Halmozási Limit</a> szabályai miatt.</p>
+	</div>
+</details>
+<details>
+	<summary>Webbed (Bebálázva) <svg class="◊" viewBox="0 0 500 500"><use href="#se-webbed"/></svg> és Invisibility (Láthatatlanság) <img class="◊" src="/szabalytar/img/components/token-invisibility.webp" alt="Invisibility" width="182" height="200"></summary>
+	<div>
+		<p>Ha rendelkezel <a href="#token/invisibility">Invisibility <img class="◊" src="/szabalytar/img/components/token-invisibility.webp" alt="Invisibility" width="182" height="200"></a> jelzővel és bebáláznak a <a href="#token/webbed">Webbed <svg class="◊" viewBox="0 0 500 500"><use href="#se-webbed"/></svg></a> jelzővel, továbbra is <a href="#spent-spend">elköltheted</a> az Invisibility <img class="◊" src="/szabalytar/img/components/token-invisibility.webp" alt="Invisibility" width="182" height="200"> jelzőt (mivel a sebzés <a href="#damage-types">kivédhetetlenné</a> vált).</p>
+	</div>
+</details>
+<details>
+	<summary>Combo (Kombó) <svg class="◊" viewBox="0 0 500 500"><use href="#se-combo"/></svg> és Knockdown (Földre vitel) <svg class="◊" viewBox="0 0 500 500"><use href="#se-knockdown"></use></svg></summary>
+	<div>
+		<p>Ha földre visznek a <a href="#token/knockdown">Knockdown <svg class="◊" viewBox="0 0 500 500"><use href="#se-knockdown"></use></svg></a> jelzővel, miközben éppen elöltenéd a <a href="#token/combo">Combo <svg class="◊" viewBox="0 0 500 500"><use href="#se-combo"/></svg></a>-t, ki kell fizetned <svg class="◊" viewBox="0 0 465 500"><use href="#i-cp-2"/></svg> CP-t, különben a plusz <a href="#offensive-roll-phase">Támadó Dobási Fázisod</a> elveszik.</p>
+	</div>
+</details>
+<p>© MARVEL</p>

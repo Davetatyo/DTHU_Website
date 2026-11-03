@@ -8,7 +8,7 @@ import { EARN } from "@/features/tickets/data/earn";
 import { getBalance, getDraws, getLedger, TicketsNotReady } from "@/features/tickets/lib/data";
 import { drawPhase } from "@/features/tickets/lib/draw";
 import { loadDrawStats } from "@/features/tickets/lib/stats";
-import { getCurrentProfile } from "@/lib/auth";
+import { getAdminView, getCurrentProfile } from "@/lib/auth";
 import { routes } from "@/lib/routes";
 import "@/features/tickets/tickets.css";
 
@@ -25,6 +25,7 @@ export default async function TicketDrawPage({
 }) {
   const { uzenet, hiba } = await searchParams;
   const viewer = await getCurrentProfile();
+  const adminView = await getAdminView();
   const tz = viewer?.timezone;
 
   let data;
@@ -49,7 +50,7 @@ export default async function TicketDrawPage({
       <div>
         <div className="sec-h">
           <h1>Sorsolás</h1>
-          {viewer?.is_admin && (
+          {adminView && (
             <Link href={routes.ticketsAdmin} className="btn btn-admin btn-sm">
               Sorsolások kezelése
             </Link>
@@ -64,7 +65,7 @@ export default async function TicketDrawPage({
       {hiba && <p className="alert-error">{hiba}</p>}
       {!data && (
         <p className="alert-error">
-          A sorsolás adatbázisa még nincs beállítva (supabase/migrations/0002_ticket_draws.sql). Amíg nem fut le, ez az
+          A sorsolás adatbázisa még nincs beállítva (supabase/migrations/0007_ticket_draws.sql). Amíg nem fut le, ez az
           oldal üres.
         </p>
       )}

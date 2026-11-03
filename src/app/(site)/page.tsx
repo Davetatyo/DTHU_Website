@@ -1,19 +1,20 @@
 import Link from "next/link";
 import { Art } from "@/components/Art";
-import { HeroAvatar } from "@/components/HeroAvatar";
+import { PlayerAvatar } from "@/features/profile/components/PlayerAvatar";
 import { MatchList } from "@/features/match-organizer/components/MatchList";
 import { StatusBadge } from "@/features/match-organizer/components/StatusBadge";
 import { getActiveTournament, getLatestRound, getRoundMatches, isParticipant } from "@/features/match-organizer/lib/data";
 import { DEFAULT_TIMEZONE, timeLeft } from "@/features/match-organizer/lib/time";
-import { NEWS, NEWSART, NEWSLBL, NEWSLINK } from "@/features/landing-page/data/news";
+import { NewsCard } from "@/features/landing-page/components/NewsCard";
+import { getPublishedNews } from "@/features/landing-page/lib/news-data";
 import { PowerRanking } from "@/features/rankings/components/PowerRanking";
-import { loadRanking, rowOf } from "@/features/rankings/lib/load";
+import { loadRanking } from "@/features/rankings/lib/load";
 import { getCurrentProfile, sameName } from "@/lib/auth";
 import { routes } from "@/lib/routes";
 import "@/features/landing-page/news.css";
 
-// Site home ("Hírek"), prototype V3. The tournament banner and the match schedule are real
-// Meccsszervező data; news, ranking numbers and tickets are sample data for now.
+// Site home ("Hírek"), prototype V3. The tournament banner, the match schedule and the latest
+// news are real data; ranking numbers are sample data for now.
 export default async function NewsPage() {
   const viewer = await getCurrentProfile();
   const tz = viewer?.timezone ?? DEFAULT_TIMEZONE;
@@ -28,7 +29,7 @@ export default async function NewsPage() {
   const opp = myMatch && (meSide === myMatch.a ? myMatch.b : myMatch.a);
   const upcoming = matches.filter((m) => m.status === "confirmed" && m.scheduled_at && Date.parse(m.scheduled_at) > Date.now() - 86_400_000);
   const ranking = await loadRanking();
-  const myTickets = rowOf(ranking, viewer?.karnyx_name)?.tix;
+  const { rows: news } = await getPublishedNews({ perPage: 4 });
 
   return (
     <div className="space-y-7">
@@ -75,19 +76,17 @@ export default async function NewsPage() {
       <section>
         <div className="hh">
           <h2>Hírek</h2>
+          <Link href={routes.news}>Minden hír ›</Link>
         </div>
-        <div className="news4">
-          {NEWS.map((n) => (
-            <Link key={n.t} className="ncard" href={NEWSLINK[n.i]}>
-              <span className="pic">
-                <Art spec={NEWSART[n.i]} />
-              </span>
-              <span className="lbl">{NEWSLBL[n.i]}</span>
-              <b>{n.t}</b>
-              <small>{n.d}</small>
-            </Link>
-          ))}
-        </div>
+        {news.length ? (
+          <div className="news4">
+            {news.map((n) => (
+              <NewsCard key={n.id} article={n} timeZone={tz} />
+            ))}
+          </div>
+        ) : (
+          <p className="card muted">Még nincs hír.</p>
+        )}
       </section>
 
       <div className="l3">
@@ -116,12 +115,12 @@ export default async function NewsPage() {
               <Link href={routes.match(myMatch.id)} className="panel3 block p-4">
                 <div className="vsbox">
                   <div className="p">
-                    <HeroAvatar name={meSide?.karnyx_name ?? null} hero={meSide?.heroes[0]} size="md" />
+                    <PlayerAvatar name={meSide?.karnyx_name ?? null} hero={meSide?.heroes[0]} size="md" />
                     <b>{meSide?.karnyx_name}</b>
                   </div>
                   <span className="vsx">VS</span>
                   <div className="p">
-                    <HeroAvatar name={opp?.karnyx_name ?? null} hero={opp?.heroes[0]} size="md" />
+                    <PlayerAvatar name={opp?.karnyx_name ?? null} hero={opp?.heroes[0]} size="md" />
                     <b>{opp?.karnyx_name ?? "Bye"}</b>
                   </div>
                 </div>
@@ -140,11 +139,11 @@ export default async function NewsPage() {
               <PowerRanking rows={ranking} limit={8} me={viewer?.karnyx_name} />
             </div>
           </div>
-          <Link href={routes.tickets} className="tile block" style={{ minHeight: 150 }}>
-            <Art spec={{ c1: "#e0b24a", c2: "#7a2fb0", g: "ticket", prompt: "glowing golden tickets, esports reward banner" }} />
+          <Link href={routes.tacticianGame} className="tile block" style={{ minHeight: 150 }}>
+            <Art spec={{ img: "/jatekok/hadvezer-portre.jpg", pos: "center 30%" }} />
             <div className="in">
-              <span className="k">Sorsolás</span>
-              <h3>{myTickets !== undefined ? `${myTickets} jegyed van` : "Állj dobogóra, gyűjts jegyet"}</h3>
+              <span className="k">Játékok</span>
+              <h3>Taktikai Előny: kitalálja a Hadvezér, kire gondolsz?</h3>
             </div>
           </Link>
         </aside>

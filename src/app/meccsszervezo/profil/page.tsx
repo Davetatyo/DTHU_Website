@@ -4,14 +4,16 @@ import { getActiveTournament, getPlayers } from "@/features/match-organizer/lib/
 import { createAdminClient } from "@/lib/supabase/server";
 import { CUSTOM_NAME, isProfileComplete, NOT_PLAYING } from "@/features/match-organizer/lib/profile";
 import { KarnyxNameField } from "@/features/match-organizer/components/KarnyxNameField";
-import { DEFAULT_TIMEZONE } from "@/features/match-organizer/lib/time";
+import { timeZoneOptions } from "@/features/match-organizer/lib/time";
 import { saveProfile } from "@/features/match-organizer/actions/profile";
 import { SubmitButton } from "@/components/SubmitButton";
 import { InfoTip } from "@/components/InfoTip";
+import { AvatarEditor } from "@/features/profile/components/AvatarEditor";
+import { canUploadOwnAvatar } from "@/features/profile/lib/access";
+import { avatarPublicUrl } from "@/features/profile/lib/avatar";
+import { removeMyAvatar, uploadMyAvatar } from "@/features/profile/actions/avatar";
 
 export const metadata: Metadata = { title: "Profilom" };
-
-const COMMON_ZONES = [DEFAULT_TIMEZONE, "Europe/London", "Europe/Berlin", "Europe/Bucharest", "America/New_York"];
 
 export default async function ProfilePage({ searchParams }: { searchParams: Promise<{ hiba?: string }> }) {
   const { hiba } = await searchParams;
@@ -24,7 +26,7 @@ export default async function ProfilePage({ searchParams }: { searchParams: Prom
     (claimed ?? []).filter((c) => c.id !== profile.id).map((c) => String(c.karnyx_name).toLowerCase()),
   );
   const available = players.filter((p) => !takenByOthers.has(p.karnyx_name.toLowerCase()));
-  const zones = [...new Set([...COMMON_ZONES, ...Intl.supportedValuesOf("timeZone")])];
+  const zones = timeZoneOptions();
   // Preselect the saved choice: a roster name, "Egyedi" for a name not on the roster,
   // or "Nem játszom" for a saved profile without a Karnyx name (organiser or spectator).
   const ownOnRoster = available.find((p) => sameName(p.karnyx_name, profile.karnyx_name));
@@ -40,6 +42,15 @@ export default async function ProfilePage({ searchParams }: { searchParams: Prom
         <h1>Profilom</h1>
       </div>
       <div className="card">
+      {canUploadOwnAvatar(profile) && (
+        <div className="mb-5 border-b pb-5" style={{ borderColor: "var(--line)" }}>
+          <p className="label">
+            Profilkép
+            <InfoTip text="Ez a kép jelenik meg a neved mellett a fejlécben, a meccslistákban és a meccsoldalon. Ha nincs képed, a hősöd képe vagy az alap ikon látszik." />
+          </p>
+          <AvatarEditor currentUrl={avatarPublicUrl(profile.avatar_path)} upload={uploadMyAvatar} remove={removeMyAvatar} />
+        </div>
+      )}
       <p className="muted mt-1">
         Discord: <strong>{profile.discord_username ?? "?"}</strong>
       </p>

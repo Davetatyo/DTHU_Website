@@ -8,7 +8,7 @@ const vt323 = VT323({ variable: "--font-vt323", subsets: ["latin", "latin-ext"],
 
 export const metadata: Metadata = {
   title: { default: "DTHU – Dice Throne Hungary", template: "%s · DTHU" },
-  description: "A magyar Dice Throne közösség oldala: online bajnokság, meccsszervező, közelgő meccsek.",
+  description: "A magyar Dice Throne közösség oldala: online bajnokság, időpontfoglaló, közelgő meccsek.",
 };
 
 // Every page depends on the signed-in visitor and live data.

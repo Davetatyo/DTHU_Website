@@ -12,7 +12,7 @@ import { resolveKarnyxChoice } from "@/features/match-organizer/lib/profile";
 import { setMatchPlayed } from "@/features/match-organizer/lib/rounds";
 import { getSiteUrl } from "@/lib/site";
 import { createAdminClient } from "@/lib/supabase/server";
-import { wallTimeToUtc } from "@/features/match-organizer/lib/time";
+import { isValidTimeZone, wallTimeToUtc } from "@/features/match-organizer/lib/time";
 import type { Profile } from "@/features/match-organizer/lib/types";
 
 function done(key: "uzenet" | "hiba", text: string): never {
@@ -185,10 +185,11 @@ export async function removeAdmin(formData: FormData) {
 }
 
 /**
- * Admin sets (or clears) another user's Karnyx name, e.g. when someone picked the wrong name
- * or "Nem játszom" by mistake. Same choices as the profile form; names stay unique.
+ * Admin edits another user's profile ("Profil szerkesztése"): Karnyx name (e.g. a wrong pick
+ * or "Nem játszom" by mistake; same choices as the profile form, names stay unique), Facebook
+ * name and time zone. Pictures and bans have their own actions in features/profile.
  */
-export async function adminSetKarnyxName(formData: FormData) {
+export async function adminSaveProfile(formData: FormData) {
   await requireAdmin();
   const profileId = String(formData.get("profile_id"));
   const editUrl = routes.adminUser(profileId);
@@ -210,6 +211,9 @@ export async function adminSetKarnyxName(formData: FormData) {
   );
   if (!choice.ok) fail(choice.error);
   const name = choice.ok ? choice.name : null;
+  const facebookName = String(formData.get("facebook_name") ?? "").trim() || null;
+  const timezone = String(formData.get("timezone") ?? "");
+  if (!isValidTimeZone(timezone)) fail("Érvénytelen időzóna.");
 
   // Names are unique: say who holds it instead of a bare database error.
   if (name) {
@@ -222,10 +226,16 @@ export async function adminSetKarnyxName(formData: FormData) {
     }
   }
 
-  const { error } = await db.from("profiles").update({ karnyx_name: name }).eq("id", profileId);
+  const { error } = await db
+    .from("profiles")
+    .update({ karnyx_name: name, facebook_name: facebookName, timezone })
+    .eq("id", profileId);
   if (error) fail("Mentés sikertelen, próbáld újra.");
-  const who = (target as Profile).display_name ?? (target as Profile).discord_username;
-  done("uzenet", name ? `${who} Karnyx neve mostantól: ${name}.` : `${who} mostantól nem játszó felhasználó (nincs Karnyx neve).`);
+  const who = (target as Profile).display_name || (target as Profile).discord_username;
+  done(
+    "uzenet",
+    `${who} profilja elmentve. ${name ? `Karnyx név: ${name}.` : "Nem játszó felhasználó (nincs Karnyx neve)."}`,
+  );
 }
 
 export async function releaseNickname(formData: FormData) {
@@ -265,6 +275,6 @@ export async function sendReminder(formData: FormData) {
 
 export async function testWebhook() {
   await requireAdmin();
-  const ok = await postToDiscord(["🔧 Teszt üzenet a DT Meccsszervezőből. Ha ezt látod, a Discord értesítések működnek."]);
+  const ok = await postToDiscord(["🔧 Teszt üzenet a DT Időpontfoglalóból. Ha ezt látod, a Discord értesítések működnek."]);
   done(ok ? "uzenet" : "hiba", ok ? "Teszt üzenet elküldve Discordra." : "A Discord üzenet nem ment el. Ellenőrizd a DISCORD_WEBHOOK_URL beállítást.");
 }

@@ -1,0 +1,46 @@
+<h2 slot="header">Revolverhős</h2>
+<ul slot="header" class="see-also">
+	<li><a href="#heroes">Hősök</a></li></ul>
+<div class="hero-basics float-right">
+	<img class="portrait" src="/szabalytar/img/heroes/gunslinger.webp" alt="Revolverhős" width="300" height="300">
+	<img class="complexity" src="/szabalytar/img/heroes/complexity-2.webp" alt="Bonyolultság 2" width="213" height="72">
+</div>
+<p class="bio">A családjára hozott romlás által hajtva, a Revolverhős most azzal tölti az életét, hogy felkutasson mindenkit, aki aljas és romlott a világban. Valahányszor ügyesen újratölti ikerpisztolyait, egy lépéssel közelebb kerül a bosszúhoz.</p>
+<p><dfn>Választott fegyver:</dfn> Ikerpisztolyok</p>
+<h3>Tokenek</h3>
+<ul class="grid tokens">
+	<li><a href="#token/evasive"><svg viewbox="0 0 500 500"><use href="#se-evasive"/></svg> Evasive (Elkerülés)</a></li>
+	<li><a href="#token/reload"><svg viewbox="0 0 500 500"><use href="#se-reload"/></svg> Reload (Újratöltés)</a></li>
+	<li><a href="#token/knockdown"><svg viewbox="0 0 500 500"><use href="#se-knockdown"/></svg> Knockdown (Földre vitel)</a></li>
+	<li><a href="#token/bounty"><svg viewbox="0 0 500 500"><use href="#se-bounty"/></svg> Bounty (Fejvadászat)</a></li>
+</ul>
+<h3>Szabálytisztázások</h3>
+<details>
+	<summary>Bounty (Fejvadászat) <svg class="◊" viewbox="0 0 500 500"><use href="#se-bounty"/></svg></summary>
+	<div>
+		<p>A <a href="#token/bounty">Bounty <svg class="◊" viewbox="0 0 500 500"><use href="#se-bounty"/></svg></a> növeli a <a href="#attack">Támadásból</a> származó sebzést, de nem növeli a <a href="#damage-types">tiszta</a> vagy <a href="#damage-types">járulékos</a> sebzést. Minden sebzés <a href="#final-dmg-total">egyidejűleg kerül kiszámításra</a> a <a href="#roll-phase">Dobási fázis</a> végén.</p>
+		<p>Megkapod az <svg class="◊" viewbox="0 0 465 500"><use href="#i-cp-1"/></svg> CP-t függetlenül attól, hogy mit tesz az ellenfél a <a href="#defensive-roll-phase">védekezése</a> során, még akkor is, ha meggátolja vagy elkerüli az összes <a href="#damage-types">bejövő sebzést</a>.</p>
+	</div>
+</details>
+<details>
+	<summary>Evasive (Elkerülés) <svg class="◊" viewbox="0 0 500 500"><use href="#se-evasive"/></svg> elköltése</summary>
+	<div>
+		<p>Az <a href="#token/evasive">Evasive <svg class="◊" viewbox="0 0 500 500"><use href="#se-evasive"/></svg></a> nem használható egy <a href="#ultimate-ability">Végső képesség</a> <a href="#attack">Támadás</a> ellen, mivel az <a href="#damage-types">Ultimate sebzés</a> semmilyen módon nem gátolható meg.</p>
+		<p>A <a href="#hero-cards">kártyák</a> használhatók az Evasive <svg class="◊" viewbox="0 0 500 500"><use href="#se-evasive"/></svg> kockadobásának módosítására, feltéve, hogy a kártya kijátszása megengedett abban a Fázisban, amelyben éppen vagy.</p>
+		<p>Egyetlen Evasive <svg class="◊" viewbox="0 0 500 500"><use href="#se-evasive"/></svg> jelző elkerüli a Fázis során elszenvedett összes összesített sebzést.</p>
+		<p>Ha az első elkerülési kísérlet sikertelen, folytathatod a sebzés elkerülését annyi jelzőt használva, amennyi rendelkezésedre áll.</p>
+		<p>Ha sikeresen elkerülöd a normál Támadás sebzését, továbbra is aktiválhatod a <a href="#defensive-ability">Védekező Képességedet</a>.</p>
+	</div>
+</details>
+<details>
+	<summary>Reload (Újratöltés) <svg class="◊" viewbox="0 0 500 500"><use href="#se-reload"/></svg></summary>
+	<div>
+		<p>A <a href="#token/reload">Reload <svg class="◊" viewbox="0 0 500 500"><use href="#se-reload"/></svg></a> elkölthető bármikor a <a href="#attack">Támadás</a> aktiválása után (beleértve a <a href="#defensive-roll-phase">védekező dobás</a> előtt vagy után is), de el kell költeni a sebzés kiosztása előtt. Ha akkor költöd el, amikor <a href="#damage-types">kivédhetetlen sebzést</a> okozol, a hozzáadott Reload <svg class="◊" viewbox="0 0 500 500"><use href="#se-reload"/></svg> sebzés is kivédhetetlenné válik.</p>
+	</div>
+</details>
+<details>
+	<summary>Wild West (Vadnyugat)</summary>
+	<div>
+		<p>Két <a href="#token/reload">Reload <svg class="◊" viewbox="0 0 500 500"><use href="#se-reload"/></svg></a> jelzőt is elkölthetsz a kártya aktiválásakor. Újra kell dobnod egy kockát a további sebzés hozzáadásához. Ha ez után az újradobás után újra dobsz egy kockát, már nem adod hozzá a plusz <svg class="◊" viewBox="0 0 500 500"><use href="#i-dmg-1"/></svg> sebzést.</p>
+	</div>
+</details>
