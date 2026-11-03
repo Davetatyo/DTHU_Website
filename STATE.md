@@ -85,7 +85,7 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 | `rankings` Ranglista | `/ranglista` | preview | names/heroes real; points, records, movement sample | results source (Karnyx copy-paste? results on "Lejátszottuk"?) |
 | `timetables` Eseménynaptár (was Versenynaptár) | `/esemenynaptar` (+ `/esemenynaptar/<slug>`, admin `/meccsszervezo/admin/esemenyek`) | preview (admins only), **on `main` since v2.3** | all real: events table (migration 0003) + online rounds; sample data removed | owner tests live; then phase 5 (calendar feed, Hírek tiles, Discord later) |
 | `tickets` Sorsolás (ticket draws) | `/sorsolas`, admin `/sorsolas/admin` | preview (admins only), **on `main`** (pull request #2, 2026-11-03) | all real once migration 0008 runs: ticket ledger, draws, entries, winners; podium places earn tickets (+3/+2/+1, booked by admins), and since `feature/shop` they can also be bought for DTHU coins | confirm migration 0008 was run; test live |
-| `games` Játékok | `/jatekok`, `/jatekok/taktikai-elony`, `/jatekok/kockazat`, `/jatekok/szemfules` | preview (admins only), **on `main` since v2.11** (Kockázat v2.13, Szemfüles v2.17, Trick or Treat v2.20, Black Friday Shopping v2.21, ARRRrrrrrrrrr v2.22) | Taktikai Előny: static data from the Szabálytár + `lib/tactician-traits.ts`; Kockázat: all in the browser; no database | owner reviews the hero facts table; Kvíz parked |
+| `games` Játékok | `/jatekok`, `/jatekok/taktikai-elony`, `/jatekok/kockazat`, `/jatekok/szemfules` | preview (admins only), **on `main` since v2.11** (Kockázat v2.13, Szemfüles v2.17, Trick or Treat v2.20, Black Friday Shopping v2.21, ARRRrrrrrrrrr v2.22) | Taktikai Előny: static data from the Szabálytár + `lib/tactician-traits.ts`; Kockázat: all in the browser. **Napi kvíz + Szerencsekerék + sorozat** (DTHU coins, admin settings, question bank, audit log) on `feature/games`, not merged: real once migration 0010 runs | owner runs 0010; admins write the first questions; level Kvíz (R7) still parked |
 | `shop` Bolt + DTHU coin | `/bolt`, admin `/bolt/admin`; wallet in the header | preview (admins only), **on `feature/shop`, not merged** | all real once migration 0009 runs: DTHU coin ledger; the only item is a Sorsolás ticket for 3500 coins; coins only from admins so far; header wallet (coins + tickets) shown wherever the full site is | owner runs 0008 then 0009; how players earn coins (owner to describe) |
 | `rulebook` Szabálytár | `/szabalytar` | preview (admins only), **RulePop version on `main` since v2.8** (roadmap R10) | the owner's Hungarian RulePop imported (36 sections, 40 heroes, 123 tokens) + the 5 newer heroes and 13 tokens translated (v2.9); popups + own links | owner reviews the new translations; ~20 core pages still to translate |
 | `faq` GYIK (site-wide) | `/gyik` | preview | content from the prototype | review texts |
@@ -104,8 +104,9 @@ local development uses the live data too (see CLAUDE.md, golden rule 1).
 0001 init · 0002 profile pictures and bans · 0003 events · 0004 news · 0005 polls · 0006 links ·
 0007 match play modes. **0001–0007 are applied** on the live database (checked 2026-11-03). **0008 ticket draws**
 (Sorsolás, on `main`) was **not applied** when last checked: confirm it ran. **0009 DTHU coins** (Bolt,
-branch `feature/shop`, needs 0008) is **not applied**: run it before that branch is merged.
-A new change gets the next number (0010…) and is
+on `main` since pull request #3, needs 0008) was **not applied** when last checked: confirm it ran.
+**0010 daily spin and question** (Játékok, branch `feature/games`, needs 0009) is **not applied**:
+run it before that branch is merged. A new change gets the next number (0011…) and is
 run *before* the code that needs it is deployed.
 
 **Access model:** row level security is on for every table. The website reads and writes
@@ -114,7 +115,9 @@ through the server with the service-role key and checks permissions in code
 `profiles` for signed-in users); the newer tables have **no policies**, so the browser can't
 read them directly at all. There are no database functions or triggers of our own yet; migration 0008 adds five
 (`ticket_award`, `ticket_draw_enter`, `ticket_draw_complete`, `ticket_draw_close_now`,
-`ticket_draw_cancel`) and migration 0009 two (`coin_award`, `shop_buy_tickets`), callable only
+`ticket_draw_cancel`), migration 0009 two (`coin_award`, `shop_buy_tickets`) and migration 0010
+five (`daily_spin`, `daily_answer`, `daily_question_for`, `daily_streak_touch`,
+`economy_config_set`) plus a trigger that keeps `audit_log` unchangeable, callable only
 with the service role. They keep balances >= 0 and refuse
 entries after a draw closes.
 
@@ -139,6 +142,13 @@ entries after a draw closes.
 | `ticket_draw_entries` *(0008)* | Tickets a player put into a draw | primary key (`draw_id`, `profile_id`), `tickets` | – |
 | `ticket_draw_winners` *(0008)* | Draw results | primary key (`draw_id`, `place`), `profile_id` (unique per draw) | – |
 | `coin_ledger` *(0009, not applied)* | Every DTHU coin change; balance = sum. A shop purchase writes a coin row (− price) and a `ticket_ledger` row (kind `shop_purchase`, added to its allowed kinds by 0009) together | `profile_id`, `amount` (not 0), `kind` (award/shop_purchase), `reason`, `created_by` | – |
+| `economy_config` *(0010, not applied)* | Economy settings edited by admins (spin table, rewards, streak, ticket price, fallback, weekday types); a missing key = the default in `shop/lib/economy.ts` | `key`, `value` (jsonb), `updated_by` | – |
+| `audit_log` *(0010)* | Every admin change to settings and daily questions; update/delete refused by a trigger | `actor_id`, `action`, `entity_type`, `entity_id`, `before`, `after`, `reason` | – |
+| `daily_spins` *(0010)* | One spin per player per Budapest day | `profile_id`, `day` (unique together), `result_label`, `coins` | – |
+| `daily_questions` *(0010)* | Question bank | `type`, `prompt`, `answer_mode`, `options`/`correct_option` or `accepted_answers`, `explanation`, `difficulty`, `reward_override`, `status`, `publish_date` (unique), `times_used`, `last_used_date` | – |
+| `daily_question_days` *(0010)* | The question each day used, fixed on first request | `day` (key), `question_id` | – |
+| `daily_question_answers` *(0010)* | One answer per player per day | `question_id`, `profile_id`, `day`, `answer`, `is_correct`, `coins` | – |
+| `daily_streaks` *(0010)* | Days in a row per game (spin and quiz separately, 1..7) | `profile_id` + `game` (key), `current_length`, `last_completed_date` | – |
 
 \*Row counts on 2026-11-03, for scale only.
 
@@ -186,6 +196,11 @@ sample data (no tables yet; tickets and coins become real with migrations 0008 a
 
 ## Needs the owner
 
+0. **Napi kvíz + Szerencsekerék (`feature/games`, not merged): run
+   `supabase/migrations/0010_daily_spin_and_question.sql`** in the Supabase SQL Editor *after*
+   0008 and 0009 and *before* merging the branch. Only adds things, no data; safe to run twice,
+   one transaction. Then write the first daily questions (Játékok → "Napi játékok kezelése" →
+   Kérdésbank); until there is a ready question the Napi kvíz says "Mára nincs kérdés".
 0. **Bolt + DTHU coin (`feature/shop`, not merged): run `supabase/migrations/0009_dthu_coins.sql`**
    in the Supabase SQL Editor *after* 0008 and *before* merging the branch. Only adds things (the
    `coin_ledger` table, two functions, a `shop_purchase` kind for `ticket_ledger`), no data; safe
@@ -277,6 +292,43 @@ quiz) are in
 ## Handover log
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
+
+### 2026-11-03 · Napi kvíz, Szerencsekerék, sorozat, economy settings (feature/games, committed, not merged)
+
+- Owner: build the daily spin and the daily question from `DTHU_COINS_SPEC.md` (owner's spec,
+  not in the repo; game reporting and tournaments later). Quiz in the Kvíz card's place, spin
+  next to it; day = Europe/Budapest from 00:00; a daily card turns grey with a countdown only
+  after the player has played it. Owner answers: streak yes; text-only types now (champion_zoom
+  later); admins write all questions (no starter set); audit log yes, CSV import not now.
+- Built: see `src/features/games/README.md` → "Daily games". Ticket price moved into the
+  settings (`economy_config.ticket_price`, default 3500), so the Bolt reads it from there.
+- Design decision: answers are unique per player and day (not per question as the spec said),
+  because reused bank questions would otherwise lock players out of a later day's quiz.
+- `feature/games` was fast-forwarded to `main` (with Sorsolás and Bolt) first.
+- **Verified:** types, lint, 221 tests (new: economy incl. 100 000 spins, daily time/answers,
+  question form). Migration 0010 on an in-memory Postgres with 0001-0009 (and run twice): spin
+  once, 7-day streak +2 and reset, missed day, fallback, wrong question, audit log unchangeable,
+  anon refused. Local fake Supabase + TEMP-PREVIEW users, clicked in headless Edge: spin → card
+  grey with countdown; quiz answer → reveal, +1 coin, card grey; streak 1/7 after both; admin
+  settings save (ticket price 4000 reached the Bolt) and audit entry; question created with
+  preview; calendar and gap warning; 375 px. A hydration mismatch in the wheel (float digits)
+  was found and fixed.
+- Owner feedback round (same day): played cards locked (no link, direct visit redirects); a
+  bigger wheel with lights, pointer and the "Pörgetés" button in the centre, slices showing the
+  amount with the coin icon; chances hidden from players; **two separate streaks** (spin, quiz),
+  days counted 1..7, the 7th pays +2 on top of the day's win even when it was 0. Fixed: the
+  header balance didn't update after a spin (now a real reload into the result view).
+  Verified in headless Edge over simulated days (TEMP-PREVIEW day shift `?nap=N`, 1 = today):
+  both streaks 1..7, bonus on day 7, day 8 back to 1, balance updated right after each spin.
+  The owner tested locally as several users (a temporary `?sorozat=N` shortcut set a streak
+  directly to reach day 7; the bonus also paid on a "Semmi" spin). Storage discussed with the
+  owner and kept: per-day spin/answer rows (once-a-day guarantee, history), one streak row per
+  player and game, coin amounts also in `coin_ledger` (the single source of balances).
+- Committed and pushed on `feature/games` with the owner's OK, after merging `main` (v2.23).
+  All TEMP-PREVIEW test code removed (`grep -rn TEMP-PREVIEW src` prints nothing).
+- **Next:** the other developer runs 0010 (after 0008 and 0009) in Supabase, then the owner
+  opens the pull request and merges. The Hungarian guide for him now has a 0010 section (run
+  steps, check query `tables = 7`, `functions = 6`, rollback SQL; all checked on a local copy).
 
 ### 2026-11-03 · Test badge also on the admin's own picture in lists (feature/profile, v2.24)
 

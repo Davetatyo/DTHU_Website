@@ -4,6 +4,7 @@ import { Icon } from "@/components/Icon";
 import { CoinAmount } from "@/features/shop/components/CoinAmount";
 import { TicketOffer } from "@/features/shop/components/TicketOffer";
 import { CoinsNotReady, getCoinBalance } from "@/features/shop/lib/coins";
+import { loadEconomy } from "@/features/shop/lib/economy-store";
 import { getBalance, TicketsNotReady } from "@/features/tickets/lib/data";
 import { getAdminView, getCurrentProfile } from "@/lib/auth";
 import { routes } from "@/lib/routes";
@@ -66,7 +67,7 @@ export default async function ShopPage({
         </div>
       )}
 
-      <TicketOffer coins={ready ? coins : null} signedIn={!!viewer} />
+      <TicketOffer coins={ready ? coins : null} signedIn={!!viewer} price={(await loadEconomy()).ticketPrice} />
     </div>
   );
 }

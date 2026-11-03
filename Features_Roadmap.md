@@ -459,7 +459,7 @@ A new site section that keeps users engaged and coming back. It introduces games
 
 ### R7 · Quiz (Kvíz)
 
-**Status:** Parked by the owner (2026-11-03; plan discussed: level map, reveal animations); shown as "Hamarosan" on the Játékok page. Was: Idea · **Feature id (proposed):** `quiz` (a game inside R6) · **Depends on:** R6
+**Status:** Parked by the owner (2026-11-03; plan discussed: level map, reveal animations). Its card now holds the **Napi kvíz** (daily question for DTHU coins, built on `feature/games` 2026-11-03 from the owner's coin spec), so the level-based quiz below is still to do. Was: Idea · **Feature id (proposed):** `quiz` (a game inside R6) · **Depends on:** R6
 hub, R4 XP (for rewards), R5 Admin area (for managing questions)
 
 Quizzes on the website in **increasing difficulty**. Users learn the game and earn XP.

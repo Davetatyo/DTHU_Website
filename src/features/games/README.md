@@ -4,7 +4,7 @@
 |---|---|
 | Folder | `src/features/games/` |
 | Branch | `feature/games` |
-| Route | `/jatekok` (hub), `/jatekok/taktikai-elony`, `/jatekok/kockazat`, `/jatekok/szemfules` (pages in `src/app/(site)/jatekok/`) |
+| Route | `/jatekok` (hub), `/jatekok/taktikai-elony`, `/jatekok/kockazat`, `/jatekok/szemfules`, `/jatekok/napi-kviz`, `/jatekok/szerencsekerek`; admin `/jatekok/admin`, `/jatekok/admin/kerdesek` (pages in `src/app/(site)/jatekok/`) |
 | Status | **preview**: admins only until the full site opens. Roadmap: R6 (hub), R11 (Taktikai Előny), R12 (Kockázat), R13 (Szemfüles), R7 (Kvíz, parked) |
 
 ## What it is
@@ -20,7 +20,50 @@ The Játékok menu tab (after Bolt): a hub with one card per game (`lib/hub.ts`)
   below the top bar and scrolled to the middle when the page opens and when a game starts.
 - **Kockázat** (live for admins): dice poker against the Barbarian, who turns into your fan.
 - **Szemfüles** (live for admins): spot the 10 differences in 60 seconds.
-- **Kvíz**: parked, shown as "Hamarosan".
+- **Napi kvíz** (live for admins; in the old Kvíz card's place): one question a day, the same
+  for everyone; see "Daily games" below. The level-based Kvíz (roadmap R7) stays parked.
+- **Szerencsekerék** (live for admins, next to the Napi kvíz): one free spin a day.
+
+## Daily games (Napi kvíz, Szerencsekerék, sorozat)
+
+Built from the owner's spec `DTHU_COINS_SPEC.md` (§2, §3.2–3.4, §4.2, §5), 2026-11-03. Casual
+game reporting, tournaments, champion_zoom images, CSV import, community submissions and the
+monitoring dashboard are **not built yet**.
+
+- **Day:** Europe/Budapest, every day starts at 00:00 (`lib/daily.ts`: `budapestDay`,
+  `nextDailyReset`, DST-safe). A daily card is normal until today's turn is used; then it turns
+  grey ("Mára kész") with a countdown to the next 00:00 (`ResetCountdown`, refreshes at zero).
+- **Spin:** server-side crypto-random from the spin table (`shop/lib/economy.ts` `pickSpin`);
+  the wheel only animates to the slice the server names. Default table from the spec (EV ≈ 0.76).
+  Players don't see the chances (owner: backend only); admins edit them. Slices show the coin
+  amount with the DTHU coin icon. Once per day (unique key in the database).
+- **Daily question:** `daily_question_for` fixes the day's question on first request: the one
+  scheduled for that date, else (fallback on) the least recently used ready question, preferring
+  the weekday's type. One answer per player per day; the correct answer and the explanation are
+  only sent after answering (`lib/daily-data.ts`). Multiple choice (2–6) or free text matched
+  ignoring case, spaces and accents (`isCorrectAnswer`). Reward: normal 1 / hard 2 or a
+  per-question override. **Decision:** answers are unique per player and day, not per question,
+  because reused bank questions must be answerable again on a later day.
+- **Streaks (owner, 2026-11-03): two separate ones**, the spin and the quiz each count their own
+  days in a row, 1..7. The 7th day shows 7/7 and pays +2 on top of that day's win (also when
+  the win was 0); the next day starts a new round at 1; a missed day starts over
+  (`daily_streak_touch` with `game`, `visibleStreak`). This replaces the spec's single streak
+  that needed both games on the same day.
+- **After playing:** the card is locked (not a link) and a direct visit goes to the Játékok page;
+  the result shows once right after (`?eredmeny=1`). After a spin the page reloads for real
+  into that view, because a soft refresh didn't redraw the header balance.
+- **Admin** (`/jatekok/admin`, "Napi játékok kezelése"): next 14 days with a gap warning for the
+  next 7, every setting (spin table with live sum and expected value, warning above
+  `max_spin_ev`; rewards; streak; ticket price; fallback; weekday types), the audit log.
+  `/jatekok/admin/kerdesek`: question bank with filters, schedule a question on a day (reuse
+  included), archive; editor with live preview, duplicate warning, and answer-related fields
+  locked once a question has answers.
+- **Database:** migration `0010_daily_spin_and_question.sql` (needs 0009): `economy_config`,
+  `audit_log` (a trigger refuses update/delete), `daily_spins`, `daily_questions`,
+  `daily_question_days`, `daily_question_answers`, `daily_streaks`, new coin kinds `spin`,
+  `daily_question`, `streak`. Settings default in code (`shop/lib/economy.ts`) until changed.
+- Tests: `lib/daily.test.ts`, `lib/question-form.test.ts`, `shop/lib/economy.test.ts` (incl. a
+  100 000-spin statistics check).
 
 ## Taktikai Előny
 

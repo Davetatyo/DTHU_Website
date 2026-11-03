@@ -4,20 +4,20 @@ import { InfoTip } from "@/components/InfoTip";
 import { SubmitButton } from "@/components/SubmitButton";
 import { routes } from "@/lib/routes";
 import { buyTickets } from "../actions/shop";
-import { affordableTickets, formatCoins, TICKET_PRICE } from "../lib/catalog";
+import { affordableTickets, formatCoins } from "../lib/catalog";
 import { CoinAmount } from "./CoinAmount";
 
 /**
- * The Bolt's one item for now: a Sorsolás ticket for TICKET_PRICE coins.
+ * The Bolt's one item for now: a Sorsolás ticket for `price` coins (the admin setting).
  * `coins` is null for anonymous visitors (and when the coin table isn't there yet).
  */
-export function TicketOffer({ coins, signedIn }: { coins: number | null; signedIn: boolean }) {
-  const canBuy = coins == null ? 0 : affordableTickets(coins);
+export function TicketOffer({ coins, signedIn, price }: { coins: number | null; signedIn: boolean; price: number }) {
+  const canBuy = coins == null ? 0 : affordableTickets(coins, price);
   return (
     <div className="tile offer">
       <Art spec={{ c1: "#e0b24a", c2: "#7a2fb0", g: "ticket", prompt: "glowing golden raffle ticket, fantasy UI" }} />
       <span className="badge-tr price">
-        <CoinAmount value={TICKET_PRICE} size={22} />
+        <CoinAmount value={price} size={22} />
       </span>
       <div className="in">
         <h3>Sorsolási jegy</h3>
@@ -33,7 +33,8 @@ export function TicketOffer({ coins, signedIn }: { coins: number | null; signedI
           </Link>
         ) : canBuy === 0 ? (
           <span className="sub">
-            Még nincs elég DTHU coinod: egy jegy {formatCoins(TICKET_PRICE)} coinba kerül.
+            Még nincs elég DTHU coinod: egy jegy {formatCoins(price)} coinba kerül
+            {coins != null && `, ${formatCoins(price - coins)} hiányzik`}.
           </span>
         ) : (
           <form action={buyTickets} className="flex flex-wrap items-end gap-2">

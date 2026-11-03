@@ -6,7 +6,8 @@ import { parseTicketAmount } from "@/features/tickets/lib/draw";
 import { requireAdmin, requireProfile } from "@/lib/auth";
 import { routes } from "@/lib/routes";
 import { createAdminClient } from "@/lib/supabase/server";
-import { formatCoins, TICKET_PRICE } from "../lib/catalog";
+import { formatCoins } from "../lib/catalog";
+import { loadEconomy } from "../lib/economy-store";
 import { shopErrorMessage } from "../lib/errors";
 
 // Every write checks the permission first, then calls a database function from
@@ -28,7 +29,7 @@ export async function buyTickets(formData: FormData) {
   const { data, error } = await createAdminClient().rpc("shop_buy_tickets", {
     p_profile: me.id,
     p_quantity: quantity,
-    p_unit_price: TICKET_PRICE,
+    p_unit_price: (await loadEconomy()).ticketPrice,
   });
   if (error) back(routes.shop, "hiba", shopErrorMessage(error));
   back(

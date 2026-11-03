@@ -4,7 +4,8 @@ import { InfoTip } from "@/components/InfoTip";
 import { SubmitButton } from "@/components/SubmitButton";
 import { awardCoins } from "@/features/shop/actions/shop";
 import { CoinAmount } from "@/features/shop/components/CoinAmount";
-import { formatCoins, TICKET_PRICE } from "@/features/shop/lib/catalog";
+import { formatCoins } from "@/features/shop/lib/catalog";
+import { loadEconomy } from "@/features/shop/lib/economy-store";
 import { CoinsNotReady, getAllCoinBalances, getCoinLedger } from "@/features/shop/lib/coins";
 import { LedgerList } from "@/features/tickets/components/LedgerList";
 import { profileName } from "@/features/tickets/lib/data";
@@ -24,6 +25,7 @@ export default async function ShopAdminPage({
 }) {
   const { uzenet, hiba } = await searchParams;
   const me = await requireAdmin();
+  const price = (await loadEconomy()).ticketPrice;
   const { data: profileRows } = await createAdminClient().from("profiles").select("*");
   const profiles = ((profileRows ?? []) as Profile[]).sort((a, b) => profileName(a).localeCompare(profileName(b), "hu"));
   const names = new Map(profiles.map((p) => [p.id, profileName(p)]));
@@ -63,7 +65,7 @@ export default async function ShopAdminPage({
         <h2 className="text-lg font-bold">
           DTHU coin jóváírása vagy levonása
           <InfoTip
-            text={`Egyelőre csak az adminok adhatnak DTHU coint. Negatív számmal coint vonsz le; az egyenleg nem mehet nulla alá. Egy sorsolási jegy ${formatCoins(TICKET_PRICE)} coin a boltban.`}
+            text={`Egyelőre csak az adminok adhatnak DTHU coint. Negatív számmal coint vonsz le; az egyenleg nem mehet nulla alá. Egy sorsolási jegy ${formatCoins(price)} coin a boltban (az ár a Játékok admin oldalán állítható).`}
           />
         </h2>
         <form action={awardCoins} className="space-y-2">
@@ -87,7 +89,7 @@ export default async function ShopAdminPage({
               <label className="label" htmlFor="coin-amount">
                 DTHU coin
               </label>
-              <input id="coin-amount" name="amount" type="number" defaultValue={TICKET_PRICE} className="input" required />
+              <input id="coin-amount" name="amount" type="number" defaultValue={price} className="input" required />
             </div>
             <div className="flex-1">
               <label className="label" htmlFor="coin-reason">

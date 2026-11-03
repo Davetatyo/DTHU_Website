@@ -1,0 +1,51 @@
+/* Daily games (Napi kvíz, Szerencsekerék): grey "done for today" cards with a countdown. */
+.tile.daily-done > .img { filter: grayscale(1) brightness(0.55); }
+.tile.daily-done h3, .tile.daily-done .sub { color: #b9b3a8; }
+.daily-lock { position: absolute; top: 12px; right: 12px; display: flex; flex-direction: column; align-items: flex-end; gap: 2px; padding: 6px 10px; border-radius: 8px; background: rgba(10, 8, 14, 0.78); border: 1px solid #3a3a46; color: #e7e2d6; }
+.daily-lock .lbl { font-size: 11px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: #a7a19a; }
+.countdown { font-family: var(--font-px); font-size: 24px; line-height: 1; font-variant-numeric: tabular-nums; letter-spacing: 0.04em; }
+
+/* Shared panel of the two daily pages */
+.daily-panel { max-width: 640px; }
+.daily-done-box { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; padding: 12px 14px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg2); }
+.daily-done-box .countdown { color: var(--gold); font-size: 28px; }
+.streak { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; }
+.streak .dots { display: inline-flex; gap: 4px; }
+.streak .dots i { width: 10px; height: 10px; border-radius: 50%; background: var(--line); }
+.streak .dots i.on { background: var(--gold); box-shadow: 0 0 6px color-mix(in srgb, var(--gold) 60%, transparent); }
+
+/* Quiz */
+.quiz-options { display: grid; gap: 8px; }
+.quiz-option { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); cursor: pointer; }
+.quiz-option:hover { border-color: var(--gold-dim); }
+.quiz-option:has(input:checked) { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold); }
+.quiz-option input { accent-color: var(--gold); }
+.quiz-prompt { font-size: 20px; font-weight: 700; line-height: 1.35; white-space: pre-line; }
+.reveal { border-left: 4px solid var(--line); padding: 10px 14px; border-radius: 6px; background: var(--bg2); }
+.reveal.ok { border-left-color: var(--ok); }
+.reveal.bad { border-left-color: var(--danger); }
+
+/* Wheel: frame with lights (still), the turning wheel, the pointer and the spin button (still). */
+.wheel-stage { position: relative; width: min(100%, 460px); aspect-ratio: 1; margin: 8px auto 0; filter: drop-shadow(0 14px 28px rgba(0, 0, 0, 0.45)); }
+.wheel-stage > svg.wheel, .wheel-stage > svg.wheel-frame { position: absolute; inset: 0; width: 100%; height: 100%; }
+.wheel-stage svg.wheel { transform-origin: 50% 50%; transition: transform 5.2s cubic-bezier(0.1, 0.75, 0.08, 1); }
+.wheel-label { fill: #fff; font-weight: 900; paint-order: stroke; stroke: rgba(10, 6, 16, 0.6); stroke-width: 4px; letter-spacing: 0.02em; }
+.wheel-pointer { position: absolute; z-index: 2; top: -3%; left: 50%; width: 11%; margin-left: -5.5%; filter: drop-shadow(0 3px 3px rgba(0, 0, 0, 0.55)); }
+.wheel-stage.is-spinning .wheel-pointer { animation: wheel-tick 0.12s ease-in-out infinite alternate; transform-origin: 50% 25%; }
+@keyframes wheel-tick { from { transform: rotate(-6deg); } to { transform: rotate(6deg); } }
+.bulb { opacity: 0.8; }
+.wheel-stage.is-spinning .bulb { animation: bulb-blink 0.5s steps(1) infinite; }
+.wheel-stage.is-spinning .bulb.b { animation-delay: 0.25s; }
+.wheel-stage.is-done .bulb { opacity: 1; }
+@keyframes bulb-blink { 0% { opacity: 1; } 50% { opacity: 0.3; } }
+.wheel-hub { position: absolute; z-index: 3; left: 50%; top: 50%; width: 29%; aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; border: 4px solid #6e4508; background: radial-gradient(circle at 35% 30%, #fff3c2 0%, #f0c14e 38%, #b57b17 78%, #7a4c0c 100%); color: #3b2505; font-weight: 900; font-size: clamp(14px, 4.2vw, 20px); letter-spacing: 0.04em; text-transform: uppercase; box-shadow: 0 0 0 4px #1b1622, 0 6px 16px rgba(0, 0, 0, 0.5), inset 0 -4px 8px rgba(110, 69, 8, 0.45); cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; }
+.wheel-hub:not(:disabled):hover { transform: translate(-50%, -50%) scale(1.06); box-shadow: 0 0 0 4px #1b1622, 0 0 26px rgba(240, 193, 78, 0.75), inset 0 -4px 8px rgba(110, 69, 8, 0.45); }
+.wheel-hub:not(:disabled) { animation: hub-glow 1.8s ease-in-out infinite; }
+@keyframes hub-glow { 50% { box-shadow: 0 0 0 4px #1b1622, 0 0 22px rgba(240, 193, 78, 0.6), inset 0 -4px 8px rgba(110, 69, 8, 0.45); } }
+.wheel-hub:disabled { cursor: default; }
+.wheel-hub:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+.hub-result { display: inline-flex; align-items: center; gap: 4px; font-size: clamp(18px, 5.5vw, 28px); text-transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  .wheel-stage svg.wheel { transition-duration: 0.01s; }
+  .wheel-hub, .wheel-stage.is-spinning .bulb, .wheel-stage.is-spinning .wheel-pointer { animation: none; }
+}

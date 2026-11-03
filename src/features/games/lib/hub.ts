@@ -10,6 +10,8 @@ export type GameCard = {
   href?: string;
   picture?: string;
   badge: "Új" | "Hamarosan";
+  /** A once-a-day game: its card turns grey with a countdown once today's turn is used. */
+  daily?: "quiz" | "spin";
 };
 
 export const GAMES: GameCard[] = [
@@ -39,8 +41,18 @@ export const GAMES: GameCard[] = [
   },
   {
     id: "quiz",
-    name: "Kvíz",
-    blurb: "Szabályok, hősök, sebzésszámítás: egyre nehezedő szintek. Hamarosan.",
-    badge: "Hamarosan",
+    name: "Napi kvíz",
+    blurb: "Minden nap egy új Dice Throne kérdés, mindenkinek ugyanaz. Egy próbálkozás, a jó válasz DTHU coint ér.",
+    href: routes.dailyQuiz,
+    badge: "Új",
+    daily: "quiz",
+  },
+  {
+    id: "spin",
+    name: "Szerencsekerék",
+    blurb: "Naponta egy ingyenes pörgetés DTHU coinért. Kvíz és pörgetés minden nap: sorozatbónusz jár érte.",
+    href: routes.dailySpin,
+    badge: "Új",
+    daily: "spin",
   },
 ];
