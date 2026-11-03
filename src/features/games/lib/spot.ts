@@ -87,6 +87,25 @@ export const PICTURES: SpotPicture[] = [
       px(1876, 1015, 115, "Sárkány a sarokban álló dobozon"),
     ],
   },
+  {
+    id: "arrr",
+    name: "ARRRrrrrrrrrr",
+    images: ["/jatekok/szemfules/arrr-1.jpg", "/jatekok/szemfules/arrr-2.jpg"],
+    ratio: 2000 / 1116,
+    // Found by the difference map (2026-11-03); picture 2 is picture 1 plus only these areas.
+    spots: [
+      px(1340, 45, 140, "Koponya és keresztcsontok a vitorlán"),
+      px(512, 234, 115, "Második majom a kötélen"),
+      px(316, 398, 105, "Hajó a láthatáron"),
+      px(705, 285, 75, "Barna vagy kék kalap a kapitányon"),
+      px(580, 690, 50, "Koponya a kormánykeréken"),
+      px(95, 705, 90, "Hordó vagy kincsesláda"),
+      px(265, 825, 90, "Vödör a korláton"),
+      px(1098, 512, 55, "Kendő a tökfejen"),
+      px(1250, 744, 160, "Felmosó vagy súrolókefe"),
+      px(1585, 975, 105, "Ágyúk a hajó oldalán"),
+    ],
+  },
 ];
 
 export const ROUND_SECONDS = 60;
