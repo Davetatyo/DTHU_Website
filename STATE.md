@@ -186,6 +186,9 @@ still sample data (no tables yet; tickets become real with migration 0007, Sorso
    `supabase/migrations/0007_ticket_draws.sql`** in the Supabase SQL Editor *before* merging the
    branch to `main`. No new cron job: the hourly `dt-reminders` call also holds closed draws
    (response becomes `{"warnings":0,"draws":0}`). Tested locally first (see Handover log).
+   The developer sent the other developer (who has Supabase access) a short Hungarian guide:
+   run the file once, check query (`ticket_%` tables = 4, functions = 5), rollback SQL if needed.
+   Both queries were checked on a local copy of migrations 0001-0007.
 0. **Linkek (v2.7, on `main`; migration 0006 applied, checked 2026-11-03).** On dthu.hu: Admin felület → Linkek kezelése → Új link, picture, ↑ / ↓,
    "Látható" off, delete; check `/linkek`.
 0. **Szavazás (v2.6, on `main`; migration 0005 applied, checked 2026-11-03).** On dthu.hu: a news article → "+
@@ -295,6 +298,10 @@ Newest first. Each session adds an entry (see CLAUDE.md → "End of every sessio
   awards, draw creation, entries, drawing and cancelling. The fake script lives outside the
   repository; ask before adding it as a dev tool. All TEMP-PREVIEW code was removed before the
   commit (`grep -rn TEMP-PREVIEW src` empty).
+- **Hidden from players (checked):** status `preview`, so the tab shows only in the admin menu
+  and the phase-1 gate sends non-admins from `/sorsolas` to the Időpontfoglaló. No code change
+  needed. The only player-visible part is the Discord result post, sent only when an admin
+  creates a draw and it closes: don't create real draws before launch.
 - **Next:** the owner runs migration 0007 in the Supabase SQL Editor, then the branch is merged
   to `main` with his OK and tested live as admin (podium award, small draw, "Sorsolás most").
   Discord result posts are untested (no webhook locally).
