@@ -1,4 +1,7 @@
 import Link from "next/link";
+import { Fragment } from "react";
+import { matchMode, showsMode } from "../lib/play-mode";
+import { ModeTag } from "./ModeTag";
 import { PlayerAvatar } from "@/features/profile/components/PlayerAvatar";
 import { sameName } from "@/lib/auth";
 import { routes } from "@/lib/routes";
@@ -23,7 +26,17 @@ function Side({ player, side }: { player: Player | null; side: "l" | "r" }) {
       <PlayerAvatar name={player.karnyx_name} hero={player.heroes[0]} />
       <span className="min-w-0">
         <b>{player.karnyx_name}</b>
-        {player.heroes.length > 0 && <small>{player.heroes.slice(0, 2).join(" · ")}</small>}
+        {/* The whole roster; a line breaks only between heroes (one per line on phones). */}
+        {player.heroes.length > 0 && (
+          <small className="heroes">
+            {player.heroes.map((h, i) => (
+              <Fragment key={h}>
+                {i > 0 && <i className="sep"> · </i>}
+                <span>{h}</span>
+              </Fragment>
+            ))}
+          </small>
+        )}
       </span>
     </span>
   );
@@ -66,7 +79,15 @@ export function MatchRow({ match, timeZone, mine, now }: { match: MatchView; tim
       <Side player={match.b} side="r" />
       <span className="st">
         <StatusBadge status={match.status} />
-        <small className="muted mt-1 block text-xs">{match.table_no}. asztal</small>
+        <small className="muted mt-1 block text-xs">
+          {match.table_no}. asztal
+          {showsMode(match) && (
+            <>
+              {" · "}
+              <ModeTag mode={matchMode(match)!} />
+            </>
+          )}
+        </small>
       </span>
       <span className="go" aria-hidden>
         ›

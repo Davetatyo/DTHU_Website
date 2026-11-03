@@ -49,7 +49,14 @@ function Side({ player, registered }: { player: Player | null; registered: (p: P
         />
         {player.karnyx_name}
       </b>
-      {player.heroes.length > 0 && <small>{player.heroes[0]}</small>}
+      {/* The whole roster (all 3 heroes), one per line. */}
+      {player.heroes.length > 0 && (
+        <small className="heroes">
+          {player.heroes.map((h) => (
+            <span key={h}>{h}</span>
+          ))}
+        </small>
+      )}
     </div>
   );
 }

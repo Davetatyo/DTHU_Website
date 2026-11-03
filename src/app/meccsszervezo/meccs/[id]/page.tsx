@@ -15,7 +15,10 @@ import { googleCalendarUrl } from "@/features/match-organizer/lib/ics";
 import { getSiteUrl } from "@/lib/site";
 import { DEFAULT_TIMEZONE, formatDateTime, pickerDays, utcToWallTime } from "@/features/match-organizer/lib/time";
 import type { Player, Profile } from "@/features/match-organizer/lib/types";
-import { acceptProposal, adminReplacePlayer, adminResetMatch, adminSetTime, markPlayed, proposeTimes } from "@/features/match-organizer/actions/match";
+import { acceptProposal, adminReplacePlayer, adminResetMatch, adminSetTime, markPlayed, proposeTimes, setPlayMode } from "@/features/match-organizer/actions/match";
+import { ModeTag } from "@/features/match-organizer/components/ModeTag";
+import { AcceptWithMode, PlayModeField } from "@/features/match-organizer/components/PlayModePicker";
+import { matchMode, showsMode, sideOf, type PlayMode } from "@/features/match-organizer/lib/play-mode";
 
 export const metadata: Metadata = { title: "Meccs" };
 
@@ -89,6 +92,21 @@ export default async function MatchPage({
   const proposerName = (profileId: string | null) =>
     [...profiles.values()].find((p) => p.id === profileId)?.karnyx_name ?? "Az admin";
 
+  // Játékmód: each player's own choice; a missing choice counts as webcam.
+  const modeOf = (side: "a" | "b"): PlayMode | null => (side === "a" ? match.mode_a : match.mode_b) ?? null;
+  const mySide = isMine ? sideOf(match, viewer?.karnyx_name) : null;
+  const myMode = mySide ? modeOf(mySide) : null;
+  const agreed = match.status === "confirmed" || match.status === "played";
+  const sideTag = (side: "a" | "b") => {
+    const m = modeOf(side);
+    if (m) return <ModeTag mode={m} player />;
+    if (agreed) return <ModeTag mode="webcam" player note="(alap)" />;
+    return <span className="pm-tag"><i>még nem választott</i></span>;
+  };
+  const proposerSide = open.length ? sideOf(match, proposerName(open[0].proposed_by)) : null;
+  const proposerMode = proposerSide ? modeOf(proposerSide) : null;
+  const mode = matchMode(match);
+
   const now = new Date();
   const deadline = new Date(match.round.deadline);
   const overdue = match.status === "confirmed" && !!match.scheduled_at && new Date(match.scheduled_at) < now;
@@ -129,12 +147,14 @@ export default async function MatchPage({
               <PlayerAvatar name={match.a.karnyx_name} hero={match.a.heroes[0]} size="lg" />
               <h1 className="text-xl font-extrabold sm:text-2xl">{match.a.karnyx_name}</h1>
               <small>{match.a.heroes.join(" · ")}</small>
+              {match.b && sideTag("a")}
             </div>
             <span className="vsx text-4xl">VS</span>
             <div className="p">
               <PlayerAvatar name={match.b?.karnyx_name ?? null} hero={match.b?.heroes[0]} size="lg" />
               <h2 className="text-xl font-extrabold sm:text-2xl">{match.b?.karnyx_name ?? "Bye"}</h2>
               <small>{match.b ? match.b.heroes.join(" · ") : "nincs ellenfél"}</small>
+              {match.b && sideTag("b")}
             </div>
           </div>
           <div className="meta justify-center">
@@ -146,6 +166,11 @@ export default async function MatchPage({
             <span>
               Határidő: <b>{formatDateTime(deadline, tz)}</b>
             </span>
+            {mode && showsMode(match) && (
+              <span>
+                Játékmód: <ModeTag mode={mode} />
+              </span>
+            )}
           </div>
         </div>
       </section>
@@ -216,6 +241,21 @@ export default async function MatchPage({
               + Apple / Outlook (.ics)
             </a>
           </div>
+          {mySide && (
+            <form action={setPlayMode} className="mt-4 space-y-2 border-t pt-3" style={{ borderColor: "var(--line)" }}>
+              <input type="hidden" name="match_id" value={match.id} />
+              <p className="pm-q">
+                Játékmódom <span>(itt még átállíthatod; ha nem választasz, webkamerásnak számítasz)</span>
+              </p>
+              <div className="pm-seg">
+                {(["tts", "webcam"] as const).map((m) => (
+                  <SubmitButton key={m} name="play_mode" value={myMode === m ? "" : m} className={myMode === m ? "on" : ""}>
+                    <ModeTag mode={m} player />
+                  </SubmitButton>
+                ))}
+              </div>
+            </form>
+          )}
         </div>
       )}
 
@@ -225,20 +265,34 @@ export default async function MatchPage({
             {proposedByMe ? "A te javaslataid" : `${proposerName(open[0].proposed_by)} javasolt időpontjai`}
             <InfoTip text="Mindig a másik fél választ egyet az Elfogadom gombbal. Ha valamelyikőtök új időpontokat küld, ezek érvényüket vesztik." />
           </h2>
-          <ul className="mt-3 space-y-2">
-            {open.map((p) => (
-              <li key={p.id} className="flex flex-wrap items-center justify-between gap-2">
-                <span className="font-medium first-letter:uppercase">{formatDateTime(p.starts_at, tz)}</span>
-                {canAccept && (
-                  <form action={acceptProposal}>
-                    <input type="hidden" name="match_id" value={match.id} />
-                    <input type="hidden" name="proposal_id" value={p.id} />
-                    <SubmitButton className="btn btn-sm">Elfogadom</SubmitButton>
-                  </form>
-                )}
-              </li>
-            ))}
-          </ul>
+          {proposerMode && !proposedByMe && (
+            <p className="muted mt-1 text-sm">
+              {proposerName(open[0].proposed_by)} {proposerMode === "tts" ? "TTS-en" : "webkamerával"} játszana.
+            </p>
+          )}
+          {canAccept && mySide ? (
+            <AcceptWithMode
+              matchId={match.id}
+              initial={myMode}
+              proposals={open.map((p) => ({ id: p.id, label: formatDateTime(p.starts_at, tz) }))}
+            />
+          ) : (
+            <ul className="mt-3 space-y-2">
+              {open.map((p) => (
+                <li key={p.id} className="flex flex-wrap items-center justify-between gap-2">
+                  <span className="font-medium first-letter:uppercase">{formatDateTime(p.starts_at, tz)}</span>
+                  {/* An admin who isn't playing accepts for the players: no mode to choose. */}
+                  {canAccept && (
+                    <form action={acceptProposal}>
+                      <input type="hidden" name="match_id" value={match.id} />
+                      <input type="hidden" name="proposal_id" value={p.id} />
+                      <SubmitButton className="btn btn-sm">Elfogadom</SubmitButton>
+                    </form>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
           {proposedByMe && (
             <p className="muted mt-3 text-sm">
               Várakozás {opponent?.karnyx_name ?? "az ellenfél"} válaszára: elfogad egyet, vagy új időpontokat javasol.
@@ -264,6 +318,7 @@ export default async function MatchPage({
             kiválaszthat egyet, vagy újat javasolhat.
           </p>
           <input type="hidden" name="match_id" value={match.id} />
+          {mySide && <PlayModeField initial={myMode} />}
           <SlotPicker days={proposeDays} min={proposeMin} max={proposeMax} maxSlots={3} submitLabel="Javaslat küldése" />
         </form>
       )}

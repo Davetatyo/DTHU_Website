@@ -27,6 +27,9 @@ export type Match = {
   scheduled_at: string | null;
   played_at: string | null;
   reminder_sent: boolean;
+  /** How each player plays this match (migration 0007; null = not chosen = webcam). */
+  mode_a?: "tts" | "webcam" | null;
+  mode_b?: "tts" | "webcam" | null;
 };
 
 /** A match joined with its players and round, as most pages need it. */
