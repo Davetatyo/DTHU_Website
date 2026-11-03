@@ -278,6 +278,18 @@ quiz) are in
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
 
+### 2026-11-03 · XP look decided (option C), Gyűjtemény needed (roadmap only, nothing built)
+
+- Owner is planning the XP system (roadmap R4). Mockups shown: a filling ring around the
+  avatar, then ring + badge-ring variants, then option C on the real pages in a scratch copy
+  (current `main` with Árpád's coin|ticket header capsule from PR #3). **Owner chose C:** the
+  avatar carries only the worn badge ring, a 3 px gold XP bar sits under the name in the
+  header chip, and Profilom gets a level block on top.
+- Owner: the **Gyűjtemény** (R3) is needed, because badges will be rewarded more and more
+  for events and games.
+- Written into `Features_Roadmap.md` (R3, R4 → "Look", shared foundations); screenshots and
+  the mock code in `docs/mockups/xp-option-c/`. **Don't build yet** (owner).
+
 ### 2026-11-03 · Bolt: DTHU coin, ticket purchase, header wallet (feature/shop, not merged)
 
 - Owner: the only item in the Bolt for now is a Sorsolás ticket for **3500 DTHU coins**; a new

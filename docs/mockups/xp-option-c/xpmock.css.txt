@@ -1,0 +1,32 @@
+.xm-av { position: relative; display: inline-block; flex: none; }
+.xm-av svg { position: absolute; inset: 0; }
+.xm-img { position: absolute; border-radius: 50%; background: #23232c center / cover no-repeat; }
+.tb-user.xm-chip { padding-left: 2px; gap: 7px; }
+.xm-name { display: flex; flex-direction: column; gap: 3px; min-width: 0; line-height: 1.05; }
+.xm-bar { display: block; height: 3px; border-radius: 3px; background: #2c2c37; overflow: hidden; width: 100%; min-width: 34px; }
+.xm-bar > span { display: block; height: 100%; background: var(--gold); border-radius: 3px; }
+.xm-card { margin-bottom: 16px; }
+.xm-head { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+.xm-big { position: relative; display: flex; flex-direction: column; align-items: center; }
+.xm-lv { margin-top: -12px; position: relative; padding: 2px 11px; border-radius: 99px; background: var(--gold); color: var(--on-gold); font-size: 12px; font-weight: 800; border: 3px solid var(--panel); white-space: nowrap; }
+.xm-info { flex: 1; min-width: 200px; display: flex; flex-direction: column; gap: 4px; }
+.xm-n { font-size: 20px; }
+.xm-worn { font-size: 13px; color: var(--muted); }
+.xm-worn b { color: var(--fg); font-weight: 600; }
+.xm-worn a { color: var(--gold); }
+.xm-prog { margin-top: 10px; }
+.xm-prog-top, .xm-prog-bot { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); }
+.xm-prog-bot { display: block; margin-top: 6px; }
+.xm-prog-bot b { color: var(--gold); font-size: 15px; }
+.xm-track { height: 8px; border-radius: 8px; background: var(--line); overflow: hidden; margin-top: 4px; }
+.xm-track > span { display: block; height: 100%; background: var(--gold); border-radius: 8px; }
+.xm-log { list-style: none; margin: 6px 0 0; padding: 0; }
+.xm-log li { display: grid; grid-template-columns: 1fr auto 44px; gap: 10px; align-items: baseline; padding: 8px 0; border-top: 1px solid var(--line); font-size: 14px; }
+.xm-log small { color: var(--muted); font-size: 12px; }
+.xm-log b { color: var(--gold); text-align: right; }
+@media (max-width: 520px) {
+  .xm-head { flex-direction: column; align-items: stretch; }
+  .xm-big { align-self: center; }
+  .xm-info { align-items: center; text-align: center; }
+  .xm-prog { width: 100%; text-align: left; }
+}

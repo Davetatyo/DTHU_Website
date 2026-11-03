@@ -49,7 +49,7 @@ whichever item needs it first.
 |---|---|---|
 | **Admin area**: a dedicated admin page with its own menu | R2, R4, R5, R7 | That page is item R5. Every admin tool below plugs into its menu. |
 | **Image upload**: Supabase Storage bucket, resize and compress before saving | R2, R3 | One shared helper: resize to a max size and compress, keeping quality reasonable (e.g. WebP), on the client before upload. Size limits and allowed types are enforced by the bucket policy. |
-| **Cosmetics catalogue**: one list of every badge ring, title, rank and emote, what each player owns and what they wear | R3, R4, later the shop | Defined in R3. XP levels (R4), events and the shop only *grant* items from it; the profile settings page is where players choose what to wear. |
+| **Cosmetics catalogue**: one list of every badge ring, title, rank and emote, what each player owns and what they wear | R3, R4, R6 games, events, later the shop | Defined in R3. XP levels (R4), events, games and the shop only *grant* items from it; the Gyűjtemény (R3) is where players choose what to wear. |
 | **Separate dev Supabase project** | all items with new tables | STATE.md → Technical debt. Local development uses the live database today. New tables and uploads should be tried on a dev project first. |
 | **Activity events**: one place where "something happened" is recorded | R4, R7, later tickets/shop | XP (and later tickets) are awarded from events such as a played match, a sign-up or a finished tutorial. Design this together with the XP system. |
 | **Once-a-day / first-login prompts**: show something once per user per day or until done | R1, R7 | The tutorial starting after the first login and the Daily Quiz popping up on the first login of the day should use one mechanism, so they don't pile up on top of each other. |
@@ -152,7 +152,9 @@ hírek" on event pages. Then push to `main` for the owner's live test.
 
 **Status:** Avatar part **built and live for everyone** (v2.2, 2026-11-02: upload with crop,
 shown everywhere, admin remove/replace, plus admin "Profil szerkesztése" and bans; see
-`src/features/profile/README.md`). The cosmetics collection is still in discussion with R4. ·
+`src/features/profile/README.md`). **Gyűjtemény: needed** (owner, 2026-11-03): more and more
+badges will be rewarded for events and games, so players need one place to see and wear them.
+Not built yet. ·
 **Feature id:** `profile` (today the profile page lives in the Meccsszervező at
 `/meccsszervezo/profil`) · **Depends on:** the image upload foundation, the cosmetics
 catalogue foundation; R4 is what fills the collection
@@ -164,6 +166,11 @@ catalogue foundation; R4 is what fills the collection
 **Cosmetics collection (Gyűjtemény), on the profile settings page**
 - Players see **every cosmetic they've earned**: badge rings around the avatar, titles,
   rank, emotes, and later shop items.
+- **Where badges come from** (owner, 2026-11-03): XP levels and milestones (R4), **events**
+  (e.g. attending a live event, tournament placements) and **games** (e.g. a Szemfüles or
+  Kockázat achievement). The list of sources will keep growing, so a badge only needs a
+  catalogue row and a "grant" call from the feature that awards it.
+- Linked from the profile's level block ("Viselt jelvény: … · Gyűjtemény", see R4 → Look).
 - They choose what to **wear** and can switch to any earned item at any time, or wear
   nothing.
 - **One item per slot:** one badge ring, one title, one rank display. The number of emote
@@ -175,8 +182,8 @@ catalogue foundation; R4 is what fills the collection
   el a 10. szintet")? Or keep them hidden as a surprise? (Open question.)
 - **What others see:** only the worn cosmetics, next to the player's name and avatar. Never
   their XP or level (R4).
-- **The player's own XP:** a level and XP progress block on the profile. The small track next
-  to the profile icon is in R4.
+- **The player's own XP:** a level and XP progress block on top of the profile page, and a
+  thin XP bar under the name in the header. Decided look: R4 → Look.
 
 **Data (draft):**
 - `profiles.avatar_path`.
@@ -258,10 +265,28 @@ fine-tune them on the XP management page.
 
 **Visibility**
 - **No XP leaderboard.**
-- A player sees their own XP and level on their **profile**, plus a **small progress track
-  next to their profile icon** in the header.
+- A player sees their own XP and level on their **profile**, plus a **thin XP bar under their
+  name** in the header (see Look below).
 - Other players never see someone's XP or level. They only see the cosmetics that player
   chose to wear.
+
+**Look (decided by the owner, 2026-11-03: "option C", not built yet)**
+- Mockup screenshots and the mock code: `docs/mockups/xp-option-c/` (made on the real pages
+  in a scratch copy with example data: Dave, level 5, 172 XP, wearing a badge ring).
+- **Header profile chip** (after the coin|ticket capsule, same 32 px height): the avatar
+  carries the **worn badge ring** only (nothing around it when no badge is worn). Under the
+  name sits a **3 px gold XP bar** showing progress to the next level. Hover/title:
+  "5. szint · 172 / 200 XP". No level number on the avatar, so the area stays quiet.
+- **Profile page, on top:** a level block. The big avatar with its badge ring and a gold
+  "5. szint" label under it; the name; "Viselt jelvény: <name> · Gyűjtemény"; a progress bar
+  from this level to the next; "28 XP kell még · összesen 172 XP · 1. szezon, 20 szint";
+  "Legutóbbi XP" (activity, date, +amount); a note that only the player sees level and XP.
+  On phones the block stacks and centres.
+- **Rejected:** a ring around the avatar that fills up (the owner's first idea), and the
+  variants with the XP ring outside or inside a badge ring: too much noise around the
+  picture once badges exist.
+- Top level: the bar stays full and the profile says "Csúcsszint". Level-up feedback is
+  still open (see below).
 
 **Admin controls (XP kezelés page, admins only)**
 - Change the XP value of each activity, turn activities on and off, and edit the level curve
@@ -289,7 +314,8 @@ fine-tune them on the XP management page.
 **Suggested build order:**
 1. The admin-given sources and the XP management page (works without the tutorial or the
    quiz).
-2. The profile XP track, the cosmetics catalogue and the collection page (R3).
+2. The header XP bar and the profile level block (Look above), the cosmetics catalogue and
+   the Gyűjtemény page (R3).
 3. The automatic sources, as R1 and R7 are built.
 
 **Open questions (to settle with the admins):**
@@ -305,6 +331,8 @@ fine-tune them on the XP management page.
 - **Level number:** hidden from other players too (proposed), or visible without the XP?
 - **Starting values and curve:** OK as a placeholder?
 - **Rewards:** which cosmetic for each level and milestone?
+- **Level-up moment:** is the bar filling up enough, or a one-time "Szintlépés! 6. szint"
+  popup on the next visit?
 
 ### R5 · Admin area upgrade (Admin felület)
 
