@@ -17,6 +17,8 @@ export const routes = {
   timetables: "/esemenynaptar",
   /** An event's own page (Eseménynaptár). */
   event: (slug: string) => `/esemenynaptar/${slug}`,
+  tickets: "/sorsolas",
+  ticketsAdmin: "/sorsolas/admin",
   games: "/jatekok",
   tacticianGame: "/jatekok/taktikai-elony",
   diceGame: "/jatekok/kockazat",

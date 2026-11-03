@@ -6,9 +6,11 @@ import { getSiteUrl } from "@/lib/site";
 import { createAdminClient } from "@/lib/supabase/server";
 import { formatDateTime } from "@/features/match-organizer/lib/time";
 import type { Round } from "@/features/match-organizer/lib/types";
+import { runDueDraws } from "@/features/tickets/lib/run";
 
-// Called hourly by Supabase pg_cron (see README). Sends one warning per round 48 hours before
-// the deadline, pinging the players whose match still has no agreed time.
+// Called hourly by Supabase pg_cron (see docs/setup.md §6). Sends one warning per round 48 hours
+// before the deadline, pinging the players whose match still has no agreed time. The same run
+// also holds the ticket draws (Sorsolás) whose closing time has passed, so they need no own job.
 
 const DEADLINE_WARNING_MS = 48 * 3600_000;
 
@@ -51,5 +53,13 @@ export async function GET(request: NextRequest) {
     warnings++;
   }
 
-  return NextResponse.json({ warnings });
+  // Ticket draws must never break the reminders (e.g. before migration 0002 is applied).
+  let draws = 0;
+  try {
+    draws = (await runDueDraws(site)).filter((o) => o.completed).length;
+  } catch (err) {
+    console.error("Sorsolás hiba", err);
+  }
+
+  return NextResponse.json({ warnings, draws });
 }
