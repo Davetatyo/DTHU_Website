@@ -278,6 +278,36 @@ quiz) are in
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
 
+### 2026-11-03 · Podium badge art: six sets (files only, nothing built)
+
+- Sixth set **Párbaj** (re-sent by the owner) cut to `public/badges/parbaj/`; its small
+  versions sat on black squares and were keyed against black. Sets now: Vitality,
+  Innovation, Devotion, Mad King, X-Mas, Párbaj.
+
+- Sets **Mad King** (`public/badges/mad-king/`) and **X-Mas** (`public/badges/x-mas/`) added
+  the same way (per-set settings script in `docs/mockups/podium-badges/`). Mad King's red
+  swirl inside the ring was removed so the picture fills the ring like in the other sets.
+
+- Third set **Devotion** (winged shield, red sashes) cut out to `public/badges/devotion/`;
+  its gold halo is keyed so it's see-through on white, the red sashes stay solid. Owner:
+  **admins can try on and wear any badge** from their profile for testing (roadmap R4 →
+  Rewards). Gyűjtemény mock with all three sets checked in the scratch copy.
+
+- Later the same day: the owner named the first set **Vitality** and sent a second,
+  **Innovation** (steampunk). Files moved to `public/badges/vitality/` and
+  `public/badges/innovation/` (`{gold,silver,bronze}-{512,128}.png`); the hole size differs
+  per set (table in `docs/mockups/podium-badges/README.md`), so size a badge from the
+  picture, not the other way round. Both checked in the scratch copy (Profilom, header, a
+  Gyűjtemény row with both sets).
+
+- Owner: tournament winners get Gold / Silver / Bronze badge rings. After a few mockup rounds
+  the owner had another agent draw them from a prompt written here; it returned one preview
+  image. Cut out of it (now `public/badges/vitality/`, see above): transparent,
+  exact hole at the inner rim; 512 for profile/Gyűjtemény, a simplified 128 for the header).
+  Checked on dark and white backgrounds and on the real header and Profilom in a scratch copy
+  (screenshots and the cut-out script in `docs/mockups/podium-badges/`). Roadmap R4 → Rewards.
+- The files are served but unused until the XP/Gyűjtemény build.
+
 ### 2026-11-03 · XP values and level curve agreed (roadmap only, nothing built)
 
 - Worked out the XP plan with the owner, written into `Features_Roadmap.md` → R4: smallest
@@ -286,8 +316,11 @@ Newest first. Each session adds an entry (see CLAUDE.md → "End of every sessio
   podium extra 150/100/75; Szemfüles 5 XP once per picture at 100 points, no cheat check.
 - Curve: 25 XP for level 2, +15 per level, level 20 = 3,040 XP. Someone who joins everything
   reaches 20 around week 45 (all quiz answers right) to week 50 (80% right).
-- Still open (R4 → Open questions): after the first year, double XP scope, level number
-  visibility, rewards per level, the level-up moment.
+- Still open (R4 → Open questions): after the first year, double XP scope, rewards per level.
+- Later the same day (owner): profiles aren't visible to other players at first; your level
+  is only visible to you, others can guess it from the worn badge ring; a level-up shows a
+  small confetti popup with the milestone reward; rewards are claimed automatically by the
+  server (wearing stays the player's choice). Recorded in R3 and R4.
 
 ### 2026-11-03 · XP look decided (option C), Gyűjtemény needed (roadmap only, nothing built)
 

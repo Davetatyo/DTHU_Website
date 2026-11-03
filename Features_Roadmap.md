@@ -181,7 +181,8 @@ catalogue foundation; R4 is what fills the collection
 - **Locked items:** show the ones not yet earned greyed out, with how to get them (e.g. "Érd
   el a 10. szintet")? Or keep them hidden as a surprise? (Open question.)
 - **What others see:** only the worn cosmetics, next to the player's name and avatar. Never
-  their XP or level (R4).
+  their XP or level (R4). **Profiles aren't visible to other players at first** (owner,
+  2026-11-03; to be opened later), so the profile page is only ever your own.
 - **The player's own XP:** a level and XP progress block on top of the profile page, and a
   thin XP bar under the name in the header. Decided look: R4 → Look.
 
@@ -310,8 +311,33 @@ events. Admins fine-tune values on the XP management page.
 - **Milestone levels** (e.g. 5, 10, 15, 20) give **badges and titles**. Later they also unlock
   shop items.
 - Admins decide which reward belongs to which level.
-- Rewards land in the player's **cosmetics collection** (R3), marked "Új". The player decides
-  whether to wear them; nothing is equipped automatically.
+- **Rewards are claimed automatically** (owner, 2026-11-03): the server gives them the
+  moment a player reaches the level, with no claim button. They land in the **Gyűjtemény**
+  (R3), marked "Új". Wearing stays the player's choice (R3: nothing is worn automatically);
+  the level-up popup offers to wear a new badge in one tap.
+- **Level-up popup** (owner, 2026-11-03): a small popup with **confetti** and a
+  congratulation ("Gratulálunk! Elérted a 6. szintet"), showing the **milestone reward** if
+  that level has one (picture and name, "Felveszem" for a badge). Shown once per level-up:
+  right away when the XP comes from something the player just did, otherwise on their next
+  page load (e.g. admin-given podium XP). Several levels at once show as one popup. No
+  confetti for visitors who prefer reduced motion.
+- **Podium badges** (owner, 2026-11-03): tournament winners also get a **Gold, Silver or
+  Bronze badge ring** (1st / 2nd / 3rd place), on top of the podium XP. The badges come in
+  **named sets**, each a full gold/silver/bronze trio in its own look. Art done for two:
+  **Vitality** ("storm grove": moss, thorny vines, carved bark, glowing seed gem) and
+  **Innovation** (steampunk: riveted metal, energy tubes, gears, glowing lens, sparks) and
+  **Devotion** (knightly: winged shield, red sashes, polished metal), **Mad King** (horned
+  crest, armour plates, glowing runes), **X-Mas** (snow, ribbons, holly, star; a seasonal
+  set) and **Párbaj** (Wild West duel: cowboy hat with a glowing die, bandoliers). Files in
+  `public/badges/<set>/{gold,silver,bronze}-{512,128}.png`; hole sizes, placement rules and
+  screenshots in `docs/mockups/podium-badges/`. Open: which set a tournament awards (one set
+  per tournament or season, chosen by an admin?).
+- **Admins can try on any badge** (owner, 2026-11-03): in their own profile's Gyűjtemény,
+  admins see every badge of every set as available and can wear any of them, for testing.
+  Nothing is added to their collection or XP. Open: should an admin's test badge also show to
+  others (next to their name), or only to the admin? They go to the Gyűjtemény automatically like
+  every reward; wearing stays the player's choice. Open: one badge per place (with a count,
+  e.g. "×3"), or one per tournament ("Október · 1. hely")?
 - **Double XP periods:** an admin sets a start and an end, and the automatic sources give
   2× XP during that time.
 
@@ -319,8 +345,10 @@ events. Admins fine-tune values on the XP management page.
 - **No XP leaderboard.**
 - A player sees their own XP and level on their **profile**, plus a **thin XP bar under their
   name** in the header (see Look below).
-- Other players never see someone's XP or level. They only see the cosmetics that player
-  chose to wear.
+- **Your level is visible only to you** (owner, 2026-11-03). Other players never see
+  someone's XP or level; profiles aren't open to others at first (R3).
+- Others can only **guess** a player's level from the **badge ring they wear** around their
+  profile picture.
 
 **Look (decided by the owner, 2026-11-03: "option C", not built yet)**
 - Mockup screenshots and the mock code: `docs/mockups/xp-option-c/` (made on the real pages
@@ -339,8 +367,8 @@ events. Admins fine-tune values on the XP management page.
 - **Rejected:** a ring around the avatar that fills up (the owner's first idea), and the
   variants with the XP ring outside or inside a badge ring: too much noise around the
   picture once badges exist.
-- Top level: the bar stays full and the profile says "Csúcsszint". Level-up feedback is
-  still open (see below).
+- Top level: the bar stays full and the profile says "Csúcsszint". Level-up: the popup in
+  Rewards above.
 
 **Admin controls (XP kezelés page, admins only)**
 - Change the XP value of each activity, turn activities on and off, and edit the level curve
@@ -376,10 +404,7 @@ events. Admins fine-tune values on the XP management page.
 - **After the first year / past level 20:** XP is lifetime. Does the cap rise for the next
   year (levels 21–40), and does XP earned at level 20 keep counting until then (proposed)?
 - **Double XP:** only the automatic sources (proposed), or the admin-given ones too?
-- **Level number:** hidden from other players too (proposed), or visible without the XP?
 - **Rewards:** which cosmetic for each level and milestone?
-- **Level-up moment:** is the bar filling up enough, or a one-time "Szintlépés! 6. szint"
-  popup on the next visit?
 
 ### R5 · Admin area upgrade (Admin felület)
 

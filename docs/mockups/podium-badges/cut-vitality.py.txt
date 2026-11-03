@@ -1,0 +1,80 @@
+# Cuts the podium badges out of the owner's preview image: transparent background (glow and
+# lightning keyed against the dark background), an exact transparent hole for the profile
+# picture, square PNGs centred on the hole.
+import sys, math
+from collections import deque
+from PIL import Image, ImageFilter
+src, out = sys.argv[1], sys.argv[2]
+im = Image.open(src).convert("RGB"); P = im.load(); W, H = im.size
+BG = (15, 14, 19)
+
+def dist(c): return max(abs(c[k] - BG[k]) for k in range(3))
+
+def cut(name, cx, cy, half, hole, keep_from, size, fade_from=None, xlim=None, ylim=None, body=10**6):
+    x0, y0 = int(round(cx - half)), int(round(cy - half)); n = 2 * int(half)
+    box = im.crop((x0, y0, x0 + n, y0 + n)); b = box.load()
+    lo, hi = xlim if xlim else (0, W)
+    # 1. solid silhouette: everything not reachable from the crop border through background
+    bgish = [[dist(b[x, y]) <= 12 for x in range(n)] for y in range(n)]
+    seen = [[False] * n for _ in range(n)]; q = deque()
+    for i in range(n):
+        for (x, y) in ((i, 0), (i, n - 1), (0, i), (n - 1, i)):
+            if bgish[y][x] and not seen[y][x]: seen[y][x] = True; q.append((x, y))
+    while q:
+        x, y = q.popleft()
+        for nx, ny in ((x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)):
+            if 0 <= nx < n and 0 <= ny < n and not seen[ny][nx] and bgish[ny][nx]:
+                seen[ny][nx] = True; q.append((nx, ny))
+    solid = Image.new("L", (n, n), 0); sp = solid.load()
+    for y in range(n):
+        for x in range(n):
+            if not seen[y][x]: sp[x, y] = 255
+    solid = solid.filter(ImageFilter.MaxFilter(5))  # give back the dark outline eaten by the fill
+    # Dark pockets enclosed by lightning outside the ring body aren't part of the badge: keep
+    # the solid area only inside the body radius or right next to coloured pixels.
+    bright = Image.new("L", (n, n), 0); bp = bright.load()
+    for y in range(n):
+        for x in range(n):
+            if dist(b[x, y]) > 30: bp[x, y] = 255
+    bright = bright.filter(ImageFilter.MaxFilter(7)); bp = bright.load()
+    sp = solid.load()
+    for y in range(n):
+        for x in range(n):
+            if sp[x, y] and math.hypot(x + 0.5 - (cx - x0), y + 0.5 - (cy - y0)) > body and not bp[x, y]: sp[x, y] = 0
+    res = Image.new("RGBA", (n, n)); r = res.load()
+    for y in range(n):
+        for x in range(n):
+            c = b[x, y]; gx, gy = x0 + x, y0 + y
+            rr = math.hypot(x + 0.5 - (cx - x0), y + 0.5 - (cy - y0))
+            if gx < lo or gx >= hi or (ylim and gy >= ylim): r[x, y] = (0, 0, 0, 0); continue
+            if sp[x, y]: a = 1.0
+            else:  # glow / lightning: key against the background colour
+                # only light (glow, lightning, sparks) survives; dark shadow pixels drop out, so
+                # nothing smudges on the white profile card
+                lum = 0.3 * c[0] + 0.59 * c[1] + 0.11 * c[2]
+                a = max(0.0, min(1.0, (lum - 22) / 80))
+            # the hole: transparent inside `hole`, except bright ornaments overlapping it from `keep_from`
+            if rr < keep_from: a = 0.0
+            elif rr < hole:
+                if dist(c) < 45: a = 0.0
+            if rr < hole + 1 and rr >= hole and dist(c) < 45: a *= (rr - hole)  # soft edge
+            if fade_from and rr > fade_from: a *= max(0.0, 1 - (rr - fade_from) / (half - fade_from))
+            if a <= 0: r[x, y] = (0, 0, 0, 0); continue
+            if a < 1:  # un-premultiply the background out of the glow
+                col = tuple(max(0, min(255, int(round((c[k] - BG[k] * (1 - a)) / a)))) for k in range(3))
+            else: col = c
+            r[x, y] = (*col, int(round(a * 255)))
+    res = res.resize((size, size), Image.LANCZOS)
+    res.save(f"{out}/{name}.png", optimize=True)
+    return hole * size / n
+
+BODY = 282
+T = {"gold": (363, 421), "silver": (1000, 421), "bronze": (1640, 421)}
+X = {"gold": (0, 681), "silver": (681, 1320), "bronze": (1320, W)}
+for k, (cx, cy) in T.items():
+    h = cut(f"podium-{k}-512", cx, cy, 336, 183.5, 162, 512, fade_from=300, xlim=X[k], ylim=770, body=BODY)
+    print(k, "large hole radius in 512 canvas:", round(h, 1))
+S = {"gold": (269, 963.5), "silver": (905, 963.5), "bronze": (1541, 963)}
+for k, (cx, cy) in S.items():
+    h = cut(f"podium-{k}-128", cx, cy, 102, 48.5, 48.5, 128, xlim=(cx - 102, cx + 102), ylim=1116)
+    print(k, "small hole radius in 128 canvas:", round(h, 1))
