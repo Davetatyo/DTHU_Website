@@ -327,7 +327,8 @@ Newest first. Each session adds an entry (see CLAUDE.md → "End of every sessio
 - Committed and pushed on `feature/games` with the owner's OK, after merging `main` (v2.23).
   All TEMP-PREVIEW test code removed (`grep -rn TEMP-PREVIEW src` prints nothing).
 - **Next:** the other developer runs 0010 (after 0008 and 0009) in Supabase, then the owner
-  opens the pull request and merges. The Hungarian guide for him may need a 0010 section.
+  opens the pull request and merges. The Hungarian guide for him now has a 0010 section (run
+  steps, check query `tables = 7`, `functions = 6`, rollback SQL; all checked on a local copy).
 
 ### 2026-11-03 · Admin badge try-on on Profilom (feature/profile, v2.23)
 
