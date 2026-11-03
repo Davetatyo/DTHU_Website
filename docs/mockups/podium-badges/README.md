@@ -1,4 +1,4 @@
-# Podium badges (gold, silver, bronze), by set
+# Badges: podium sets (gold, silver, bronze) and level badges
 
 Tournament podium badge rings: 1st place gold, 2nd silver, 3rd bronze. They come in **sets**
 (owner, 2026-11-03), each with its own look. Drawn by another agent from the owner's
@@ -14,6 +14,20 @@ R4).
 | **Mad King** | barbaric: horned crest with a glowing crystal, armour plates with straps and spikes, glowing runes, a torn red cloth, a shield with the numeral | `public/badges/mad-king/` |
 | **X-Mas** | festive: snow-capped ring with red ribbons and a bow, holly, a star on top, a shield with the numeral, snowflakes | `public/badges/x-mas/` |
 | **Párbaj** | duel / Wild West: a cowboy hat with a glowing die (gold), crystal cube (silver) or crystals (bronze), bandoliers and purple scarves, gems, a gear medallion, energy arcs | `public/badges/parbaj/` |
+
+## Level badges (single badges, not sets)
+
+Earned by reaching an XP level (owner, 2026-11-03), one badge each, no gold/silver/bronze:
+
+| Badge | Level | Look | Files | 512 hole | 128 hole |
+|---|---|---|---|---|---|
+| **Barbarian** (Barbár) | 5 | bronze-toned riveted ring, fur, straps, a glowing amber orb on top, a plain shield at the bottom, embers | `public/badges/levels/barbarian-{512,128}.png` | 103.65 px | 28.61 px |
+| **Moon Elf** (Holdtünde) | 7 | silver ring with flowing cloth, a glowing crescent moon on top, a winged shield, blue sparkles | `public/badges/levels/moon-elf-{512,128}.png` | 103.02 px | 26.18 px |
+
+Placed the same way as the podium badges (see below). Screenshots:
+`szint-jelvenyek-sotet-vilagos.png`, `gyujtemeny-szint-jutalmak.jpg` (Gyűjtemény row: earned
+and locked). Moon Elf shows a small dark patch beside the moon on white backgrounds (part of
+its glow); fine on the dark header.
 
 ## Files
 

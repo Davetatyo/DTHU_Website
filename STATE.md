@@ -1,6 +1,6 @@
 # Project state: DTHU website
 
-**Current version: v2.22** (2026-11-03). Live: https://dthu.hu builds from this repository's
+**Current version: v2.23** (2026-11-03). Live: https://dthu.hu builds from this repository's
 `main` (the owner moved Vercel over around 2026-11-01; checked live 2026-11-02). Every push to
 `main` deploys within a minute.
 **Launch phase: 1**: the public sees only the Meccsszervező; the whole site from the prototype
@@ -277,6 +277,27 @@ quiz) are in
 ## Handover log
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
+
+### 2026-11-03 · Admin badge try-on on Profilom (feature/profile, v2.23)
+
+- Owner: test the badges live, admins only, invisible to everyone else until the public
+  launch. Built on `feature/profile` (fast-forwarded to `main` first): `lib/badges.ts`
+  catalogue (+ tests, incl. that every file exists), `BadgedAvatar`, `AdminBadgePicker` on
+  Profilom (admins only), `headerBadge()` passed by both layouts to `SiteHeader` as
+  `userBadge`. The choice is the `teszt_jelveny` cookie (httpOnly, set by the admin-only
+  `setTestBadge` action), read only when the visitor is a real admin: no database writes,
+  no migration, and other admins don't see it either (per browser).
+- Verified in the scratch copy with a fake login: wearing and removing, header chip, desktop
+  dark and phone light; with the same cookie but a non-admin login nothing shows (no badge,
+  no picker, no badge images). Types, lint, 205 tests.
+- Also in this push: the level badges (Barbarian level 5, Moon Elf level 7) in
+  `public/badges/levels/` and their docs.
+
+### 2026-11-03 · Level badges: Barbarian (level 5) and Moon Elf (level 7) (files only)
+
+- Owner: single badges awarded at XP levels. Cut out like the podium sets into
+  `public/badges/levels/` (`barbarian`, `moon-elf`, 512 and 128 px); roadmap R4 → Rewards,
+  README in `docs/mockups/podium-badges/`. Mock Gyűjtemény row shows earned vs locked.
 
 ### 2026-11-03 · Podium badge art: six sets (files only, nothing built)
 
@@ -1004,6 +1025,15 @@ webhook, no cron secret), so nothing local can post to Discord.
 ---
 
 ## Changelog
+
+### v2.23 · 2026-11-03 · merge of `feature/profile`
+**Changed (admins only):** Profilom has "Jelvények · admin teszt": admins can put on any badge
+(level badges Barbár and Holdtünde, and the six podium sets) to see it on their header chip
+and profile. Only that admin sees it, in that browser (a cookie, nothing in the database).
+Players see no change.
+**Manual steps:** none.
+**Verified:** types, lint, 205 tests; browser with a fake login (admin and non-admin), desktop
+and 375 px, dark and light.
 
 ### v2.22 · 2026-11-03 · merge of `feature/games`
 **Changed (admins only, phase 1):** Szemfüles has a fourth picture, **ARRRrrrrrrrrr** (pirate
