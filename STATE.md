@@ -278,6 +278,17 @@ quiz) are in
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
 
+### 2026-11-03 · XP values and level curve agreed (roadmap only, nothing built)
+
+- Worked out the XP plan with the owner, written into `Features_Roadmap.md` → R4: smallest
+  step 5 XP; at most 20 levels a year; quiz XP only for correct answers; welcome 10 (first
+  Discord sign-in), first match 10, finishing 30 (Bye in the first/last round still counts),
+  podium extra 150/100/75; Szemfüles 5 XP once per picture at 100 points, no cheat check.
+- Curve: 25 XP for level 2, +15 per level, level 20 = 3,040 XP. Someone who joins everything
+  reaches 20 around week 45 (all quiz answers right) to week 50 (80% right).
+- Still open (R4 → Open questions): after the first year, double XP scope, level number
+  visibility, rewards per level, the level-up moment.
+
 ### 2026-11-03 · XP look decided (option C), Gyűjtemény needed (roadmap only, nothing built)
 
 - Owner is planning the XP system (roadmap R4). Mockups shown: a filling ring around the

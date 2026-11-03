@@ -205,8 +205,8 @@ catalogue foundation; R4 is what fills the collection
 
 ### R4 · XP and levels (Tapasztalati pontok)
 
-**Status:** In discussion (draft decisions from the owner, 2026-10-31; to finalise with the
-other admins before building) · **Feature id (proposed):** `xp` · **Depends on:** R5 Admin
+**Status:** XP values and level curve **agreed with the owner** (2026-11-03), look decided
+(option C, see Look); not built · **Feature id (proposed):** `xp` · **Depends on:** R5 Admin
 area (XP management page), R3 Profile (cosmetics collection, badge ring). The automatic
 sources need R1 Tutorial and R7 Quiz.
 
@@ -220,37 +220,89 @@ Users earn XP for activities and level up at rising milestones, in the style of 
 - XP is **lifetime** and never resets.
 - Everyone starts from **zero** at launch. Nothing is backfilled.
 
-**How XP is earned (first list, will keep growing)**
+**Ground rules (owner, 2026-11-03)**
+- The smallest XP step is **5 XP**: every value and level cost is a multiple of 5.
+- **One year, at most 20 levels.** Level 20 is reachable for anyone who joins everything
+  (events, tutorials, games, news, the daily quiz). It takes dedication, not skill, apart
+  from the quiz, which pays only for correct answers.
+- Tournament **podium places give big extra XP**, so strong but less active players can
+  catch up.
+- "Season" means the **official Dice Throne season** and its theme: the top level is named
+  after it. The XP plan itself is counted per year.
 
-| Activity | How it's given | How often | Starting XP (adjustable) |
-|---|---|---|---|
-| Finishing the site tutorial after the first sign-in (R1) | automatic | once | 50 |
-| First match played in a tournament | admin | once per tournament | 20 |
-| Tournament placement: 1st / 2nd / 3rd / everyone else | admin | once per tournament | 150 / 100 / 75 / 30 |
-| Daily Quiz (R7) | automatic | once a day | 10 |
-| Quiz level completed (R7) | automatic | once per level, only with 100% correct answers | 15–40, rising with difficulty |
-| Attending a live event | admin | once per event | 50 |
-| Idea (later): reading a news article and confirming it with an emoji (R2) | automatic | once per article | small, to decide |
+**How XP is earned (agreed values; the list will keep growing)**
 
-The values are a starting point modelled on Duolingo (about 10 XP for a daily task). Admins
-fine-tune them on the XP management page.
+| Activity | XP | Rule | Given | Max in a year |
+|---|---|---|---|---|
+| Welcome: first sign-in to the site with Discord | 10 | once ever, no Karnyx name needed | automatic | 10 |
+| Site tutorial (R1) | 50 | once | automatic | 50 |
+| Other tutorials: tournament rules, new site features (R1) | 25 | each once, about 6 a year | automatic | 150 |
+| Daily Quiz (R7) | 5 | **only for a correct answer**, once a day | automatic | 1,825 at 100% / ~1,460 at 80% |
+| First match played in a tournament | 10 | when the player's first match is marked Lejátszott; a Bye doesn't count | automatic | 120 |
+| Finishing a tournament | 30 | ends with a place, even the last; a Bye in the first or last round still counts as in; no XP for dropping out midway or not showing up (they keep the first-match XP if they had it) | automatic when the tournament closes: everyone who played or had a Bye in every round | 360 |
+| Podium extra: 1st / 2nd / 3rd | 150 / 100 / 75 | on top of the 30 | admin (like the Sorsolás podium tickets) | catch-up, not counted in the max |
+| Taking part in a live event | 50 | per event, about 12 a year | admin | 600 |
+| Playing a game for the first time (R6) | 25 | once per game, about 6 | automatic | 150 |
+| Szemfüles: a picture done with 100 points (all 10 found) | 5 | **once per picture**, about 2 new pictures a month; no cheat check (owner: "if someone cheats they deserve it") | automatic | ~140 |
+| Reading an important news article and confirming it (R2) | 5 | per marked article, about 2 a month | automatic | 120 |
+| **Joining everything, all quiz answers right** | | | | **~3,525** |
+| **Joining everything, 80% right** | | | | **~3,160** |
+
+Frequencies assumed: 12 online tournaments a year (monthly) and about 12 live or community
+events. Admins fine-tune values on the XP management page.
 
 **Built-in limits (no separate cap needed)**
-- Every source is **one-time, once a day or occasional**. Nothing can be repeated endlessly
-  for XP.
-- Quiz **retakes give no XP**. **Random mode gives no XP**. A quiz level gives XP only when
-  it's completed **100% correctly**.
+- Every source is **one-time, once a day, once per item or occasional**. Nothing can be
+  repeated endlessly for XP (e.g. replaying a Szemfüles picture gives nothing new).
+- Quiz: **only correct answers** give XP; retakes and random mode give none; a quiz level
+  gives XP only when completed **100% correctly**.
 - These limits are written into the code. Admins can't switch them off by accident.
 
-**Levels and seasons**
-- Each level needs more XP than the last. Starting curve: going from level *n* to *n*+1 costs
-  **20 + 10·(n−1) XP**.
-  - That puts level 2 at 20 XP, level 5 at 140, level 10 at 540 and level 20 at 2,090.
-  - A very active player (daily quiz, quiz levels, one tournament and an event) reaches about
-    level 20 by the end of the season.
-- **Season 1 has 20 levels.** A season lasts **3 months**. Admins can adjust the curve.
-- Levels have **no names**, except the season's **top level**. Admins name it after the
-  current Dice Throne season.
+**Levels (agreed curve)**
+- Level 1 → 2 costs **25 XP**, and every level costs **15 XP more** than the one before
+  (level *n* → *n*+1 costs 25 + 15·(n−1)). Level 20 needs **3,040 XP** in total.
+- The one-off sources (welcome, site tutorial, first plays, existing Szemfüles pictures, ~180
+  XP) take a new player to about level 5 in the first week. After that, roughly one level
+  every 3–5 weeks.
+- Milestones: levels **5, 10, 15, 20** (badges and titles).
+
+| Level | XP for this level | Total XP | Joins everything, 80% quiz | Joins everything, 100% quiz |
+|---|---|---|---|---|
+| 2 | 25 | 25 | week 1 | week 1 |
+| 3 | 40 | 65 | week 1 | week 1 |
+| 4 | 55 | 120 | week 1 | week 1 |
+| **5** | 70 | **190** | week 1 | week 1 |
+| 6 | 85 | 275 | week 2 | week 2 |
+| 7 | 100 | 375 | week 4 | week 3 |
+| 8 | 115 | 490 | week 6 | week 5 |
+| 9 | 130 | 620 | week 8 | week 7 |
+| **10** | 145 | **765** | week 11 | week 10 |
+| 11 | 160 | 925 | week 13 | week 12 |
+| 12 | 175 | 1,100 | week 17 | week 15 |
+| 13 | 190 | 1,290 | week 20 | week 18 |
+| 14 | 205 | 1,495 | week 23 | week 21 |
+| **15** | 220 | **1,715** | week 27 | week 24 |
+| 16 | 235 | 1,950 | week 31 | week 28 |
+| 17 | 250 | 2,200 | week 36 | week 32 |
+| 18 | 265 | 2,465 | week 40 | week 36 |
+| 19 | 280 | 2,745 | week 45 | week 40 |
+| **20** | 295 | **3,040** | **week 50** | **week 45** |
+
+**Example players over one year**
+
+| Player | XP | Level |
+|---|---|---|
+| Joins everything, all quiz answers right | ~3,525 | 20 (week 45) |
+| Joins everything, 80% right | ~3,160 | 20 (week 50) |
+| Joins everything, 60% right | ~2,795 | 19 |
+| Plays every tournament, nothing else | ~540 | 8 |
+| Same, with 2 golds, 2 silvers and 2 bronzes | ~1,190 | 12 |
+| Same, with 4 golds, 3 silvers and 2 bronzes | ~1,590 | 14 |
+| Casual: quiz every second day at 80%, 6 tournaments, 4 events | ~1,330 | 13 |
+| Only the quiz, 80% right | ~1,470 | 13 |
+
+- Levels have **no names**, except the **top level**, named after the current official Dice
+  Throne season.
 - Reaching the top level earns a **special badge ring** around the profile picture.
 
 **Rewards**
@@ -272,7 +324,9 @@ fine-tune them on the XP management page.
 
 **Look (decided by the owner, 2026-11-03: "option C", not built yet)**
 - Mockup screenshots and the mock code: `docs/mockups/xp-option-c/` (made on the real pages
-  in a scratch copy with example data: Dave, level 5, 172 XP, wearing a badge ring).
+  in a scratch copy with example data: Dave, level 5, 172 XP, wearing a badge ring). The
+  numbers in the mockup come from the earlier draft curve; with the agreed curve 172 XP is
+  level 4, and the profile line reads "… XP kell még · összesen … XP" (no season counter).
 - **Header profile chip** (after the coin|ticket capsule, same 32 px height): the avatar
   carries the **worn badge ring** only (nothing around it when no badge is worn). Under the
   name sits a **3 px gold XP bar** showing progress to the next level. Hover/title:
@@ -303,7 +357,7 @@ fine-tune them on the XP management page.
 - `xp_activities`: key, name, XP amount, how often, automatic or admin, active.
 - `xp_events`: user, activity, amount, multiplier, source reference, reason, given by, time.
   A unique key stops double awards, e.g. the same activity + user + day/tournament/quiz level.
-- `xp_levels`: level, XP needed, season, name.
+- `xp_levels`: level, XP needed, name (the top level takes the Dice Throne season name).
 - `xp_rewards`: level → cosmetic from the R3 catalogue. Reaching the level adds the item to
   `user_cosmetics`.
 - `xp_boosts`: start, end, multiplier.
@@ -319,17 +373,10 @@ fine-tune them on the XP management page.
 3. The automatic sources, as R1 and R7 are built.
 
 **Open questions (to settle with the admins):**
-- **XP past the season's top level:** XP is lifetime, but season 1 stops at level 20.
-  Proposal: the level cap rises each season (season 2 opens levels 21–40, and so on). XP
-  earned at the cap
-  - (a) keeps counting and is applied when the next season opens (proposed); or
-  - (b) is not earned until then.
-- **First match played:** once per tournament (proposed), or once ever?
-- **Daily Quiz:** XP only for a correct answer (proposed, in line with the 100% rule), or for
-  answering at all?
+- **After the first year / past level 20:** XP is lifetime. Does the cap rise for the next
+  year (levels 21–40), and does XP earned at level 20 keep counting until then (proposed)?
 - **Double XP:** only the automatic sources (proposed), or the admin-given ones too?
 - **Level number:** hidden from other players too (proposed), or visible without the XP?
-- **Starting values and curve:** OK as a placeholder?
 - **Rewards:** which cosmetic for each level and milestone?
 - **Level-up moment:** is the bar filling up enough, or a one-time "Szintlépés! 6. szint"
   popup on the next visit?
