@@ -1,6 +1,6 @@
 # Project state: DTHU website
 
-**Current version: v2.23** (2026-11-03). Live: https://dthu.hu builds from this repository's
+**Current version: v2.24** (2026-11-03). Live: https://dthu.hu builds from this repository's
 `main` (the owner moved Vercel over around 2026-11-01; checked live 2026-11-02). Every push to
 `main` deploys within a minute.
 **Launch phase: 1**: the public sees only the Meccsszervező; the whole site from the prototype
@@ -329,6 +329,14 @@ Newest first. Each session adds an entry (see CLAUDE.md → "End of every sessio
 - **Next:** the other developer runs 0010 (after 0008 and 0009) in Supabase, then the owner
   opens the pull request and merges. The Hungarian guide for him now has a 0010 section (run
   steps, check query `tables = 7`, `functions = 6`, rollback SQL; all checked on a local copy).
+
+### 2026-11-03 · Test badge also on the admin's own picture in lists (feature/profile, v2.24)
+
+- Owner couldn't see his test badge where players' pictures sit side by side. `PlayerAvatar`
+  now wraps the admin's own avatar in `BadgeOverlay` (same footprint, the ring overflows a
+  little, the picture shrinks into the hole) when `getOwnTestBadge(name)` matches the signed-in
+  admin's Karnyx name. Still only for that admin. Checked in the scratch copy: Következő
+  meccsem, cards, list row, match page; on phones the list rows hide avatars as before.
 
 ### 2026-11-03 · Admin badge try-on on Profilom (feature/profile, v2.23)
 
@@ -1077,6 +1085,13 @@ webhook, no cron secret), so nothing local can post to Discord.
 ---
 
 ## Changelog
+
+### v2.24 · 2026-11-03 · merge of `feature/profile`
+**Changed (admins only):** the test badge also shows around the admin's own picture in the
+Időpontfoglaló (Következő meccsem, matchup cards and rows, the match page). Only that admin sees
+it. Players see no change.
+**Manual steps:** none.
+**Verified:** types, lint, tests; browser with a fake admin login.
 
 ### v2.23 · 2026-11-03 · merge of `feature/profile`
 **Changed (admins only):** Profilom has "Jelvények · admin teszt": admins can put on any badge
