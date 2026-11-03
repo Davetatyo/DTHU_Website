@@ -93,15 +93,88 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 | `register-page` Regisztráció | `/regisztracio` | **live** | static guide content; tournament banner real | owner review of Hungarian texts |
 | `profile` Profilkép, Profil szerkesztése, Kitiltás | `/meccsszervezo/profil`, `/meccsszervezo/admin/felhasznalo/<id>` | **live** (v2.2): every logged-in user can upload a picture; admin page and bans for all admins | all real | badge ring (R3/R4), cosmetics collection |
 
+## Database (Supabase)
+
+Snapshot of the live database, **checked 2026-11-03** against the production project
+(read-only: table existence, row counts, storage buckets). There is **one** Supabase project:
+local development uses the live data too (see CLAUDE.md, golden rule 1).
+
+**Migrations** (`supabase/migrations/`, run by hand in the Supabase SQL Editor, in order):
+0001 init · 0002 profile pictures and bans · 0003 events · 0004 news · 0005 polls · 0006 links.
+**All six are applied** on the live database. A new change gets the next number (0007…) and is
+run *before* the code that needs it is deployed.
+
+**Access model:** row level security is on for every table. The website reads and writes
+through the server with the service-role key and checks permissions in code
+(`requireAdmin()` etc.). Only the 0001 tables have read policies (tournament data public,
+`profiles` for signed-in users); the newer tables have **no policies**, so the browser can't
+read them directly at all. There are no database functions or triggers of our own.
+
+### Tables
+
+| Table | What it holds | Key columns | Rows* |
+|---|---|---|---|
+| `profiles` | One per Discord login (`id` = `auth.users.id`) | `discord_id`, `discord_username`, `display_name`, `karnyx_name` (unique, case-insensitive), `facebook_name`, `timezone`, `is_admin`, `avatar_path`, `banned_at`, `banned_by` | 18 |
+| `tournaments` | A tournament (the online season) | `name`, `is_active` | 1 |
+| `players` | Players of a tournament, from the pasted Karnyx pairings | `tournament_id`, `karnyx_name` (unique per tournament), `heroes` (text[]) | 24 |
+| `rounds` | Rounds of a tournament | `tournament_id`, `number`, `starts_at`, `deadline`, `closed_at`, `completed_at`, `deadline_warning_sent` | 2 |
+| `matches` | One pairing (table) in a round | `round_id`, `table_no`, `player_a_id`, `player_b_id` (null = bye), `status` (pending/proposed/confirmed/played/bye), `scheduled_at`, `played_at`, `reminder_sent` (unused) | 23 |
+| `proposals` | Proposed times for a match | `match_id`, `proposed_by` → profiles, `starts_at`, `status` (open/accepted/declined/superseded) | 32 |
+| `events` | Eseménynaptár events | `slug` (unique, never changes), `title`, `kind` (online/live/community/other), `tentative`, `starts_at`, `ends_at`, `all_day`, `location`, `summary`, `body` (jsonb blocks), `cover_path`, `link_url`, `card_only`, `pinned`, `published_at` (null = draft, future = scheduled), `created_by`/`updated_by` | 3 |
+| `news` | Hírek articles | `slug`, `title`, `category` (tournament/community/live/site/shop), `lead`, `body` (jsonb blocks), `cover_path`, `pinned`, `published_at`, `edited_at`, `author_id`, `created_by`/`updated_by` | 4 |
+| `polls` | Szavazás in an article (set up in the article's body, synced on save) | `id` (from the editor), `news_id` (cascade), `question`, `options` (jsonb: id + label), `multi`, `allow_other`, `closes_at` | 1 |
+| `poll_votes` | One vote per user per poll (anonymous on the site) | primary key (`poll_id`, `user_id`), `choices` (text[], `_other` = Egyéb), `other_text` | 1 |
+| `links` | Linkek page | `title`, `url`, `description`, `image_path`, `sort_order`, `visible` | 5 |
+
+\*Row counts on 2026-11-03, for scale only.
+
+Every table also has `created_at` (and most `updated_at`). `auth.users` (Supabase Auth,
+Discord provider) is managed by Supabase; a profile is created at the first login.
+
+```mermaid
+erDiagram
+  profiles ||--o{ proposals : "proposed_by"
+  profiles ||--o{ poll_votes : "user_id"
+  tournaments ||--o{ players : ""
+  tournaments ||--o{ rounds : ""
+  rounds ||--o{ matches : ""
+  players ||--o{ matches : "player_a / player_b"
+  matches ||--o{ proposals : ""
+  news ||--o{ polls : "news_id"
+  polls ||--o{ poll_votes : "poll_id"
+  profiles ||--o{ events : "created_by / updated_by"
+  profiles ||--o{ news : "author / created_by / updated_by"
+  profiles ||--o{ links : "created_by / updated_by"
+```
+
+### Storage buckets (all public read; writes only through the server)
+
+| Bucket | For | Limit |
+|---|---|---|
+| `avatars` | Profile pictures (`profiles.avatar_path`) | 300 KB, webp/jpeg/png |
+| `event-images` | Event cards and pictures in event pages | 1 MB, webp/jpeg/png |
+| `news-images` | News cards and pictures in articles | 1 MB, webp/jpeg/png |
+| `link-images` | Linkek tile pictures | 1 MB, webp/jpeg/png |
+
+### Scheduled job
+
+`pg_cron` + `pg_net`: job `dt-reminders` runs every hour and calls
+`https://dthu.hu/api/cron/reminders` with the secret stored in Vault as `dt_cron_secret`
+(setup in docs/setup.md §6; not re-checked here, it isn't visible through the API).
+
+### Not in the database
+
+Szabálytár content (files in `src/features/rulebook/content/`), the games' data (code), the
+Alchemist's answers (code). Kept only in the player's browser (`localStorage`): Bolt wishlist,
+the Alchemist's unanswered questions, Szemfüles best scores. Ranking, tickets and shop
+balances are still sample data (no tables yet; ideas in the roadmap: R4 `xp_events`, R7
+`quiz_*`).
+
 ## Needs the owner
 
-0. **Linkek (v2.7, on `main`):** run `supabase/migrations/0006_links.sql` in the Supabase SQL
-   Editor if not done yet (new `links` table with the four current links, `link-images`
-   bucket; without it the Linkek page is empty). Then on dthu.hu: Admin felület → Linkek kezelése → Új link, picture, ↑ / ↓,
+0. **Linkek (v2.7, on `main`; migration 0006 applied, checked 2026-11-03).** On dthu.hu: Admin felület → Linkek kezelése → Új link, picture, ↑ / ↓,
    "Látható" off, delete; check `/linkek`.
-0. **Szavazás (v2.6, on `main`):** run `supabase/migrations/0005_polls.sql` in the Supabase SQL
-   Editor if not done yet (tables `polls`, `poll_votes`; only adds things; without it saving a
-   poll shows an error). Then on dthu.hu: a news article → "+
+0. **Szavazás (v2.6, on `main`; migration 0005 applied, checked 2026-11-03).** On dthu.hu: a news article → "+
    Szavazás indítása" → publish → vote, change the vote, check live results (a second admin
    account helps), "Új hír az eredményből".
 0. **Hírek (v2.5, migration 0004 run by the owner):** on dthu.hu as admin: Admin felület → Hírek kezelése → Új hír → card picture, blocks
@@ -175,6 +248,16 @@ quiz) are in
 ## Handover log
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
+
+### 2026-11-03 · Database overview in STATE.md (docs only)
+
+- Owner: a collaborator should see what the Supabase database looks like. New section
+  "Database (Supabase)" above "Needs the owner": migrations, access model, tables with key
+  columns and row counts, a mermaid diagram of the relations, storage buckets, the cron job,
+  and what is deliberately not in the database. Written from `supabase/migrations/` and
+  checked against the live project read-only (a script in the scratchpad: HEAD requests with
+  `count=exact`, a few column checks, the bucket list; no row data read, no key printed). All
+  six migrations are applied; "Needs the owner" no longer asks to run 0005/0006.
 
 ### 2026-11-03 (later) · Favicon (v2.18)
 
