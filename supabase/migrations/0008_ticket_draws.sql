@@ -1,4 +1,4 @@
--- 0007 · Sorsolás (ticket draws): ticket ledger, draws, entries, winners.
+-- 0008 · Sorsolás (ticket draws): ticket ledger, draws, entries, winners.
 -- Run: Supabase Dashboard → SQL Editor → paste the whole file → Run, BEFORE deploying the code
 -- that needs it (see STATE.md → Needs the owner).
 -- Only adds things (four new tables, five functions) and no data. Safe to run twice. Runs in

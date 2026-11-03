@@ -7,8 +7,9 @@ import { requireProfile, sameName } from "@/lib/auth";
 import { getMatch, getPlayers, isParticipant } from "@/features/match-organizer/lib/data";
 import { notifyConfirmed, notifyProposal, notifySwap } from "@/features/match-organizer/lib/notify";
 import { cleanKarnyxName } from "@/features/match-organizer/lib/profile";
+import { parsePlayMode, sideOf } from "@/features/match-organizer/lib/play-mode";
 import { planSwap, type SwapMatch } from "@/features/match-organizer/lib/swap";
-import type { Player } from "@/features/match-organizer/lib/types";
+import type { MatchView, Player } from "@/features/match-organizer/lib/types";
 import { setMatchPlayed } from "@/features/match-organizer/lib/rounds";
 import { getSiteUrl } from "@/lib/site";
 import { createAdminClient } from "@/lib/supabase/server";
@@ -19,6 +20,21 @@ const MAX_SLOTS = 3;
 function back(matchId: string, key: "uzenet" | "hiba", text: string): never {
   revalidatePath(routes.match(matchId));
   redirect(`${routes.match(matchId)}?${key}=${encodeURIComponent(text)}`);
+}
+
+/**
+ * Saves how the visitor plays this match, on their own side only (an admin who isn't playing
+ * has no side). Separate from the other updates on purpose: if migration 0007 hadn't been run,
+ * proposing and accepting still work and only the choice is lost.
+ */
+async function savePlayMode(match: MatchView, karnyxName: string | null, formData: FormData) {
+  if (!formData.has("play_mode")) return;
+  const side = sideOf(match, karnyxName);
+  if (!side) return;
+  await createAdminClient()
+    .from("matches")
+    .update({ [side === "a" ? "mode_a" : "mode_b"]: parsePlayMode(formData.get("play_mode")) })
+    .eq("id", match.id);
 }
 
 /** Loads the match and checks that the visitor is one of its players or an admin. */
@@ -69,6 +85,7 @@ export async function proposeTimes(formData: FormData) {
     .from("matches")
     .update({ status: "proposed", scheduled_at: null, reminder_sent: false, updated_at: new Date().toISOString() })
     .eq("id", matchId);
+  await savePlayMode(match, profile.karnyx_name, formData);
 
   // Players answer their opponent's proposal; an admin's proposal goes to both players.
   const playing = isParticipant(match, profile.karnyx_name);
@@ -117,9 +134,20 @@ export async function acceptProposal(formData: FormData) {
     .from("matches")
     .update({ status: "confirmed", scheduled_at: proposal.starts_at, reminder_sent: false, updated_at: new Date().toISOString() })
     .eq("id", matchId);
+  await savePlayMode(match, profile.karnyx_name, formData);
 
   await notifyConfirmed(match, new Date(proposal.starts_at), await getSiteUrl());
   back(matchId, "uzenet", "Időpont megerősítve! Add hozzá a naptáradhoz.");
+}
+
+/** "Játékmódom" on a match: a player changes how they play it (their own side only). */
+export async function setPlayMode(formData: FormData) {
+  const matchId = String(formData.get("match_id"));
+  const { profile, match } = await authorize(matchId);
+  if (!sideOf(match, profile.karnyx_name)) back(matchId, "hiba", "Csak a saját játékmódodat állíthatod be.");
+  if (match.status === "played") back(matchId, "hiba", "A meccs már le van játszva.");
+  await savePlayMode(match, profile.karnyx_name, formData);
+  back(matchId, "uzenet", "Játékmód elmentve.");
 }
 
 export async function markPlayed(formData: FormData) {
@@ -201,6 +229,8 @@ export async function adminReplacePlayer(formData: FormData) {
       updated_at: new Date().toISOString(),
     })
     .eq("id", matchId);
+  // The new player chooses for themselves (separate update, see savePlayMode).
+  await db.from("matches").update({ [slot === "a" ? "mode_a" : "mode_b"]: null }).eq("id", matchId);
   if (plan.addByeFor) {
     await db.from("matches").insert({
       round_id: match.round_id,

@@ -59,6 +59,10 @@ const SECTIONS: Section[] = [
         a: "A meccs oldalán az „Elfogadom” gombbal választhatsz egyet, és a meccs megerősítetté válik. Ha egyik sem jó, javasolj te újakat; ilyenkor az ő javaslatai érvényüket vesztik.",
       },
       {
+        q: "Mi az a TTS / Webkamera választás a meccs oldalán?",
+        a: "Időpont javaslásakor és elfogadásakor megadhatod, hogyan játszol azon a meccsen: TTS-en (Tabletop Simulator) vagy webkamerával. Nem kötelező; ha nem választasz, webkamerásnak számítasz. A megbeszélt meccsnél még átállíthatod. A Közelgő meccsek oldalon így lehet szűrni: TTS (mindketten TTS-en), Webkamera (mindketten webkamerával) vagy Hibrid (egyikőtök így, másikótok úgy).",
+      },
+      {
         q: "Elfogadhatom a saját javaslatomat?",
         a: "Nem. Mindig a másik fél dönt, így biztos, hogy mindketten egyetértetek az időpontban.",
       },

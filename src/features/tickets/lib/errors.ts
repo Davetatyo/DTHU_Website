@@ -1,4 +1,4 @@
-// The database functions (supabase/migrations/0007_ticket_draws.sql) raise short codes;
+// The database functions (supabase/migrations/0008_ticket_draws.sql) raise short codes;
 // this turns them into Hungarian messages for the page.
 
 const MESSAGES: Record<string, string> = {
@@ -21,7 +21,7 @@ export function ticketErrorMessage(error: { message?: string } | null | undefine
   return "Valami hiba történt, próbáld újra később.";
 }
 
-/** True when the tables of migration 0007 don't exist yet (not applied in Supabase). */
+/** True when the tables of migration 0008 don't exist yet (not applied in Supabase). */
 export function isMissingTable(error: { code?: string; message?: string } | null | undefined): boolean {
   return !!error && (error.code === "42P01" || error.code === "PGRST205" || /does not exist|schema cache/i.test(error.message ?? ""));
 }

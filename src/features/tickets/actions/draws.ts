@@ -13,7 +13,7 @@ import { holdDraw } from "../lib/run";
 import type { Draw } from "../lib/types";
 
 // Every write checks the permission first, then calls a database function from
-// supabase/migrations/0007_ticket_draws.sql (they keep balances and closing times consistent).
+// supabase/migrations/0008_ticket_draws.sql (they keep balances and closing times consistent).
 
 function back(to: string, key: "uzenet" | "hiba", text: string): never {
   revalidatePath(routes.tickets, "layout");

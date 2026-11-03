@@ -6,7 +6,7 @@
 | Branch | `feature/tickets` |
 | Route | `/sorsolas` (player page), `/sorsolas/admin` (admins). Old `/jegyek` redirects. Pages in `src/app/(site)/sorsolas/` |
 | Status | **preview**: admins only until the full site opens (keep in sync with `src/features/registry.ts` and STATE.md) |
-| Database | `supabase/migrations/0007_ticket_draws.sql` (**must be run by the owner before deploy**) |
+| Database | `supabase/migrations/0008_ticket_draws.sql` (**must be run by the owner before deploy**) |
 
 ## What it is
 
@@ -40,7 +40,7 @@ are drawn at random.
 
 ```
 lib/draw.ts       pure rules: drawWinners, drawPhase, maxEntry, parseTicketAmount (tested)
-lib/data.ts       reads (service client); TicketsNotReady when migration 0007 is missing
+lib/data.ts       reads (service client); TicketsNotReady when migration 0008 is missing
 lib/stats.ts      per-draw stats for the cards
 lib/run.ts        holdDraw / runDueDraws (cron + admin button), Discord announcement
 lib/errors.ts     database error codes → Hungarian messages

@@ -1,6 +1,6 @@
 # Project state: DTHU website
 
-**Current version: v2.18** (2026-11-03). Live: https://dthu.hu builds from this repository's
+**Current version: v2.19** (2026-11-03). Live: https://dthu.hu builds from this repository's
 `main` (the owner moved Vercel over around 2026-11-01; checked live 2026-11-02). Every push to
 `main` deploys within a minute.
 **Launch phase: 1**: the public sees only the Meccsszervező; the whole site from the prototype
@@ -84,7 +84,7 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 | `landing-page` Hírek (home) + news | `/`, `/hirek`, `/hirek/<slug>`, admin `/meccsszervezo/admin/hirek` | preview (admins only), **on `main` since v2.5** | news real (table `news`, migration 0004); banner + matches real; ranking and tickets sample | owner runs migration 0004, tests live after the push |
 | `rankings` Ranglista | `/ranglista` | preview | names/heroes real; points, records, movement sample | results source (Karnyx copy-paste? results on "Lejátszottuk"?) |
 | `timetables` Eseménynaptár (was Versenynaptár) | `/esemenynaptar` (+ `/esemenynaptar/<slug>`, admin `/meccsszervezo/admin/esemenyek`) | preview (admins only), **on `main` since v2.3** | all real: events table (migration 0003) + online rounds; sample data removed | owner tests live; then phase 5 (calendar feed, Hírek tiles, Discord later) |
-| `tickets` Sorsolás (ticket draws) | `/sorsolas`, admin `/sorsolas/admin` | preview (admins only), **on `feature/tickets`, not merged** (merged with `main` v2.18 on 2026-11-03) | all real once migration 0007 runs: ticket ledger, draws, entries, winners; only podium places earn tickets (+3/+2/+1, booked by admins) | owner runs migration 0007 before the merge; test live |
+| `tickets` Sorsolás (ticket draws) | `/sorsolas`, admin `/sorsolas/admin` | preview (admins only), **on `feature/tickets`, not merged** (merged with `main` v2.18 on 2026-11-03) | all real once migration 0008 runs: ticket ledger, draws, entries, winners; only podium places earn tickets (+3/+2/+1, booked by admins) | owner runs migration 0008 before the merge; test live |
 | `games` Játékok | `/jatekok`, `/jatekok/taktikai-elony`, `/jatekok/kockazat`, `/jatekok/szemfules` | preview (admins only), **on `main` since v2.11** (Kockázat v2.13, Szemfüles v2.17) | Taktikai Előny: static data from the Szabálytár + `lib/tactician-traits.ts`; Kockázat: all in the browser; no database | owner reviews the hero facts table; Kvíz parked |
 | `shop` Bolt | `/bolt` | preview | items sample; wishlist only in the browser; ticket balance sample (the Jegyek page was removed in v2.11, `/jegyek` redirects here; real balances come with Sorsolás, `feature/tickets`) | shared wishlist, then redeeming (needs a ticket ledger) |
 | `rulebook` Szabálytár | `/szabalytar` | preview (admins only), **RulePop version on `main` since v2.8** (roadmap R10) | the owner's Hungarian RulePop imported (36 sections, 40 heroes, 123 tokens) + the 5 newer heroes and 13 tokens translated (v2.9); popups + own links | owner reviews the new translations; ~20 core pages still to translate |
@@ -101,16 +101,17 @@ Snapshot of the live database, **checked 2026-11-03** against the production pro
 local development uses the live data too (see CLAUDE.md, golden rule 1).
 
 **Migrations** (`supabase/migrations/`, run by hand in the Supabase SQL Editor, in order):
-0001 init · 0002 profile pictures and bans · 0003 events · 0004 news · 0005 polls · 0006 links.
-**All six are applied** on the live database. **0007 ticket draws** (Sorsolás, branch
-`feature/tickets`) is **not applied yet**: run it before that branch is merged. A new change gets the next number (0008…) and is
+0001 init · 0002 profile pictures and bans · 0003 events · 0004 news · 0005 polls · 0006 links ·
+0007 match play modes. **0001–0007 are applied** on the live database (checked 2026-11-03). **0008 ticket draws**
+(Sorsolás, branch `feature/tickets`) is **not applied yet**: run it before that branch is merged.
+A new change gets the next number (0009…) and is
 run *before* the code that needs it is deployed.
 
 **Access model:** row level security is on for every table. The website reads and writes
 through the server with the service-role key and checks permissions in code
 (`requireAdmin()` etc.). Only the 0001 tables have read policies (tournament data public,
 `profiles` for signed-in users); the newer tables have **no policies**, so the browser can't
-read them directly at all. There are no database functions or triggers of our own yet; migration 0007 adds five
+read them directly at all. There are no database functions or triggers of our own yet; migration 0008 adds five
 (`ticket_award`, `ticket_draw_enter`, `ticket_draw_complete`, `ticket_draw_close_now`,
 `ticket_draw_cancel`), callable only with the service role. They keep balances >= 0 and refuse
 entries after a draw closes.
@@ -123,7 +124,7 @@ entries after a draw closes.
 | `tournaments` | A tournament (the online season) | `name`, `is_active` | 1 |
 | `players` | Players of a tournament, from the pasted Karnyx pairings | `tournament_id`, `karnyx_name` (unique per tournament), `heroes` (text[]) | 24 |
 | `rounds` | Rounds of a tournament | `tournament_id`, `number`, `starts_at`, `deadline`, `closed_at`, `completed_at`, `deadline_warning_sent` | 2 |
-| `matches` | One pairing (table) in a round | `round_id`, `table_no`, `player_a_id`, `player_b_id` (null = bye), `status` (pending/proposed/confirmed/played/bye), `scheduled_at`, `played_at`, `reminder_sent` (unused) | 23 |
+| `matches` | One pairing (table) in a round | `round_id`, `table_no`, `player_a_id`, `player_b_id` (null = bye), `status` (pending/proposed/confirmed/played/bye), `scheduled_at`, `played_at`, `reminder_sent` (unused), `mode_a`/`mode_b` (0007: `tts`/`webcam`/null) | 23 |
 | `proposals` | Proposed times for a match | `match_id`, `proposed_by` → profiles, `starts_at`, `status` (open/accepted/declined/superseded) | 32 |
 | `events` | Eseménynaptár events | `slug` (unique, never changes), `title`, `kind` (online/live/community/other), `tentative`, `starts_at`, `ends_at`, `all_day`, `location`, `summary`, `body` (jsonb blocks), `cover_path`, `link_url`, `card_only`, `pinned`, `published_at` (null = draft, future = scheduled), `created_by`/`updated_by` | 3 |
 | `news` | Hírek articles | `slug`, `title`, `category` (tournament/community/live/site/shop), `lead`, `body` (jsonb blocks), `cover_path`, `pinned`, `published_at`, `edited_at`, `author_id`, `created_by`/`updated_by` | 4 |
@@ -131,10 +132,10 @@ entries after a draw closes.
 | `poll_votes` | One vote per user per poll (anonymous on the site) | primary key (`poll_id`, `user_id`), `choices` (text[], `_other` = Egyéb), `other_text` | 1 |
 | `links` | Linkek page | `title`, `url`, `description`, `image_path`, `sort_order`, `visible` | 5 |
 
-| `ticket_draws` *(0007, not applied)* | Sorsolás draws | `title`, `prize`, `description`, `closes_at`, `winner_count`, `max_tickets_per_player`, `status` (open/drawn/cancelled), `drawn_at` | – |
-| `ticket_ledger` *(0007)* | Every ticket change; balance = sum | `profile_id`, `amount` (not 0), `kind` (award/draw_entry/draw_refund), `reason`, `draw_id`, `created_by` | – |
-| `ticket_draw_entries` *(0007)* | Tickets a player put into a draw | primary key (`draw_id`, `profile_id`), `tickets` | – |
-| `ticket_draw_winners` *(0007)* | Draw results | primary key (`draw_id`, `place`), `profile_id` (unique per draw) | – |
+| `ticket_draws` *(0008, not applied)* | Sorsolás draws | `title`, `prize`, `description`, `closes_at`, `winner_count`, `max_tickets_per_player`, `status` (open/drawn/cancelled), `drawn_at` | – |
+| `ticket_ledger` *(0008)* | Every ticket change; balance = sum | `profile_id`, `amount` (not 0), `kind` (award/draw_entry/draw_refund), `reason`, `draw_id`, `created_by` | – |
+| `ticket_draw_entries` *(0008)* | Tickets a player put into a draw | primary key (`draw_id`, `profile_id`), `tickets` | – |
+| `ticket_draw_winners` *(0008)* | Draw results | primary key (`draw_id`, `place`), `profile_id` (unique per draw) | – |
 
 \*Row counts on 2026-11-03, for scale only.
 
@@ -177,18 +178,21 @@ erDiagram
 Szabálytár content (files in `src/features/rulebook/content/`), the games' data (code), the
 Alchemist's answers (code). Kept only in the player's browser (`localStorage`): Bolt wishlist,
 the Alchemist's unanswered questions, Szemfüles best scores. Ranking and shop data are
-still sample data (no tables yet; tickets become real with migration 0007, Sorsolás; ideas in the roadmap: R4 `xp_events`, R7
+still sample data (no tables yet; tickets become real with migration 0008, Sorsolás; ideas in the roadmap: R4 `xp_events`, R7
 `quiz_*`).
 
 ## Needs the owner
 
 0. **Sorsolás (`feature/tickets`, agreed with the owner 2026-11-03): run
-   `supabase/migrations/0007_ticket_draws.sql`** in the Supabase SQL Editor *before* merging the
+   `supabase/migrations/0008_ticket_draws.sql`** in the Supabase SQL Editor *before* merging the
    branch to `main`. No new cron job: the hourly `dt-reminders` call also holds closed draws
    (response becomes `{"warnings":0,"draws":0}`). Tested locally first (see Handover log).
    The developer sent the other developer (who has Supabase access) a short Hungarian guide:
    run the file once, check query (`ticket_%` tables = 4, functions = 5), rollback SQL if needed.
-   Both queries were checked on a local copy of migrations 0001-0007.
+   Both queries were checked on a local copy of migrations 0001-0008.
+0. **Játékmód (v2.19; migration 0007 applied, checked 2026-11-03).** On dthu.hu: a match → propose with TTS → the other side accepts with
+   Webkamera → Közelgő meccsek → Hibrid filter.
+
 0. **Linkek (v2.7, on `main`; migration 0006 applied, checked 2026-11-03).** On dthu.hu: Admin felület → Linkek kezelése → Új link, picture, ↑ / ↓,
    "Látható" off, delete; check `/linkek`.
 0. **Szavazás (v2.6, on `main`; migration 0005 applied, checked 2026-11-03).** On dthu.hu: a news article → "+
@@ -277,7 +281,8 @@ Newest first. Each session adds an entry (see CLAUDE.md → "End of every sessio
   single +/- booking, new draw, "Sorsolás most", "Elmarad" (refund), balances, recent ledger.
   The hourly cron holds closed draws (crypto-random, ticket-weighted, one win per player) and
   posts the result to Discord. Rules: `src/features/tickets/README.md`.
-- Migration renumbered **0002 -> 0007** (main had 0002-0006); its read policies dropped to match
+- Migration renumbered **0002 -> 0007 -> 0008** (main took 0002-0006, then 0007 for match play
+  modes in v2.19, merged into the branch the same day); its read policies dropped to match
   the newer tables (server-only access). The "Sorsolások kezelése" button uses `getAdminView()`.
 - Merged `origin/main` (v2.18) into the branch: conflicts resolved in main's favour (home tile,
   next.config, deleted sample news/events), Sorsolás re-added to the registry and routes.
@@ -290,7 +295,7 @@ Newest first. Each session adds an entry (see CLAUDE.md → "End of every sessio
   `/sorsolas`); only their balance and their tickets per draw. The full ledger stays on the
   admin page.
 - **How it was tested locally (no access to the live Supabase on this machine):** an
-  in-memory Postgres (PGlite) ran migrations 0001-0007 behind a small fake of the Supabase REST
+  in-memory Postgres (PGlite) ran migrations 0001-0008 behind a small fake of the Supabase REST
   API (only the calls the app makes; storage uploads not supported), with seeded test users
   (Dave admin, Kata, Bence, Lili, RP). The dev server pointed at it via environment variables
   set in the shell only (no `.env.local`, fake values), with `NEXT_PUBLIC_FULL_SITE=1` and a
@@ -298,18 +303,39 @@ Newest first. Each session adds an entry (see CLAUDE.md → "End of every sessio
   awards, draw creation, entries, drawing and cancelling. The fake script lives outside the
   repository; ask before adding it as a dev tool. All TEMP-PREVIEW code was removed before the
   commit (`grep -rn TEMP-PREVIEW src` empty).
-- **Migration 0007 hardened (before it was ever run):** safe to run twice (`if not exists`,
+- **Migration 0008 (was 0007) hardened (before it was ever run):** safe to run twice (`if not exists`,
   `create or replace`), one transaction (`begin`/`commit`), fixed `search_path` on the five
   functions, banned players (`profiles.banned_at`) can't enter draws, length/size checks that
   match the app (reason <= 200, title <= 120, prize <= 200, amounts <= 9999). No data in it.
-  Re-tested on a local copy of 0001-0007 (also run twice, and a failing run leaves nothing).
+  Re-tested on a local copy of 0001-0008 (also run twice, and a failing run leaves nothing).
 - **Hidden from players (checked):** status `preview`, so the tab shows only in the admin menu
   and the phase-1 gate sends non-admins from `/sorsolas` to the Időpontfoglaló. No code change
   needed. The only player-visible part is the Discord result post, sent only when an admin
   creates a draw and it closes: don't create real draws before launch.
-- **Next:** the owner runs migration 0007 in the Supabase SQL Editor, then the branch is merged
+- **Next:** the owner runs migration 0008 in the Supabase SQL Editor, then the branch is merged
   to `main` with his OK and tested live as admin (podium award, small draw, "Sorsolás most").
   Discord result posts are untested (no webhook locally).
+
+### 2026-11-03 · Játékmód: TTS / Webkamera / Hibrid in the Időpontfoglaló (feature/match-organizer, v2.19)
+
+- Request from an admin via the owner: know how each match is played and filter scheduled
+  matches by it. First plan (a profile setting) was changed by the owner to a per-match
+  choice on the match page (mock-ups shown for both). Decisions: optional, not chosen =
+  webcam; Hibrid = one TTS + one webcam; changeable on the agreed match; earlier choice
+  pre-selected on new proposals; no Discord or calendar changes; tags on both match lists,
+  filter only on Közelgő meccsek.
+- New: migration 0007 (`matches.mode_a`, `mode_b`), `lib/play-mode.ts` (+ tests),
+  `components/ModeTag.tsx`, `components/PlayModePicker.tsx`, `play-mode.css`; changed
+  `actions/match.ts` (`savePlayMode`, new `setPlayMode`, swap clears the replaced side),
+  `meccs/[id]/page.tsx`, `menetrend/page.tsx`, `MatchList.tsx` (row tag), GYIK, docs.
+- Migration 0007 was run by the owner before the push (checked read-only). Without it the site still works
+  (all matches read as Webkamera) but choices aren't saved.
+- Branch: `feature/match-organizer` (fast-forwarded to `main` first).
+- Same branch, bug fix (owner's screenshots): heroes were cut off. The Áttekintés cards
+  showed only the first hero, the match rows (Lista, Közelgő meccsek) only two with "…".
+  Now the whole roster: one per line on the cards (`MatchupGrid.tsx`), "A · B · C" in the
+  rows, wrapping only between heroes, one per line on phones (`MatchList.tsx`, `.heroes`
+  rules in `globals.css`). Screenshots (desktop + 375 px, dark + light) approved by the owner.
 
 ### 2026-11-03 · Database overview in STATE.md (docs only)
 
@@ -847,6 +873,20 @@ webhook, no cron secret), so nothing local can post to Discord.
 ---
 
 ## Changelog
+
+### v2.19 · 2026-11-03 · merge of `feature/match-organizer`
+**Changed (players see it, Időpontfoglaló):** Játékmód. On the match page each player can say
+how they play that match (TTS or Webkamera, optional, not chosen = webcam): when proposing
+times, when accepting one, and later on the agreed match. Közelgő meccsek gets a filter
+(Mind · TTS · Webkamera · Hibrid, with counts) and match rows a subtle mode tag. GYIK answer
+added.
+**Fixed (players see it):** every player's full roster (3 heroes) is visible on the Áttekintés
+cards (was 1) and in the match rows on Áttekintés / Közelgő meccsek (was 2, cut off).
+**Manual steps:** `supabase/migrations/0007_match_play_modes.sql` before the deploy.
+**Verified:** types, lint, 182 tests (new `play-mode.test.ts`); browser read-only with a fake
+login (reverted): filter, counts, empty state, row tags, match page banner tags, Játékmódom
+and the propose-form choice, 375 px. Not tested: saving (needs the migration and real logins)
+and the accept list (no open proposals in the data).
 
 ### v2.18 · 2026-11-03 · `main`
 **Changed (everyone, also players):** the browser tab / bookmark icon is the DTHU die (owner's

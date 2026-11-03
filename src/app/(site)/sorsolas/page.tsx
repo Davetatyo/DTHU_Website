@@ -64,7 +64,7 @@ export default async function TicketDrawPage({
       {hiba && <p className="alert-error">{hiba}</p>}
       {!data && (
         <p className="alert-error">
-          A sorsolás adatbázisa még nincs beállítva (supabase/migrations/0007_ticket_draws.sql). Amíg nem fut le, ez az
+          A sorsolás adatbázisa még nincs beállítva (supabase/migrations/0008_ticket_draws.sql). Amíg nem fut le, ez az
           oldal üres.
         </p>
       )}
