@@ -46,6 +46,27 @@ export const PICTURES: SpotPicture[] = [
       px(318, 440, 55, "Merre néz a holló"),
     ],
   },
+  {
+    id: "trick-or-treat",
+    name: "Trick or Treat",
+    images: ["/jatekok/szemfules/trick-or-treat-1.jpg", "/jatekok/szemfules/trick-or-treat-2.jpg"],
+    ratio: 2000 / 1116,
+    // The owner marked the 10 (2026-11-03). The generator also changed a few things by accident
+    // (a lit window, pumpkin faces): the second image is the first one with only these 10
+    // areas taken from the owner's version, so nothing else differs.
+    spots: [
+      px(490, 190, 90, "Széttárt szárnyú vagy károgó holló"),
+      px(292, 150, 70, "Boszorkánysüveg vagy szalmakalap a madárijesztőn"),
+      px(150, 480, 50, "Fekete macska a kerítésen"),
+      px(712, 756, 65, "Zombikéz vagy bekötözött múmiakéz"),
+      px(855, 625, 60, "Sötét vagy világító kis tök a lépcsőnél"),
+      px(1132, 82, 45, "Gyertya a padlásablakban"),
+      px(1420, 70, 60, "Pók a tetőn"),
+      px(1275, 985, 115, "Csordultig tele cukorkás tök"),
+      px(1700, 915, 70, "Tökfej vagy szellem a zacskón"),
+      px(1784, 694, 65, "Nyalóka vagy csoki a kézben"),
+    ],
+  },
 ];
 
 export const ROUND_SECONDS = 60;

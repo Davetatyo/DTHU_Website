@@ -1,6 +1,6 @@
 # Project state: DTHU website
 
-**Current version: v2.19** (2026-11-03). Live: https://dthu.hu builds from this repository's
+**Current version: v2.20** (2026-11-03). Live: https://dthu.hu builds from this repository's
 `main` (the owner moved Vercel over around 2026-11-01; checked live 2026-11-02). Every push to
 `main` deploys within a minute.
 **Launch phase: 1**: the public sees only the Meccsszervező; the whole site from the prototype
@@ -85,7 +85,7 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 | `rankings` Ranglista | `/ranglista` | preview | names/heroes real; points, records, movement sample | results source (Karnyx copy-paste? results on "Lejátszottuk"?) |
 | `timetables` Eseménynaptár (was Versenynaptár) | `/esemenynaptar` (+ `/esemenynaptar/<slug>`, admin `/meccsszervezo/admin/esemenyek`) | preview (admins only), **on `main` since v2.3** | all real: events table (migration 0003) + online rounds; sample data removed | owner tests live; then phase 5 (calendar feed, Hírek tiles, Discord later) |
 | `tickets` Sorsolás (ticket draws) | `/sorsolas`, admin `/sorsolas/admin` | preview (admins only), **on `feature/tickets`, not merged** (merged with `main` v2.18 on 2026-11-03) | all real once migration 0008 runs: ticket ledger, draws, entries, winners; only podium places earn tickets (+3/+2/+1, booked by admins) | owner runs migration 0008 before the merge; test live |
-| `games` Játékok | `/jatekok`, `/jatekok/taktikai-elony`, `/jatekok/kockazat`, `/jatekok/szemfules` | preview (admins only), **on `main` since v2.11** (Kockázat v2.13, Szemfüles v2.17) | Taktikai Előny: static data from the Szabálytár + `lib/tactician-traits.ts`; Kockázat: all in the browser; no database | owner reviews the hero facts table; Kvíz parked |
+| `games` Játékok | `/jatekok`, `/jatekok/taktikai-elony`, `/jatekok/kockazat`, `/jatekok/szemfules` | preview (admins only), **on `main` since v2.11** (Kockázat v2.13, Szemfüles v2.17, Trick or Treat v2.20) | Taktikai Előny: static data from the Szabálytár + `lib/tactician-traits.ts`; Kockázat: all in the browser; no database | owner reviews the hero facts table; Kvíz parked |
 | `shop` Bolt | `/bolt` | preview | items sample; wishlist only in the browser; ticket balance sample (the Jegyek page was removed in v2.11, `/jegyek` redirects here; real balances come with Sorsolás, `feature/tickets`) | shared wishlist, then redeeming (needs a ticket ledger) |
 | `rulebook` Szabálytár | `/szabalytar` | preview (admins only), **RulePop version on `main` since v2.8** (roadmap R10) | the owner's Hungarian RulePop imported (36 sections, 40 heroes, 123 tokens) + the 5 newer heroes and 13 tokens translated (v2.9); popups + own links | owner reviews the new translations; ~20 core pages still to translate |
 | `faq` GYIK (site-wide) | `/gyik` | preview | content from the prototype | review texts |
@@ -269,6 +269,22 @@ quiz) are in
 ## Handover log
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
+
+### 2026-11-03 · Szemfüles: second picture "Trick or Treat" (feature/games, v2.20)
+
+- Owner sent two images plus his marked version (10 red circles). A pixel comparison found
+  the generator had also changed things he didn't mark: a lit/dark window on the left gable,
+  pumpkin faces on the roof and the porch, and JPEG noise. So `trick-or-treat-2.jpg` is
+  picture 1 with only the 10 marked areas taken from his picture 2 (feathered mask); the
+  re-check shows only the 10 left. Spots measured from the difference map and his circles.
+- `lib/spot.ts`: new `PICTURES` entry; `spot.test.ts` now checks every picture (10 spots,
+  inside, not overlapping, each hit at its centre). README: how to clean stray changes.
+- Verified: types, lint, tests; browser with a fake admin login in a scratch copy (reverted
+  there; the repo never had it): picker shows both pictures, a full round finds all 10
+  (rings on both pictures), a stray tap costs 5, "Sasszem" result, "Legjobb" on the card,
+  375 px picker.
+- Note for the next agent: PR #2 (Sorsolás, `feature/tickets`) was merged into `main` on
+  GitHub at 11:41 without a version bump; its handover entry below still says "not on main".
 
 ### 2026-11-03 · Sorsolás (ticket draws) on `feature/tickets`, merged with `main` (not on `main`)
 
@@ -873,6 +889,13 @@ webhook, no cron secret), so nothing local can post to Discord.
 ---
 
 ## Changelog
+
+### v2.20 · 2026-11-03 · merge of `feature/games`
+**Changed (admins only, phase 1):** Szemfüles has a second picture, **Trick or Treat** (10
+differences marked by the owner; stray changes from the image generator removed).
+**Manual steps:** none.
+**Verified:** types, lint, tests (every picture checked); a full round in the browser with a
+fake login, desktop and 375 px.
 
 ### v2.19 · 2026-11-03 · merge of `feature/match-organizer`
 **Changed (players see it, Időpontfoglaló):** Játékmód. On the match page each player can say

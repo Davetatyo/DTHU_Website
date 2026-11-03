@@ -4,19 +4,25 @@ import { addScore, hitSpot, maxScore, onFoundSpot, PICTURES, title } from "./spo
 const tea = PICTURES[0];
 
 describe("Szemfüles pictures", () => {
-  it("has the Tea Party with 10 differences inside the picture, not overlapping", () => {
-    expect(tea.spots).toHaveLength(10);
-    for (const s of tea.spots) {
+  it("has unique ids", () => {
+    expect(new Set(PICTURES.map((p) => p.id)).size).toBe(PICTURES.length);
+  });
+
+  it.each(PICTURES.map((p) => [p.name, p] as const))("%s has 10 differences inside the picture, not overlapping", (_, pic) => {
+    expect(pic.spots).toHaveLength(10);
+    for (const s of pic.spots) {
       expect(s.x).toBeGreaterThan(0);
       expect(s.x).toBeLessThan(1);
       expect(s.y).toBeGreaterThan(0);
       expect(s.y).toBeLessThan(1);
     }
-    tea.spots.forEach((a, i) =>
-      tea.spots.forEach((b, j) => {
-        if (i < j) expect(Math.hypot(a.x - b.x, (a.y - b.y) / tea.ratio), `${a.label} / ${b.label}`).toBeGreaterThan(a.r + b.r);
+    pic.spots.forEach((a, i) =>
+      pic.spots.forEach((b, j) => {
+        if (i < j) expect(Math.hypot(a.x - b.x, (a.y - b.y) / pic.ratio), `${a.label} / ${b.label}`).toBeGreaterThan(a.r + b.r);
       }),
     );
+    // Every difference is hit at its own centre (no neighbour steals the tap).
+    pic.spots.forEach((s, i) => expect(hitSpot(pic, new Set(), s.x, s.y)).toBe(i));
   });
 });
 
