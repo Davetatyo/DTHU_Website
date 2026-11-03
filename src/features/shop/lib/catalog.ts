@@ -1,8 +1,8 @@
-// What the Bolt sells. For now only Sorsolás tickets (owner, 2026-11-03). The price is passed to
-// the database function shop_buy_tickets (supabase/migrations/0009_dthu_coins.sql), so this
-// constant is the one place to change it.
+// What the Bolt sells. For now only Sorsolás tickets (owner, 2026-11-03). The price is a setting
+// admins change on the Játékok admin page (economy_config `ticket_price`, see lib/economy.ts);
+// the server passes it to shop_buy_tickets (migration 0009).
 
-/** Price of one Sorsolás ticket, in DTHU coins. */
+/** Default price of one Sorsolás ticket, in DTHU coins (used until an admin sets another). */
 export const TICKET_PRICE = 3500;
 
 /** Most tickets one purchase may buy (the database refuses more). */

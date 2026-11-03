@@ -4,7 +4,20 @@ import { useId } from "react";
 // (the logo's motif) embossed in the middle. Full colour on purpose (unlike the line icons in
 // IconSprite), so it reads as gold in both themes. Decorative unless `title` is given.
 
-export function DthuCoin({ size = 24, title, className }: { size?: number; title?: string; className?: string }) {
+export function DthuCoin({
+  size = 24,
+  title,
+  className,
+  x,
+  y,
+}: {
+  size?: number;
+  title?: string;
+  className?: string;
+  /** Position when drawn inside another <svg> (e.g. on the prize wheel). */
+  x?: number;
+  y?: number;
+}) {
   const id = useId().replace(/:/g, "");
   const rim = `${id}-rim`;
   const face = `${id}-face`;
@@ -13,6 +26,8 @@ export function DthuCoin({ size = 24, title, className }: { size?: number; title
     <svg
       width={size}
       height={size}
+      x={x}
+      y={y}
       viewBox="0 0 64 64"
       className={className}
       role={title ? "img" : undefined}
