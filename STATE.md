@@ -1,6 +1,6 @@
 # Project state: DTHU website
 
-**Current version: v2.20** (2026-11-03). Live: https://dthu.hu builds from this repository's
+**Current version: v2.21** (2026-11-03). Live: https://dthu.hu builds from this repository's
 `main` (the owner moved Vercel over around 2026-11-01; checked live 2026-11-02). Every push to
 `main` deploys within a minute.
 **Launch phase: 1**: the public sees only the Meccsszervező; the whole site from the prototype
@@ -85,7 +85,7 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 | `rankings` Ranglista | `/ranglista` | preview | names/heroes real; points, records, movement sample | results source (Karnyx copy-paste? results on "Lejátszottuk"?) |
 | `timetables` Eseménynaptár (was Versenynaptár) | `/esemenynaptar` (+ `/esemenynaptar/<slug>`, admin `/meccsszervezo/admin/esemenyek`) | preview (admins only), **on `main` since v2.3** | all real: events table (migration 0003) + online rounds; sample data removed | owner tests live; then phase 5 (calendar feed, Hírek tiles, Discord later) |
 | `tickets` Sorsolás (ticket draws) | `/sorsolas`, admin `/sorsolas/admin` | preview (admins only), **on `main`** (pull request #2, 2026-11-03) | all real once migration 0008 runs: ticket ledger, draws, entries, winners; podium places earn tickets (+3/+2/+1, booked by admins), and since `feature/shop` they can also be bought for DTHU coins | confirm migration 0008 was run; test live |
-| `games` Játékok | `/jatekok`, `/jatekok/taktikai-elony`, `/jatekok/kockazat`, `/jatekok/szemfules` | preview (admins only), **on `main` since v2.11** (Kockázat v2.13, Szemfüles v2.17, Trick or Treat v2.20) | Taktikai Előny: static data from the Szabálytár + `lib/tactician-traits.ts`; Kockázat: all in the browser; no database | owner reviews the hero facts table; Kvíz parked |
+| `games` Játékok | `/jatekok`, `/jatekok/taktikai-elony`, `/jatekok/kockazat`, `/jatekok/szemfules` | preview (admins only), **on `main` since v2.11** (Kockázat v2.13, Szemfüles v2.17, Trick or Treat v2.20, Black Friday Shopping v2.21) | Taktikai Előny: static data from the Szabálytár + `lib/tactician-traits.ts`; Kockázat: all in the browser; no database | owner reviews the hero facts table; Kvíz parked |
 | `shop` Bolt + DTHU coin | `/bolt`, admin `/bolt/admin`; wallet in the header | preview (admins only), **on `feature/shop`, not merged** | all real once migration 0009 runs: DTHU coin ledger; the only item is a Sorsolás ticket for 3500 coins; coins only from admins so far; header wallet (coins + tickets) shown wherever the full site is | owner runs 0008 then 0009; how players earn coins (owner to describe) |
 | `rulebook` Szabálytár | `/szabalytar` | preview (admins only), **RulePop version on `main` since v2.8** (roadmap R10) | the owner's Hungarian RulePop imported (36 sections, 40 heroes, 123 tokens) + the 5 newer heroes and 13 tokens translated (v2.9); popups + own links | owner reviews the new translations; ~20 core pages still to translate |
 | `faq` GYIK (site-wide) | `/gyik` | preview | content from the prototype | review texts |
@@ -298,7 +298,11 @@ Newest first. Each session adds an entry (see CLAUDE.md → "End of every sessio
   layouts (`SiteHeader` got a `wallet` slot; components may not import features). Shown only
   where the full site is (phase 1: admins in admin view), hidden if the balances can't be read,
   so the live Időpontfoglaló header can't break.
-- `feature/shop` was fast-forwarded to `main` (v2.20) first; it had nothing of its own.
+- `feature/shop` was fast-forwarded to `main` (v2.20) first; later `main` (v2.21) was merged in
+  (only STATE.md conflicted; resolved by re-adding these notes on top of main's version).
+- The developer's Hungarian Supabase guide for the other developer now covers 0008 and 0009
+  (order, check queries, rollback SQL, all re-run on a local copy), plus a short note asking
+  for 0009.
 - **Verified:** types, lint, 195 tests (new `shop/lib/catalog.test.ts`). Migrations 0001-0009 on
   an in-memory Postgres (PGlite): purchase, too-low balance, banned player, bought tickets entered
   into a draw, anon can't call, run twice. Local fake Supabase + TEMP-PREVIEW test users: Bolt as
@@ -306,6 +310,15 @@ Newest first. Each session adds an entry (see CLAUDE.md → "End of every sessio
   375 px (player and admin). TEMP-PREVIEW code removed before the commit.
 - **Next:** the owner runs 0009 (after 0008), reviews, merges; the owner's description of how
   coins are earned is the next piece of work.
+
+### 2026-11-03 · Szemfüles: third picture "Black Friday Shopping" (feature/games, v2.21)
+
+- Owner sent two images, no marking. The colour difference map showed 11 real differences;
+  the owner dropped the small second "MEGA DEALS" sign (same change as the big one). Picture
+  2 = picture 1 plus the other 10 areas (feathered mask), which also removes the generator's
+  small redraws (box art, potions, "PUBLISHER" misspelt); the re-check shows only the 10.
+- `lib/spot.ts` entry, README note. Verified: types, lint, tests; a full round in the
+  browser (fake admin login in the scratch copy only): all 10 hit, the old small sign is a miss.
 
 ### 2026-11-03 · Szemfüles: second picture "Trick or Treat" (feature/games, v2.20)
 
@@ -926,6 +939,12 @@ webhook, no cron secret), so nothing local can post to Discord.
 ---
 
 ## Changelog
+
+### v2.21 · 2026-11-03 · merge of `feature/games`
+**Changed (admins only, phase 1):** Szemfüles has a third picture, **Black Friday Shopping**
+(10 differences; the owner dropped an 11th).
+**Manual steps:** none.
+**Verified:** types, lint, tests; a full round in the browser with a fake login.
 
 ### v2.20 · 2026-11-03 · merge of `feature/games`
 **Changed (admins only, phase 1):** Szemfüles has a second picture, **Trick or Treat** (10
