@@ -32,8 +32,9 @@ role first); nobody can ban themselves. "Tiltás feloldása" lifts it.
 
 **Admin badge try-on** (testing, v2.23): on Profilom, admins see "Jelvények · admin teszt":
 every badge in `public/badges/` (level badges and the podium sets), each previewed with their
-own picture and a "Felveszem" button. The worn badge shows on their header chip and at the top
-of that block; "Leveszem" takes it off. The choice is a cookie (`teszt_jelveny`) in that
+own picture and a "Felveszem" button. The worn badge shows on their header chip, at the top
+of that block, and (v2.24) around their own picture everywhere `PlayerAvatar` draws it:
+Következő meccsem, the matchup cards and rows, the match page. "Leveszem" takes it off. The choice is a cookie (`teszt_jelveny`) in that
 admin's browser, not a database row, and it is only drawn for the signed-in visitor themself
 when they are a real admin. So players and other admins never see it, and nothing is
 written to the database. The real collection (Gyűjtemény, roadmap R3/R4) replaces this later.
@@ -50,7 +51,9 @@ written to the database. The real collection (Gyűjtemény, roadmap R3/R4) repla
   read only for admins. `actions/badge.ts`: `setTestBadge` (admins only).
 - `components/BadgedAvatar.tsx` (picture + ring, sized from the picture), `HeaderBadge.tsx`
   (`headerBadge()`, passed by the layouts to `SiteHeader` as `userBadge`),
-  `AdminBadgePicker.tsx` (the Profilom block). Styles in `badges.css`.
+  `AdminBadgePicker.tsx` (the Profilom block), `BadgeOverlay` (in `BadgedAvatar.tsx`: a
+  badge around an existing avatar without changing its footprint, used by `PlayerAvatar` via
+  `getOwnTestBadge`). Styles in `badges.css`.
 - `actions/avatar.ts`, `actions/ban.ts`: server actions, permission checks first.
 - `components/AvatarEditor.tsx` (client: pick, crop, upload), `components/PlayerAvatar.tsx`
   (server: avatar with picture lookup), `components/BanButton.tsx` (client: two-step ban).

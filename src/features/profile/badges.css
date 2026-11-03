@@ -9,6 +9,14 @@
   .tb-user.has-badge { padding-left: 2px; gap: 6px; overflow: visible; }
   .tb-user .badged { margin: -8px -2px; }
 
+  /* ---------- badge around a player avatar in lists and cards (BadgeOverlay) ---------- */
+  .badge-wrap { position: relative; display: inline-grid; place-items: center; flex: none; }
+  .badge-wrap > .av { width: var(--pic); height: var(--pic); border: 0; box-shadow: none; }
+  .badge-wrap-ring { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); max-width: none; pointer-events: none; z-index: 1; }
+  @media (max-width: 720px) {
+    .mr .pl .badge-wrap { display: none; }
+  }
+
   /* ---------- admin badge try-on on Profilom ---------- */
   .badge-test-head { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; }
   .badge-test-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(132px, 1fr)); gap: 10px; margin-top: 8px; }
