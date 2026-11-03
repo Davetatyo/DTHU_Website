@@ -24,6 +24,7 @@ export const routes = {
   diceGame: "/jatekok/kockazat",
   spotGame: "/jatekok/szemfules",
   shop: "/bolt",
+  shopAdmin: "/bolt/admin",
   rulebook: "/szabalytar",
   rule: (id: string) => `/szabalytar/${id}`,
   rulebookTab: (tab: string) => `/szabalytar?tab=${tab}`,
