@@ -90,7 +90,8 @@ The Játékok menu tab (after Bolt): a hub with one card per game (`lib/hub.ts`)
   generator changed things by accident (Trick or Treat: a lit window, pumpkin faces), build
   the second image as the first one plus only the marked areas from the owner's version
   (feathered mask), then re-run the difference check: only the 10 should remain.
-- Pictures: Tea Party, Trick or Treat (both 2000 × 1116).
+- Pictures: Tea Party, Trick or Treat, Black Friday Shopping (all 2000 × 1116). A pair with
+  more than 10 differences: the owner picks one to drop, it is taken back from picture 1.
 
 ## Adding a game
 

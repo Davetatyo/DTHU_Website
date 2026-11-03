@@ -67,6 +67,26 @@ export const PICTURES: SpotPicture[] = [
       px(1784, 694, 65, "Nyalóka vagy csoki a kézben"),
     ],
   },
+  {
+    id: "black-friday",
+    name: "Black Friday Shopping",
+    images: ["/jatekok/szemfules/black-friday-1.jpg", "/jatekok/szemfules/black-friday-2.jpg"],
+    ratio: 2000 / 1116,
+    // The pair had 11 differences; the owner dropped the small second "MEGA DEALS" sign
+    // (2026-11-03). Picture 2 is picture 1 plus only these 10 areas, as for Trick or Treat.
+    spots: [
+      px(145, 610, 130, "Hősök vagy lila sárkány a reklámtáblán"),
+      px(1024, 184, 150, "A kiállítás táblájának színe"),
+      px(1516, 138, 50, "Dobókocka a zászlón"),
+      px(1712, 284, 80, "BIG SALE vagy MEGA DEALS felirat"),
+      px(360, 362, 60, "Sárga sapka az árusón"),
+      px(342, 596, 50, "50%-os kedvezmény tábla"),
+      px(802, 668, 100, "Mystical Dragon doboz a kupacban"),
+      px(1404, 866, 105, "Barna vagy kék SALE szatyor"),
+      px(1600, 600, 100, "Barna vagy zöld ruha a barbáron"),
+      px(1876, 1015, 115, "Sárkány a sarokban álló dobozon"),
+    ],
+  },
 ];
 
 export const ROUND_SECONDS = 60;
