@@ -50,9 +50,8 @@ data/earn.ts      "Így szerzel jegyet" tiles (prototype values)
 
 ## Open questions (ask the owner)
 
-- Exact ticket amounts per placement/activity (`data/earn.ts` still shows the prototype's
-  list, including "+1 per played match", which is **not** automatic).
-- Should played/won Meccsszervező matches give tickets automatically?
+- Other ways to earn later (played/won matches, live events, helping organise)? Agreed
+  2026-11-02: for now **only podium places** (1st +3, 2nd +2, 3rd +1), `data/earn.ts`.
 - Do tickets expire (e.g. at season end)?
 - Should players see each other's balances / a ticket leaderboard?
 - The Bolt (shop) can later spend tickets through the same ledger (new `kind`).

@@ -114,7 +114,7 @@ export default async function TicketAdminPage({
         <section className="card space-y-3">
           <h2 className="text-lg font-bold">
             Jegy jóváírása vagy levonása
-            <InfoTip text="Bármilyen okból (élő esemény, szervezés, javítás). Negatív számmal jegyet vonsz le; az egyenleg nem mehet nulla alá." />
+            <InfoTip text="Egyedi könyvelés: pl. egy helyezés, ami nem fér a dobogó űrlapba, vagy javítás. Negatív számmal jegyet vonsz le; az egyenleg nem mehet nulla alá." />
           </h2>
           <form action={awardTickets} className="space-y-2">
             <label className="label" htmlFor="award-profile">
@@ -142,13 +142,13 @@ export default async function TicketAdminPage({
                   name="reason"
                   className="input"
                   list="award-reasons"
-                  placeholder="pl. Élő esemény: Budapest, nov. 15."
+                  placeholder="pl. Budapesti élő verseny · 1. hely"
                   required
                 />
                 <datalist id="award-reasons">
-                  <option value="Részvétel élő eseményen" />
-                  <option value="Segítség a szervezésben" />
-                  <option value="Teljes bajnokság végigjátszása" />
+                  <option value="Élő verseny · 1. hely" />
+                  <option value="Élő verseny · 2. hely" />
+                  <option value="Élő verseny · 3. hely" />
                   <option value="Javítás" />
                 </datalist>
               </div>

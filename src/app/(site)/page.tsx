@@ -144,7 +144,7 @@ export default async function NewsPage() {
             <Art spec={{ c1: "#e0b24a", c2: "#7a2fb0", g: "ticket", prompt: "glowing golden tickets, esports reward banner" }} />
             <div className="in">
               <span className="k">Sorsolás</span>
-              <h3>{myTickets !== undefined ? `${myTickets} jegyed van` : "Gyűjts jegyet minden meccsért"}</h3>
+              <h3>{myTickets !== undefined ? `${myTickets} jegyed van` : "Állj dobogóra, gyűjts jegyet"}</h3>
             </div>
           </Link>
         </aside>

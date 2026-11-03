@@ -14,8 +14,9 @@ import "@/features/tickets/tickets.css";
 
 export const metadata: Metadata = { title: "Sorsolás" };
 
-const ICONS: IconId[] = ["swords", "trophy", "scroll", "die", "gem", "link"];
-const COLORS = ["#a8322b", "#d4ab52", "#4f8fe0", "#5eae4a", "#8b55d6", "#3fb39a"];
+const ICONS: IconId[] = ["trophy", "trophy", "trophy"];
+// Gold, silver, bronze.
+const COLORS = ["#d4ab52", "#9aa3ad", "#b0703c"];
 
 export default async function TicketDrawPage({
   searchParams,
@@ -55,7 +56,7 @@ export default async function TicketDrawPage({
           )}
         </div>
         <p className="lead">
-          Jegyeket versenyeken és a közösségért szerezhetsz. Az év során több sorsolás is lesz: annyi jeggyel nevezel,
+          Jegyet a versenyek dobogósai kapnak. Az év során több sorsolás is lesz: annyi jeggyel nevezel,
           amennyivel szeretnél, és minden jegy egy esély a nyereményre.
         </p>
       </div>
@@ -108,7 +109,7 @@ export default async function TicketDrawPage({
         <div className="rowh">
           <h2>Így szerzel jegyet</h2>
         </div>
-        <p className="lead">A jegyeket a szervezők írják jóvá a versenyek után (online és élő eseményeken is).</p>
+        <p className="lead">Egyelőre a versenyek dobogósai kapnak jegyet, online és élő versenyeken is. A jegyeket a szervezők írják jóvá a verseny után.</p>
         <div className="cards sm">
           {EARN.map(([t, n], i) => (
             <div key={t} className="tile earn">
