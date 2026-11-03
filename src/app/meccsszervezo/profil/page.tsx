@@ -12,6 +12,8 @@ import { AvatarEditor } from "@/features/profile/components/AvatarEditor";
 import { canUploadOwnAvatar } from "@/features/profile/lib/access";
 import { avatarPublicUrl } from "@/features/profile/lib/avatar";
 import { removeMyAvatar, uploadMyAvatar } from "@/features/profile/actions/avatar";
+import { AdminBadgePicker } from "@/features/profile/components/AdminBadgePicker";
+import { getTestBadge } from "@/features/profile/lib/test-badge";
 
 export const metadata: Metadata = { title: "Profilom" };
 
@@ -27,6 +29,8 @@ export default async function ProfilePage({ searchParams }: { searchParams: Prom
   );
   const available = players.filter((p) => !takenByOthers.has(p.karnyx_name.toLowerCase()));
   const zones = timeZoneOptions();
+  // Admins only: badge try-on (testing). Players never get this block.
+  const testBadge = profile.is_admin ? await getTestBadge() : null;
   // Preselect the saved choice: a roster name, "Egyedi" for a name not on the roster,
   // or "Nem játszom" for a saved profile without a Karnyx name (organiser or spectator).
   const ownOnRoster = available.find((p) => sameName(p.karnyx_name, profile.karnyx_name));
@@ -41,6 +45,7 @@ export default async function ProfilePage({ searchParams }: { searchParams: Prom
       <div className="sec-h">
         <h1>Profilom</h1>
       </div>
+      {profile.is_admin && <AdminBadgePicker current={testBadge} avatarUrl={avatarPublicUrl(profile.avatar_path)} />}
       <div className="card">
       {canUploadOwnAvatar(profile) && (
         <div className="mb-5 border-b pb-5" style={{ borderColor: "var(--line)" }}>

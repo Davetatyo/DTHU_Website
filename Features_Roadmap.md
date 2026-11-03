@@ -332,10 +332,15 @@ events. Admins fine-tune values on the XP management page.
   `public/badges/<set>/{gold,silver,bronze}-{512,128}.png`; hole sizes, placement rules and
   screenshots in `docs/mockups/podium-badges/`. Open: which set a tournament awards (one set
   per tournament or season, chosen by an admin?).
-- **Admins can try on any badge** (owner, 2026-11-03): in their own profile's Gyűjtemény,
-  admins see every badge of every set as available and can wear any of them, for testing.
-  Nothing is added to their collection or XP. Open: should an admin's test badge also show to
-  others (next to their name), or only to the admin? They go to the Gyűjtemény automatically like
+- **Level badges** (owner, 2026-11-03): single badges (no gold/silver/bronze) awarded by
+  reaching an XP level, given automatically like every reward. So far: **Barbarian** (Barbár)
+  at **level 5** and **Moon Elf** (Holdtünde) at **level 7**. Files in
+  `public/badges/levels/<id>-{512,128}.png`, details in `docs/mockups/podium-badges/README.md`.
+- **Admins can try on any badge** (owner, 2026-11-03), **built (v2.23)**: Profilom →
+  "Jelvények · admin teszt" lists every badge; the worn one shows on the admin's own header
+  chip and profile. Owner: it must stay hidden from everyone else until the public launch, so
+  it's a cookie in the admin's own browser (no database row), drawn only for that admin.
+  Other admins don't see it either. They go to the Gyűjtemény automatically like
   every reward; wearing stays the player's choice. Open: one badge per place (with a count,
   e.g. "×3"), or one per tournament ("Október · 1. hely")?
 - **Double XP periods:** an admin sets a start and an end, and the automatic sources give

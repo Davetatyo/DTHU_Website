@@ -1,0 +1,20 @@
+@layer components {
+  /* ---------- badge ring around a profile picture (BadgedAvatar) ---------- */
+  .badged { position: relative; display: inline-block; flex: none; }
+  .badged-pic { position: absolute; border-radius: 50%; background: #23232c center / cover no-repeat; display: grid; place-items: center; color: var(--gold); overflow: hidden; }
+  .badged-pic svg { width: 55%; height: 55%; }
+  .badged-ring { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+
+  /* In the header chip the badge is taller than the 32 px chip: let it overflow evenly. */
+  .tb-user.has-badge { padding-left: 2px; gap: 6px; overflow: visible; }
+  .tb-user .badged { margin: -8px -2px; }
+
+  /* ---------- admin badge try-on on Profilom ---------- */
+  .badge-test-head { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; }
+  .badge-test-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(132px, 1fr)); gap: 10px; margin-top: 8px; }
+  .badge-test-item { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 6px 12px; border: 1px solid var(--line); border-radius: 10px; text-align: center; background: var(--bg2); }
+  .badge-test-item.on { border-color: var(--gold); box-shadow: inset 0 0 0 1px var(--gold); }
+  .badge-test-item > .badged { margin: auto 0; }
+  .badge-test-item b { font-size: 13px; line-height: 1.25; }
+  .badge-test-item small { font-size: 12px; color: var(--muted); }
+}

@@ -2,6 +2,7 @@ import { DevPreviewBanner } from "@/components/site/DevPreviewBanner";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { HelpVial } from "@/features/alchemist/components/HelpVial";
+import { headerBadge } from "@/features/profile/components/HeaderBadge";
 import { HeaderWallet } from "@/features/shop/components/HeaderWallet";
 import { SeasonPhases } from "@/features/timetables/components/SeasonPhases";
 import { getAdminView } from "@/lib/auth";
@@ -14,7 +15,7 @@ export default async function SiteLayout({ children }: Readonly<{ children: Reac
   const adminView = await getAdminView();
   return (
     <>
-      <SiteHeader tabs={siteMenu} wallet={<HeaderWallet />} />
+      <SiteHeader tabs={siteMenu} wallet={<HeaderWallet />} userBadge={await headerBadge()} />
       <div className="wrap space-y-3 pb-0">
         {isDevPreview(adminView) && <DevPreviewBanner />}
         <SeasonPhases />
