@@ -3,9 +3,8 @@ import Link from "next/link";
 import { Art } from "@/components/Art";
 import type { IconId } from "@/components/Icon";
 import { DrawCard } from "@/features/tickets/components/DrawCard";
-import { LedgerList } from "@/features/tickets/components/LedgerList";
 import { EARN } from "@/features/tickets/data/earn";
-import { getBalance, getDraws, getLedger, TicketsNotReady } from "@/features/tickets/lib/data";
+import { getBalance, getDraws, TicketsNotReady } from "@/features/tickets/lib/data";
 import { drawPhase } from "@/features/tickets/lib/draw";
 import { loadDrawStats } from "@/features/tickets/lib/stats";
 import { getAdminView, getCurrentProfile } from "@/lib/auth";
@@ -31,12 +30,12 @@ export default async function TicketDrawPage({
   let data;
   try {
     const draws = await getDraws();
-    const [stats, balance, ledger] = await Promise.all([
+    // Players see only their balance; the ticket history (ledger) is for admins (/sorsolas/admin).
+    const [stats, balance] = await Promise.all([
       loadDrawStats(draws, viewer?.id ?? null),
       viewer ? getBalance(viewer.id) : Promise.resolve(null),
-      viewer ? getLedger(viewer.id, 30) : Promise.resolve([]),
     ]);
-    data = { draws, stats, balance, ledger };
+    data = { draws, stats, balance };
   } catch (err) {
     if (!(err instanceof TicketsNotReady)) throw err;
     data = null;
@@ -139,14 +138,6 @@ export default async function TicketDrawPage({
         </div>
       )}
 
-      {viewer && data && (
-        <div>
-          <div className="rowh">
-            <h2>Jegyeim</h2>
-          </div>
-          <LedgerList rows={data.ledger} timeZone={tz} />
-        </div>
-      )}
     </div>
   );
 }

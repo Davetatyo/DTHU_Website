@@ -22,7 +22,8 @@ are drawn at random.
   tournament, defaults +3/+2/+1, agreed 2026-11-02) or a single +/− booking with a reason. Nothing is automatic
   yet, since results live in Karnyx. Tickets belong to a **profile** (Discord login), so a
   player must log in once before they can receive tickets.
-- **Balance** = sum of the ledger (`ticket_ledger`). Rows are never edited; corrections are
+- **Balance** = sum of the ledger (`ticket_ledger`). Players see only their balance; the
+  history (who got or spent what, when) is shown to admins only, on `/sorsolas/admin`. Rows are never edited; corrections are
   negative bookings. The balance can never go below zero (checked in the database).
 - **Entering:** signed-in players on `/sorsolas`, any number of tickets up to their balance and
   the draw's optional per-player cap; they can add more later. Spent tickets are gone, unless

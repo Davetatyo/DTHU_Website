@@ -269,7 +269,8 @@ Newest first. Each session adds an entry (see CLAUDE.md → "End of every sessio
   Eseménynaptár). `/jegyek` keeps redirecting to `/bolt` as on `main`. Only podium places earn
   tickets: 1st +3, 2nd +2, 3rd +1, booked by admins (online and live tournaments).
 - Players: balance, open draws with ticket entry (1 ticket = 1 entry, add more later, optional
-  per-player cap), past draws with winners, own history. Admins (`/sorsolas/admin`): podium form,
+  per-player cap), past draws with winners; no ticket history for players (owner, 2026-11-03:
+  admins only). Admins (`/sorsolas/admin`): podium form,
   single +/- booking, new draw, "Sorsolás most", "Elmarad" (refund), balances, recent ledger.
   The hourly cron holds closed draws (crypto-random, ticket-weighted, one win per player) and
   posts the result to Discord. Rules: `src/features/tickets/README.md`.
@@ -282,8 +283,21 @@ Newest first. Each session adds an entry (see CLAUDE.md → "End of every sessio
   against a fake Supabase API backed by that database (scratchpad script, not in the repo)
   with the TEMP-PREVIEW admin: `/sorsolas`, `/sorsolas/admin`, `/`, `/bolt`,
   `/esemenynaptar`, `/meccsszervezo` 200, `/jegyek` -> `/bolt`, cron route 200.
-- **Next:** the developer clicks through the local test; then the owner runs migration 0007,
-  and the branch is merged to `main` with his OK. TEMP-PREVIEW must be reverted before any commit.
+- Later the same day: players no longer see a ticket history ("Jegyeim" removed from
+  `/sorsolas`); only their balance and their tickets per draw. The full ledger stays on the
+  admin page.
+- **How it was tested locally (no access to the live Supabase on this machine):** an
+  in-memory Postgres (PGlite) ran migrations 0001-0007 behind a small fake of the Supabase REST
+  API (only the calls the app makes; storage uploads not supported), with seeded test users
+  (Dave admin, Kata, Bence, Lili, RP). The dev server pointed at it via environment variables
+  set in the shell only (no `.env.local`, fake values), with `NEXT_PUBLIC_FULL_SITE=1` and a
+  TEMP-PREVIEW login that could switch between the test users. The developer clicked through
+  awards, draw creation, entries, drawing and cancelling. The fake script lives outside the
+  repository; ask before adding it as a dev tool. All TEMP-PREVIEW code was removed before the
+  commit (`grep -rn TEMP-PREVIEW src` empty).
+- **Next:** the owner runs migration 0007 in the Supabase SQL Editor, then the branch is merged
+  to `main` with his OK and tested live as admin (podium award, small draw, "Sorsolás most").
+  Discord result posts are untested (no webhook locally).
 
 ### 2026-11-03 · Database overview in STATE.md (docs only)
 
