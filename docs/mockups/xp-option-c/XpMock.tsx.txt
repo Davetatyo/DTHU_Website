@@ -1,0 +1,96 @@
+// MOCKUP ONLY (scratch copy): option C. Badge ring on the avatar, XP as a bar under the name.
+import "./xpmock.css";
+
+export const MOCK = { level: 5, xp: 172, from: 140, to: 200, avatar: "/szabalytar/img/heroes/barbarian.webp" };
+export const pct = ((MOCK.xp - MOCK.from) / (MOCK.to - MOCK.from)) * 100;
+
+function studs(c: number, r: number, n: number, k: number) {
+  return Array.from({ length: n }, (_, i) => {
+    const a = (i / n) * 2 * Math.PI;
+    const x = c + r * Math.sin(a);
+    const y = c - r * Math.cos(a);
+    return i === 0 ? (
+      <path key={i} d={`M${x} ${y - k * 2.2} L${x + k * 1.6} ${y} L${x} ${y + k * 2.2} L${x - k * 1.6} ${y} Z`} fill="#f2c95a" stroke="#6b430a" strokeWidth={0.8} />
+    ) : (
+      <circle key={i} cx={x} cy={y} r={k} fill="#f2c95a" />
+    );
+  });
+}
+
+/** Avatar with the worn badge ring ("Évadbajnok" example). */
+export function BadgeAvatar({ size, ring, studCount }: { size: number; ring: number; studCount: number }) {
+  const c = size / 2;
+  const r = c - ring / 2 - 1;
+  return (
+    <span className="xm-av" style={{ width: size, height: size }}>
+      <span className="xm-img" style={{ inset: ring + 1, backgroundImage: `url(${MOCK.avatar})` }} />
+      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} aria-hidden>
+        <circle cx={c} cy={c} r={r} fill="none" stroke="#5b2d9e" strokeWidth={ring} />
+        <circle cx={c} cy={c} r={r + ring / 2 - 0.6} fill="none" stroke="#d9a83f" strokeWidth={1.2} />
+        <circle cx={c} cy={c} r={r - ring / 2 + 0.6} fill="none" stroke="#d9a83f" strokeWidth={1.2} />
+        {studs(c, r, studCount, Math.max(1.4, ring * 0.3))}
+      </svg>
+    </span>
+  );
+}
+
+/** Header chip content: badge avatar, name and the thin XP bar under it. */
+export function ChipMock({ name }: { name: string }) {
+  return (
+    <>
+      <BadgeAvatar size={28} ring={3.4} studCount={4} />
+      <span className="xm-name">
+        <span className="truncate">{name}</span>
+        <span className="xm-bar" title={`${MOCK.level}. szint · ${MOCK.xp} / ${MOCK.to} XP`}>
+          <span style={{ width: `${pct}%` }} />
+        </span>
+      </span>
+    </>
+  );
+}
+
+const LOG = [
+  ["Online bajnokság · 2. hely", 100, "nov. 2."],
+  ["Első meccs a bajnokságban", 20, "okt. 27."],
+  ["Napi kvíz", 10, "okt. 26."],
+  ["Útmutató befejezve", 50, "okt. 25."],
+] as const;
+
+/** The level block on the profile page. */
+export function ProfileXpMock({ name }: { name: string }) {
+  return (
+    <div className="card xm-card">
+      <div className="xm-head">
+        <div className="xm-big">
+          <BadgeAvatar size={124} ring={12} studCount={8} />
+          <span className="xm-lv">{MOCK.level}. szint</span>
+        </div>
+        <div className="xm-info">
+          <b className="xm-n">{name}</b>
+          <span className="xm-worn">Viselt jelvény: <b>Évadbajnok gyűrű</b> · <a href="#">Gyűjtemény</a></span>
+          <div className="xm-prog">
+            <div className="xm-prog-top">
+              <span>{MOCK.level}. szint</span>
+              <span>{MOCK.level + 1}. szint</span>
+            </div>
+            <div className="xm-track"><span style={{ width: `${pct}%` }} /></div>
+            <div className="xm-prog-bot">
+              <b>{MOCK.to - MOCK.xp} XP</b> kell még · összesen {MOCK.xp} XP · 1. szezon, 20 szint
+            </div>
+          </div>
+        </div>
+      </div>
+      <p className="label mt-5">Legutóbbi XP</p>
+      <ul className="xm-log">
+        {LOG.map(([what, n, when]) => (
+          <li key={what}>
+            <span>{what}</span>
+            <small>{when}</small>
+            <b>+{n}</b>
+          </li>
+        ))}
+      </ul>
+      <p className="muted text-sm mt-3">A szinted és az XP-d csak neked látszik. Mások csak a viselt jelvényedet látják.</p>
+    </div>
+  );
+}

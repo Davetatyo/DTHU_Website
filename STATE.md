@@ -1,6 +1,6 @@
 # Project state: DTHU website
 
-**Current version: v2.22** (2026-11-03). Live: https://dthu.hu builds from this repository's
+**Current version: v2.23** (2026-11-03). Live: https://dthu.hu builds from this repository's
 `main` (the owner moved Vercel over around 2026-11-01; checked live 2026-11-02). Every push to
 `main` deploys within a minute.
 **Launch phase: 1**: the public sees only the Meccsszervező; the whole site from the prototype
@@ -328,6 +328,83 @@ Newest first. Each session adds an entry (see CLAUDE.md → "End of every sessio
   All TEMP-PREVIEW test code removed (`grep -rn TEMP-PREVIEW src` prints nothing).
 - **Next:** the other developer runs 0010 (after 0008 and 0009) in Supabase, then the owner
   opens the pull request and merges. The Hungarian guide for him may need a 0010 section.
+
+### 2026-11-03 · Admin badge try-on on Profilom (feature/profile, v2.23)
+
+- Owner: test the badges live, admins only, invisible to everyone else until the public
+  launch. Built on `feature/profile` (fast-forwarded to `main` first): `lib/badges.ts`
+  catalogue (+ tests, incl. that every file exists), `BadgedAvatar`, `AdminBadgePicker` on
+  Profilom (admins only), `headerBadge()` passed by both layouts to `SiteHeader` as
+  `userBadge`. The choice is the `teszt_jelveny` cookie (httpOnly, set by the admin-only
+  `setTestBadge` action), read only when the visitor is a real admin: no database writes,
+  no migration, and other admins don't see it either (per browser).
+- Verified in the scratch copy with a fake login: wearing and removing, header chip, desktop
+  dark and phone light; with the same cookie but a non-admin login nothing shows (no badge,
+  no picker, no badge images). Types, lint, 205 tests.
+- Also in this push: the level badges (Barbarian level 5, Moon Elf level 7) in
+  `public/badges/levels/` and their docs.
+
+### 2026-11-03 · Level badges: Barbarian (level 5) and Moon Elf (level 7) (files only)
+
+- Owner: single badges awarded at XP levels. Cut out like the podium sets into
+  `public/badges/levels/` (`barbarian`, `moon-elf`, 512 and 128 px); roadmap R4 → Rewards,
+  README in `docs/mockups/podium-badges/`. Mock Gyűjtemény row shows earned vs locked.
+
+### 2026-11-03 · Podium badge art: six sets (files only, nothing built)
+
+- Sixth set **Párbaj** (re-sent by the owner) cut to `public/badges/parbaj/`; its small
+  versions sat on black squares and were keyed against black. Sets now: Vitality,
+  Innovation, Devotion, Mad King, X-Mas, Párbaj.
+
+- Sets **Mad King** (`public/badges/mad-king/`) and **X-Mas** (`public/badges/x-mas/`) added
+  the same way (per-set settings script in `docs/mockups/podium-badges/`). Mad King's red
+  swirl inside the ring was removed so the picture fills the ring like in the other sets.
+
+- Third set **Devotion** (winged shield, red sashes) cut out to `public/badges/devotion/`;
+  its gold halo is keyed so it's see-through on white, the red sashes stay solid. Owner:
+  **admins can try on and wear any badge** from their profile for testing (roadmap R4 →
+  Rewards). Gyűjtemény mock with all three sets checked in the scratch copy.
+
+- Later the same day: the owner named the first set **Vitality** and sent a second,
+  **Innovation** (steampunk). Files moved to `public/badges/vitality/` and
+  `public/badges/innovation/` (`{gold,silver,bronze}-{512,128}.png`); the hole size differs
+  per set (table in `docs/mockups/podium-badges/README.md`), so size a badge from the
+  picture, not the other way round. Both checked in the scratch copy (Profilom, header, a
+  Gyűjtemény row with both sets).
+
+- Owner: tournament winners get Gold / Silver / Bronze badge rings. After a few mockup rounds
+  the owner had another agent draw them from a prompt written here; it returned one preview
+  image. Cut out of it (now `public/badges/vitality/`, see above): transparent,
+  exact hole at the inner rim; 512 for profile/Gyűjtemény, a simplified 128 for the header).
+  Checked on dark and white backgrounds and on the real header and Profilom in a scratch copy
+  (screenshots and the cut-out script in `docs/mockups/podium-badges/`). Roadmap R4 → Rewards.
+- The files are served but unused until the XP/Gyűjtemény build.
+
+### 2026-11-03 · XP values and level curve agreed (roadmap only, nothing built)
+
+- Worked out the XP plan with the owner, written into `Features_Roadmap.md` → R4: smallest
+  step 5 XP; at most 20 levels a year; quiz XP only for correct answers; welcome 10 (first
+  Discord sign-in), first match 10, finishing 30 (Bye in the first/last round still counts),
+  podium extra 150/100/75; Szemfüles 5 XP once per picture at 100 points, no cheat check.
+- Curve: 25 XP for level 2, +15 per level, level 20 = 3,040 XP. Someone who joins everything
+  reaches 20 around week 45 (all quiz answers right) to week 50 (80% right).
+- Still open (R4 → Open questions): after the first year, double XP scope, rewards per level.
+- Later the same day (owner): profiles aren't visible to other players at first; your level
+  is only visible to you, others can guess it from the worn badge ring; a level-up shows a
+  small confetti popup with the milestone reward; rewards are claimed automatically by the
+  server (wearing stays the player's choice). Recorded in R3 and R4.
+
+### 2026-11-03 · XP look decided (option C), Gyűjtemény needed (roadmap only, nothing built)
+
+- Owner is planning the XP system (roadmap R4). Mockups shown: a filling ring around the
+  avatar, then ring + badge-ring variants, then option C on the real pages in a scratch copy
+  (current `main` with Árpád's coin|ticket header capsule from PR #3). **Owner chose C:** the
+  avatar carries only the worn badge ring, a 3 px gold XP bar sits under the name in the
+  header chip, and Profilom gets a level block on top.
+- Owner: the **Gyűjtemény** (R3) is needed, because badges will be rewarded more and more
+  for events and games.
+- Written into `Features_Roadmap.md` (R3, R4 → "Look", shared foundations); screenshots and
+  the mock code in `docs/mockups/xp-option-c/`. **Don't build yet** (owner).
 
 ### 2026-11-03 · Bolt: DTHU coin, ticket purchase, header wallet (feature/shop, not merged)
 
@@ -999,6 +1076,15 @@ webhook, no cron secret), so nothing local can post to Discord.
 ---
 
 ## Changelog
+
+### v2.23 · 2026-11-03 · merge of `feature/profile`
+**Changed (admins only):** Profilom has "Jelvények · admin teszt": admins can put on any badge
+(level badges Barbár and Holdtünde, and the six podium sets) to see it on their header chip
+and profile. Only that admin sees it, in that browser (a cookie, nothing in the database).
+Players see no change.
+**Manual steps:** none.
+**Verified:** types, lint, 205 tests; browser with a fake login (admin and non-admin), desktop
+and 375 px, dark and light.
 
 ### v2.22 · 2026-11-03 · merge of `feature/games`
 **Changed (admins only, phase 1):** Szemfüles has a fourth picture, **ARRRrrrrrrrrr** (pirate

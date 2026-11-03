@@ -49,7 +49,7 @@ whichever item needs it first.
 |---|---|---|
 | **Admin area**: a dedicated admin page with its own menu | R2, R4, R5, R7 | That page is item R5. Every admin tool below plugs into its menu. |
 | **Image upload**: Supabase Storage bucket, resize and compress before saving | R2, R3 | One shared helper: resize to a max size and compress, keeping quality reasonable (e.g. WebP), on the client before upload. Size limits and allowed types are enforced by the bucket policy. |
-| **Cosmetics catalogue**: one list of every badge ring, title, rank and emote, what each player owns and what they wear | R3, R4, later the shop | Defined in R3. XP levels (R4), events and the shop only *grant* items from it; the profile settings page is where players choose what to wear. |
+| **Cosmetics catalogue**: one list of every badge ring, title, rank and emote, what each player owns and what they wear | R3, R4, R6 games, events, later the shop | Defined in R3. XP levels (R4), events, games and the shop only *grant* items from it; the Gyűjtemény (R3) is where players choose what to wear. |
 | **Separate dev Supabase project** | all items with new tables | STATE.md → Technical debt. Local development uses the live database today. New tables and uploads should be tried on a dev project first. |
 | **Activity events**: one place where "something happened" is recorded | R4, R7, later tickets/shop | XP (and later tickets) are awarded from events such as a played match, a sign-up or a finished tutorial. Design this together with the XP system. |
 | **Once-a-day / first-login prompts**: show something once per user per day or until done | R1, R7 | The tutorial starting after the first login and the Daily Quiz popping up on the first login of the day should use one mechanism, so they don't pile up on top of each other. |
@@ -152,7 +152,9 @@ hírek" on event pages. Then push to `main` for the owner's live test.
 
 **Status:** Avatar part **built and live for everyone** (v2.2, 2026-11-02: upload with crop,
 shown everywhere, admin remove/replace, plus admin "Profil szerkesztése" and bans; see
-`src/features/profile/README.md`). The cosmetics collection is still in discussion with R4. ·
+`src/features/profile/README.md`). **Gyűjtemény: needed** (owner, 2026-11-03): more and more
+badges will be rewarded for events and games, so players need one place to see and wear them.
+Not built yet. ·
 **Feature id:** `profile` (today the profile page lives in the Meccsszervező at
 `/meccsszervezo/profil`) · **Depends on:** the image upload foundation, the cosmetics
 catalogue foundation; R4 is what fills the collection
@@ -164,6 +166,11 @@ catalogue foundation; R4 is what fills the collection
 **Cosmetics collection (Gyűjtemény), on the profile settings page**
 - Players see **every cosmetic they've earned**: badge rings around the avatar, titles,
   rank, emotes, and later shop items.
+- **Where badges come from** (owner, 2026-11-03): XP levels and milestones (R4), **events**
+  (e.g. attending a live event, tournament placements) and **games** (e.g. a Szemfüles or
+  Kockázat achievement). The list of sources will keep growing, so a badge only needs a
+  catalogue row and a "grant" call from the feature that awards it.
+- Linked from the profile's level block ("Viselt jelvény: … · Gyűjtemény", see R4 → Look).
 - They choose what to **wear** and can switch to any earned item at any time, or wear
   nothing.
 - **One item per slot:** one badge ring, one title, one rank display. The number of emote
@@ -174,9 +181,10 @@ catalogue foundation; R4 is what fills the collection
 - **Locked items:** show the ones not yet earned greyed out, with how to get them (e.g. "Érd
   el a 10. szintet")? Or keep them hidden as a surprise? (Open question.)
 - **What others see:** only the worn cosmetics, next to the player's name and avatar. Never
-  their XP or level (R4).
-- **The player's own XP:** a level and XP progress block on the profile. The small track next
-  to the profile icon is in R4.
+  their XP or level (R4). **Profiles aren't visible to other players at first** (owner,
+  2026-11-03; to be opened later), so the profile page is only ever your own.
+- **The player's own XP:** a level and XP progress block on top of the profile page, and a
+  thin XP bar under the name in the header. Decided look: R4 → Look.
 
 **Data (draft):**
 - `profiles.avatar_path`.
@@ -198,8 +206,8 @@ catalogue foundation; R4 is what fills the collection
 
 ### R4 · XP and levels (Tapasztalati pontok)
 
-**Status:** In discussion (draft decisions from the owner, 2026-10-31; to finalise with the
-other admins before building) · **Feature id (proposed):** `xp` · **Depends on:** R5 Admin
+**Status:** XP values and level curve **agreed with the owner** (2026-11-03), look decided
+(option C, see Look); not built · **Feature id (proposed):** `xp` · **Depends on:** R5 Admin
 area (XP management page), R3 Profile (cosmetics collection, badge ring). The automatic
 sources need R1 Tutorial and R7 Quiz.
 
@@ -213,37 +221,89 @@ Users earn XP for activities and level up at rising milestones, in the style of 
 - XP is **lifetime** and never resets.
 - Everyone starts from **zero** at launch. Nothing is backfilled.
 
-**How XP is earned (first list, will keep growing)**
+**Ground rules (owner, 2026-11-03)**
+- The smallest XP step is **5 XP**: every value and level cost is a multiple of 5.
+- **One year, at most 20 levels.** Level 20 is reachable for anyone who joins everything
+  (events, tutorials, games, news, the daily quiz). It takes dedication, not skill, apart
+  from the quiz, which pays only for correct answers.
+- Tournament **podium places give big extra XP**, so strong but less active players can
+  catch up.
+- "Season" means the **official Dice Throne season** and its theme: the top level is named
+  after it. The XP plan itself is counted per year.
 
-| Activity | How it's given | How often | Starting XP (adjustable) |
-|---|---|---|---|
-| Finishing the site tutorial after the first sign-in (R1) | automatic | once | 50 |
-| First match played in a tournament | admin | once per tournament | 20 |
-| Tournament placement: 1st / 2nd / 3rd / everyone else | admin | once per tournament | 150 / 100 / 75 / 30 |
-| Daily Quiz (R7) | automatic | once a day | 10 |
-| Quiz level completed (R7) | automatic | once per level, only with 100% correct answers | 15–40, rising with difficulty |
-| Attending a live event | admin | once per event | 50 |
-| Idea (later): reading a news article and confirming it with an emoji (R2) | automatic | once per article | small, to decide |
+**How XP is earned (agreed values; the list will keep growing)**
 
-The values are a starting point modelled on Duolingo (about 10 XP for a daily task). Admins
-fine-tune them on the XP management page.
+| Activity | XP | Rule | Given | Max in a year |
+|---|---|---|---|---|
+| Welcome: first sign-in to the site with Discord | 10 | once ever, no Karnyx name needed | automatic | 10 |
+| Site tutorial (R1) | 50 | once | automatic | 50 |
+| Other tutorials: tournament rules, new site features (R1) | 25 | each once, about 6 a year | automatic | 150 |
+| Daily Quiz (R7) | 5 | **only for a correct answer**, once a day | automatic | 1,825 at 100% / ~1,460 at 80% |
+| First match played in a tournament | 10 | when the player's first match is marked Lejátszott; a Bye doesn't count | automatic | 120 |
+| Finishing a tournament | 30 | ends with a place, even the last; a Bye in the first or last round still counts as in; no XP for dropping out midway or not showing up (they keep the first-match XP if they had it) | automatic when the tournament closes: everyone who played or had a Bye in every round | 360 |
+| Podium extra: 1st / 2nd / 3rd | 150 / 100 / 75 | on top of the 30 | admin (like the Sorsolás podium tickets) | catch-up, not counted in the max |
+| Taking part in a live event | 50 | per event, about 12 a year | admin | 600 |
+| Playing a game for the first time (R6) | 25 | once per game, about 6 | automatic | 150 |
+| Szemfüles: a picture done with 100 points (all 10 found) | 5 | **once per picture**, about 2 new pictures a month; no cheat check (owner: "if someone cheats they deserve it") | automatic | ~140 |
+| Reading an important news article and confirming it (R2) | 5 | per marked article, about 2 a month | automatic | 120 |
+| **Joining everything, all quiz answers right** | | | | **~3,525** |
+| **Joining everything, 80% right** | | | | **~3,160** |
+
+Frequencies assumed: 12 online tournaments a year (monthly) and about 12 live or community
+events. Admins fine-tune values on the XP management page.
 
 **Built-in limits (no separate cap needed)**
-- Every source is **one-time, once a day or occasional**. Nothing can be repeated endlessly
-  for XP.
-- Quiz **retakes give no XP**. **Random mode gives no XP**. A quiz level gives XP only when
-  it's completed **100% correctly**.
+- Every source is **one-time, once a day, once per item or occasional**. Nothing can be
+  repeated endlessly for XP (e.g. replaying a Szemfüles picture gives nothing new).
+- Quiz: **only correct answers** give XP; retakes and random mode give none; a quiz level
+  gives XP only when completed **100% correctly**.
 - These limits are written into the code. Admins can't switch them off by accident.
 
-**Levels and seasons**
-- Each level needs more XP than the last. Starting curve: going from level *n* to *n*+1 costs
-  **20 + 10·(n−1) XP**.
-  - That puts level 2 at 20 XP, level 5 at 140, level 10 at 540 and level 20 at 2,090.
-  - A very active player (daily quiz, quiz levels, one tournament and an event) reaches about
-    level 20 by the end of the season.
-- **Season 1 has 20 levels.** A season lasts **3 months**. Admins can adjust the curve.
-- Levels have **no names**, except the season's **top level**. Admins name it after the
-  current Dice Throne season.
+**Levels (agreed curve)**
+- Level 1 → 2 costs **25 XP**, and every level costs **15 XP more** than the one before
+  (level *n* → *n*+1 costs 25 + 15·(n−1)). Level 20 needs **3,040 XP** in total.
+- The one-off sources (welcome, site tutorial, first plays, existing Szemfüles pictures, ~180
+  XP) take a new player to about level 5 in the first week. After that, roughly one level
+  every 3–5 weeks.
+- Milestones: levels **5, 10, 15, 20** (badges and titles).
+
+| Level | XP for this level | Total XP | Joins everything, 80% quiz | Joins everything, 100% quiz |
+|---|---|---|---|---|
+| 2 | 25 | 25 | week 1 | week 1 |
+| 3 | 40 | 65 | week 1 | week 1 |
+| 4 | 55 | 120 | week 1 | week 1 |
+| **5** | 70 | **190** | week 1 | week 1 |
+| 6 | 85 | 275 | week 2 | week 2 |
+| 7 | 100 | 375 | week 4 | week 3 |
+| 8 | 115 | 490 | week 6 | week 5 |
+| 9 | 130 | 620 | week 8 | week 7 |
+| **10** | 145 | **765** | week 11 | week 10 |
+| 11 | 160 | 925 | week 13 | week 12 |
+| 12 | 175 | 1,100 | week 17 | week 15 |
+| 13 | 190 | 1,290 | week 20 | week 18 |
+| 14 | 205 | 1,495 | week 23 | week 21 |
+| **15** | 220 | **1,715** | week 27 | week 24 |
+| 16 | 235 | 1,950 | week 31 | week 28 |
+| 17 | 250 | 2,200 | week 36 | week 32 |
+| 18 | 265 | 2,465 | week 40 | week 36 |
+| 19 | 280 | 2,745 | week 45 | week 40 |
+| **20** | 295 | **3,040** | **week 50** | **week 45** |
+
+**Example players over one year**
+
+| Player | XP | Level |
+|---|---|---|
+| Joins everything, all quiz answers right | ~3,525 | 20 (week 45) |
+| Joins everything, 80% right | ~3,160 | 20 (week 50) |
+| Joins everything, 60% right | ~2,795 | 19 |
+| Plays every tournament, nothing else | ~540 | 8 |
+| Same, with 2 golds, 2 silvers and 2 bronzes | ~1,190 | 12 |
+| Same, with 4 golds, 3 silvers and 2 bronzes | ~1,590 | 14 |
+| Casual: quiz every second day at 80%, 6 tournaments, 4 events | ~1,330 | 13 |
+| Only the quiz, 80% right | ~1,470 | 13 |
+
+- Levels have **no names**, except the **top level**, named after the current official Dice
+  Throne season.
 - Reaching the top level earns a **special badge ring** around the profile picture.
 
 **Rewards**
@@ -251,17 +311,69 @@ fine-tune them on the XP management page.
 - **Milestone levels** (e.g. 5, 10, 15, 20) give **badges and titles**. Later they also unlock
   shop items.
 - Admins decide which reward belongs to which level.
-- Rewards land in the player's **cosmetics collection** (R3), marked "Új". The player decides
-  whether to wear them; nothing is equipped automatically.
+- **Rewards are claimed automatically** (owner, 2026-11-03): the server gives them the
+  moment a player reaches the level, with no claim button. They land in the **Gyűjtemény**
+  (R3), marked "Új". Wearing stays the player's choice (R3: nothing is worn automatically);
+  the level-up popup offers to wear a new badge in one tap.
+- **Level-up popup** (owner, 2026-11-03): a small popup with **confetti** and a
+  congratulation ("Gratulálunk! Elérted a 6. szintet"), showing the **milestone reward** if
+  that level has one (picture and name, "Felveszem" for a badge). Shown once per level-up:
+  right away when the XP comes from something the player just did, otherwise on their next
+  page load (e.g. admin-given podium XP). Several levels at once show as one popup. No
+  confetti for visitors who prefer reduced motion.
+- **Podium badges** (owner, 2026-11-03): tournament winners also get a **Gold, Silver or
+  Bronze badge ring** (1st / 2nd / 3rd place), on top of the podium XP. The badges come in
+  **named sets**, each a full gold/silver/bronze trio in its own look. Art done for two:
+  **Vitality** ("storm grove": moss, thorny vines, carved bark, glowing seed gem) and
+  **Innovation** (steampunk: riveted metal, energy tubes, gears, glowing lens, sparks) and
+  **Devotion** (knightly: winged shield, red sashes, polished metal), **Mad King** (horned
+  crest, armour plates, glowing runes), **X-Mas** (snow, ribbons, holly, star; a seasonal
+  set) and **Párbaj** (Wild West duel: cowboy hat with a glowing die, bandoliers). Files in
+  `public/badges/<set>/{gold,silver,bronze}-{512,128}.png`; hole sizes, placement rules and
+  screenshots in `docs/mockups/podium-badges/`. Open: which set a tournament awards (one set
+  per tournament or season, chosen by an admin?).
+- **Level badges** (owner, 2026-11-03): single badges (no gold/silver/bronze) awarded by
+  reaching an XP level, given automatically like every reward. So far: **Barbarian** (Barbár)
+  at **level 5** and **Moon Elf** (Holdtünde) at **level 7**. Files in
+  `public/badges/levels/<id>-{512,128}.png`, details in `docs/mockups/podium-badges/README.md`.
+- **Admins can try on any badge** (owner, 2026-11-03), **built (v2.23)**: Profilom →
+  "Jelvények · admin teszt" lists every badge; the worn one shows on the admin's own header
+  chip and profile. Owner: it must stay hidden from everyone else until the public launch, so
+  it's a cookie in the admin's own browser (no database row), drawn only for that admin.
+  Other admins don't see it either. They go to the Gyűjtemény automatically like
+  every reward; wearing stays the player's choice. Open: one badge per place (with a count,
+  e.g. "×3"), or one per tournament ("Október · 1. hely")?
 - **Double XP periods:** an admin sets a start and an end, and the automatic sources give
   2× XP during that time.
 
 **Visibility**
 - **No XP leaderboard.**
-- A player sees their own XP and level on their **profile**, plus a **small progress track
-  next to their profile icon** in the header.
-- Other players never see someone's XP or level. They only see the cosmetics that player
-  chose to wear.
+- A player sees their own XP and level on their **profile**, plus a **thin XP bar under their
+  name** in the header (see Look below).
+- **Your level is visible only to you** (owner, 2026-11-03). Other players never see
+  someone's XP or level; profiles aren't open to others at first (R3).
+- Others can only **guess** a player's level from the **badge ring they wear** around their
+  profile picture.
+
+**Look (decided by the owner, 2026-11-03: "option C", not built yet)**
+- Mockup screenshots and the mock code: `docs/mockups/xp-option-c/` (made on the real pages
+  in a scratch copy with example data: Dave, level 5, 172 XP, wearing a badge ring). The
+  numbers in the mockup come from the earlier draft curve; with the agreed curve 172 XP is
+  level 4, and the profile line reads "… XP kell még · összesen … XP" (no season counter).
+- **Header profile chip** (after the coin|ticket capsule, same 32 px height): the avatar
+  carries the **worn badge ring** only (nothing around it when no badge is worn). Under the
+  name sits a **3 px gold XP bar** showing progress to the next level. Hover/title:
+  "5. szint · 172 / 200 XP". No level number on the avatar, so the area stays quiet.
+- **Profile page, on top:** a level block. The big avatar with its badge ring and a gold
+  "5. szint" label under it; the name; "Viselt jelvény: <name> · Gyűjtemény"; a progress bar
+  from this level to the next; "28 XP kell még · összesen 172 XP · 1. szezon, 20 szint";
+  "Legutóbbi XP" (activity, date, +amount); a note that only the player sees level and XP.
+  On phones the block stacks and centres.
+- **Rejected:** a ring around the avatar that fills up (the owner's first idea), and the
+  variants with the XP ring outside or inside a badge ring: too much noise around the
+  picture once badges exist.
+- Top level: the bar stays full and the profile says "Csúcsszint". Level-up: the popup in
+  Rewards above.
 
 **Admin controls (XP kezelés page, admins only)**
 - Change the XP value of each activity, turn activities on and off, and edit the level curve
@@ -278,7 +390,7 @@ fine-tune them on the XP management page.
 - `xp_activities`: key, name, XP amount, how often, automatic or admin, active.
 - `xp_events`: user, activity, amount, multiplier, source reference, reason, given by, time.
   A unique key stops double awards, e.g. the same activity + user + day/tournament/quiz level.
-- `xp_levels`: level, XP needed, season, name.
+- `xp_levels`: level, XP needed, name (the top level takes the Dice Throne season name).
 - `xp_rewards`: level → cosmetic from the R3 catalogue. Reaching the level adds the item to
   `user_cosmetics`.
 - `xp_boosts`: start, end, multiplier.
@@ -289,21 +401,14 @@ fine-tune them on the XP management page.
 **Suggested build order:**
 1. The admin-given sources and the XP management page (works without the tutorial or the
    quiz).
-2. The profile XP track, the cosmetics catalogue and the collection page (R3).
+2. The header XP bar and the profile level block (Look above), the cosmetics catalogue and
+   the Gyűjtemény page (R3).
 3. The automatic sources, as R1 and R7 are built.
 
 **Open questions (to settle with the admins):**
-- **XP past the season's top level:** XP is lifetime, but season 1 stops at level 20.
-  Proposal: the level cap rises each season (season 2 opens levels 21–40, and so on). XP
-  earned at the cap
-  - (a) keeps counting and is applied when the next season opens (proposed); or
-  - (b) is not earned until then.
-- **First match played:** once per tournament (proposed), or once ever?
-- **Daily Quiz:** XP only for a correct answer (proposed, in line with the 100% rule), or for
-  answering at all?
+- **After the first year / past level 20:** XP is lifetime. Does the cap rise for the next
+  year (levels 21–40), and does XP earned at level 20 keep counting until then (proposed)?
 - **Double XP:** only the automatic sources (proposed), or the admin-given ones too?
-- **Level number:** hidden from other players too (proposed), or visible without the XP?
-- **Starting values and curve:** OK as a placeholder?
 - **Rewards:** which cosmetic for each level and milestone?
 
 ### R5 · Admin area upgrade (Admin felület)

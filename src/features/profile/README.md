@@ -30,6 +30,14 @@ load, and `getCurrentProfile` treats them as logged out. Their picture is delete
 roster and Karnyx name are untouched. Admins and the owner can't be banned (remove the admin
 role first); nobody can ban themselves. "Tiltás feloldása" lifts it.
 
+**Admin badge try-on** (testing, v2.23): on Profilom, admins see "Jelvények · admin teszt":
+every badge in `public/badges/` (level badges and the podium sets), each previewed with their
+own picture and a "Felveszem" button. The worn badge shows on their header chip and at the top
+of that block; "Leveszem" takes it off. The choice is a cookie (`teszt_jelveny`) in that
+admin's browser, not a database row, and it is only drawn for the signed-in visitor themself
+when they are a real admin. So players and other admins never see it, and nothing is
+written to the database. The real collection (Gyűjtemény, roadmap R3/R4) replaces this later.
+
 ## Code
 
 - `lib/avatar.ts`: sizes and limits, file-format check by magic bytes, storage paths (pure,
@@ -37,6 +45,12 @@ role first); nobody can ban themselves. "Tiltás feloldása" lifts it.
 - `lib/avatar-store.ts`: storage reads/writes (service role) and the Karnyx name → picture
   map used by `components/PlayerAvatar`.
 - `lib/ban.ts`: who may be banned.
+- `lib/badges.ts` (+ tests): the badge catalogue (podium sets × gold/silver/bronze and level
+  badges, files and hole sizes) and `badgeBoxSize()`. `lib/test-badge.ts`: the try-on cookie,
+  read only for admins. `actions/badge.ts`: `setTestBadge` (admins only).
+- `components/BadgedAvatar.tsx` (picture + ring, sized from the picture), `HeaderBadge.tsx`
+  (`headerBadge()`, passed by the layouts to `SiteHeader` as `userBadge`),
+  `AdminBadgePicker.tsx` (the Profilom block). Styles in `badges.css`.
 - `actions/avatar.ts`, `actions/ban.ts`: server actions, permission checks first.
 - `components/AvatarEditor.tsx` (client: pick, crop, upload), `components/PlayerAvatar.tsx`
   (server: avatar with picture lookup), `components/BanButton.tsx` (client: two-step ban).
