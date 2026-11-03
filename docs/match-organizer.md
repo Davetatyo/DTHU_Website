@@ -104,6 +104,7 @@ components/
   ImportForm                  Karnyx paste + Bye field + live preview
   KarnyxNameField             roster / Egyedi / Nem játszom picker (profile + admin user page)
   StatusBadge
+  ModeTag, PlayModePicker     Játékmód tag/icons; the TTS/Webkamera choice (propose form, accept list)
 lib/
   karnyx.ts                   parser for pasted Karnyx text + Bye names (pure, tested)
   notify.ts                   all Discord message texts (pure builders tested) + senders
@@ -114,6 +115,7 @@ lib/
                               picker days, countdown (pure, tested)
   ics.ts, calendar.ts         iCalendar + Google Calendar links (event UIDs must never change)
   profile.ts                  NOT_PLAYING, CUSTOM_NAME, isProfileComplete, cleanKarnyxName, resolveKarnyxChoice
+  play-mode.ts                Játékmód: matchMode (TTS/Webkamera/Hibrid), sideOf, showsMode (pure, tested)
   swap.ts                     planSwap: rules for the admin player swap (pure, tested)
   labels.ts, types.ts, view.ts
 Site-wide, used by this feature:
@@ -139,6 +141,8 @@ Tables (see `supabase/migrations/0001_init.sql`):
 - `matches`: `player_a_id`, `player_b_id` (null = Bye), `status`, `scheduled_at`, `played_at`.
   `reminder_sent` is **unused** since the 1-hour reminder was removed (kept to avoid a migration).
 - `proposals`: one row per suggested time; `status` open → accepted / declined / superseded.
+- `matches.mode_a` / `mode_b` (migration 0007): how each player plays the match, `tts` or
+  `webcam`; null = not chosen = webcam. See "Játékmód" below.
 
 Match status flow: `pending` → (proposal) `proposed` → (opponent accepts / admin sets time)
 `confirmed` → (Lejátszottuk) `played`. `bye` never changes. A new proposal on a confirmed
@@ -174,6 +178,16 @@ Profiles link to players **by Karnyx name**, not by id, so one claim works acros
   a real match there. Optionally the dropout gets a Bye. Proposals and any agreed time are
   cleared (status back to `pending`), and Discord pings the new pairing. Rules live in
   `lib/swap.ts` (`planSwap`, unit-tested).
+- **Játékmód (TTS / Webkamera / Hibrid, 2026-11-03):** each player chooses for themselves on
+  the match page, optionally: in the propose form ("Hogyan játszol ezen a meccsen?"), above the
+  "Elfogadom" buttons ("Te hogyan játszol?"), and later on the agreed match ("Játékmódom").
+  Only the player's own side is saved (`savePlayMode` in `actions/match.ts`, its own update so
+  a missing migration can't break proposing/accepting). Not chosen = webcam. The match is TTS
+  when both play TTS, Webkamera when both use a webcam, Hibrid when mixed (`lib/play-mode.ts`,
+  tested). Közelgő meccsek filters by it (`?mod=tts|webkamera|hibrid`, combinable with the
+  player filter); rows show a subtle tag once agreed or once someone has chosen. An admin who
+  isn't playing has no side (accepts without a mode); a player swap clears the replaced
+  player's mode. Not in Discord messages or the calendar feed.
 - **Making someone admin:** they log in once; an admin promotes them on the admin page by
   Discord or Karnyx name. Admins can't remove their own admin flag.
 - **Admins fix Karnyx names:** "Karnyx név szerkesztése" on the admin user list opens
