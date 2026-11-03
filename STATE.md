@@ -298,6 +298,11 @@ Newest first. Each session adds an entry (see CLAUDE.md → "End of every sessio
   awards, draw creation, entries, drawing and cancelling. The fake script lives outside the
   repository; ask before adding it as a dev tool. All TEMP-PREVIEW code was removed before the
   commit (`grep -rn TEMP-PREVIEW src` empty).
+- **Migration 0007 hardened (before it was ever run):** safe to run twice (`if not exists`,
+  `create or replace`), one transaction (`begin`/`commit`), fixed `search_path` on the five
+  functions, banned players (`profiles.banned_at`) can't enter draws, length/size checks that
+  match the app (reason <= 200, title <= 120, prize <= 200, amounts <= 9999). No data in it.
+  Re-tested on a local copy of 0001-0007 (also run twice, and a failing run leaves nothing).
 - **Hidden from players (checked):** status `preview`, so the tab shows only in the admin menu
   and the phase-1 gate sends non-admins from `/sorsolas` to the Időpontfoglaló. No code change
   needed. The only player-visible part is the Discord result post, sent only when an admin
