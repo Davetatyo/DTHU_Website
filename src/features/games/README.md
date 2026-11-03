@@ -86,7 +86,11 @@ The Játékok menu tab (after Bolt): a hub with one card per game (`lib/hub.ts`)
 - **Adding a picture:** put the two versions in `public/jatekok/szemfules/` and add an entry
   to `PICTURES`. To find the differences, compare the two images (pixel difference, blurred
   against JPEG noise) and confirm each with the owner: the second image of an AI-generated
-  pair is redrawn everywhere, so not every changed pixel is a real difference.
+  pair is redrawn everywhere, so not every changed pixel is a real difference. When the
+  generator changed things by accident (Trick or Treat: a lit window, pumpkin faces), build
+  the second image as the first one plus only the marked areas from the owner's version
+  (feathered mask), then re-run the difference check: only the 10 should remain.
+- Pictures: Tea Party, Trick or Treat (both 2000 × 1116).
 
 ## Adding a game
 
