@@ -81,7 +81,8 @@ src/app/meccsszervezo/        the pages (thin: data loading + JSX; logic lives i
   meccs/[id]/                 match page: versus banner, action bar (Lejátszottuk, copy message),
                               players, proposals, SlotPicker proposal form, admin tools
                               (set time, player swap, reset)
-  menetrend/page.tsx          "Közelgő meccsek": confirmed upcoming matches by day + calendar subscribe
+  menetrend/page.tsx          "Közelgő meccsek": confirmed upcoming matches by day (rows or cards)
+                              + calendar subscribe
   gyik/page.tsx               FAQ (keep it in sync with behaviour!)
   admin/                      admin page; admin/felhasznalo/[id]: set or fix any user's Karnyx name
 src/app/auth/callback|signout login route handlers (site-wide, never move: Supabase calls them)
@@ -94,13 +95,14 @@ actions/
   profile.ts                  save profile
 components/
   MatchList                   MatchRow + grouped rows (by day / open / played / Bye, lib/schedule.ts)
-  MatchupGrid                 hero-coloured picture tiles with scheduling state chips
+  MatchupGrid                 hero-coloured picture tiles with scheduling state chips; MatchCards
+                              = the tiles alone (dayView: Közelgő meccsek, time + Játékmód, no chip)
   RoundTimeline               the tournament's rounds with progress
   SlotPicker                  day cards + typed time entry, posts hidden "slot" inputs. 1 slot (admin
                               set time): the visible day+time IS the choice, live. Several slots:
                               added chips, plus a typed-but-unadded time is sent too (dashed chip)
   ViewToggle                  Lista/Kártyák switch; choice kept in a cookie (`nezet` home,
-                              `admin_nezet` admin), resolved server-side by lib/view.ts
+                              `admin_nezet` admin, `nezet_menetrend` Közelgő meccsek), resolved server-side by lib/view.ts
   ImportForm                  Karnyx paste + Bye field + live preview
   KarnyxNameField             roster / Egyedi / Nem játszom picker (profile + admin user page)
   StatusBadge

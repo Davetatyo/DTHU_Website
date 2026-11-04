@@ -4,8 +4,10 @@ import { PlayerAvatar } from "@/features/profile/components/PlayerAvatar";
 import { sameName } from "@/lib/auth";
 import { heroColors } from "@/lib/heroes";
 import { routes } from "@/lib/routes";
-import { formatDateTime } from "@/features/match-organizer/lib/time";
+import { formatDateTime, formatTime } from "@/features/match-organizer/lib/time";
 import type { MatchView, Player } from "@/features/match-organizer/lib/types";
+import { matchMode, showsMode } from "../lib/play-mode";
+import { ModeTag } from "./ModeTag";
 
 // Round overview (home page and admin): one picture tile per match in the two players' hero
 // colours, with a chip showing how far the pair got with scheduling.
@@ -61,24 +63,17 @@ function Side({ player, registered }: { player: Player | null; registered: (p: P
   );
 }
 
-export function MatchupGrid({
-  matches,
-  timeZone,
-  registeredNames,
-  openProposalCounts,
-  highlight,
-}: {
+type CardsProps = {
   matches: MatchView[];
   timeZone: string;
   registeredNames: Set<string>;
   openProposalCounts: Map<string, number>;
   /** Karnyx name of the viewer: their own match gets a gold outline. */
   highlight?: string | null;
-}) {
-  const now = new Date();
-  const registered = (p: Player) => registeredNames.has(p.karnyx_name.toLowerCase());
-  const isMine = (m: MatchView) => sameName(m.a.karnyx_name, highlight) || sameName(m.b?.karnyx_name, highlight);
+};
 
+/** The round overview: the colour legend above the cards. */
+export function MatchupGrid(props: CardsProps) {
   return (
     <div className="space-y-3">
       <div className="muted flex flex-wrap gap-x-4 gap-y-1 text-xs">
@@ -93,49 +88,78 @@ export function MatchupGrid({
         </span>
       </div>
 
-      <div className="cards">
-        {matches.map((m) => {
-          const state = cardState(m, now);
-          const proposals = openProposalCounts.get(m.id) ?? 0;
-          const faded = state === "played" || state === "bye";
-          const [c1] = heroColors(m.a.heroes[0]);
-          const [c2] = heroColors(m.b?.heroes[0]);
-          return (
-            <Link key={m.id} href={routes.match(m.id)} className={`tile${isMine(m) ? " me" : ""}${faded ? " faded" : ""}`}>
-              <div className="img ph-art" style={{ "--c1": c1, "--c2": c2 } as CSSProperties} />
-              <span className="badge-tl tile-no">
-                #{m.table_no}
-                {isMine(m) ? " · a te meccsed" : ""}
-              </span>
+      <MatchCards {...props} />
+    </div>
+  );
+}
+
+/**
+ * The cards alone. `dayView` is for the Közelgő meccsek page: every match there is confirmed and
+ * sits under a day heading, so no state chip, and the footer shows only the time and Játékmód.
+ */
+export function MatchCards({
+  matches,
+  timeZone,
+  registeredNames,
+  openProposalCounts,
+  highlight,
+  dayView,
+}: CardsProps & { dayView?: boolean }) {
+  const now = new Date();
+  const registered = (p: Player) => registeredNames.has(p.karnyx_name.toLowerCase());
+  const isMine = (m: MatchView) => sameName(m.a.karnyx_name, highlight) || sameName(m.b?.karnyx_name, highlight);
+
+  return (
+    <div className="cards">
+      {matches.map((m) => {
+        const state = cardState(m, now);
+        const proposals = openProposalCounts.get(m.id) ?? 0;
+        const faded = state === "played" || state === "bye";
+        const [c1] = heroColors(m.a.heroes[0]);
+        const [c2] = heroColors(m.b?.heroes[0]);
+        return (
+          <Link key={m.id} href={routes.match(m.id)} className={`tile${dayView ? " tile-day" : ""}${isMine(m) ? " me" : ""}${faded ? " faded" : ""}`}>
+            <div className="img ph-art" style={{ "--c1": c1, "--c2": c2 } as CSSProperties} />
+            <span className="badge-tl tile-no">
+              #{m.table_no}
+              {isMine(m) ? " · a te meccsed" : ""}
+            </span>
+            {!dayView && (
               <span className="badge-tr">
                 <span className="badge" style={{ color: STATE[state].color }}>
                   {STATE[state].label}
                 </span>
               </span>
-              <div className="in">
-                <div className="vsbox">
-                  <Side player={m.a} registered={registered} />
-                  <span className="vsx">VS</span>
-                  <Side player={m.b} registered={registered} />
-                </div>
-                <div className="foot">
-                  {m.scheduled_at && (state === "confirmed" || state === "overdue" || state === "played") ? (
-                    <span className="font-semibold first-letter:uppercase">{formatDateTime(m.scheduled_at, timeZone)}</span>
-                  ) : state === "proposed" ? (
-                    <span>{proposals} időpont vár válaszra</span>
-                  ) : state === "played" ? (
-                    <span>Lejátszva, időpont egyeztetés nélkül</span>
-                  ) : state === "bye" ? (
-                    <span>Nincs teendő</span>
-                  ) : (
-                    <span>Még senki nem javasolt időpontot</span>
-                  )}
-                </div>
+            )}
+            <div className="in">
+              <div className="vsbox">
+                <Side player={m.a} registered={registered} />
+                <span className="vsx">VS</span>
+                <Side player={m.b} registered={registered} />
               </div>
-            </Link>
-          );
-        })}
-      </div>
+              <div className="foot">
+                {dayView && m.scheduled_at ? (
+                  <span className="tile-when">
+                    <b>{formatTime(m.scheduled_at, timeZone)}</b>
+                    {showsMode(m) && <ModeTag mode={matchMode(m)!} />}
+                  {state === "overdue" && <small style={{ color: STATE.overdue.color }}>lejátszásra vár</small>}
+                  </span>
+                ) : m.scheduled_at && (state === "confirmed" || state === "overdue" || state === "played") ? (
+                  <span className="font-semibold first-letter:uppercase">{formatDateTime(m.scheduled_at, timeZone)}</span>
+                ) : state === "proposed" ? (
+                  <span>{proposals} időpont vár válaszra</span>
+                ) : state === "played" ? (
+                  <span>Lejátszva, időpont egyeztetés nélkül</span>
+                ) : state === "bye" ? (
+                  <span>Nincs teendő</span>
+                ) : (
+                  <span>Még senki nem javasolt időpontot</span>
+                )}
+              </div>
+            </div>
+          </Link>
+        );
+      })}
     </div>
   );
 }

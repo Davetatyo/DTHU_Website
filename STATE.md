@@ -1,6 +1,6 @@
 # Project state: DTHU website
 
-**Current version: v2.25** (2026-11-03). Live: https://dthu.hu builds from this repository's
+**Current version: v2.26** (2026-11-04). Live: https://dthu.hu builds from this repository's
 `main` (the owner moved Vercel over around 2026-11-01; checked live 2026-11-02). Every push to
 `main` deploys within a minute.
 **Launch phase: 1**: the public sees only the Meccsszervező; the whole site from the prototype
@@ -269,6 +269,9 @@ quiz) are in
   non-admin on the Vercel preview (Launch plan step 2).
 - Most full-site pages show sample data (see Features); the prototype strip says so.
 - Discord login works locally only on port 3000 (Supabase redirect allow-list).
+- Időpontfoglaló Kártyák view: the status chip covers the right player's picture on many cards
+  (6 of 11 at desktop width, measured 2026-11-04), because the cards got tighter when all 3
+  heroes were added. Likely fix: the extra top room Közelgő meccsek's cards have (`.tile-day .in`).
 
 ## Technical debt
 
@@ -292,6 +295,20 @@ quiz) are in
 ## Handover log
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
+
+### 2026-11-04 · Közelgő meccsek: card view (feature/match-organizer, v2.26)
+
+- Owner asked to see the Időpontfoglaló's cards on Közelgő meccsek. Added the same Lista / Kártyák
+  switch; Lista stays the default. The choice has its own cookie (`nezet_menetrend`), and
+  `ViewToggle` got a `keep` prop so switching keeps the player and Játékmód filters.
+- `MatchupGrid.tsx` now also exports `MatchCards` (the cards without the legend). Its `dayView`
+  prop: no state chip, footer shows the time and Játékmód, "lejátszásra vár" once the time has
+  passed, and more top room (`.tile-day`).
+- Verified in the scratch copy with a fake admin (reads only): desktop and 375 px, dark and
+  light; filters kept when switching; choice remembered. "lejátszásra vár" not seen on screen, no
+  match was in that state. Types, lint, 229 tests.
+- Not done: the chip overlap on the Időpontfoglaló's own cards (see Known issues), offered to the
+  owner, not yet decided.
 
 ### 2026-11-03 · Thinner badge rings (feature/profile, v2.25)
 
@@ -1097,6 +1114,14 @@ webhook, no cron secret), so nothing local can post to Discord.
 ---
 
 ## Changelog
+
+### v2.26 · 2026-11-04 · merge of `feature/match-organizer`
+**Changed (visible to players):** Közelgő meccsek has a Lista / Kártyák switch. Kártyák shows the
+Időpontfoglaló's cards under each day, with the time and Játékmód on each card. Lista stays the
+default, and the choice is remembered.
+**Manual steps:** none.
+**Verified:** types, lint, tests; browser with a fake admin login, desktop and 375 px, dark and
+light; live check after deploy.
 
 ### v2.25 · 2026-11-03 · merge of `feature/profile`
 **Changed (admins only):** all badges have much thinner rings, so the profile picture is much

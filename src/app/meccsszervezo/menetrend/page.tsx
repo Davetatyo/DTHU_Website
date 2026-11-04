@@ -1,11 +1,15 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import { CopyButton } from "@/components/CopyButton";
 import { InfoTip } from "@/components/InfoTip";
 import { MatchRow } from "@/features/match-organizer/components/MatchList";
+import { MatchCards } from "@/features/match-organizer/components/MatchupGrid";
+import { ViewToggle } from "@/features/match-organizer/components/ViewToggle";
 import { getCurrentProfile, sameName } from "@/lib/auth";
-import { getActiveTournament, getPlayers, getScheduledMatches } from "@/features/match-organizer/lib/data";
+import { getActiveTournament, getPlayers, getRegisteredKarnyxNames, getScheduledMatches } from "@/features/match-organizer/lib/data";
 import { googleSubscribeUrl, webcalUrl } from "@/features/match-organizer/lib/ics";
 import { groupMatches } from "@/features/match-organizer/lib/schedule";
+import { resolveView } from "@/features/match-organizer/lib/view";
 import { routes } from "@/lib/routes";
 import { getSiteUrl } from "@/lib/site";
 import { DEFAULT_TIMEZONE } from "@/features/match-organizer/lib/time";
@@ -15,8 +19,12 @@ import { MATCH_MODE_LABELS, matchMode, MODE_PARAM, PARAM_FOR, type MatchMode } f
 
 export const metadata: Metadata = { title: "Közelgő meccsek" };
 
-export default async function SchedulePage({ searchParams }: { searchParams: Promise<{ jatekos?: string; mod?: string }> }) {
-  const { jatekos, mod } = await searchParams;
+const VIEW_COOKIE = "nezet_menetrend";
+const NO_PROPOSALS = new Map<string, number>(); // only confirmed matches are listed here
+
+export default async function SchedulePage({ searchParams }: { searchParams: Promise<{ jatekos?: string; mod?: string; nezet?: string }> }) {
+  const { jatekos, mod, nezet } = await searchParams;
+  const view = resolveView(nezet, (await cookies()).get(VIEW_COOKIE)?.value, "lista");
   const wanted: MatchMode | null = (mod && MODE_PARAM[mod]) || null;
   const viewer = await getCurrentProfile();
   const tz = viewer?.timezone ?? DEFAULT_TIMEZONE;
@@ -40,12 +48,14 @@ export default async function SchedulePage({ searchParams }: { searchParams: Pro
     const q = new URLSearchParams();
     if (jatekos) q.set("jatekos", jatekos);
     if (m) q.set("mod", PARAM_FOR[m]);
+    if (nezet) q.set("nezet", nezet);
     const qs = q.toString();
     return `${routes.schedule}${qs ? `?${qs}` : ""}`;
   };
   const now = new Date();
   const days = groupMatches(matches, tz, now);
   const mine = (name: string | undefined) => sameName(name, viewer?.karnyx_name);
+  const registeredNames = view === "kartyak" ? await getRegisteredKarnyxNames() : new Set<string>();
 
   const site = await getSiteUrl();
   const feedUrl = `${site}${routes.calendarFeed}${jatekos ? `?player=${encodeURIComponent(jatekos)}` : ""}`;
@@ -61,18 +71,22 @@ export default async function SchedulePage({ searchParams }: { searchParams: Pro
 
       <div className="l3">
         <section className="min-w-0">
-          <form className="mb-3 flex flex-wrap gap-2">
-            {mod && <input type="hidden" name="mod" value={mod} />}
-            <select name="jatekos" defaultValue={jatekos ?? ""} className="input max-w-xs" aria-label="Játékos">
-              <option value="">Minden játékos</option>
-              {players.map((p) => (
-                <option key={p.id} value={p.karnyx_name}>
-                  {p.karnyx_name}
-                </option>
-              ))}
-            </select>
-            <button className="btn btn-secondary">Szűrés</button>
-          </form>
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+            <form className="flex min-w-0 flex-1 flex-wrap gap-2">
+              {mod && <input type="hidden" name="mod" value={mod} />}
+              {nezet && <input type="hidden" name="nezet" value={nezet} />}
+              <select name="jatekos" defaultValue={jatekos ?? ""} className="input max-w-xs" aria-label="Játékos">
+                <option value="">Minden játékos</option>
+                {players.map((p) => (
+                  <option key={p.id} value={p.karnyx_name}>
+                    {p.karnyx_name}
+                  </option>
+                ))}
+              </select>
+              <button className="btn btn-secondary">Szűrés</button>
+            </form>
+            <ViewToggle current={view} path={routes.schedule} cookie={VIEW_COOKIE} keep={{ jatekos, mod }} />
+          </div>
           <nav className="pm-filter mb-4" aria-label="Játékmód">
             <Link href={filterHref(null)} className={`pm-chip${wanted ? "" : " on"}`} aria-current={wanted ? undefined : "true"}>
               Mind <small>{byPlayer.length}</small>
@@ -93,9 +107,22 @@ export default async function SchedulePage({ searchParams }: { searchParams: Pro
                 <b>{d.title}</b>
                 {d.sub && <span>{d.sub}</span>}
               </div>
-              {d.matches.map((m) => (
-                <MatchRow key={m.id} match={m} timeZone={tz} mine={mine(m.a.karnyx_name) || mine(m.b?.karnyx_name)} now={now} />
-              ))}
+              {view === "kartyak" ? (
+                <div className="mt-3 mb-4">
+                  <MatchCards
+                    matches={d.matches}
+                    timeZone={tz}
+                    registeredNames={registeredNames}
+                    openProposalCounts={NO_PROPOSALS}
+                    highlight={viewer?.karnyx_name}
+                    dayView
+                  />
+                </div>
+              ) : (
+                d.matches.map((m) => (
+                  <MatchRow key={m.id} match={m} timeZone={tz} mine={mine(m.a.karnyx_name) || mine(m.b?.karnyx_name)} now={now} />
+                ))
+              )}
             </section>
           ))}
         </section>
