@@ -308,7 +308,8 @@ a:hover { color: inherit; }
   .tile.me { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold); }
   .tile.faded { opacity: 0.7; }
   .tile .foot { font-size: 13px; color: #d9d2c2; text-align: center; }
-  .tile-day .in { padding-top: 38px; } /* keeps "#10 · a te meccsed" clear of the pictures */
+  .tile-match .in { padding-top: 46px; } /* keeps the number and state chip clear of the pictures and badge rings */
+  .tile-mine { display: block; font-size: 12px; font-weight: 700; color: #e6c06a; } /* fixed: tiles are dark in both themes */
   .tile-when { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 4px 10px; }
   .tile-when b { font-size: 17px; color: #fff; }
   .badge-tl, .badge-tr { position: absolute; top: 10px; z-index: 2; }

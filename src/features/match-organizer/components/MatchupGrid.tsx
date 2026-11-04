@@ -118,11 +118,11 @@ export function MatchCards({
         const [c1] = heroColors(m.a.heroes[0]);
         const [c2] = heroColors(m.b?.heroes[0]);
         return (
-          <Link key={m.id} href={routes.match(m.id)} className={`tile${dayView ? " tile-day" : ""}${isMine(m) ? " me" : ""}${faded ? " faded" : ""}`}>
+          <Link key={m.id} href={routes.match(m.id)} className={`tile tile-match${isMine(m) ? " me" : ""}${faded ? " faded" : ""}`}>
             <div className="img ph-art" style={{ "--c1": c1, "--c2": c2 } as CSSProperties} />
             <span className="badge-tl tile-no">
               #{m.table_no}
-              {isMine(m) ? " · a te meccsed" : ""}
+              {dayView && isMine(m) ? " · a te meccsed" : ""}
             </span>
             {!dayView && (
               <span className="badge-tr">
@@ -138,6 +138,8 @@ export function MatchCards({
                 <Side player={m.b} registered={registered} />
               </div>
               <div className="foot">
+                {/* With a state chip in the corner there is no room for this next to the number. */}
+                {!dayView && isMine(m) && <small className="tile-mine">a te meccsed</small>}
                 {dayView && m.scheduled_at ? (
                   <span className="tile-when">
                     <b>{formatTime(m.scheduled_at, timeZone)}</b>
