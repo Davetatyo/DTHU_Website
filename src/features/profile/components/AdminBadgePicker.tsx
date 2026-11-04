@@ -9,7 +9,7 @@ function Item({ badge, current, avatarUrl }: { badge: Badge; current: Badge | nu
   const on = current?.id === badge.id;
   return (
     <div className={`badge-test-item${on ? " on" : ""}`}>
-      <BadgedAvatar badge={badge} picture={52} avatarUrl={avatarUrl} />
+      <BadgedAvatar badge={badge} picture={64} avatarUrl={avatarUrl} />
       <b>{badge.name}</b>
       <small>{badge.group === "level" ? `${badge.level}. szint` : tierPlace(badge.tier!)}</small>
       <form action={setTestBadge} className="mt-1">

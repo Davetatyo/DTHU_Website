@@ -30,18 +30,18 @@ const TIER_PLACES: Record<BadgeTier, number> = { gold: 1, silver: 2, bronze: 3 }
 
 /** Podium sets: folder, display name, hole radius in the 512 and 128 px files. */
 export const BADGE_SETS = [
-  { folder: "vitality", name: "Vitality", hole: 139.8, holeSmall: 30.4 },
-  { folder: "innovation", name: "Innovation", hole: 104.02, holeSmall: 25.94 },
-  { folder: "devotion", name: "Devotion", hole: 121.02, holeSmall: 32.76 },
-  { folder: "mad-king", name: "Mad King", hole: 121.47, holeSmall: 34.21 },
-  { folder: "x-mas", name: "X-Mas", hole: 108.58, holeSmall: 27.5 },
-  { folder: "parbaj", name: "Párbaj", hole: 108.31, holeSmall: 34.21 },
+  { folder: "vitality", name: "Vitality", hole: 171.84, holeSmall: 42.11 },
+  { folder: "innovation", name: "Innovation", hole: 155.22, holeSmall: 44.09 },
+  { folder: "devotion", name: "Devotion", hole: 152.82, holeSmall: 41.22 },
+  { folder: "mad-king", name: "Mad King", hole: 154.78, holeSmall: 45.09 },
+  { folder: "x-mas", name: "X-Mas", hole: 150.86, holeSmall: 40.62 },
+  { folder: "parbaj", name: "Párbaj", hole: 154.65, holeSmall: 47.82 },
 ] as const;
 
 /** Single badges awarded at an XP level. */
 export const LEVEL_BADGES = [
-  { file: "barbarian", name: "Barbár", level: 5, hole: 103.65, holeSmall: 28.61 },
-  { file: "moon-elf", name: "Holdtünde", level: 7, hole: 103.02, holeSmall: 26.18 },
+  { file: "barbarian", name: "Barbár", level: 5, hole: 151.32, holeSmall: 41.88 },
+  { file: "moon-elf", name: "Holdtünde", level: 7, hole: 156.82, holeSmall: 40.77 },
 ] as const;
 
 const TIERS: BadgeTier[] = ["gold", "silver", "bronze"];

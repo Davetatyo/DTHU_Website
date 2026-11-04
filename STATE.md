@@ -1,6 +1,6 @@
 # Project state: DTHU website
 
-**Current version: v2.24** (2026-11-03). Live: https://dthu.hu builds from this repository's
+**Current version: v2.25** (2026-11-03). Live: https://dthu.hu builds from this repository's
 `main` (the owner moved Vercel over around 2026-11-01; checked live 2026-11-02). Every push to
 `main` deploys within a minute.
 **Launch phase: 1**: the public sees only the Meccsszervező; the whole site from the prototype
@@ -292,6 +292,18 @@ quiz) are in
 ## Handover log
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
+
+### 2026-11-03 · Thinner badge rings (feature/profile, v2.25)
+
+- Owner: the badges are too thick, the pictures barely show. All 40 PNGs in `public/badges/`
+  reshaped with a radial squeeze (`docs/mockups/podium-badges/thin-rings.py.txt`, README there):
+  the ring band is about 25% of the hole radius, ornaments keep their shape. New hole sizes in
+  `lib/badges.ts`. Header picture 24 px (was 18), lists keep about 75-95% of the normal picture
+  size (`BadgeOverlay` ring 1.3x), try-on cards 64 px. Originals are in git history.
+- Verified in the scratch copy with a fake admin and a stand-in picture: Profilom, header,
+  cards, list row; desktop dark, phone light. Types, lint, tests.
+- Note: `main` now has a guided tour popup ("Bemutató", from feature/games); it appears for a
+  fresh browser. Not clicked in the preview, in case it writes to the database.
 
 ### 2026-11-03 · Napi kvíz, Szerencsekerék, sorozat, economy settings (feature/games, committed, not merged)
 
@@ -1085,6 +1097,12 @@ webhook, no cron secret), so nothing local can post to Discord.
 ---
 
 ## Changelog
+
+### v2.25 · 2026-11-03 · merge of `feature/profile`
+**Changed (admins only):** all badges have much thinner rings, so the profile picture is much
+bigger inside them (header, Időpontfoglaló, Profilom try-on). Players see no change.
+**Manual steps:** none.
+**Verified:** types, lint, tests; browser with a fake admin login, desktop and 375 px.
 
 ### v2.24 · 2026-11-03 · merge of `feature/profile`
 **Changed (admins only):** the test badge also shows around the admin's own picture in the

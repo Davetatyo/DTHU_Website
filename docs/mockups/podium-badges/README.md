@@ -21,8 +21,8 @@ Earned by reaching an XP level (owner, 2026-11-03), one badge each, no gold/silv
 
 | Badge | Level | Look | Files | 512 hole | 128 hole |
 |---|---|---|---|---|---|
-| **Barbarian** (Barbár) | 5 | bronze-toned riveted ring, fur, straps, a glowing amber orb on top, a plain shield at the bottom, embers | `public/badges/levels/barbarian-{512,128}.png` | 103.65 px | 28.61 px |
-| **Moon Elf** (Holdtünde) | 7 | silver ring with flowing cloth, a glowing crescent moon on top, a winged shield, blue sparkles | `public/badges/levels/moon-elf-{512,128}.png` | 103.02 px | 26.18 px |
+| **Barbarian** (Barbár) | 5 | bronze-toned riveted ring, fur, straps, a glowing amber orb on top, a plain shield at the bottom, embers | `public/badges/levels/barbarian-{512,128}.png` | see the table below | |
+| **Moon Elf** (Holdtünde) | 7 | silver ring with flowing cloth, a glowing crescent moon on top, a winged shield, blue sparkles | `public/badges/levels/moon-elf-{512,128}.png` | see the table below | |
 
 Placed the same way as the podium badges (see below). Screenshots:
 `szint-jelvenyek-sotet-vilagos.png`, `gyujtemeny-szint-jutalmak.jpg` (Gyűjtemény row: earned
@@ -36,22 +36,35 @@ and `{gold,silver,bronze}-128.png` (a simplified drawing for the header chip). A
 transparent PNGs with an exact transparent hole for the profile picture. The hole size
 differs per set, because the ornaments reach out differently:
 
-| Set | 512 file: hole radius | 128 file: hole radius |
+| Badge | 512 file: hole radius | 128 file: hole radius |
 |---|---|---|
-| Vitality | 139.8 px (27.3% of the width) | 30.4 px (23.75%) |
-| Innovation | 104.0 px (20.3%) | 25.9 px (20.3%) |
-| Devotion | 121.0 px (23.6%) | 32.8 px (25.6%) |
-| Mad King | 121.5 px (23.7%) | 34.2 px (26.7%) |
-| X-Mas | 108.6 px (21.2%) | 27.5 px (21.5%) |
-| Párbaj | 108.3 px (21.2%) | 34.2 px (26.7%) |
+| Vitality | 171.8 px (33.6% of the width) | 42.1 px (32.9%) |
+| Innovation | 155.2 px (30.3% of the width) | 44.1 px (34.4%) |
+| Devotion | 152.8 px (29.8% of the width) | 41.2 px (32.2%) |
+| Mad King | 154.8 px (30.2% of the width) | 45.1 px (35.2%) |
+| X-Mas | 150.9 px (29.5% of the width) | 40.6 px (31.7%) |
+| Párbaj | 154.7 px (30.2% of the width) | 47.8 px (37.4%) |
+| Barbarian | 151.3 px (29.6% of the width) | 41.9 px (32.7%) |
+| Moon Elf | 156.8 px (30.6% of the width) | 40.8 px (31.9%) |
 
 **How to place one:** pick the profile picture's size first, then size the badge from it, so
 every set shows the picture at the same size:
 `badgeSize = pictureDiameter / (2 × hole / width)`. Draw the picture as a circle centred in
 the badge (1 px larger, so no seam shows), then the PNG on top. Ornaments may overlap the
-picture's edge on purpose. Examples used in the screenshots: picture 52 px in the Gyűjtemény
-cards (Vitality badge 95 px, Innovation 128 px, Devotion 110 px); about 17 px in the header
-chip. Give the cards a fixed text/button area so different badge heights don't misalign them.
+picture's edge on purpose. Sizes in use: picture 64 px in the try-on cards, 96 px at the top
+of that block, 24 px in the header chip. Give the cards a fixed text/button area so different
+badge heights don't misalign them.
+
+## Thinner rings (v2.25, owner: "super thick")
+
+The first cut-outs had rings about as wide as the picture's radius, so the picture looked
+small. `thin-rings.py.txt` (numpy + Pillow, renamed so nothing runs it) reshapes every file with
+a radial squeeze: the band between the hole and the ring's outer edge is pressed outwards
+until it's about 25% of the new hole radius (28% in the 128 px files). Anything beyond the
+outer edge stays put, and the band is squeezed less under the top and bottom ornaments, so
+gems, hats and numbered medallions keep their shape (they overlap the picture's edge a
+little). All gold/silver/bronze of a set share one hole size. `vekony-elotte-utana.png` shows
+before and after; `vekony-*` are the current look. The other screenshots here predate this.
 
 ## How the files were made
 

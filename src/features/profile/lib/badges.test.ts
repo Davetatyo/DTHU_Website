@@ -18,10 +18,10 @@ describe("badge catalogue", () => {
 
   it("has plausible hole sizes (a share of the image width)", () => {
     for (const b of BADGES) {
-      expect(b.hole).toBeGreaterThan(0.15);
-      expect(b.hole).toBeLessThan(0.35);
-      expect(b.holeSmall).toBeGreaterThan(0.15);
-      expect(b.holeSmall).toBeLessThan(0.35);
+      expect(b.hole).toBeGreaterThan(0.25);
+      expect(b.hole).toBeLessThan(0.45);
+      expect(b.holeSmall).toBeGreaterThan(0.25);
+      expect(b.holeSmall).toBeLessThan(0.45);
     }
   });
 });
@@ -41,7 +41,7 @@ describe("sizes", () => {
     // hole radius 25% of the width: a 50 px picture needs a 100 px badge
     expect(badgeBoxSize(50, 0.25)).toBe(100);
     const b = findBadge("innovation-gold")!;
-    expect(badgeBoxSize(52, b.hole)).toBe(128);
+    expect(badgeBoxSize(52, b.hole)).toBe(Math.round(52 / (2 * b.hole)));
   });
 
   it("labels the places", () => {

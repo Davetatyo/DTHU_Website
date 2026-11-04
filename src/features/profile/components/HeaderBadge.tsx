@@ -12,5 +12,5 @@ export async function headerBadge(): Promise<React.ReactNode | undefined> {
   const badge = await getTestBadge();
   if (!badge) return undefined;
   const profile = await getCurrentProfile();
-  return <BadgedAvatar badge={badge} picture={18} small avatarUrl={avatarPublicUrl(profile?.avatar_path)} />;
+  return <BadgedAvatar badge={badge} picture={24} small avatarUrl={avatarPublicUrl(profile?.avatar_path)} />;
 }
