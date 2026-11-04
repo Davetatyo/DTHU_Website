@@ -1,6 +1,6 @@
 # Project state: DTHU website
 
-**Current version: v2.26** (2026-11-04). Live: https://dthu.hu builds from this repository's
+**Current version: v2.27** (2026-11-04). Live: https://dthu.hu builds from this repository's
 `main` (the owner moved Vercel over around 2026-11-01; checked live 2026-11-02). Every push to
 `main` deploys within a minute.
 **Launch phase: 1**: the public sees only the Meccsszervező; the whole site from the prototype
@@ -269,9 +269,6 @@ quiz) are in
   non-admin on the Vercel preview (Launch plan step 2).
 - Most full-site pages show sample data (see Features); the prototype strip says so.
 - Discord login works locally only on port 3000 (Supabase redirect allow-list).
-- Időpontfoglaló Kártyák view: the status chip covers the right player's picture on many cards
-  (6 of 11 at desktop width, measured 2026-11-04), because the cards got tighter when all 3
-  heroes were added. Likely fix: the extra top room Közelgő meccsek's cards have (`.tile-day .in`).
 
 ## Technical debt
 
@@ -295,6 +292,15 @@ quiz) are in
 ## Handover log
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
+
+### 2026-11-04 · Match cards: chip no longer covers the pictures (feature/match-organizer, v2.27)
+
+- The status chip covered the right player's picture on 6 of 11 Időpontfoglaló cards. All match cards
+  now have more top room (`.tile-match .in`, replaces `.tile-day` from v2.26), enough for a badge ring
+  too. "a te meccsed" moved to the card footer where a chip is shown, in a fixed gold (`.tile-mine`).
+- Verified in the scratch copy: 0 of 11 cards overlap at desktop and 375 px, with at least 10 px
+  between chip and badge ring on desktop; dark and light. Admin cards use the same component, not
+  opened. Types, lint, tests.
 
 ### 2026-11-04 · Közelgő meccsek: card view (feature/match-organizer, v2.26)
 
@@ -1114,6 +1120,13 @@ webhook, no cron secret), so nothing local can post to Discord.
 ---
 
 ## Changelog
+
+### v2.27 · 2026-11-04 · merge of `feature/match-organizer`
+**Changed (visible to players):** on the match cards the status chip no longer covers the right
+player's picture. Cards are a little taller, and "a te meccsed" sits in the footer above the date.
+**Manual steps:** none.
+**Verified:** types, lint, tests; browser with a fake admin login, desktop and 375 px, dark and
+light; live stylesheet checked after deploy.
 
 ### v2.26 · 2026-11-04 · merge of `feature/match-organizer`
 **Changed (visible to players):** Közelgő meccsek has a Lista / Kártyák switch. Kártyák shows the
