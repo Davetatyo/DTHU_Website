@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { DevPreviewBanner } from "@/components/site/DevPreviewBanner";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
+import { LiveBanner } from "@/features/live-banner/components/LiveBanner";
 import { headerBadge } from "@/features/profile/components/HeaderBadge";
 import { HeaderWallet } from "@/features/shop/components/HeaderWallet";
 import { getAdminView } from "@/lib/auth";
@@ -32,6 +33,7 @@ export default async function OrganizerLayout({ children }: Readonly<{ children:
             <DevPreviewBanner />
           </div>
         )}
+        <LiveBanner />
         {children}
       </main>
       <SiteFooter />

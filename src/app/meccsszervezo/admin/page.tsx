@@ -27,6 +27,7 @@ import {
   updateDeadline,
 } from "@/features/match-organizer/actions/admin";
 import { ImportForm } from "@/features/match-organizer/components/ImportForm";
+import { AdminLivePanel } from "@/features/live-banner/components/AdminLivePanel";
 
 export const metadata: Metadata = { title: "Admin felület" };
 
@@ -339,6 +340,8 @@ export default async function AdminPage({
           </table>
         </div>
       </section>
+
+      <AdminLivePanel tournamentId={tournament?.id ?? null} timeZone={tz} />
 
       <section className="card space-y-2">
         <h2 className="text-lg font-bold">Discord</h2>

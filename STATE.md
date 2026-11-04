@@ -92,6 +92,7 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 | `links` Linkek | `/linkek`, admin `/meccsszervezo/admin/linkek` | preview (admins only), **admin editor on `main` since v2.7** | links from the `links` table (migration 0006) | owner runs migration 0006, tests live |
 | `alchemist` Alkimista | `/alkimista` + help vial | preview | knowledge base from the prototype; unanswered questions only in the browser | admin inbox for unanswered questions |
 | `register-page` Regisztráció | `/regisztracio` | **live** | static guide content; tournament banner real | owner review of Hungarian texts |
+| `live-banner` Élő adás | banner at the top of the layouts; `/api/live/voice`, `/api/live/now`; admin block on `/meccsszervezo/admin` | **built on `feature/live-banner`, not merged.** Admins only until `LIVE_BANNER_ADMINS_ONLY` is false. Detection waits for Árpád's bot | real; needs migration 0011 and `LIVE_BOT_SECRET` | `src/features/live-banner/README.md`, bot guide in `bot/README.md` |
 | `profile` Profilkép, Profil szerkesztése, Kitiltás | `/meccsszervezo/profil`, `/meccsszervezo/admin/felhasznalo/<id>` | **live** (v2.2): every logged-in user can upload a picture; admin page and bans for all admins | all real | badge ring (R3/R4), cosmetics collection |
 
 ## Database (Supabase)
@@ -148,6 +149,8 @@ entries after a draw closes.
 | `daily_questions` *(0010)* | Question bank | `type`, `prompt`, `answer_mode`, `options`/`correct_option` or `accepted_answers`, `explanation`, `difficulty`, `reward_override`, `status`, `publish_date` (unique), `times_used`, `last_used_date` | – |
 | `daily_question_days` *(0010)* | The question each day used, fixed on first request | `day` (key), `question_id` | – |
 | `daily_question_answers` *(0010)* | One answer per player per day | `question_id`, `profile_id`, `day`, `answer`, `is_correct`, `coins` | – |
+| `live_channels` *(0011, not applied)* | Tournament voice channels for the Élő adás banner, edited on the admin page | `discord_channel_id` (key), `name`, `join_url`, `sort_order`, `last_report_at` | – |
+| `match_live` *(0011)* | Matches that went live; whether one is live now is worked out when read | `match_id` (key, cascade), `channel_id`, `started_at`, `last_seen_at`, `ended_at`, `source` (voice/admin) | – |
 | `daily_streaks` *(0010)* | Days in a row per game (spin and quiz separately, 1..7) | `profile_id` + `game` (key), `current_length`, `last_completed_date` | – |
 
 \*Row counts on 2026-11-03, for scale only.
@@ -196,6 +199,11 @@ sample data (no tables yet; tickets and coins become real with migrations 0008 a
 
 ## Needs the owner
 
+0. **Élő adás (`feature/live-banner`, not merged): run `supabase/migrations/0011_live_banner.sql`**
+   in the Supabase SQL Editor *before* merging. Only adds two tables; safe to run twice, one
+   transaction. Then: add `LIVE_BOT_SECRET` in Vercel (any long random text) and redeploy, send it
+   privately to Árpád, add the tournament voice channels on the admin page, and point Árpád to
+   `src/features/live-banner/bot/README.md`.
 0. **Napi kvíz + Szerencsekerék (`feature/games`, not merged): run
    `supabase/migrations/0010_daily_spin_and_question.sql`** in the Supabase SQL Editor *after*
    0008 and 0009 and *before* merging the branch. Only adds things, no data; safe to run twice,
@@ -295,6 +303,28 @@ quiz) are in
 ## Handover log
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
+
+### 2026-11-04 · Élő adás banner, website side and bot module (feature/live-banner, not merged)
+
+- Owner wants a blinking "Élő adás" card when a match is played, linking to its Discord voice
+  channel. No second bot: **Árpád merges the reporter into his bot later.** So the bot reports to the
+  site (`POST /api/live/voice`) instead of the site checking Discord once a minute, as first planned.
+- Decisions: voice channel; one player joining is enough; logged-in users only; 1.5 hours or until
+  everyone leaves. Built as the *longer* of the two, and "everyone" means the match's two players.
+  Both readings are flagged in the feature README for the owner to confirm.
+- Built: migration 0011, rules + tests (`lib/rules.ts`), endpoint, banner in both layouts, admin
+  block (bot status, stop, manual start, channels), portable `bot/live-voice-reporter.ts` + tests,
+  Árpád's guide `bot/README.md`. Banner is admins-only until `LIVE_BANNER_ADMINS_ONLY` is false.
+- Verified: types, lint, tests. Migration run twice on an in-memory Postgres (PGlite). discord.js
+  snippet compiled against 14.28. In the scratch copy with stubbed data: banner on desktop and 375 px,
+  dark and light; admin block on desktop, dark. Endpoint's 401, 400, 405 replies, and 503 while the
+  migration hasn't run. No button was clicked and no report reached a real table.
+- **Not verified:** the migration on the real database, any real write through the endpoint, a real
+  Discord server, the links on a phone. The golden rule forbids test writes to the live database.
+- Bot language is unknown; the guide also has a contract for other languages.
+- Uncommitted on this working tree and **not part of this feature**: the Időpontfoglaló card chip
+  fix (`src/app/globals.css`, `MatchupGrid.tsx`), still waiting for the owner's push decision. Stage
+  files one by one so it doesn't slip into this feature's commit.
 
 ### 2026-11-04 · Közelgő meccsek: card view (feature/match-organizer, v2.26)
 

@@ -1,0 +1,26 @@
+@layer components {
+  /* The "Élő adás" banner. Fixed dark colours: like the top bar it stays dark in both themes. */
+  .live-cards { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+  .live-card { display: flex; align-items: center; gap: 14px; padding: 10px 14px; border: 1px solid #c8453c; border-radius: 8px; background: linear-gradient(90deg, #3a1416, #1a1219 70%); color: #f4ecda; }
+  a.live-card:hover { border-color: #ff7a70; color: #f4ecda; }
+  .live-tag { display: inline-flex; align-items: center; gap: 7px; flex: none; font-size: 13px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: #ff7a70; }
+  .live-tag i { width: 9px; height: 9px; border-radius: 50%; background: #ff4d42; }
+  .live-match { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+  .live-match b { font-size: 15px; color: #fff; overflow-wrap: anywhere; line-height: 1.25; }
+  .live-match small { font-size: 12px; color: #cfc6b4; }
+  .live-go { flex: none; font-size: 13px; font-weight: 700; color: #e6c06a; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .live-tag { animation: live-blink 1.4s ease-in-out infinite; }
+  }
+  @keyframes live-blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  @media (max-width: 560px) {
+    .live-card { flex-wrap: wrap; gap: 4px 10px; }
+    .live-match { order: 3; flex-basis: 100%; }
+    .live-go { margin-left: auto; }
+  }
+}

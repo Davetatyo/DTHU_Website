@@ -62,4 +62,6 @@ export const routes = {
   authCallback: "/auth/callback",
   signout: "/auth/signout",
   calendarFeed: "/api/calendar",
+  /** The live banner's refresh (see features/live-banner). */
+  liveNow: "/api/live/now",
 } as const;

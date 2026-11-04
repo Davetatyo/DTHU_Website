@@ -116,6 +116,13 @@ select status_code, content, error_msg, created from net._http_response
 The same hourly call also holds the Sorsolás ticket draws whose closing time has passed
 (`src/features/tickets/lib/run.ts`), so stopping it stops those too. Stop the job with `select cron.unschedule('dt-reminders');`.
 
+### 7. Élő adás banner
+
+Run `supabase/migrations/0011_live_banner.sql`, add `LIVE_BOT_SECRET` in Vercel and redeploy, then
+add the tournament voice channels at Admin felület → Élő adás. Detection needs the Discord bot:
+[its guide](../src/features/live-banner/bot/README.md). Rules:
+[feature README](../src/features/live-banner/README.md).
+
 ## Running a tournament
 
 1. `/meccsszervezo/admin` → **Új verseny indítása** (new tournament).

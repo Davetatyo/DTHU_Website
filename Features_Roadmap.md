@@ -622,6 +622,21 @@ congratulation. New pictures: the owner sends two images, the differences are ma
 
 **Open questions:** none.
 
+### R14 · Élő adás (live banner on the site, voice detection through the Discord bot)
+
+**Status:** Website side built on `feature/live-banner`, not merged (2026-11-04). Waits for the owner
+to run migration 0011 and for Árpád to merge the reporter into his bot.
+· **Feature id:** `live-banner` · **Depends on:** Árpád's Discord bot
+
+A blinking "Élő adás" card on top of the page when a tournament match is on, opening its Discord
+voice channel. Several games at once get one card each, linking to the channel they are in. Owner
+decisions (2026-11-04): voice channels; one player joining within ±30 minutes of the match time is
+enough; on for 1.5 hours or until everyone leaves; logged-in users only; no second bot. Details:
+`src/features/live-banner/README.md`, bot guide `src/features/live-banner/bot/README.md`.
+
+**Open questions:** whether "1.5 hours or until everyone leaves" means the longer of the two, as
+built; which link works best on phones.
+
 ---
 
 ## Built

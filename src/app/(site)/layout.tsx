@@ -2,6 +2,7 @@ import { DevPreviewBanner } from "@/components/site/DevPreviewBanner";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { HelpVial } from "@/features/alchemist/components/HelpVial";
+import { LiveBanner } from "@/features/live-banner/components/LiveBanner";
 import { headerBadge } from "@/features/profile/components/HeaderBadge";
 import { HeaderWallet } from "@/features/shop/components/HeaderWallet";
 import { SeasonPhases } from "@/features/timetables/components/SeasonPhases";
@@ -20,7 +21,10 @@ export default async function SiteLayout({ children }: Readonly<{ children: Reac
         {isDevPreview(adminView) && <DevPreviewBanner />}
         <SeasonPhases />
       </div>
-      <main className="wrap page-fade">{children}</main>
+      <main className="wrap page-fade">
+        <LiveBanner />
+        {children}
+      </main>
       <SiteFooter />
       <HelpVial />
     </>
