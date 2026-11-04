@@ -5,9 +5,9 @@
   .badged-pic svg { width: 55%; height: 55%; }
   .badged-ring { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 
-  /* In the header chip the badge is taller than the 32 px chip: let it overflow evenly. */
+  /* In the header chip the badge is a little taller than the 32 px chip: let it overflow evenly. */
   .tb-user.has-badge { padding-left: 2px; gap: 6px; overflow: visible; }
-  .tb-user .badged { margin: -8px -2px; }
+  .tb-user .badged { margin: -3px -1px; }
 
   /* ---------- badge around a player avatar in lists and cards (BadgeOverlay) ---------- */
   .badge-wrap { position: relative; display: inline-grid; place-items: center; flex: none; }

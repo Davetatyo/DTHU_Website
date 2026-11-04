@@ -1,0 +1,34 @@
+# Thins a badge ring: a radial remap that squeezes the band between the hole and the ring's
+# outer edge outwards, so the hole grows and the ring gets thinner. Nothing beyond the outer
+# edge moves. protect=True squeezes less under the top and bottom ornaments.
+import numpy as np
+from PIL import Image
+
+def thin(src, hole, body, q, protect=False, ss=2):
+    im = np.asarray(Image.open(src).convert("RGBA")).astype(np.float32) / 255
+    im[..., :3] *= im[..., 3:4]  # premultiply, so transparent pixels don't bleed
+    n = im.shape[0]; N = n * ss; c = n / 2
+    ys, xs = np.mgrid[0:N, 0:N]
+    dx = (xs + 0.5) / ss - c; dy = (ys + 0.5) / ss - c
+    r = np.hypot(dx, dy); th = np.arctan2(dy, dx)  # th = -pi/2 is the top
+    h2 = body / (1 + q)
+    if protect:
+        d = np.minimum(np.abs(np.angle(np.exp(1j * (th + np.pi / 2)))), np.abs(np.angle(np.exp(1j * (th - np.pi / 2)))))
+        t = np.clip((d - np.radians(16)) / np.radians(18), 0, 1); w = 1 - t * t * (3 - 2 * t)
+        hh = h2 + (hole + (h2 - hole) * 0.25 - h2) * w  # under ornaments the band keeps more width
+    else:
+        hh = np.full_like(r, h2)
+    k = (body - hh) / (body - hole)
+    t = np.clip((r - hh) / (body - hh), 0, 1)
+    s = hole + (body - hole) * ((2 - k) * t + (k - 1) * t * t)
+    s = np.where(r >= body, r, s)
+    s = np.where(r < hh, r - (hh - hole), s)  # ornaments that overlapped the hole move with it
+    sx = c + s * np.cos(th) - 0.5; sy = c + s * np.sin(th) - 0.5
+    x0 = np.clip(np.floor(sx).astype(int), 0, n - 2); y0 = np.clip(np.floor(sy).astype(int), 0, n - 2)
+    fx = np.clip(sx - x0, 0, 1)[..., None]; fy = np.clip(sy - y0, 0, 1)[..., None]
+    o = (im[y0, x0] * (1 - fx) + im[y0, x0 + 1] * fx) * (1 - fy) + (im[y0 + 1, x0] * (1 - fx) + im[y0 + 1, x0 + 1] * fx) * fy
+    o[s < 0] = 0
+    a = o[..., 3:4]
+    rgb = np.where(a > 1e-4, o[..., :3] / np.maximum(a, 1e-4), 0)
+    out = Image.fromarray((np.clip(np.concatenate([rgb, a], axis=2), 0, 1) * 255 + 0.5).astype(np.uint8), "RGBA")
+    return out.resize((n, n), Image.LANCZOS), h2

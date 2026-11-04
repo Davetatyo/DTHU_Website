@@ -45,7 +45,7 @@ export function BadgedAvatar({
  * picture shrinks to fit the badge's hole. `footprint` = the avatar's normal size (px).
  */
 export function BadgeOverlay({ badge, footprint, children }: { badge: Badge; footprint: number; children: React.ReactNode }) {
-  const ring = Math.round(footprint * 1.4);
+  const ring = Math.round(footprint * 1.3);
   const small = ring < 70;
   const picture = Math.round(ring * 2 * (small ? badge.holeSmall : badge.hole));
   return (
