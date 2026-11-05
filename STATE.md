@@ -48,24 +48,11 @@ feature table, owner tasks and known issues current (see CLAUDE.md → "End of e
 ## Launch plan
 
 **Phase 1: the Meccsszervező in public, the rest as an admin preview.** Every page of the
-prototype is built (see Features). Anonymous visitors and non-admins are redirected to the
-Meccsszervező; admins see the full menu with a "fejlesztői előnézet" strip, on dthu.hu too.
-The code is on GitHub (github.com/Davetatyo/DTHU_Website, `main` + `feature/*`, pushed
-2026-10-30); nothing is deployed from it yet. To go live:
-
-1. ~~Push to github.com/Davetatyo/DTHU_Website~~ done 2026-10-30.
-2. **Vercel: follow [docs/vercel.md](docs/vercel.md).** In short: import DTHU_Website as a
-   *new* Vercel project (env vars copied, `DISCORD_WEBHOOK_URL` left out while testing), add its
-   `*.vercel.app/auth/callback` to Supabase Redirect URLs, test login as admin and as a player
-   on that address, then move the `dthu.hu` domain from the old project (`dthuonlinebajnoksag`)
-   to the new one **between rounds** (round 1 deadline: 2026-11-02 12:25). Rollback = move the
-   domain back.
-3. Nothing changes in Supabase besides that redirect URL: `/auth/callback` and
-   `/api/cron/reminders` keep their paths.
-4. **Write tests use the real tournament** (one database): setting a match time changes that
-   match; starting a new round closes round 1 and pings everyone. See docs/vercel.md §3 before
-   testing writes.
-5. Afterwards: record the release here, archive DT_Match_Organizer on GitHub (read-only).
+prototype is built (see Features). Logged-out visitors get the registration guide (`/regisztracio`),
+logged-in non-admins the Meccsszervező; admins see the full menu with a "fejlesztői előnézet" strip, on dthu.hu too.
+The code is on GitHub (github.com/Davetatyo/DTHU_Website, `main` + `feature/*`), and dthu.hu has
+built from `main` since about 2026-11-01 (see [docs/vercel.md](docs/vercel.md) for how it was set
+up). Still open from that move: see "Needs the owner".
 
 **Phase 2: the full site.** When the features below have real data (owner decides which are
 needed for launch): set `NEXT_PUBLIC_FULL_SITE=1` in Vercel and redeploy. Everyone then sees
@@ -80,35 +67,34 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 
 | Feature (folder / branch `feature/<id>`) | Route | Status | Real data / still sample | Next step |
 |---|---|---|---|---|
-| `match-organizer` Meccsszervező | `/meccsszervezo` | **live** (v1.2 old design on dthu.hu; v2.0 ready) | all real | Launch plan |
+| `match-organizer` Meccsszervező | `/meccsszervezo` | **live** | all real | features as the owner asks |
 | `landing-page` Hírek (home) + news | `/`, `/hirek`, `/hirek/<slug>`, admin `/meccsszervezo/admin/hirek` | preview (admins only), **on `main` since v2.5** | news real (table `news`, migration 0004); banner + matches real; ranking and tickets sample | owner runs migration 0004, tests live after the push |
 | `rankings` Ranglista | `/ranglista` | preview | names/heroes real; points, records, movement sample | results source (Karnyx copy-paste? results on "Lejátszottuk"?) |
 | `timetables` Eseménynaptár (was Versenynaptár) | `/esemenynaptar` (+ `/esemenynaptar/<slug>`, admin `/meccsszervezo/admin/esemenyek`) | preview (admins only), **on `main` since v2.3** | all real: events table (migration 0003) + online rounds; sample data removed | owner tests live; then phase 5 (calendar feed, Hírek tiles, Discord later) |
-| `tickets` Sorsolás (ticket draws) | `/sorsolas`, admin `/sorsolas/admin` | preview (admins only), **on `main`** (pull request #2, 2026-11-03) | all real once migration 0008 runs: ticket ledger, draws, entries, winners; podium places earn tickets (+3/+2/+1, booked by admins), and since `feature/shop` they can also be bought for DTHU coins | confirm migration 0008 was run; test live |
-| `games` Játékok | `/jatekok`, `/jatekok/taktikai-elony`, `/jatekok/kockazat`, `/jatekok/szemfules` | preview (admins only), **on `main` since v2.11** (Kockázat v2.13, Szemfüles v2.17, Trick or Treat v2.20, Black Friday Shopping v2.21, ARRRrrrrrrrrr v2.22) | Taktikai Előny: static data from the Szabálytár + `lib/tactician-traits.ts`; Kockázat: all in the browser. **Napi kvíz + Szerencsekerék + sorozat** (DTHU coins, admin settings, question bank, audit log) on `feature/games`, not merged: real once migration 0010 runs | owner runs 0010; admins write the first questions; level Kvíz (R7) still parked |
-| `shop` Bolt + DTHU coin | `/bolt`, admin `/bolt/admin`; wallet in the header | preview (admins only), **on `feature/shop`, not merged** | all real once migration 0009 runs: DTHU coin ledger; the only item is a Sorsolás ticket for 3500 coins; coins only from admins so far; header wallet (coins + tickets) shown wherever the full site is | owner runs 0008 then 0009; how players earn coins (owner to describe) |
-| `rulebook` Szabálytár | `/szabalytar` | preview (admins only), **RulePop version on `main` since v2.8** (roadmap R10) | the owner's Hungarian RulePop imported (36 sections, 40 heroes, 123 tokens) + the 5 newer heroes and 13 tokens translated (v2.9); popups + own links | owner reviews the new translations; ~20 core pages still to translate |
+| `tickets` Sorsolás (ticket draws) | `/sorsolas`, admin `/sorsolas/admin` | preview (admins only), **on `main`** (pull request #2, 2026-11-03) | all real (migration 0008 has run): ticket ledger, draws, entries, winners; podium places earn tickets (+3/+2/+1, booked by admins), and since `feature/shop` they can also be bought for DTHU coins | owner tests live |
+| `games` Játékok | `/jatekok`, `/jatekok/taktikai-elony`, `/jatekok/kockazat`, `/jatekok/szemfules` | preview (admins only), **on `main` since v2.11** (Kockázat v2.13, Szemfüles v2.17, Trick or Treat v2.20, Black Friday Shopping v2.21, ARRRrrrrrrrrr v2.22) | Taktikai Előny: static data from the Szabálytár + `lib/tactician-traits.ts`; Kockázat: all in the browser. **Napi kvíz + Szerencsekerék + sorozat** (DTHU coins, admin settings, question bank, audit log) on `main` since pull request #4 (migration 0010 has run) | admins write the first questions (none yet, checked 2026-11-05); level Kvíz (R7) still parked |
+| `shop` Bolt + DTHU coin | `/bolt`, admin `/bolt/admin`; wallet in the header | preview (admins only), **on `main` since pull request #3** | all real (migration 0009 has run): DTHU coin ledger; the only item is a Sorsolás ticket for 3500 coins; coins only from admins so far; header wallet (coins + tickets) shown wherever the full site is | how players earn coins (owner to describe) |
+| `rulebook` Szabálytár | `/szabalytar` | preview (admins only), **RulePop version on `main` since v2.8** (roadmap R10) | the owner's Hungarian RulePop imported (36 sections, 40 heroes, 123 tokens) + the 5 newer heroes and 13 tokens translated (v2.9); popups + own links; hero boards and leaflets from the fandom wiki with a large view (v2.28, v2.29; Mystic Brawler has none yet) | owner reviews the new translations; ~20 core pages still to translate |
 | `faq` GYIK (site-wide) | `/gyik` | preview | content from the prototype | review texts |
 | `links` Linkek | `/linkek`, admin `/meccsszervezo/admin/linkek` | preview (admins only), **admin editor on `main` since v2.7** | links from the `links` table (migration 0006) | owner runs migration 0006, tests live |
 | `alchemist` Alkimista | `/alkimista` + help vial | preview | knowledge base from the prototype; unanswered questions only in the browser | admin inbox for unanswered questions |
 | `register-page` Regisztráció | `/regisztracio` | **live** | static guide content; tournament banner real | owner review of Hungarian texts |
+| `live-banner` Élő adás | banner at the top of the layouts; `/api/live/voice`, `/api/live/now`; admin block on `/meccsszervezo/admin` | **on `feature/live-banner`, not merged**. Admins only until `LIVE_BANNER_ADMINS_ONLY` is false | real; migration 0011 has run; detection waits for Árpád's bot | see "Needs the owner"; `src/features/live-banner/README.md` on that branch |
 | `hero-guide` Hős segédlet | `/meccsszervezo/meccs/<id>/hos-segedlet` (button on the match page) | **on `main` since v2.30**: admins only until `HERO_GUIDE_ADMINS_ONLY` is false, then everyone logged in | real; no tables | `src/features/hero-guide/README.md` |
 | `profile` Profilkép, Profil szerkesztése, Kitiltás | `/meccsszervezo/profil`, `/meccsszervezo/admin/felhasznalo/<id>` | **live** (v2.2): every logged-in user can upload a picture; admin page and bans for all admins | all real | badge ring (R3/R4), cosmetics collection |
 
 ## Database (Supabase)
 
 Snapshot of the live database, **checked 2026-11-03** against the production project
-(read-only: table existence, row counts, storage buckets). There is **one** Supabase project:
+(read-only: table existence, row counts, storage buckets; migrations rechecked 2026-11-05). There is **one** Supabase project:
 local development uses the live data too (see CLAUDE.md, golden rule 1).
 
 **Migrations** (`supabase/migrations/`, run by hand in the Supabase SQL Editor, in order):
 0001 init · 0002 profile pictures and bans · 0003 events · 0004 news · 0005 polls · 0006 links ·
-0007 match play modes. **0001–0007 are applied** on the live database (checked 2026-11-03). **0008 ticket draws**
-(Sorsolás, on `main`) was **not applied** when last checked: confirm it ran. **0009 DTHU coins** (Bolt,
-on `main` since pull request #3, needs 0008) was **not applied** when last checked: confirm it ran.
-**0010 daily spin and question** (Játékok, branch `feature/games`, needs 0009) is **not applied**:
-run it before that branch is merged. A new change gets the next number (0011…) and is
-run *before* the code that needs it is deployed.
+0007 match play modes · 0008 ticket draws · 0009 DTHU coins · 0010 daily spin and question · 0011 live
+banner (its code is on `feature/live-banner`). **All are applied** on the live database (checked
+2026-11-05 by reading a table from each). A new change gets the next number (0012…) and is run
+*before* the code that needs it is deployed.
 
 **Access model:** row level security is on for every table. The website reads and writes
 through the server with the service-role key and checks permissions in code
@@ -138,17 +124,19 @@ entries after a draw closes.
 | `poll_votes` | One vote per user per poll (anonymous on the site) | primary key (`poll_id`, `user_id`), `choices` (text[], `_other` = Egyéb), `other_text` | 1 |
 | `links` | Linkek page | `title`, `url`, `description`, `image_path`, `sort_order`, `visible` | 5 |
 
-| `ticket_draws` *(0008, not applied)* | Sorsolás draws | `title`, `prize`, `description`, `closes_at`, `winner_count`, `max_tickets_per_player`, `status` (open/drawn/cancelled), `drawn_at` | – |
+| `ticket_draws` *(0008)* | Sorsolás draws | `title`, `prize`, `description`, `closes_at`, `winner_count`, `max_tickets_per_player`, `status` (open/drawn/cancelled), `drawn_at` | – |
 | `ticket_ledger` *(0008)* | Every ticket change; balance = sum | `profile_id`, `amount` (not 0), `kind` (award/draw_entry/draw_refund), `reason`, `draw_id`, `created_by` | – |
 | `ticket_draw_entries` *(0008)* | Tickets a player put into a draw | primary key (`draw_id`, `profile_id`), `tickets` | – |
 | `ticket_draw_winners` *(0008)* | Draw results | primary key (`draw_id`, `place`), `profile_id` (unique per draw) | – |
-| `coin_ledger` *(0009, not applied)* | Every DTHU coin change; balance = sum. A shop purchase writes a coin row (− price) and a `ticket_ledger` row (kind `shop_purchase`, added to its allowed kinds by 0009) together | `profile_id`, `amount` (not 0), `kind` (award/shop_purchase), `reason`, `created_by` | – |
-| `economy_config` *(0010, not applied)* | Economy settings edited by admins (spin table, rewards, streak, ticket price, fallback, weekday types); a missing key = the default in `shop/lib/economy.ts` | `key`, `value` (jsonb), `updated_by` | – |
+| `coin_ledger` *(0009)* | Every DTHU coin change; balance = sum. A shop purchase writes a coin row (− price) and a `ticket_ledger` row (kind `shop_purchase`, added to its allowed kinds by 0009) together | `profile_id`, `amount` (not 0), `kind` (award/shop_purchase), `reason`, `created_by` | – |
+| `economy_config` *(0010)* | Economy settings edited by admins (spin table, rewards, streak, ticket price, fallback, weekday types); a missing key = the default in `shop/lib/economy.ts` | `key`, `value` (jsonb), `updated_by` | – |
 | `audit_log` *(0010)* | Every admin change to settings and daily questions; update/delete refused by a trigger | `actor_id`, `action`, `entity_type`, `entity_id`, `before`, `after`, `reason` | – |
 | `daily_spins` *(0010)* | One spin per player per Budapest day | `profile_id`, `day` (unique together), `result_label`, `coins` | – |
 | `daily_questions` *(0010)* | Question bank | `type`, `prompt`, `answer_mode`, `options`/`correct_option` or `accepted_answers`, `explanation`, `difficulty`, `reward_override`, `status`, `publish_date` (unique), `times_used`, `last_used_date` | – |
 | `daily_question_days` *(0010)* | The question each day used, fixed on first request | `day` (key), `question_id` | – |
 | `daily_question_answers` *(0010)* | One answer per player per day | `question_id`, `profile_id`, `day`, `answer`, `is_correct`, `coins` | – |
+| `live_channels` *(0011)* | Tournament voice channels for the Élő adás banner, edited on the admin page | `discord_channel_id` (key), `name`, `join_url`, `sort_order`, `last_report_at` | – |
+| `match_live` *(0011)* | Matches that went live; whether one is live now is worked out when read | `match_id` (key, cascade), `channel_id`, `started_at`, `last_seen_at`, `ended_at`, `source` (voice/admin) | – |
 | `daily_streaks` *(0010)* | Days in a row per game (spin and quiz separately, 1..7) | `profile_id` + `game` (key), `current_length`, `last_completed_date` | – |
 
 \*Row counts on 2026-11-03, for scale only.
@@ -197,23 +185,21 @@ sample data (no tables yet; tickets and coins become real with migrations 0008 a
 
 ## Needs the owner
 
-0. **Napi kvíz + Szerencsekerék (`feature/games`, not merged): run
-   `supabase/migrations/0010_daily_spin_and_question.sql`** in the Supabase SQL Editor *after*
-   0008 and 0009 and *before* merging the branch. Only adds things, no data; safe to run twice,
-   one transaction. Then write the first daily questions (Játékok → "Napi játékok kezelése" →
-   Kérdésbank); until there is a ready question the Napi kvíz says "Mára nincs kérdés".
-0. **Bolt + DTHU coin (`feature/shop`, not merged): run `supabase/migrations/0009_dthu_coins.sql`**
-   in the Supabase SQL Editor *after* 0008 and *before* merging the branch. Only adds things (the
-   `coin_ledger` table, two functions, a `shop_purchase` kind for `ticket_ledger`), no data; safe
-   to run twice, one transaction. Check: `coin_ledger` exists and `coin_award`, `shop_buy_tickets`
-   are listed under functions. Then: describe how players earn coins (for now only admins give them).
-0. **Sorsolás (on `main` since pull request #2, agreed with the owner 2026-11-03): confirm
-   `supabase/migrations/0008_ticket_draws.sql`** was run in the Supabase SQL Editor (until it is,
-   the pages show a notice). No new cron job: the hourly `dt-reminders` call also holds closed draws
-   (response becomes `{"warnings":0,"draws":0}`). Tested locally first (see Handover log).
-   The developer sent the other developer (who has Supabase access) a short Hungarian guide:
-   run the file once, check query (`ticket_%` tables = 4, functions = 5), rollback SQL if needed.
-   Both queries were checked on a local copy of migrations 0001-0008.
+0. **Élő adás (`feature/live-banner`, not merged; migration 0011 has run).** To do: add
+   `LIVE_BOT_SECRET` in Vercel and redeploy if not done yet, send it privately to Árpád, merge the branch
+   (the banner stays admins only), add the voice channels on the admin page, and test with Árpád once
+   his bot has the reporter (`src/features/live-banner/bot/README.md`). To answer: should a short game
+   stay on the banner for the full 1.5 hours (built that way), and should spectators keep it on (built:
+   no)? Merging: this branch's STATE.md and roadmap repeat these notes, so keep `main`'s version.
+0. **Hős segédlet (v2.30, admins only).** Test it live. To open it to everyone logged in: decide on
+   Roxley's images, set `HERO_GUIDE_ADMINS_ONLY` to false, add it to the GYIK.
+0. **Napi kvíz + Szerencsekerék (on `main`, migration 0010 has run):** write the first daily questions
+   (Játékok → "Napi játékok kezelése" → Kérdésbank); until there is a ready question the Napi kvíz says
+   "Mára nincs kérdés". None yet, checked 2026-11-05.
+0. **Bolt + DTHU coin (on `main`, migration 0009 has run):** describe how players earn coins (for now
+   only admins give them).
+0. **Sorsolás (on `main`, migration 0008 has run):** test it live. No new cron job: the hourly
+   `dt-reminders` call also holds closed draws (response becomes `{"warnings":0,"draws":0}`).
 0. **Játékmód (v2.19; migration 0007 applied, checked 2026-11-03).** On dthu.hu: a match → propose with TTS → the other side accepts with
    Webkamera → Közelgő meccsek → Hibrid filter.
 
@@ -225,24 +211,23 @@ sample data (no tables yet; tickets and coins become real with migrations 0008 a
 0. **Hírek (v2.5, migration 0004 run by the owner):** on dthu.hu as admin: Admin felület → Hírek kezelése → Új hír → card picture, blocks
    (try formatting, list, gallery, a YouTube link, an event card) → publish now / scheduled →
    check `/`, `/hirek` and the article; delete test articles afterwards.
-1. **Follow [docs/vercel.md](docs/vercel.md)**: new Vercel project for DTHU_Website, test on its
-   address (admin + player login), then move dthu.hu over between rounds.
+1. **After the move to dthu.hu** (done around 2026-11-01): confirm the old `dthuonlinebajnoksag` Vercel
+   project is off, then archive DT_Match_Organizer on GitHub (read-only).
 2. Carried over from DT_Match_Organizer `state.md` (2026-10-30), status unknown here, please
    confirm or close:
    - Domain move to dthu.hu: Supabase Site URL `https://dthu.hu` + redirect
      `https://dthu.hu/auth/callback`; `dt-reminders` job URL → `https://dthu.hu/api/cron/reminders`;
      Vercel `NEXT_PUBLIC_SITE_URL` (optional).
-   - **Security:** `.env.local` still contains two lines without `NAME=` (they look like the
-     Discord app's Client ID and Secret, which the app doesn't use; checked 2026-10-30, the
-     values were not printed). Delete them and reset the Discord Client Secret (Developer
-     Portal → OAuth2 → Reset Secret, then paste it into Supabase → Authentication → Providers →
-     Discord).
+   - **Security:** the two stray lines in `.env.local` (they looked like the Discord app's Client ID
+     and Secret) are gone, checked 2026-11-05. If you haven't yet, reset the Discord Client Secret
+     (Developer Portal → OAuth2 → Reset Secret, then paste it into Supabase → Authentication →
+     Providers → Discord), since it sat in that file.
    - Link RP to his match (Admin → RP's row → "Karnyx név szerkesztése" → "RP").
    - Confirm the first swap's 🔁 Discord post appeared; ask players to log in and claim their
      Karnyx names; around 2026-10-31 12:25 confirm the automatic 48h warning appeared.
    - Optional: tag releases (`v1.0 e527783`, `v1.1 6c1a193`, `v1.2 a278e0a`) and push tags.
 3. Decide the scope and order of the phase-2 features (table above) and of the future
-   features in [Features_Roadmap.md](Features_Roadmap.md) (R1–R7: open questions per item).
+   features in [Features_Roadmap.md](Features_Roadmap.md) (open questions per item).
 
 ## Ideas discussed, not decided (ask the owner before building)
 
@@ -262,12 +247,8 @@ quiz) are in
 
 ## Known issues
 
-- v2.0 is not yet tested end to end with a real login and write actions: locally only read-only
-  checks and the TEMP-PREVIEW fake profile were used. Do the preview test (Launch plan step 2)
-  before switching production.
-- The admin preview gate (middleware reads `profiles.is_admin` with the visitor's session) is
-  tested only for anonymous visitors so far; check it logged in as an admin and as a
-  non-admin on the Vercel preview (Launch plan step 2).
+- The admin preview gate (middleware reads `profiles.is_admin` with the visitor's session) has no
+  recorded check with a real non-admin login. The owner tests as an admin.
 - Most full-site pages show sample data (see Features); the prototype strip says so.
 - Discord login works locally only on port 3000 (Supabase redirect allow-list).
 
@@ -293,6 +274,16 @@ quiz) are in
 ## Handover log
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
+
+### 2026-11-05 · STATE.md and roadmap brought up to date (docs only, under v2.30)
+
+- Added Élő adás to `main`'s notes (it was only on its branch), corrected entries from before the move
+  to dthu.hu and the merges of pull requests #3 and #4.
+- Checked read-only by reading one table per migration: 0001–0011 are all applied, so the "not applied"
+  notes were out of date. Table existence only. `daily_questions`, `live_channels` and the ticket and coin
+  tables were empty.
+- `feature/live-banner` is behind `main` and repeats some of these notes in STATE.md and the roadmap.
+  Expect a small conflict when merging it; keep `main`'s version.
 
 ### 2026-11-05 · Hős segédlet (feature/hero-guide, v2.30)
 
@@ -1162,6 +1153,9 @@ webhook, no cron secret), so nothing local can post to Discord.
 ---
 
 ## Changelog
+
+### v2.30 · 2026-11-05 · docs update
+STATE.md and the roadmap brought up to date, no change to the site.
 
 ### v2.30 · 2026-11-05 · merge of `feature/hero-guide`
 **Changed (admins only for now):** Hős segédlet: an orange button on every match with an opponent
