@@ -348,3 +348,23 @@ use[href="#se-regenerate"] { --bkg: #dde24b; --tree: #4f753e; --underbrush: whit
 use[href="#se-regenerate-1"] { --bkg: #4f753e; --tree: white; --underbrush: #dde24b; }
 use[href="#se-regenerate-2"] { --bkg: #dde24b; --tree: #4f753e; --underbrush: white; }
 use[href="#se-wound"] { --bkg: #c63f6c; }
+
+/* Hero board and leaflet (HeroMedia). Dark behind the pictures in both themes, like the art. */
+.hm { clear: both; }
+.hm-thumbs { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 0.8em; }
+.hm-thumb { display: flex; flex-direction: column; flex-shrink: 1; min-width: 0; padding: 0; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: #15131c; cursor: zoom-in; font: inherit; }
+.hm-thumb:hover { border-color: var(--gold); }
+.rp .hm-thumb img { display: block; width: 100%; height: auto; margin: auto 0; border: 0; border-radius: 0; }
+.hm-thumb span { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 6px 10px; font-size: 13px; font-weight: 700; line-height: 1.25; text-align: left; background: #0f0d14; color: #f4ecda; }
+.hm-thumb i { font-style: normal; color: #e6c06a; }
+.hm-big { position: fixed; inset: 0; z-index: 300; display: flex; flex-direction: column; background: rgb(8 7 12 / 0.96); }
+.hm-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 10px 12px; border-bottom: 1px solid #2c2935; }
+.hm-switch { flex-wrap: wrap; }
+.hm-hint { font-size: 13px; color: #b9b8c4; }
+.hm-close { margin-left: auto; }
+.hm-stage { flex: 1; min-height: 0; overflow: auto; display: flex; padding: 10px; }
+.hm-stage img { max-width: 100%; max-height: 100%; width: auto; height: auto; margin: auto; object-fit: contain; cursor: zoom-in; }
+.hm-stage.zoomed img { flex: none; max-width: none; max-height: none; height: auto; margin: 0 auto; cursor: zoom-out; }
+@media (max-width: 560px) {
+  .hm-hint { display: none; }
+}

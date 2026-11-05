@@ -4,6 +4,8 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { entryPath, entryUrl, refForTarget, RULE_PAGES, type EntryKind, type EntryRef, type EntryWidth, type KnownIds } from "./pages";
+import { HERO_MEDIA } from "../data/hero-media";
+import type { HeroMediaItem } from "./hero-media";
 import { applyRelevance, defaultFlags, plainText, resolveLinks, splitEntry } from "./render";
 
 const DIR = join(process.cwd(), "src/features/rulebook/content");
@@ -17,6 +19,8 @@ export type RenderedEntry = {
   seeAlsoHtml: string | null;
   bodyHtml: string;
   width: EntryWidth;
+  /** A hero's board and leaflet; empty for everything else. */
+  media: HeroMediaItem[];
 };
 
 const ids = (kind: EntryKind) =>
@@ -62,6 +66,7 @@ export function renderEntry(ref: EntryRef): RenderedEntry {
     seeAlsoHtml: parts.seeAlsoHtml && link(parts.seeAlsoHtml),
     bodyHtml: applyRelevance(link(parts.bodyHtml), defaultFlags(parts.bodyHtml)),
     width: ref.kind === "rule" ? (RULE_PAGES[ref.id].width ?? "normal") : "normal",
+    media: ref.kind === "hero" ? (HERO_MEDIA[ref.id] ?? []) : [],
   };
   cache.set(path, entry);
   return entry;

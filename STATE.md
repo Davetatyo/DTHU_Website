@@ -1,6 +1,6 @@
 # Project state: DTHU website
 
-**Current version: v2.27** (2026-11-04). Live: https://dthu.hu builds from this repository's
+**Current version: v2.28** (2026-11-05). Live: https://dthu.hu builds from this repository's
 `main` (the owner moved Vercel over around 2026-11-01; checked live 2026-11-02). Every push to
 `main` deploys within a minute.
 **Launch phase: 1**: the public sees only the Meccsszervező; the whole site from the prototype
@@ -292,6 +292,24 @@ quiz) are in
 ## Handover log
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
+
+### 2026-11-05 · Szabálytár: hero boards and leaflets (feature/rulebook, v2.28)
+
+- Owner chose layout A from two mockups: thumbnails before Tokenek on hero pages, a full-screen view
+  with tap to zoom. Works on the page and in the popup; Esc closes only the big view.
+- Pictures for 44 of 45 heroes from https://dice-throne.fandom.com, at the owner's request (the wiki
+  calls the leaflet "insert"). `scripts/rulebook/hero-media.py` downloads them, writes
+  `public/szabalytar/img/heroes/boards/` (26 MB) and generates `data/hero-media.ts`. Editing its
+  tables and re-running is how to change anything. Details: the feature README.
+- Open with the owner: Mystic Brawler has no wiki page, so no section. Small pictures (720 px boards:
+  Gambit, Jean Grey, Loki, Rogue, Scarlet Witch, Spider-Man, Thor; leaflets: Druid, Sun Elf). White
+  backgrounds: Duelist and Sun Elf boards, Sun Elf and Scarlet Witch leaflets. Left out on purpose: Paladin's alternate art, the art-only
+  leaflet sides of Cursed Pirate and Pale Lady. The owner was told these are Roxley's components and
+  that it may be worth asking them before the Szabálytár opens to the public.
+- The owner's `docs/HeroBoardsandLeaflets/` is untracked and no longer needed by the site.
+- Verified in the scratch copy with a fake admin: all 45 heroes' data and all files served; Moon Elf,
+  Pale Lady, Duelist, Necromancer (popup), Jean Grey, Mystic Brawler; desktop and 375 px; dark and
+  light. Types, lint, 238 tests. The Szabálytár is admin-only until the full site opens.
 
 ### 2026-11-04 · Match cards: chip no longer covers the pictures (feature/match-organizer, v2.27)
 
@@ -1120,6 +1138,14 @@ webhook, no cron secret), so nothing local can post to Discord.
 ---
 
 ## Changelog
+
+### v2.28 · 2026-11-05 · merge of `feature/rulebook`
+**Changed (admins only, like the whole Szabálytár):** hero pages show the hero's board and leaflet:
+thumbnails above Tokenek that open in a full-screen view with zoom. 44 of 45 heroes; Mystic Brawler
+has no pictures yet.
+**Manual steps:** none.
+**Verified:** types, lint, tests; browser with a fake admin login, desktop and 375 px, dark and
+light; every picture served in the preview, sample files compared on dthu.hu after deploy.
 
 ### v2.27 · 2026-11-04 · merge of `feature/match-organizer`
 **Changed (visible to players):** on the match cards the status chip no longer covers the right

@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { splitHeroBody } from "../lib/hero-media";
 import { RULEBOOK_PATH } from "../lib/pages";
 import { isRelevant } from "../lib/render";
 import type { RenderedEntry } from "../lib/content";
+import { HeroMedia } from "./HeroMedia";
 
 /** RulePop's flags from the controls inside `el` (game mode, FAQ category), plus the defaults. */
 function activeFlags(el: HTMLElement): Set<string> {
@@ -13,7 +15,7 @@ function activeFlags(el: HTMLElement): Set<string> {
 }
 
 /** The entry's body: our own trusted HTML from content/, with RulePop's "dynamic rules". */
-function EntryBody({ html }: { html: string }) {
+function EntryBody({ html, media }: { html: string; media: RenderedEntry["media"] }) {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const el = ref.current;
@@ -27,7 +29,15 @@ function EntryBody({ html }: { html: string }) {
     el.addEventListener("change", refresh);
     return () => el.removeEventListener("change", refresh);
   }, []);
-  return <div ref={ref} className="rp rp-body" dangerouslySetInnerHTML={{ __html: html }} />;
+  if (media.length === 0) return <div ref={ref} className="rp rp-body" dangerouslySetInnerHTML={{ __html: html }} />;
+  const [top, rest] = splitHeroBody(html);
+  return (
+    <div ref={ref} className="rp rp-body">
+      <div dangerouslySetInnerHTML={{ __html: top }} />
+      <HeroMedia items={media} />
+      <div dangerouslySetInnerHTML={{ __html: rest }} />
+    </div>
+  );
 }
 
 /** Title (click copies the entry's link, as on RulePop), "see also" links and the body. */
@@ -55,7 +65,7 @@ export function EntryView({ entry }: { entry: RenderedEntry }) {
         </h2>
         {entry.seeAlsoHtml && <ul className="see-also" dangerouslySetInnerHTML={{ __html: entry.seeAlsoHtml }} />}
       </header>
-      <EntryBody key={entry.path} html={entry.bodyHtml} />
+      <EntryBody key={entry.path} html={entry.bodyHtml} media={entry.media} />
     </article>
   );
 }
