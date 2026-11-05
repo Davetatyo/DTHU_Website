@@ -550,7 +550,7 @@ four former links; pictures in the `link-images` bucket (migration 0006).
 ### R10 · Szabálytár: the Hungarian RulePop on the site (Szabálytár)
 
 **Status:** In progress: phase 1 live for admins (v2.8); the 5 newer heroes and their tokens
-translated (v2.9, 2026-11-03).
+translated (v2.9, 2026-11-03); hero boards and leaflets (v2.28, v2.29, 2026-11-05).
 · **Feature id:** `rulebook` · **Depends on:** nothing
 
 The owner's Hungarian RulePop (dice-throne-rulepop-hu.vercel.app, his translation of
@@ -625,6 +625,23 @@ congratulation. New pictures: the owner sends two images, the differences are ma
 
 **Open questions:** none.
 
+### R14 · Élő adás (live banner on the site, voice detection through the Discord bot)
+
+**Status:** Website side built on `feature/live-banner`, not merged (2026-11-04). Migration 0011 has run.
+Waits for merging and for Árpád to add the reporter to his bot.
+· **Feature id:** `live-banner` · **Depends on:** Árpád's Discord bot
+
+A blinking "Élő adás" card on top of the page when a tournament match is on, opening its Discord
+voice channel. Several games at once get one card each, linking to the channel they are in. Owner
+decisions (2026-11-04): voice channels; one player joining within ±30 minutes of the match time is
+enough; on for 1.5 hours or until everyone leaves; logged-in users only; no second bot. Details on that
+branch: `src/features/live-banner/README.md`, bot guide `src/features/live-banner/bot/README.md`.
+
+**Open questions:** whether "1.5 hours or until everyone leaves" means the longer of the two, as
+built; which link works best on phones.
+
+---
+
 ### R15 · Hős segédlet (read up on the heroes in your match)
 
 **Status:** Built and live for admins (v2.30, 2026-11-05).
@@ -650,6 +667,8 @@ while their docs point there.)
 - R11 · Taktikai Előny · v2.11 · 2026-11-03 · the Hadvezér guesses your hero.
 - R12 · Kockázat · v2.13 · 2026-11-03 · dice poker against the Barbarian.
 - R13 · Szemfüles · v2.17 · 2026-11-03 · spot the differences, first picture Tea Party.
+- R10 · Hero boards and leaflets · v2.28–v2.29 · 2026-11-05 · on hero pages, with a large view and arrows.
+- R15 · Hős segédlet · v2.30 · 2026-11-05 · a match's heroes, board, leaflet and rules; admins only for now.
 
 ## Dropped
 
