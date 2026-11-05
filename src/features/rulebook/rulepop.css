@@ -362,9 +362,19 @@ use[href="#se-wound"] { --bkg: #c63f6c; }
 .hm-switch { flex-wrap: wrap; }
 .hm-hint { font-size: 13px; color: #b9b8c4; }
 .hm-close { margin-left: auto; }
-.hm-stage { flex: 1; min-height: 0; overflow: auto; display: flex; padding: 10px; }
+.hm-view { position: relative; flex: 1; min-height: 0; display: flex; }
+.hm-stage { flex: 1; min-width: 0; overflow: auto; display: flex; padding: 10px; }
 .hm-stage img { max-width: 100%; max-height: 100%; width: auto; height: auto; margin: auto; object-fit: contain; cursor: zoom-in; }
-.hm-stage.zoomed img { flex: none; max-width: none; max-height: none; height: auto; margin: 0 auto; cursor: zoom-out; }
+.hm-view.zoomed .hm-stage img { flex: none; max-width: none; max-height: none; height: auto; margin: 0 auto; cursor: zoom-out; }
+/* The whole screen edge is the arrow. Zoomed, only the middle is, so the rest can be dragged to scroll. */
+.hm-nav { position: absolute; top: 0; bottom: 0; width: 64px; display: flex; align-items: center; justify-content: center; padding: 0; background: none; border: 0; cursor: pointer; color: #f4ecda; }
+.hm-nav.prev { left: 0; }
+.hm-nav.next { right: 0; }
+.hm-nav span { display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding-bottom: 4px; border-radius: 50%; font-size: 32px; line-height: 1; background: rgb(15 13 20 / 0.72); border: 1px solid #4a4656; }
+.hm-nav:hover span { border-color: #e6c06a; color: #e6c06a; }
+.hm-view.zoomed .hm-nav { top: 50%; bottom: auto; height: 88px; transform: translateY(-50%); }
 @media (max-width: 560px) {
   .hm-hint { display: none; }
+  .hm-nav { width: 44px; }
+  .hm-nav span { width: 36px; height: 36px; font-size: 26px; }
 }

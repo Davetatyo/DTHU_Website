@@ -1,6 +1,6 @@
 # Project state: DTHU website
 
-**Current version: v2.28** (2026-11-05). Live: https://dthu.hu builds from this repository's
+**Current version: v2.29** (2026-11-05). Live: https://dthu.hu builds from this repository's
 `main` (the owner moved Vercel over around 2026-11-01; checked live 2026-11-02). Every push to
 `main` deploys within a minute.
 **Launch phase: 1**: the public sees only the Meccsszervező; the whole site from the prototype
@@ -292,6 +292,13 @@ quiz) are in
 ## Handover log
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
+
+### 2026-11-05 · Szabálytár large view: arrows (feature/rulebook, v2.29)
+
+- Owner asked for arrows at the screen edges of the hero board and leaflet view. The whole edge is
+  clickable, loops, keyboard arrows too; zoomed, only the middle of the edge is a button, so the
+  picture can still be dragged. Neighbouring pictures load in advance. Verified in the scratch copy
+  at desktop and 375 px, types, lint, tests. Dragging not tried on a real phone.
 
 ### 2026-11-05 · Szabálytár: hero boards and leaflets (feature/rulebook, v2.28)
 
@@ -1138,6 +1145,13 @@ webhook, no cron secret), so nothing local can post to Discord.
 ---
 
 ## Changelog
+
+### v2.29 · 2026-11-05 · merge of `feature/rulebook`
+**Changed (admins only, like the whole Szabálytár):** the large view of a hero's board and leaflet
+has arrows at the left and right screen edges, looping through the pictures. Keyboard arrows too.
+**Manual steps:** none.
+**Verified:** types, lint, tests; browser with a fake admin login, desktop and 375 px; new deployment
+confirmed live. Dragging a zoomed picture not tried on a real phone.
 
 ### v2.28 · 2026-11-05 · merge of `feature/rulebook`
 **Changed (admins only, like the whole Szabálytár):** hero pages show the hero's board and leaflet:
