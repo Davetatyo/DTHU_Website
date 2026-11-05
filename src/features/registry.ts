@@ -32,6 +32,8 @@ export const FEATURES: Feature[] = [
   { id: "faq", label: "GYIK", route: "/gyik", status: "preview" },
   { id: "links", label: "Linkek", route: "/linkek", status: "preview" },
   { id: "alchemist", label: "Alkimista", route: "/alkimista", status: "preview" },
+  // Opens from the match page, not the menu. "planned" keeps it out of the menu.
+  { id: "hero-guide", label: "Hős segédlet", route: "/meccsszervezo", status: "planned" },
 ];
 
 /** Features that appear in the full-site menu (the Alchemist opens from its help vial instead). */

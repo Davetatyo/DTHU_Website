@@ -1,6 +1,6 @@
 # Project state: DTHU website
 
-**Current version: v2.29** (2026-11-05). Live: https://dthu.hu builds from this repository's
+**Current version: v2.30** (2026-11-05). Live: https://dthu.hu builds from this repository's
 `main` (the owner moved Vercel over around 2026-11-01; checked live 2026-11-02). Every push to
 `main` deploys within a minute.
 **Launch phase: 1**: the public sees only the Meccsszervező; the whole site from the prototype
@@ -92,6 +92,7 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 | `links` Linkek | `/linkek`, admin `/meccsszervezo/admin/linkek` | preview (admins only), **admin editor on `main` since v2.7** | links from the `links` table (migration 0006) | owner runs migration 0006, tests live |
 | `alchemist` Alkimista | `/alkimista` + help vial | preview | knowledge base from the prototype; unanswered questions only in the browser | admin inbox for unanswered questions |
 | `register-page` Regisztráció | `/regisztracio` | **live** | static guide content; tournament banner real | owner review of Hungarian texts |
+| `hero-guide` Hős segédlet | `/meccsszervezo/meccs/<id>/hos-segedlet` (button on the match page) | **on `main` since v2.30**: admins only until `HERO_GUIDE_ADMINS_ONLY` is false, then everyone logged in | real; no tables | `src/features/hero-guide/README.md` |
 | `profile` Profilkép, Profil szerkesztése, Kitiltás | `/meccsszervezo/profil`, `/meccsszervezo/admin/felhasznalo/<id>` | **live** (v2.2): every logged-in user can upload a picture; admin page and bans for all admins | all real | badge ring (R3/R4), cosmetics collection |
 
 ## Database (Supabase)
@@ -292,6 +293,22 @@ quiz) are in
 ## Handover log
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
+
+### 2026-11-05 · Hős segédlet (feature/hero-guide, v2.30)
+
+- Built from the mockup the owner approved: orange button next to Lejátszottuk once the time is
+  agreed, a page to pick a player and hero and read the hero's Szabálytár entry, a large back button
+  at the top and bottom. Feature README has the rules.
+- **Admins only for now** (`HERO_GUIDE_ADMINS_ONLY`), the owner's decision. Once opened: everyone
+  logged in, on every match with an opponent, in any state, and it stays after the match is played
+  (the owner corrected the first build, which tied it to agreed times and the two players). Opening
+  shows players Roxley's boards and leaflets for the first time; add it to the GYIK then.
+- Mockup and tests run in the scratch copy, where database writes are blocked in
+  `lib/supabase/server.ts` (TEMP-PREVIEW, scratch only) so the owner can click anything safely.
+- Verified: types, lint, tests. In the scratch copy (fake admin, "Játékos nézet" cookie to act as a
+  non-admin): the access rules on pending, confirmed, played and other players' matches, with the flag
+  on and off; the click-through (token popup, large view, rule details, back). **Not verified:** a real
+  non-admin login on the live site, and a logged-out visitor (unit test only). The flag is still on.
 
 ### 2026-11-05 · Szabálytár large view: arrows (feature/rulebook, v2.29)
 
@@ -1145,6 +1162,14 @@ webhook, no cron secret), so nothing local can post to Discord.
 ---
 
 ## Changelog
+
+### v2.30 · 2026-11-05 · merge of `feature/hero-guide`
+**Changed (admins only for now):** Hős segédlet: an orange button on every match with an opponent
+opens a page to pick a player and one of their heroes, and read the hero's board, leaflet, tokens and
+rules. Later it opens to everyone logged in. Players see no change yet.
+**Manual steps:** none.
+**Verified:** types, lint, tests; browser with a fake admin login, acting as a non-admin with the player
+view, desktop and 375 px, dark and light; new deployment confirmed live.
 
 ### v2.29 · 2026-11-05 · merge of `feature/rulebook`
 **Changed (admins only, like the whole Szabálytár):** the large view of a hero's board and leaflet
