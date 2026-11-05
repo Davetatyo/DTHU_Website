@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { mediaLabel, mediaSrc, mediaThumbSrc, type HeroMediaItem } from "../lib/hero-media";
 
@@ -8,15 +8,34 @@ import { mediaLabel, mediaSrc, mediaThumbSrc, type HeroMediaItem } from "../lib/
 const ROW_HEIGHT = 140;
 const MAX_HEIGHT = 300;
 
-/** Full-screen view over the page and any popup: switch pictures, tap to zoom to full size. */
+/** Full-screen view over the page and any popup: switch pictures (arrows loop), tap to zoom. */
 function BigView({ items, start, onClose }: { items: HeroMediaItem[]; start: number; onClose: () => void }) {
   const [index, setIndex] = useState(start);
   const [zoomed, setZoomed] = useState(false);
   const item = items[index];
 
+  const show = useCallback((i: number) => {
+    setIndex(i);
+    setZoomed(false);
+  }, []);
+  const step = useCallback(
+    (by: number) => {
+      setIndex((i) => (i + by + items.length) % items.length);
+      setZoomed(false);
+    },
+    [items.length],
+  );
+
+  // Load the neighbours in advance, so an arrow click shows the next picture at once.
+  useEffect(() => {
+    for (const by of [-1, 1]) new Image().src = mediaSrc(items[(index + by + items.length) % items.length]);
+  }, [index, items]);
+
   useEffect(() => {
     // Capture phase: Esc closes only this view, not the popup underneath.
     const onKey = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft") step(-1);
+      if (e.key === "ArrowRight") step(1);
       if (e.key !== "Escape") return;
       e.stopImmediatePropagation();
       onClose();
@@ -28,7 +47,7 @@ function BigView({ items, start, onClose }: { items: HeroMediaItem[]; start: num
       document.removeEventListener("keydown", onKey, true);
       document.body.style.overflow = overflow;
     };
-  }, [onClose]);
+  }, [onClose, step]);
 
   return createPortal(
     <div className="hm-big" role="dialog" aria-modal="true" aria-label={mediaLabel(item)}>
@@ -39,10 +58,7 @@ function BigView({ items, start, onClose }: { items: HeroMediaItem[]; start: num
               key={it.file}
               type="button"
               aria-pressed={i === index}
-              onClick={() => {
-                setIndex(i);
-                setZoomed(false);
-              }}
+              onClick={() => show(i)}
             >
               {mediaLabel(it)}
             </button>
@@ -53,17 +69,25 @@ function BigView({ items, start, onClose }: { items: HeroMediaItem[]; start: num
           Bezárás
         </button>
       </div>
-      <div className={`hm-stage${zoomed ? " zoomed" : ""}`}>
-        {/* eslint-disable-next-line @next/next/no-img-element -- static pictures sized by hand; zoom needs the full file */}
-        <img
-          key={item.file}
-          src={mediaSrc(item)}
-          alt={mediaLabel(item)}
-          width={item.width}
-          height={item.height}
-          style={zoomed ? { width: item.width } : undefined}
-          onClick={() => setZoomed((z) => !z)}
-        />
+      <div className={`hm-view${zoomed ? " zoomed" : ""}`}>
+        <div className="hm-stage">
+          {/* eslint-disable-next-line @next/next/no-img-element -- static pictures sized by hand; zoom needs the full file */}
+          <img
+            key={item.file}
+            src={mediaSrc(item)}
+            alt={mediaLabel(item)}
+            width={item.width}
+            height={item.height}
+            style={zoomed ? { width: item.width } : undefined}
+            onClick={() => setZoomed((z) => !z)}
+          />
+        </div>
+        <button type="button" className="hm-nav prev" aria-label="Előző kép" onClick={() => step(-1)}>
+          <span aria-hidden>‹</span>
+        </button>
+        <button type="button" className="hm-nav next" aria-label="Következő kép" onClick={() => step(1)}>
+          <span aria-hidden>›</span>
+        </button>
       </div>
     </div>,
     document.body,
