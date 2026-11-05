@@ -58,6 +58,15 @@ link is broken, and lists (snapshot) the link targets still without a page.
    `lib/content.test.ts`) and a few changed pages.
 6. Update checker (diff against a stored copy of rulepop.com), final checks.
 
+## Hero boards and leaflets
+
+Hero pages show the hero's board and leaflet (`components/HeroMedia.tsx`, owner's layout A,
+2026-11-05): thumbnails before Tokenek, a full-screen view with tap to zoom. The pictures come from
+https://dice-throne.fandom.com (it calls the leaflet "insert"). `scripts/rulebook/hero-media.py`
+downloads them, writes `public/szabalytar/img/heroes/boards/` and generates `data/hero-media.ts`;
+to change one or add a hero, edit its tables and run it again. Mystic Brawler has no wiki page yet,
+and several pictures are small (see STATE.md).
+
 ## Known gaps
 
 - The Alchemist still answers from the old prototype summary in `data/` (its links redirect to

@@ -571,6 +571,9 @@ Forgemaster, Mystic Brawler, Sun Elf; 13 tokens; ~20 core pages such as Ability,
 Sell, Small/Large Straight; a few changed pages) · 6 update checker against rulepop.com, final
 checks. Details: `src/features/rulebook/README.md`.
 
+Hero boards and leaflets on the hero pages: built in v2.28 (2026-11-05), layout A, pictures from the
+Dice Throne fandom wiki. Mystic Brawler has none yet; see `src/features/rulebook/README.md`.
+
 **Open questions:** none.
 
 ---
