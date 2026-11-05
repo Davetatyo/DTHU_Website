@@ -39,6 +39,8 @@ export const routes = {
 
   organizer: MO,
   match: (id: string) => `${MO}/meccs/${id}`,
+  /** A match's Hős segédlet (see features/hero-guide). */
+  heroGuide: (id: string) => `${MO}/meccs/${id}/hos-segedlet`,
   schedule: `${MO}/menetrend`,
   organizerFaq: `${MO}/gyik`,
   register: "/regisztracio",

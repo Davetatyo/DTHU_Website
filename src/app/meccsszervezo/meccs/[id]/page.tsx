@@ -3,6 +3,8 @@ import { routes } from "@/lib/routes";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CopyButton } from "@/components/CopyButton";
+import { HeroGuideLink } from "@/features/hero-guide/components/HeroGuideLink";
+import { canOpenHeroGuide } from "@/features/hero-guide/lib/hero-guide";
 import { SlotPicker } from "@/features/match-organizer/components/SlotPicker";
 import { StatusBadge } from "@/features/match-organizer/components/StatusBadge";
 import { PlayerAvatar } from "@/features/profile/components/PlayerAvatar";
@@ -83,6 +85,7 @@ export default async function MatchPage({
   const swapSuggestions = canSwap ? await getSwapSuggestions(match) : [];
   const active = match.status !== "played" && match.status !== "bye";
   const canAct = (isMine || isAdmin) && active;
+  const showHeroGuide = canOpenHeroGuide({ hasOpponent: !!match.b, isLoggedIn: !!viewer, isAdmin });
   const opponent = isMine ? (sameName(match.a.karnyx_name, viewer?.karnyx_name) ? match.b : match.a) : null;
   const opponentUnregistered = !!opponent && !profileFor(profiles, opponent);
 
@@ -196,6 +199,7 @@ export default async function MatchPage({
               <InfoTip text="Nyomd meg, ha a meccs megvolt. Bármelyikőtök jelölheti. Az eredményt továbbra is a Karnyxba írjátok be." />
             </span>
           )}
+          {showHeroGuide && <HeroGuideLink matchId={match.id} />}
           <span className="inline-flex items-center">
             <CopyButton text={fbText} label="Üzenet másolása Facebookra" className="btn btn-sm btn-quiet" />
             <InfoTip text="Kimásol egy kész üzenetet a meccs linkjével, amit beilleszthetsz a Facebook csoportba. Hasznos, ha az ellenfeled még nem regisztrált az oldalon." />

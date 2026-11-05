@@ -78,6 +78,7 @@ src/app/meccsszervezo/        the pages (thin: data loading + JSX; logic lives i
   login/page.tsx              Discord login
   profil/                     profile form (roster name, "Egyedi" typed name or "Nem játszom";
                               Facebook name; time zone)
+  meccs/[id]/hos-segedlet/    Hős segédlet: both players' heroes (features/hero-guide)
   meccs/[id]/                 match page: versus banner, action bar (Lejátszottuk, copy message),
                               players, proposals, SlotPicker proposal form, admin tools
                               (set time, player swap, reset)

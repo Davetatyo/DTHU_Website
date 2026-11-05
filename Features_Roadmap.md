@@ -625,6 +625,17 @@ congratulation. New pictures: the owner sends two images, the differences are ma
 
 **Open questions:** none.
 
+### R15 · Hős segédlet (read up on the heroes in your match)
+
+**Status:** Built and live for admins (v2.30, 2026-11-05).
+· **Feature id:** `hero-guide` · **Depends on:** the Szabálytár (R10), hero boards and leaflets
+
+An orange button next to Lejátszottuk on every match with an opponent. Pick a player, pick one of their
+heroes, read the hero's board, leaflet, tokens and rules. Once opened: everyone logged in, on any match,
+at any time (owner, 2026-11-05). Details: `src/features/hero-guide/README.md`.
+
+**Open questions:** when to open it (the images are Roxley's).
+
 ---
 
 ## Built
