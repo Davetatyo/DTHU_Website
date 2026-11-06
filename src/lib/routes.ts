@@ -17,6 +17,12 @@ export const routes = {
   timetables: "/esemenynaptar",
   /** An event's own page (Eseménynaptár). */
   event: (slug: string) => `/esemenynaptar/${slug}`,
+  /** Bajnokságok: built-in tournaments with sign-up and hero picks. */
+  championships: "/bajnoksagok",
+  championship: (slug: string) => `/bajnoksagok/${slug}`,
+  championshipsAll: "/bajnoksagok/osszes",
+  championshipsAdmin: "/bajnoksagok/admin",
+  championshipAdmin: (slug: string) => `/bajnoksagok/admin/${slug}`,
   tickets: "/sorsolas",
   ticketsAdmin: "/sorsolas/admin",
   games: "/jatekok",

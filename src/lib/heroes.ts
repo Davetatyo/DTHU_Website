@@ -48,6 +48,9 @@ const COLORS: Record<string, [string, string]> = {
   Rogue: ["#3fae5a", "#c9a227"],
 };
 
+/** Heroes players can pick when joining a tournament, alphabetical. */
+export const HERO_NAMES: readonly string[] = Object.keys(COLORS).sort((a, b) => a.localeCompare(b));
+
 const IMAGES: Record<string, string> = {
   Barbarian: "/images/barb.webp",
   Paladin: "/images/pala.webp",

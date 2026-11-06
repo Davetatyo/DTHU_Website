@@ -80,6 +80,7 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 | `alchemist` Alkimista | `/alkimista` + help vial | preview | knowledge base from the prototype; unanswered questions only in the browser | admin inbox for unanswered questions |
 | `register-page` Regisztráció | `/regisztracio` | **live** | static guide content; tournament banner real | owner review of Hungarian texts |
 | `live-banner` Élő adás | banner at the top of the layouts; `/api/live/voice`, `/api/live/now`; admin block on `/meccsszervezo/admin` | **on `feature/live-banner`, not merged**. Admins only until `LIVE_BANNER_ADMINS_ONLY` is false | real; migration 0011 has run; detection waits for Árpád's bot | see "Needs the owner"; `src/features/live-banner/README.md` on that branch |
+| `championships` Bajnokságok (DTHU's own tournament platform, replaces the Időpontfoglaló at launch) | `/bajnoksagok`, `/bajnoksagok/osszes`, `/bajnoksagok/<slug>`, admin `/bajnoksagok/admin` | preview (admins only), **on `feature/tournament-pairing`, not merged** | real once migration 0012 has run; sign-up with 3 heroes, Swiss auto pairing, player-reported results with confirmation, standings with draws | owner runs migration 0012; next: own match page, Közelgő meccsek + reminders, then launch (see the feature README) |
 | `hero-guide` Hős segédlet | `/meccsszervezo/meccs/<id>/hos-segedlet` (button on the match page) | **on `main` since v2.30**: admins only until `HERO_GUIDE_ADMINS_ONLY` is false, then everyone logged in | real; no tables | `src/features/hero-guide/README.md` |
 | `profile` Profilkép, Profil szerkesztése, Kitiltás | `/meccsszervezo/profil`, `/meccsszervezo/admin/felhasznalo/<id>` | **live** (v2.2): every logged-in user can upload a picture; admin page and bans for all admins | all real | badge ring (R3/R4), cosmetics collection |
 
@@ -93,8 +94,11 @@ local development uses the live data too (see CLAUDE.md, golden rule 1).
 0001 init · 0002 profile pictures and bans · 0003 events · 0004 news · 0005 polls · 0006 links ·
 0007 match play modes · 0008 ticket draws · 0009 DTHU coins · 0010 daily spin and question · 0011 live
 banner (its code is on `feature/live-banner`). **All are applied** on the live database (checked
-2026-11-05 by reading a table from each). A new change gets the next number (0012…) and is run
-*before* the code that needs it is deployed.
+2026-11-05 by reading a table from each). A new change gets the next number and is run *before* the code that
+needs it is deployed. **0012 Bajnokságok is written but not run yet** (branch
+`feature/tournament-pairing`): tournament columns `format`, `best_of`, `settings`, `slug`, `status`,
+`starts_at`, `auto_pairing`; match columns `winner_id`, `is_draw`; tables `match_reports` and
+`tournament_registrations`. All additive, safe for the Időpontfoglaló.
 
 **Access model:** row level security is on for every table. The website reads and writes
 through the server with the service-role key and checks permissions in code
@@ -137,6 +141,8 @@ entries after a draw closes.
 | `daily_question_answers` *(0010)* | One answer per player per day | `question_id`, `profile_id`, `day`, `answer`, `is_correct`, `coins` | – |
 | `live_channels` *(0011)* | Tournament voice channels for the Élő adás banner, edited on the admin page | `discord_channel_id` (key), `name`, `join_url`, `sort_order`, `last_report_at` | – |
 | `match_live` *(0011)* | Matches that went live; whether one is live now is worked out when read | `match_id` (key, cascade), `channel_id`, `started_at`, `last_seen_at`, `ended_at`, `source` (voice/admin) | – |
+| `match_reports` *(0012, pending)* | Result report of a championship match; a player submits, the opponent confirms, then locked | `match_id` (key, cascade), `outcome` (a/b/draw), `hp_a`, `hp_b`, `pick_a`/`pick_b`, `ban_a`/`ban_b`, `submitted_side` (a/b/admin), `submitted_by`, `submitted_at`, `confirmed_by`, `confirmed_at` | – |
+| `tournament_registrations` *(0012, pending)* | Championship sign-ups with 3 secret heroes (no read policy) | primary key (`tournament_id`, `profile_id`), `karnyx_name`, `heroes` (3), `locked_at` | – |
 | `daily_streaks` *(0010)* | Days in a row per game (spin and quiz separately, 1..7) | `profile_id` + `game` (key), `current_length`, `last_completed_date` | – |
 
 \*Row counts on 2026-11-03, for scale only.
@@ -185,6 +191,10 @@ sample data (no tables yet; tickets and coins become real with migrations 0008 a
 
 ## Needs the owner
 
+0. **Bajnokságok (`feature/tournament-pairing`, not merged).** Run migration **0012** in the Supabase
+   SQL editor before this branch is merged and deployed (guide: claude.ai/artifact/96pQEhpvLqVLivxL1uiEX6).
+   Then test it live as an admin. To answer: should a result nobody confirms be confirmed
+   automatically after a while (now an admin settles it)?
 0. **Élő adás (`feature/live-banner`, not merged; migration 0011 has run).** To do: add
    `LIVE_BOT_SECRET` in Vercel and redeploy if not done yet, send it privately to Árpád, merge the branch
    (the banner stays admins only), add the voice channels on the admin page, and test with Árpád once
@@ -251,6 +261,10 @@ quiz) are in
   recorded check with a real non-admin login. The owner tests as an admin.
 - Most full-site pages show sample data (see Features); the prototype strip says so.
 - Discord login works locally only on port 3000 (Supabase redirect allow-list).
+- Bajnokságok: the Időpontfoglaló's hourly 48-hour deadline warning also covers championship rounds
+  and links to the Időpontfoglaló overview, where they aren't listed (planned: step 2 in the
+  feature README). "Lejátszottuk" on the Időpontfoglaló's match page marks a championship match
+  played without a result.
 
 ## Technical debt
 
@@ -274,6 +288,36 @@ quiz) are in
 ## Handover log
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
+
+### 2026-11-06 · Bajnokságok: DTHU's own tournament platform, step 1 (feature/tournament-pairing, committed, not merged)
+
+- **Owner direction (2026-11-06):** tournaments move from Karnyx to the site. Bajnokságok will hold
+  everything the Időpontfoglaló has plus the tournament itself; at launch the Időpontfoglaló tab is
+  removed and its old links redirect. Until then the Időpontfoglaló stays **exactly as on `main`**
+  (no file of it is changed on this branch) and Bajnokságok is admin-only (registry `preview`).
+- **Built:** own tab with sub-tabs (Áttekintés, Összes bajnokság, Kezelés). Áttekintés opens the
+  viewer's running championship (chips if several). Championship page in the Időpontfoglaló's
+  layout: header, round timeline, pairings as list/cards with scores, picks and bans, own match with
+  "Időpont egyeztetés" (still the Időpontfoglaló match page) and the slide-in result panel, round
+  progress (two counts admin-view only), earlier rounds, standings (draw = ½ point), players.
+  Visibility (`lib/access.ts`): running = everyone (read-only if not playing), finished = only its
+  players and admins. Results: player submits, opponent confirms or corrects, then locked; admins
+  change anything. Bo1 only; formats other than Swiss "hamarosan". Details:
+  `src/features/championships/README.md`.
+- **Migration renumbered to `0012_championships.sql`**: 0011 is `feature/live-banner`'s, already run
+  live. Trimmed to what the code uses (no bracket columns, no `match_games`, no `max_players`).
+  **Not run yet**; Dave's guide (claude.ai/artifact/96pQEhpvLqVLivxL1uiEX6) updated for it.
+  Tested on the local database: applies cleanly on a pre-0012 schema.
+- **Verified:** `npx tsc --noEmit`, `npm run lint`, `npm test` (344), `npm run build`; Playwright
+  runs on a local Supabase (Docker) with seeded players: submit → correct → confirm, draw, lock,
+  admin entries, automatic next round, read-only and hidden views; desktop + 375 px, dark + light.
+- **Local test setup (not in git):** `npx supabase start` (Docker), `.env.development.local` points
+  `next dev` at it (Discord webhook empty). The TEMP-PREVIEW login bypass with `?as=<KarnyxName>`
+  is kept as a patch outside the repo and re-applied locally only; never commit it.
+  `supabase/config.toml` (from `supabase init`) is untracked on purpose.
+- **Next:** step 2 = own match page `/bajnoksagok/meccs/<id>` (time proposals + result panel,
+  admin result buttons on every match), step 3 = Közelgő meccsek, calendar feed and reminders for
+  championships, step 4 = launch. Before merging: Dave runs 0012.
 
 ### 2026-11-05 · STATE.md and roadmap brought up to date (docs only, under v2.30)
 

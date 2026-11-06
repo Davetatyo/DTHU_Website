@@ -7,6 +7,7 @@ import { createAdminClient } from "@/lib/supabase/server";
 import { formatDateTime } from "@/features/match-organizer/lib/time";
 import type { Round } from "@/features/match-organizer/lib/types";
 import { runDueDraws } from "@/features/tickets/lib/run";
+import { startDueTournaments } from "@/features/championships/lib/run";
 
 // Called hourly by Supabase pg_cron (see docs/setup.md §6). Sends one warning per round 48 hours
 // before the deadline, pinging the players whose match still has no agreed time. The same run
@@ -61,5 +62,13 @@ export async function GET(request: NextRequest) {
     console.error("Sorsolás hiba", err);
   }
 
-  return NextResponse.json({ warnings, draws });
+  // Built-in tournaments whose start time passed without anyone opening them (migration 0012).
+  let started = 0;
+  try {
+    started = await startDueTournaments();
+  } catch (err) {
+    console.error("Versenyindítás hiba", err);
+  }
+
+  return NextResponse.json({ warnings, draws, started });
 }
