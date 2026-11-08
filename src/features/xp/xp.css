@@ -61,6 +61,22 @@
   .lu-reward-text small { display: block; font-size: 12px; color: #cfc6b4; text-transform: uppercase; letter-spacing: 0.08em; }
   .lu-reward-text b { font-size: 18px; color: #f2c95a; }
   .lu-actions { position: relative; display: flex; justify-content: center; gap: 8px; margin-top: 16px; }
+  /* Several levels at once: the bar fills level by level, the number jumps at each. */
+  .lu-num.bump { animation: lu-bump .5s cubic-bezier(.2,1.6,.4,1); }
+  @keyframes lu-bump { 0% { transform: scale(1.6); filter: brightness(1.8); } 100% { transform: scale(1); filter: none; } }
+  .lu-gain { position: relative; margin-top: 2px; font-size: 18px; font-weight: 900; color: #f2c95a; font-variant-numeric: tabular-nums; }
+  .lu-bar { position: relative; margin: 10px 4px 0; }
+  .lu-bar .xp-bar { background: rgb(255 255 255 / 0.12); }
+  .lu-bar .xp-fill { transition: none; }
+  .lu-track { position: relative; display: flex; justify-content: center; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+  .lu-chip { display: grid; place-items: center; min-width: 30px; height: 30px; padding: 0 6px; border-radius: 999px; font-size: 13px; font-weight: 900; color: #9e96a6; border: 2px solid #4a4250; background: rgb(0 0 0 / 0.25); transition: all .3s; }
+  .lu-chip.on { color: #1b1620; background: #f2c95a; border-color: #f2c95a; box-shadow: 0 0 12px rgb(242 201 90 / 0.6); }
+  /* The ending (title, reward, buttons) opens once the bar has finished. */
+  .lu-end { position: relative; max-height: 0; overflow: hidden; opacity: 0; }
+  .lu-end.show { max-height: 400px; opacity: 1; transition: max-height .5s ease, opacity .45s ease .1s; }
+  .lu-title { margin-top: 12px; }
+  .lu-skip { position: relative; margin-top: 12px; background: none; border: 0; color: #9e96a6; font-size: 13px; cursor: pointer; }
+  .lu-skip:hover { color: #f2c95a; }
 
   @media (max-width: 560px) {
     .xp-card-top { flex-direction: column; text-align: center; }

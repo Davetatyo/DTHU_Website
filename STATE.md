@@ -1,6 +1,6 @@
 # Project state: DTHU website
 
-**Current version: v2.31** (2026-11-08). Live: https://dthu.hu builds from this repository's
+**Current version: v2.32** (2026-11-08). Live: https://dthu.hu builds from this repository's
 `main` (the owner moved Vercel over around 2026-11-01; checked live 2026-11-02). Every push to
 `main` deploys within a minute.
 **Launch phase: 1**: the public sees only the Meccsszervező; the whole site from the prototype
@@ -282,6 +282,16 @@ quiz) are in
 ## Handover log
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
+
+### 2026-11-08 · Level-up popup: several levels at once (feature/xp, v2.32)
+
+- Owner: when XP jumps several levels (e.g. a first place), show each level being reached. Built in
+  `XpNotifier.tsx`: the bar fills level by level, the number jumps with a small burst at each, chips
+  for the levels light up, the XP counter climbs, the ending (title, badge, buttons) and the full
+  fireworks come last; "Átugrás" skips; reduced motion jumps to the end. Driven by a 16 ms timer, not
+  requestAnimationFrame, so it doesn't stall in a hidden tab.
+- Checked in the scratch copy with example data (`/xpdemo/<mode>` links, scratch only): 0 → 4 and
+  0 → 6 with Barbár, desktop and 375 px. Types, lint, tests. Owner approved and pushed.
 
 ### 2026-11-08 · XP step 1 (feature/xp, v2.31)
 
@@ -1192,6 +1202,14 @@ webhook, no cron secret), so nothing local can post to Discord.
 ---
 
 ## Changelog
+
+### v2.32 · 2026-11-08 · merge of `feature/xp`
+**Changed (admins only):** the level-up popup shows several levels in a row: the bar fills level by
+level, the number jumps at each with a small burst, the reached levels light up, the XP counter climbs,
+and the ending with the badge and the fireworks comes last. "Átugrás" skips it. Players see no change.
+**Manual steps:** none.
+**Verified:** types, lint, tests; browser with example data, 0 → 4 and 0 → 6 with Barbár, desktop and
+375 px; new deployment confirmed live.
 
 ### v2.31 · 2026-11-08 · merge of `feature/xp`
 **Changed (admins only):** XP step 1. Profilom level card with a big XP bar, a thin XP bar in the
