@@ -1,6 +1,6 @@
 # Project state: DTHU website
 
-**Current version: v2.32** (2026-11-08). Live: https://dthu.hu builds from this repository's
+**Current version: v2.33** (2026-11-08). Live: https://dthu.hu builds from this repository's
 `main` (the owner moved Vercel over around 2026-11-01; checked live 2026-11-02). Every push to
 `main` deploys within a minute.
 **Launch phase: 1**: the public sees only the Meccsszervező; the whole site from the prototype
@@ -282,6 +282,17 @@ quiz) are in
 ## Handover log
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
+
+### 2026-11-08 · XP popup kept coming back on the Időpontfoglaló tab (feature/xp, v2.33)
+
+- Owner: after closing, the popup reappeared whenever he clicked the Időpontfoglaló tab. The database
+  was right (every row marked seen within seconds, checked read-only): Next.js reused an older stored
+  copy of that section, from before the mark. Fix in `XpNotifier.tsx`: the browser remembers the
+  newest notice it showed (`localStorage` "dthu_xp_shown", keyed by the newest XP row id) and closing
+  refreshes the router's stored copies (`router.refresh()`).
+- Checked in the scratch copy, where marking is blocked, so the browser guard is the only thing
+  stopping a replay: shown once; not again after going to Hírek and back, after a full load, or after
+  the corner card auto-closes and the Áttekintés tab is clicked. Types, lint, tests.
 
 ### 2026-11-08 · Level-up popup: several levels at once (feature/xp, v2.32)
 
@@ -1202,6 +1213,13 @@ webhook, no cron secret), so nothing local can post to Discord.
 ---
 
 ## Changelog
+
+### v2.33 · 2026-11-08 · merge of `feature/xp`
+**Fixed (admins only):** the XP popup no longer comes back when switching to the Időpontfoglaló tab:
+the browser remembers the notice it showed, and closing it refreshes the stored page copies.
+**Manual steps:** none.
+**Verified:** types, lint, tests; browser with example data where the server mark is blocked: shown
+once, not again after other tabs, a full load or the auto-closing card; new deployment confirmed live.
 
 ### v2.32 · 2026-11-08 · merge of `feature/xp`
 **Changed (admins only):** the level-up popup shows several levels in a row: the bar fills level by
