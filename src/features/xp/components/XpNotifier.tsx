@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { useRouter } from "next/navigation";
 import { BadgedAvatar } from "@/features/profile/components/BadgedAvatar";
 import { setTestBadge } from "@/features/profile/actions/badge";
 import { findBadge } from "@/features/profile/lib/badges";
@@ -11,6 +12,8 @@ import { XpBar } from "./XpBar";
 import "../xp.css";
 
 export type XpNotice = {
+  /** The newest XP row in it: the browser remembers it, so the same notice never shows twice. */
+  id: string;
   gained: number;
   /** What it was for: one label, or the first one and how many more. */
   text: string;
@@ -20,17 +23,39 @@ export type XpNotice = {
   rewardId: string | null;
 };
 
-/** Shows new XP once: the corner card, or the level-up popup when a level was reached. */
+const SHOWN_KEY = "dthu_xp_shown";
+
+/**
+ * Shows new XP once: the corner card, or the level-up popup when a level was reached.
+ *
+ * "Once" has two guards. The server marks the XP as seen (markXpSeen), but Next.js keeps copies of
+ * pages it already loaded and may show an old copy, still carrying this notice, when the player
+ * comes back to that section (owner's report, 2026-11-08: the Időpontfoglaló tab replayed the
+ * popup). So the browser also remembers the newest notice it showed, and closing it refreshes the
+ * page data so the old copies are dropped.
+ */
 export function XpNotifier({ notice, avatarUrl }: { notice: XpNotice; avatarUrl: string | null }) {
+  const router = useRouter();
   const [open, setOpen] = useState(true);
   // Only in the browser: the popups attach to document.body, which the server render doesn't have.
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
+    let shown = false;
+    try {
+      shown = localStorage.getItem(SHOWN_KEY) === notice.id;
+      localStorage.setItem(SHOWN_KEY, notice.id);
+    } catch {
+      // No storage (private mode): the server's mark still applies.
+    }
+    if (shown) setOpen(false);
     setMounted(true);
     void markXpSeen();
-  }, []);
+  }, [notice.id]);
+  const close = useCallback(() => {
+    setOpen(false);
+    router.refresh();
+  }, [router]);
   if (!open || !mounted) return null;
-  const close = () => setOpen(false);
   return notice.after.level > notice.before.level ? (
     <LevelUp notice={notice} avatarUrl={avatarUrl} onClose={close} />
   ) : (

@@ -18,7 +18,8 @@ export async function XpNotices() {
   const reached = Array.from({ length: after.level - before.level }, (_, i) => after.level - i);
   const reward = reached.map(rewardForLevel).find(Boolean) ?? null;
   const text = events.length === 1 ? events[0].label : `${events[events.length - 1].label} és még ${events.length - 1}`;
-  return <XpNotifier notice={{ gained, text, before, after, rewardId: reward?.id ?? null }} avatarUrl={avatarPublicUrl(profile.avatar_path)} />;
+  const id = events[events.length - 1].id;
+  return <XpNotifier key={id} notice={{ id, gained, text, before, after, rewardId: reward?.id ?? null }} avatarUrl={avatarPublicUrl(profile.avatar_path)} />;
 }
 
 /** The header's thin XP bar under the name, or undefined when XP isn't shown. */
