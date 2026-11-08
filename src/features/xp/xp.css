@@ -1,0 +1,72 @@
+@layer components {
+  /* The XP bar: thick, gold, a soft shine moving across. */
+  .xp-bar { position: relative; height: 12px; border-radius: 999px; background: color-mix(in srgb, var(--fg) 12%, transparent); overflow: hidden; }
+  .xp-bar.big { height: 22px; }
+  .xp-fill { position: absolute; inset: 0 auto 0 0; border-radius: 999px; background: linear-gradient(90deg, #b8862c, #f2c95a); transition: width 1.1s cubic-bezier(.2,.8,.2,1); }
+  .xp-fill::after { content: ""; position: absolute; inset: 0; background: linear-gradient(100deg, transparent 30%, rgb(255 255 255 / 0.45) 50%, transparent 70%); background-size: 200% 100%; }
+  @media (prefers-reduced-motion: no-preference) { .xp-fill::after { animation: xp-shine 2.6s linear infinite; } }
+  @keyframes xp-shine { from { background-position: 150% 0; } to { background-position: -50% 0; } }
+  .xp-bar-text { position: absolute; inset: 0; display: grid; place-items: center; font-size: 12px; font-weight: 800; color: #fff; text-shadow: 0 1px 2px rgb(0 0 0 / 0.7); }
+
+  /* Header: a thin bar under the name in the account chip. */
+  .tb-user .tb-name { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+  .tb-xp { display: block; height: 3px; border-radius: 99px; background: rgb(255 255 255 / 0.15); overflow: hidden; }
+  .tb-xp i { display: block; height: 100%; background: #f2c95a; }
+
+  /* Profilom: the level card (option A). */
+  .xp-card { margin-bottom: 1.25rem; }
+  .xp-card-top { display: flex; gap: 16px; align-items: center; }
+  .xp-card-av { position: relative; flex: none; }
+  .xp-card-av .xp-pic { display: block; width: 92px; height: 92px; border-radius: 50%; background: #23232c center / cover no-repeat; }
+  .xp-medal { position: absolute; left: 50%; bottom: -6px; transform: translateX(-50%); min-width: 30px; height: 30px; padding: 0 6px; display: grid; place-items: center; border-radius: 999px; background: #1b1620; border: 2px solid #f2c95a; color: #f2c95a; font-weight: 900; font-size: 15px; }
+  .xp-card-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+  .xp-card-title { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+  .xp-card-title b { font-size: 22px; font-weight: 900; }
+  .xp-card-title span, .xp-card-sub { font-size: 13px; color: var(--muted); }
+  .xp-card-next { display: flex; align-items: center; gap: 12px; margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--line); }
+  .xp-card-next b { display: block; font-size: 14px; }
+  .xp-card-next small { font-size: 12px; color: var(--muted); }
+  .xp-curtain { display: grid; place-items: center; width: 46px; height: 46px; flex: none; border-radius: 50%; border: 2px solid var(--gold-dim); background: repeating-linear-gradient(90deg, #5a1f2a 0 7px, #7a2a38 7px 14px); color: #f2c95a; font-size: 18px; font-weight: 900; text-shadow: 0 1px 2px #000; box-shadow: inset 0 -10px 16px rgb(0 0 0 / 0.35); }
+  .xp-card-note { margin-top: 10px; font-size: 12px; color: var(--muted); }
+
+  /* XP gained: a card sliding up in the corner. */
+  .xp-toast { position: fixed; right: 16px; bottom: 16px; z-index: 400; display: flex; gap: 12px; align-items: center; width: min(340px, calc(100vw - 32px)); padding: 12px 14px; border-radius: 10px; background: #1b1620; border: 1px solid #f2c95a; color: #f4ecda; box-shadow: 0 10px 30px rgb(0 0 0 / 0.45); }
+  @media (prefers-reduced-motion: no-preference) { .xp-toast { animation: xp-in .35s cubic-bezier(.2,.8,.2,1), xp-out .4s ease-in 4.6s forwards; } }
+  .xp-toast-amt { font-size: 24px; font-weight: 900; color: #f2c95a; white-space: nowrap; }
+  .xp-toast-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+  .xp-toast-body b { font-size: 13px; }
+  .xp-toast-body small { font-size: 12px; color: #9e96a6; }
+  .xp-toast .xp-bar { background: rgb(255 255 255 / 0.12); }
+  .xp-toast-x { align-self: flex-start; padding: 0 2px; background: none; border: 0; color: #9e96a6; font-size: 18px; line-height: 1; cursor: pointer; }
+  @keyframes xp-in { from { transform: translateY(20px); opacity: 0; } }
+  @keyframes xp-out { to { transform: translateY(10px); opacity: 0; visibility: hidden; } }
+
+  /* Level up */
+  .lu { position: fixed; inset: 0; z-index: 500; display: grid; place-items: center; padding: 16px; background: rgb(8 6 12 / 0.78); }
+  @media (prefers-reduced-motion: no-preference) { .lu { animation: lu-fade .3s ease-out; } }
+  @keyframes lu-fade { from { opacity: 0; } }
+  .lu-fw { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; }
+  .lu-card { position: relative; width: min(380px, 100%); padding: 26px 22px 20px; text-align: center; border-radius: 16px; background: radial-gradient(circle at 50% 0%, #3a2a17, #17131c 60%); border: 2px solid #f2c95a; color: #f4ecda; box-shadow: 0 0 60px rgb(242 201 90 / 0.35); overflow: hidden; }
+  @media (prefers-reduced-motion: no-preference) { .lu-card { animation: lu-pop .6s cubic-bezier(.2,1.4,.4,1); } }
+  @keyframes lu-pop { 0% { transform: scale(.4); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+  .lu-rays { position: absolute; left: 50%; top: 70px; width: 420px; height: 420px; margin: -210px 0 0 -210px; background: repeating-conic-gradient(rgb(242 201 90 / 0.14) 0 9deg, transparent 9deg 18deg); border-radius: 50%; pointer-events: none; }
+  @media (prefers-reduced-motion: no-preference) { .lu-rays { animation: lu-spin 18s linear infinite; } }
+  @keyframes lu-spin { to { transform: rotate(360deg); } }
+  .lu-kicker { position: relative; font-size: 13px; font-weight: 900; letter-spacing: 0.2em; text-transform: uppercase; color: #f2c95a; }
+  .lu-num { position: relative; font-size: 88px; line-height: 1; font-weight: 900; color: #fff; text-shadow: 0 0 24px rgb(242 201 90 / 0.8), 0 4px 0 #b8862c; }
+  .lu-title { position: relative; margin-top: 4px; font-size: 17px; font-weight: 800; }
+  .lu-plain { position: relative; margin: 10px 0 0; font-size: 14px; color: #cfc6b4; }
+  .lu-reward { position: relative; display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 16px; padding: 12px; border-radius: 12px; background: rgb(0 0 0 / 0.3); }
+  .lu-reward-text { text-align: left; }
+  .lu-reward-text small { display: block; font-size: 12px; color: #cfc6b4; text-transform: uppercase; letter-spacing: 0.08em; }
+  .lu-reward-text b { font-size: 18px; color: #f2c95a; }
+  .lu-actions { position: relative; display: flex; justify-content: center; gap: 8px; margin-top: 16px; }
+
+  @media (max-width: 560px) {
+    .xp-card-top { flex-direction: column; text-align: center; }
+    .xp-card-main { width: 100%; }
+    .xp-card-title { justify-content: center; flex-direction: column; align-items: center; gap: 0; }
+    .xp-card-sub { text-align: center; }
+    .lu-num { font-size: 72px; }
+  }
+}

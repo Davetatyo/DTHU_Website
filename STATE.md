@@ -1,6 +1,6 @@
 # Project state: DTHU website
 
-**Current version: v2.30** (2026-11-05). Live: https://dthu.hu builds from this repository's
+**Current version: v2.31** (2026-11-08). Live: https://dthu.hu builds from this repository's
 `main` (the owner moved Vercel over around 2026-11-01; checked live 2026-11-02). Every push to
 `main` deploys within a minute.
 **Launch phase: 1**: the public sees only the Meccsszervező; the whole site from the prototype
@@ -80,6 +80,7 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 | `alchemist` Alkimista | `/alkimista` + help vial | preview | knowledge base from the prototype; unanswered questions only in the browser | admin inbox for unanswered questions |
 | `register-page` Regisztráció | `/regisztracio` | **live** | static guide content; tournament banner real | owner review of Hungarian texts |
 | `live-banner` Élő adás | banner at the top of the layouts; `/api/live/voice`, `/api/live/now`; admin block on `/meccsszervezo/admin` | **on `feature/live-banner`, not merged**. Admins only until `LIVE_BANNER_ADMINS_ONLY` is false | real; migration 0011 has run; detection waits for Árpád's bot | see "Needs the owner"; `src/features/live-banner/README.md` on that branch |
+| `xp` XP and levels | Profilom card, header bar, popups; admin `/meccsszervezo/admin/xp` | **step 1 on `main` since v2.31**: admins only until `XP_ADMINS_ONLY` is false | real (migration 0012 has run) | owner tests live; then step 2 (Gyűjtemény) |
 | `hero-guide` Hős segédlet | `/meccsszervezo/meccs/<id>/hos-segedlet` (button on the match page) | **on `main` since v2.30**: admins only until `HERO_GUIDE_ADMINS_ONLY` is false, then everyone logged in | real; no tables | `src/features/hero-guide/README.md` |
 | `profile` Profilkép, Profil szerkesztése, Kitiltás | `/meccsszervezo/profil`, `/meccsszervezo/admin/felhasznalo/<id>` | **live** (v2.2): every logged-in user can upload a picture; admin page and bans for all admins | all real | badge ring (R3/R4), cosmetics collection |
 
@@ -92,8 +93,8 @@ local development uses the live data too (see CLAUDE.md, golden rule 1).
 **Migrations** (`supabase/migrations/`, run by hand in the Supabase SQL Editor, in order):
 0001 init · 0002 profile pictures and bans · 0003 events · 0004 news · 0005 polls · 0006 links ·
 0007 match play modes · 0008 ticket draws · 0009 DTHU coins · 0010 daily spin and question · 0011 live
-banner (its code is on `feature/live-banner`). **All are applied** on the live database (checked
-2026-11-05 by reading a table from each). A new change gets the next number (0012…) and is run
+banner (its code is on `feature/live-banner`) · 0012 XP. **All are applied** on the live database (checked
+2026-11-05 by reading a table from each). A new change gets the next number (0013…) and is run
 *before* the code that needs it is deployed.
 
 **Access model:** row level security is on for every table. The website reads and writes
@@ -137,6 +138,10 @@ entries after a draw closes.
 | `daily_question_answers` *(0010)* | One answer per player per day | `question_id`, `profile_id`, `day`, `answer`, `is_correct`, `coins` | – |
 | `live_channels` *(0011)* | Tournament voice channels for the Élő adás banner, edited on the admin page | `discord_channel_id` (key), `name`, `join_url`, `sort_order`, `last_report_at` | – |
 | `match_live` *(0011)* | Matches that went live; whether one is live now is worked out when read | `match_id` (key, cascade), `channel_id`, `started_at`, `last_seen_at`, `ended_at`, `source` (voice/admin) | – |
+| `xp_events` *(0012)* | Every XP change; total = sum | `profile_id`, `activity`, `amount`, `multiplier`, `ref` (unique with player + activity), `tournament_id`, `reason`, `given_by`, `seen_at` | – |
+| `xp_activities` *(0012)* | What each activity is worth, on/off | `key`, `name`, `amount`, `active` | – |
+| `xp_config` *(0012)* | Settings, e.g. the level curve | `key`, `value` (jsonb) | – |
+| `xp_boosts` *(0012)* | Double XP: a tournament, or a time window for chosen activities | `multiplier`, `starts_at`, `ends_at`, `activity_keys`, `tournament_id` | – |
 | `daily_streaks` *(0010)* | Days in a row per game (spin and quiz separately, 1..7) | `profile_id` + `game` (key), `current_length`, `last_completed_date` | – |
 
 \*Row counts on 2026-11-03, for scale only.
@@ -185,6 +190,9 @@ sample data (no tables yet; tickets and coins become real with migrations 0008 a
 
 ## Needs the owner
 
+0. **XP step 1 (v2.31, admins only; migration 0012 has run, checked 2026-11-08).** Test as an admin: mark a played match, give yourself XP on Admin felület → XP kezelés, watch the
+   card, the notification and a level-up. When the full site opens: `delete from public.xp_events;`
+   and set `XP_ADMINS_ONLY` to false.
 0. **Élő adás (`feature/live-banner`, not merged; migration 0011 has run).** To do: add
    `LIVE_BOT_SECRET` in Vercel and redeploy if not done yet, send it privately to Árpád, merge the branch
    (the banner stays admins only), add the voice channels on the admin page, and test with Árpád once
@@ -274,6 +282,37 @@ quiz) are in
 ## Handover log
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
+
+### 2026-11-08 · XP step 1 (feature/xp, v2.31)
+
+- Owner chose from mockups: Profilom card option A, XP notification "1." (corner card), level-up popup
+  without the curtain reveal; badge try-on moved to the bottom of Profilom.
+- Built: migration 0012 (tables, `xp_award` / `xp_admin_adjust`), `lib/levels.ts`, `lib/finishers.ts`,
+  15 XP on every played match (hook in `setMatchPlayed`, never throws), admin XP page (hand XP,
+  tournament XP with podium, activities, curve, double XP, one user's history), Profilom card, header
+  bar, notification and level-up popup. Admins only (`XP_ADMINS_ONLY`).
+- Verified: types, lint, tests (new: levels, rewards, finishers). Migration run twice on an in-memory
+  Postgres with its rules checked (duplicates, inactive, both kinds of double XP, below-zero refusal).
+  Preview with example data (cookie-switched, scratch copy only): card desktop + phone, notification,
+  level-up with Holdtündé, admin page; found and fixed a crash where the popup rendered on the server.
+- Owner ran migration 0012; checked read-only before the push: four tables, 11 activities, no XP yet.
+- **Not verified:** any real write (golden rule); the "seen" marking (writes blocked in the preview, so
+  there the popup shows on every page). The owner tests both live.
+- The preview copy in `/private/tmp/...` lost files to the system's temp cleanup this session; it was
+  rebuilt (`npm ci`, `.env.local` copied, TEMP-PREVIEW patches reapplied). Expect that again.
+
+### 2026-11-08 · XP plan updated by the owner (roadmap only, nothing built)
+
+- Owner's changes recorded in `Features_Roadmap.md` → R4 "Owner's update, 2026-11-08": start at level
+  0, tutorial 25 XP, no first-sign-in XP, featured game of the day (5 XP), thumbs-up on news with
+  optional 5 XP, targeted double XP, podium set chosen per tournament, curtain reveal for the next
+  reward. Later the same day: daily quiz gives XP; built on the live database; test XP wiped and XP
+  opened only with the full site; curve **+20 a level** (level 20 = 4,300 XP); **podium extra doubled**
+  to 300/200/150; year two decided later. A day-by-day simulation of five player styles was shown to
+  the owner (committed hybrid level 20, website-only and tournament champion 17, tournament-only 12,
+  casual 11). Then, with realistic podium odds (about 20 players, ~90% never on the podium) and 6
+  rounds per tournament: **15 XP for every game played** (Bye counts) replaces the first-match 10 XP,
+  so a tournament is worth ~120 XP. Uncommitted.
 
 ### 2026-11-05 · STATE.md and roadmap brought up to date (docs only, under v2.30)
 
@@ -1153,6 +1192,16 @@ webhook, no cron secret), so nothing local can post to Discord.
 ---
 
 ## Changelog
+
+### v2.31 · 2026-11-08 · merge of `feature/xp`
+**Changed (admins only):** XP step 1. Profilom level card with a big XP bar, a thin XP bar in the
+header, a corner notification for new XP and a fireworks popup for a new level (with the level's badge).
+Played matches give 15 XP; Admin felület → XP kezelés gives tournament XP (finishing, Byes, podium),
+hand XP, activity amounts, the level curve and double XP. The badge test moved to the bottom of
+Profilom. Players see no change.
+**Manual steps:** migration 0012 (run by the owner before the push).
+**Verified:** types, lint, tests; migration run twice in memory with its rules checked; browser with a
+fake admin and example data, desktop and 375 px, dark and light; new deployment confirmed live.
 
 ### v2.30 · 2026-11-05 · docs update
 STATE.md and the roadmap brought up to date, no change to the site.

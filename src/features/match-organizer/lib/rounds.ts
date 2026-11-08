@@ -1,4 +1,5 @@
 import { createAdminClient } from "@/lib/supabase/server";
+import { awardMatchPlayed } from "@/features/xp/lib/award";
 
 /** Marks the match played, closes open proposals, and checks whether the round is now complete. */
 export async function setMatchPlayed(matchId: string) {
@@ -12,6 +13,8 @@ export async function setMatchPlayed(matchId: string) {
     .single();
   await db.from("proposals").update({ status: "superseded" }).eq("match_id", matchId).eq("status", "open");
   if (data) await checkRoundComplete(data.round_id);
+  // XP for both players (roadmap R4). Never throws: marking a match played must always work.
+  await awardMatchPlayed(matchId);
 }
 
 /**

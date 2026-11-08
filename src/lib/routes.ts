@@ -46,6 +46,8 @@ export const routes = {
   register: "/regisztracio",
   admin: `${MO}/admin`,
   adminUser: (id: string) => `${MO}/admin/felhasznalo/${id}`,
+  /** XP kezelés (see features/xp). */
+  adminXp: `${MO}/admin/xp`,
   adminNews: `${MO}/admin/hirek`,
   adminNewsNew: `${MO}/admin/hirek/uj`,
   adminNewsItem: (id: string) => `${MO}/admin/hirek/${id}`,
