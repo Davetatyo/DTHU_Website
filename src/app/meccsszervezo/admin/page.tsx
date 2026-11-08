@@ -78,6 +78,16 @@ export default async function AdminPage({
 
       <section className="card flex flex-wrap items-center justify-between gap-3">
         <div>
+          <h2 className="font-bold">XP kezelés</h2>
+          <p className="muted text-sm">Kézi XP, verseny XP kiosztása, tevékenységek értéke, szintgörbe, dupla XP. Egyelőre csak adminok látják az XP-t.</p>
+        </div>
+        <Link href={routes.adminXp} className="btn btn-secondary">
+          XP kezelés ›
+        </Link>
+      </section>
+
+      <section className="card flex flex-wrap items-center justify-between gap-3">
+        <div>
           <h2 className="font-bold">Hírek</h2>
           <p className="muted text-sm">Hírek írása képekkel, galériával, videóval: piszkozat, közzététel, időzítés.</p>
         </div>
