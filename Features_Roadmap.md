@@ -206,12 +206,56 @@ catalogue foundation; R4 is what fills the collection
 
 ### R4 · XP and levels (Tapasztalati pontok)
 
-**Status:** XP values and level curve **agreed with the owner** (2026-11-03), look decided
-(option C, see Look); not built · **Feature id (proposed):** `xp` · **Depends on:** R5 Admin
+**Status:** **Step 1 live for admins (v2.31, 2026-11-08)**: levels, tournament XP,
+admin XP page, Profilom card (option A), header bar, XP notification, level-up popup. See
+`src/features/xp/README.md`. Values and curve agreed 2026-11-03, updated 2026-11-08 (below);
+look updated 2026-11-08 (option A card, not option C) · **Feature id (proposed):** `xp` · **Depends on:** R5 Admin
 area (XP management page), R3 Profile (cosmetics collection, badge ring). The automatic
 sources need R1 Tutorial and R7 Quiz.
 
 Users earn XP for activities and level up at rising milestones, in the style of Duolingo.
+
+**Owner's update, 2026-11-08 (overrides the tables below where they differ)**
+- **Start at level 0.** The site tutorial gives **25 XP** (was 50) and takes a new player to
+  level 1. **No XP for the first sign-in** (the welcome 10 XP is dropped).
+- **Games: 5 XP a day, one game only.** Each day one game is picked at random as the **featured
+  game of the day** ("a nap játéka", marked on the Játékok page); playing it gives 5 XP, once a day.
+  Replaces "first play of each game, 25 XP". Napi kvíz and Szerencsekerék stay as built: Árpád
+  keeps working on them.
+- **Tutorial** (R1): one tour for everyone once the new site features open; completion is stored on
+  the server per user, so it never opens again and gives its XP once.
+- **Thumbs up on news** (R2, replaces "confirm an important article"): every Hírek article and post
+  gets a blank thumbs-up at the bottom right. A click fills it and can't be undone. When creating
+  the article an admin can tick "XP-t ad" (fixed 5 XP, once per user per article).
+- **Double XP** is aimed by the admin: at chosen activities (e.g. all games) for a period, or at a
+  **tournament**, covering its whole run (first match, finishing).
+- **After year one:** yes, levels 21–40 open and XP keeps counting at level 20.
+- **Rewards:** level 5 Barbár badge (may change later), level 7 Holdtündér badge; the rest after
+  testing. **Podium badges:** for each tournament an admin picks one badge set from the list, and
+  its gold/silver/bronze go to the top three, so every tournament awards a different set.
+- **Gyűjtemény reveal** (R3): only the **next** reward is shown, behind a "surprise curtain" with
+  the level it needs; reaching it lifts the curtain, and the next one appears covered.
+- **Settled 2026-11-08:** the daily quiz gives XP (5 per correct answer); built on the live database,
+  every XP rule checked and stored on the server (the browser only asks, the server decides);
+  admins test from now, and **all XP is wiped when the full site opens**, so everyone starts at
+  level 0; XP is **admins only until the full site opens**; the Szemfüles per-picture XP is replaced
+  by the featured game; a game counts as played when it's **finished** (the replay option shows);
+  the news thumbs-up shows a **small count** of how many users clicked it.
+- **Level curve (agreed 2026-11-08): +20 a level.** Level 0 → 1 costs 25 XP and every level costs
+  20 more than the one before: 25, 45, 65, …, 405. Level 20 needs **4,300 XP** in total; someone who
+  joins everything (quiz 80% right) earns ~4,660 XP a year and reaches it around week 48.
+- **Podium extra doubled (2026-11-08): 300 / 200 / 150** for 1st / 2nd / 3rd, on top of the 30 for
+  finishing, so podiums keep mattering next to the daily XP.
+- **15 XP for every game played in a tournament (agreed 2026-11-08)**, replacing "10 XP for the first
+  match". A 20-player tournament has 6 rounds, so a finished tournament is worth about **6 × 15 + 30 =
+  120 XP**. A Bye counts as a played game. Dropping out keeps the XP of the games already played.
+  Finishing stays 30; double XP on a tournament covers its games, finishing and podium.
+- **Realistic podiums (owner, 2026-11-08):** about 20 players per tournament, so roughly 90% of players
+  never reach the podium. Simulated year (podiums only for a top-10% player): website only level 17,
+  tournament only (12 tournaments, no podium) level 11, committed level 20 around week 50, strong player
+  with 4 podiums level 16, casual level 13; someone doing absolutely everything reaches level 20
+  around week 40.
+- **Year two** (levels 21–40): to be decided when we get there.
 
 **What XP is**
 - XP is **never spent**. It only raises the level.
@@ -652,6 +696,24 @@ heroes, read the hero's board, leaflet, tokens and rules. Once opened: everyone 
 at any time (owner, 2026-11-05). Details: `src/features/hero-guide/README.md`.
 
 **Open questions:** when to open it (the images are Roxley's).
+
+### R16 · Taktikai feladvány (Dice Throne puzzles; working title)
+
+**Status:** Parked (owner, 2026-11-09). MVP built on branch `feature/puzzle`, not merged into `main`; admins only there.
+· **Feature id:** `puzzle` · **Depends on:** the Card Scanner repo's Season 1 data (copied in), Játékok (R6)
+
+A preset 1v1 board at the end of the attacker's roll: play cards, pick an ability, find the line
+that wins most surely. Every roll that follows is counted, so the score is a percentage.
+Owner's decisions (2026-11-09): Season 1 heroes first, offensive roll preset, every defence outcome
+counted, no defender cards yet, only "find lethal" yet, card images, XP and coin rewards set by
+admins later. Details and the rules the engine assumes: `src/features/puzzle/README.md`.
+
+**Owner's test (2026-11-09):** Rage! (Ultimate) while Blind scored 66.7%; per the owner, Blind does
+not stop an Ultimate, so it should be 100%. When picked up: fix that rule in the engine first, then
+redesign puzzle 1 (Rage! would be a second 100% answer).
+
+**Open questions:** confirm the other assumed rules (README on the branch); more puzzles and goals
+(defend, tie, maximise damage); defender cards; more heroes; rewards.
 
 ---
 

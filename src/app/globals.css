@@ -101,9 +101,9 @@ a:hover { color: inherit; }
   .tb-row.r2 { border-top: 1px solid #1b1b22; }
   .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--topbar-fg); min-width: 0; }
   .brand:hover { color: var(--topbar-fg); }
-  .brand-die { width: 40px; height: 40px; flex: none; background: url("/images/die.webp") center / cover; border-radius: 8px; box-shadow: 0 0 14px rgba(232, 140, 40, 0.45); }
-  .brand b { font-weight: 800; font-size: 20px; letter-spacing: 0.04em; display: block; line-height: 1; }
-  .brand small { display: block; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--topbar-muted); }
+  /* The DTHU logo: the 3D lettering from the owner's logo, unchanged (transparent background). */
+  .brand-logo { width: 92px; height: 48px; flex: none; background: url("/images/dthu-logo.webp") center / contain no-repeat; }
+  .brand small { display: block; max-width: 11em; font-size: 11px; line-height: 1.25; letter-spacing: 0.18em; text-transform: uppercase; color: var(--topbar-muted); }
   .tb-right { margin-left: auto; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
   .tb-btn { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 10px; border-radius: 6px; border: 1px solid #2c2c36; background: #15151b; color: var(--topbar-fg); font-size: 13px; font-weight: 600; cursor: pointer; }
   .tb-btn:hover { border-color: var(--gold-dim); color: #fff; }

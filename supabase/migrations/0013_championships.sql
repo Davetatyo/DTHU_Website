@@ -1,4 +1,4 @@
--- 0012: Bajnokságok (built-in championships)
+-- 0013: Bajnokságok (built-in championships)
 --
 -- Championships are tournaments run on the site itself: sign-up with 3 heroes, automatic
 -- Swiss pairing, results reported by the players. They reuse the Időpontfoglaló's tables

@@ -115,7 +115,7 @@ export const getCalendarItems = cache(async (timeZone: string): Promise<Calendar
   return [...events.map((e) => eventToItem(e, timeZone, now)), ...roundItems, ...(await tournamentItems(timeZone, now))];
 });
 
-/** Bajnokságok (built-in tournaments). Empty before migration 0012, when the columns don't exist. */
+/** Bajnokságok (built-in tournaments). Empty before migration 0013, when the columns don't exist. */
 async function tournamentItems(timeZone: string, now: Date): Promise<CalendarItem[]> {
   const tournaments = await getChampionships({ includeDrafts: false });
   if (tournaments.length === 0) return [];

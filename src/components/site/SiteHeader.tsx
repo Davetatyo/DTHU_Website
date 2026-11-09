@@ -13,7 +13,8 @@ import { ThemeToggle } from "./ThemeToggle";
  * the first row, page tabs below. A section (e.g. the Meccsszervező) can add its own second
  * tab row with `subTabs`. `wallet` (the coin and ticket balances, from the shop feature via
  * the layout) sits before the account chip for signed-in visitors. `userBadge` (from the
- * profile feature) replaces the chip's picture when an admin is trying on a badge.
+ * profile feature) replaces the chip's picture when an admin is trying on a badge. `userXp` (from
+ * the XP feature) draws a thin progress bar under the name.
  */
 export async function SiteHeader({
   tabs,
@@ -21,12 +22,14 @@ export async function SiteHeader({
   section,
   wallet,
   userBadge,
+  userXp,
 }: {
   tabs: NavItem[];
   subTabs?: NavItem[];
   section?: string;
   wallet?: React.ReactNode;
   userBadge?: React.ReactNode;
+  userXp?: { pct: number; title: string };
 }) {
   const profile = await getCurrentProfile();
   const adminView = await getAdminView();
@@ -37,11 +40,8 @@ export async function SiteHeader({
     <header className="topbar">
       <div className="tb-row r1">
         <Link href={seesFullSite(adminView) ? routes.home : routes.organizer} className="brand" aria-label="DTHU – Dice Throne Hungary, főoldal">
-          <span className="brand-die" aria-hidden />
-          <span>
-            <b>DTHU</b>
-            <small>Dice Throne Hungary</small>
-          </span>
+          <span className="brand-logo" aria-hidden />
+          <small>Dice Throne Hungary</small>
         </Link>
         {section && <span className="kicker hidden sm:inline">{section}</span>}
         <div className="tb-right">
@@ -58,7 +58,7 @@ export async function SiteHeader({
                 </>
               )}
               {wallet}
-              <Link href={routes.profile} className={`tb-user${userBadge ? " has-badge" : ""}`} title="Profilom">
+              <Link href={routes.profile} className={`tb-user${userBadge ? " has-badge" : ""}`} title={userXp ? `Profilom · ${userXp.title}` : "Profilom"}>
                 {userBadge ? (
                   userBadge
                 ) : avatar ? (
@@ -68,7 +68,16 @@ export async function SiteHeader({
                     <UserIcon />
                   </span>
                 )}
-                <span className="truncate">{name}</span>
+                {userXp ? (
+                  <span className="tb-name">
+                    <span className="truncate">{name}</span>
+                    <span className="tb-xp" aria-hidden>
+                      <i style={{ width: `${userXp.pct}%` }} />
+                    </span>
+                  </span>
+                ) : (
+                  <span className="truncate">{name}</span>
+                )}
               </Link>
               <form action={routes.signout} method="post">
                 <button className="tb-btn" title="Kilépés" aria-label="Kilépés">

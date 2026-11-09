@@ -10,7 +10,7 @@ exactly as it is until then; there will be no Karnyx-league data in Bajnokságok
   `/bajnoksagok/admin` and `/bajnoksagok/admin/<slug>` (Kezelés, admins). The sub-tabs are
   `components/ChampionshipTabs.tsx`; slugs in `RESERVED_SLUGS` (`lib/access.ts`) can't be used.
 - **Status:** preview (admins only in phase 1). Branch `feature/tournament-pairing`.
-- **Migration:** `supabase/migrations/0012_championships.sql` (the owner runs it before deploy).
+- **Migration:** `supabase/migrations/0013_championships.sql` (the owner runs it before deploy).
 
 ## Who sees what (`lib/access.ts`)
 
@@ -52,7 +52,7 @@ exactly as it is until then; there will be no Karnyx-league data in Bajnokságok
 A championship is a `tournaments` row with `format` ≠ `manual` and `is_active = false`, so the
 Időpontfoglaló (which reads the active tournament) never shows it. Its players, rounds, matches
 and time proposals use the Időpontfoglaló's tables, which is what lets the Időpontfoglaló's
-match page work for them. Migration 0012 adds `format`, `best_of`, `settings`, `slug`,
+match page work for them. Migration 0013 adds `format`, `best_of`, `settings`, `slug`,
 `status`, `starts_at`, `auto_pairing` (tournaments), `winner_id`, `is_draw` (matches), and the
 tables `match_reports` (public read) and `tournament_registrations` (no read policy).
 

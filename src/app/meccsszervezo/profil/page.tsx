@@ -14,6 +14,7 @@ import { avatarPublicUrl } from "@/features/profile/lib/avatar";
 import { removeMyAvatar, uploadMyAvatar } from "@/features/profile/actions/avatar";
 import { AdminBadgePicker } from "@/features/profile/components/AdminBadgePicker";
 import { getTestBadge } from "@/features/profile/lib/test-badge";
+import { ProfileXpCard } from "@/features/xp/components/ProfileXpCard";
 
 export const metadata: Metadata = { title: "Profilom" };
 
@@ -45,7 +46,7 @@ export default async function ProfilePage({ searchParams }: { searchParams: Prom
       <div className="sec-h">
         <h1>Profilom</h1>
       </div>
-      {profile.is_admin && <AdminBadgePicker current={testBadge} avatarUrl={avatarPublicUrl(profile.avatar_path)} />}
+      <ProfileXpCard profileId={profile.id} avatarUrl={avatarPublicUrl(profile.avatar_path)} />
       <div className="card">
       {canUploadOwnAvatar(profile) && (
         <div className="mb-5 border-b pb-5" style={{ borderColor: "var(--line)" }}>
@@ -107,6 +108,12 @@ export default async function ProfilePage({ searchParams }: { searchParams: Prom
         <SubmitButton className="btn w-full">Mentés</SubmitButton>
       </form>
       </div>
+      {/* At the bottom: still a test, and achievements will live down here too (owner, 2026-11-08). */}
+      {profile.is_admin && (
+        <div className="mt-6">
+          <AdminBadgePicker current={testBadge} avatarUrl={avatarPublicUrl(profile.avatar_path)} />
+        </div>
+      )}
     </div>
   );
 }

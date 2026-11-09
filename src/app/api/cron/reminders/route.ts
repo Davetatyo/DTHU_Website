@@ -62,7 +62,7 @@ export async function GET(request: NextRequest) {
     console.error("Sorsolás hiba", err);
   }
 
-  // Built-in tournaments whose start time passed without anyone opening them (migration 0012).
+  // Built-in tournaments whose start time passed without anyone opening them (migration 0013).
   let started = 0;
   try {
     started = await startDueTournaments();

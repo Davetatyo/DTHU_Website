@@ -3,6 +3,7 @@ import { DevPreviewBanner } from "@/components/site/DevPreviewBanner";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { headerBadge } from "@/features/profile/components/HeaderBadge";
+import { headerXp, XpNotices } from "@/features/xp/components/XpNotices";
 import { HeaderWallet } from "@/features/shop/components/HeaderWallet";
 import { getAdminView } from "@/lib/auth";
 import { organizerTabs, siteMenu } from "@/lib/navigation";
@@ -25,6 +26,7 @@ export default async function OrganizerLayout({ children }: Readonly<{ children:
       <SiteHeader tabs={full ? siteMenu : organizerTabs} subTabs={full ? organizerTabs : undefined} section="Időpontfoglaló"
         wallet={<HeaderWallet />}
         userBadge={await headerBadge()}
+        userXp={await headerXp()}
       />
       <main className="wrap page-fade">
         {isDevPreview(adminView) && (
@@ -35,6 +37,7 @@ export default async function OrganizerLayout({ children }: Readonly<{ children:
         {children}
       </main>
       <SiteFooter />
+      <XpNotices />
     </>
   );
 }

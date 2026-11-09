@@ -1,6 +1,6 @@
 # Project state: DTHU website
 
-**Current version: v2.30** (2026-11-05). Live: https://dthu.hu builds from this repository's
+**Current version: v2.36** (2026-11-09). Live: https://dthu.hu builds from this repository's
 `main` (the owner moved Vercel over around 2026-11-01; checked live 2026-11-02). Every push to
 `main` deploys within a minute.
 **Launch phase: 1**: the public sees only the Meccsszervező; the whole site from the prototype
@@ -80,8 +80,10 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 | `alchemist` Alkimista | `/alkimista` + help vial | preview | knowledge base from the prototype; unanswered questions only in the browser | admin inbox for unanswered questions |
 | `register-page` Regisztráció | `/regisztracio` | **live** | static guide content; tournament banner real | owner review of Hungarian texts |
 | `live-banner` Élő adás | banner at the top of the layouts; `/api/live/voice`, `/api/live/now`; admin block on `/meccsszervezo/admin` | **on `feature/live-banner`, not merged**. Admins only until `LIVE_BANNER_ADMINS_ONLY` is false | real; migration 0011 has run; detection waits for Árpád's bot | see "Needs the owner"; `src/features/live-banner/README.md` on that branch |
-| `championships` Bajnokságok (DTHU's own tournament platform, replaces the Időpontfoglaló at launch) | `/bajnoksagok`, `/bajnoksagok/osszes`, `/bajnoksagok/<slug>`, admin `/bajnoksagok/admin` | preview (admins only), **on `feature/tournament-pairing`, not merged** | real once migration 0012 has run; sign-up with 3 heroes, Swiss auto pairing, player-reported results with confirmation, standings with draws | owner runs migration 0012; next: own match page, Közelgő meccsek + reminders, then launch (see the feature README) |
+| `championships` Bajnokságok (DTHU's own tournament platform, replaces the Időpontfoglaló at launch) | `/bajnoksagok`, `/bajnoksagok/osszes`, `/bajnoksagok/<slug>`, admin `/bajnoksagok/admin` | preview (admins only), **on `feature/tournament-pairing`, not merged** | real once migration 0013 has run; sign-up with 3 heroes, Swiss auto pairing, player-reported results with confirmation, standings with draws | owner runs migration 0013; next: own match page, Közelgő meccsek + reminders, then launch (see the feature README) |
+| `xp` XP and levels | Profilom card, header bar, popups; admin `/meccsszervezo/admin/xp` | **step 1 on `main` since v2.31**: admins only until `XP_ADMINS_ONLY` is false | real (migration 0012 has run) | owner tests live; then step 2 (Gyűjtemény) |
 | `hero-guide` Hős segédlet | `/meccsszervezo/meccs/<id>/hos-segedlet` (button on the match page) | **on `main` since v2.30**: admins only until `HERO_GUIDE_ADMINS_ONLY` is false, then everyone logged in | real; no tables | `src/features/hero-guide/README.md` |
+| `puzzle` Taktikai feladvány (experiment, working title) | `/jatekok/taktikai-feladvany`, `/jatekok/taktikai-feladvany/<id>`; card on the Játékok page | **parked** (owner, 2026-11-09): only on branch `feature/puzzle`, never merged into `main` | static: Season 1 Barbarian + Moon Elf rules from the Card Scanner repo; no tables. Images are **not committed** (owner): make them locally with `scripts/puzzle/assets.py` | when picked up: fix the Blind vs. Ultimate rule first (Features_Roadmap R16, `src/features/puzzle/README.md` on the branch) |
 | `profile` Profilkép, Profil szerkesztése, Kitiltás | `/meccsszervezo/profil`, `/meccsszervezo/admin/felhasznalo/<id>` | **live** (v2.2): every logged-in user can upload a picture; admin page and bans for all admins | all real | badge ring (R3/R4), cosmetics collection |
 
 ## Database (Supabase)
@@ -93,12 +95,13 @@ local development uses the live data too (see CLAUDE.md, golden rule 1).
 **Migrations** (`supabase/migrations/`, run by hand in the Supabase SQL Editor, in order):
 0001 init · 0002 profile pictures and bans · 0003 events · 0004 news · 0005 polls · 0006 links ·
 0007 match play modes · 0008 ticket draws · 0009 DTHU coins · 0010 daily spin and question · 0011 live
-banner (its code is on `feature/live-banner`). **All are applied** on the live database (checked
-2026-11-05 by reading a table from each). A new change gets the next number and is run *before* the code that
-needs it is deployed. **0012 Bajnokságok is written but not run yet** (branch
-`feature/tournament-pairing`): tournament columns `format`, `best_of`, `settings`, `slug`, `status`,
-`starts_at`, `auto_pairing`; match columns `winner_id`, `is_draw`; tables `match_reports` and
-`tournament_registrations`. All additive, safe for the Időpontfoglaló.
+banner (its code is on `feature/live-banner`) · 0012 XP. **All are applied** on the live database (checked
+2026-11-05 by reading a table from each). A new change gets the next number (0014…) and is run
+*before* the code that needs it is deployed. **0013 Bajnokságok is written but not run yet** (branch
+`feature/tournament-pairing`; it was numbered 0012 until `main`'s XP migration took that number):
+tournament columns `format`, `best_of`, `settings`, `slug`, `status`, `starts_at`, `auto_pairing`;
+match columns `winner_id`, `is_draw`; tables `match_reports` and `tournament_registrations`. All
+additive, safe for the Időpontfoglaló, no overlap with 0012 XP.
 
 **Access model:** row level security is on for every table. The website reads and writes
 through the server with the service-role key and checks permissions in code
@@ -141,8 +144,12 @@ entries after a draw closes.
 | `daily_question_answers` *(0010)* | One answer per player per day | `question_id`, `profile_id`, `day`, `answer`, `is_correct`, `coins` | – |
 | `live_channels` *(0011)* | Tournament voice channels for the Élő adás banner, edited on the admin page | `discord_channel_id` (key), `name`, `join_url`, `sort_order`, `last_report_at` | – |
 | `match_live` *(0011)* | Matches that went live; whether one is live now is worked out when read | `match_id` (key, cascade), `channel_id`, `started_at`, `last_seen_at`, `ended_at`, `source` (voice/admin) | – |
-| `match_reports` *(0012, pending)* | Result report of a championship match; a player submits, the opponent confirms, then locked | `match_id` (key, cascade), `outcome` (a/b/draw), `hp_a`, `hp_b`, `pick_a`/`pick_b`, `ban_a`/`ban_b`, `submitted_side` (a/b/admin), `submitted_by`, `submitted_at`, `confirmed_by`, `confirmed_at` | – |
-| `tournament_registrations` *(0012, pending)* | Championship sign-ups with 3 secret heroes (no read policy) | primary key (`tournament_id`, `profile_id`), `karnyx_name`, `heroes` (3), `locked_at` | – |
+| `xp_events` *(0012)* | Every XP change; total = sum | `profile_id`, `activity`, `amount`, `multiplier`, `ref` (unique with player + activity), `tournament_id`, `reason`, `given_by`, `seen_at` | – |
+| `xp_activities` *(0012)* | What each activity is worth, on/off | `key`, `name`, `amount`, `active` | – |
+| `xp_config` *(0012)* | Settings, e.g. the level curve | `key`, `value` (jsonb) | – |
+| `xp_boosts` *(0012)* | Double XP: a tournament, or a time window for chosen activities | `multiplier`, `starts_at`, `ends_at`, `activity_keys`, `tournament_id` | – |
+| `match_reports` *(0013, pending)* | Result report of a championship match; a player submits, the opponent confirms, then locked | `match_id` (key, cascade), `outcome` (a/b/draw), `hp_a`, `hp_b`, `pick_a`/`pick_b`, `ban_a`/`ban_b`, `submitted_side` (a/b/admin), `submitted_by`, `submitted_at`, `confirmed_by`, `confirmed_at` | – |
+| `tournament_registrations` *(0013, pending)* | Championship sign-ups with 3 secret heroes (no read policy) | primary key (`tournament_id`, `profile_id`), `karnyx_name`, `heroes` (3), `locked_at` | – |
 | `daily_streaks` *(0010)* | Days in a row per game (spin and quiz separately, 1..7) | `profile_id` + `game` (key), `current_length`, `last_completed_date` | – |
 
 \*Row counts on 2026-11-03, for scale only.
@@ -191,7 +198,10 @@ sample data (no tables yet; tickets and coins become real with migrations 0008 a
 
 ## Needs the owner
 
-0. **Bajnokságok (`feature/tournament-pairing`, not merged).** Run migration **0012** in the Supabase
+0. **XP step 1 (v2.31, admins only; migration 0012 has run, checked 2026-11-08).** Test as an admin: mark a played match, give yourself XP on Admin felület → XP kezelés, watch the
+   card, the notification and a level-up. When the full site opens: `delete from public.xp_events;`
+   and set `XP_ADMINS_ONLY` to false.
+0. **Bajnokságok (`feature/tournament-pairing`, not merged).** Run migration **0013** (renumbered from 0012) in the Supabase
    SQL editor before this branch is merged and deployed (guide: claude.ai/artifact/96pQEhpvLqVLivxL1uiEX6).
    Then test it live as an admin. To answer: should a result nobody confirms be confirmed
    automatically after a while (now an admin settles it)?
@@ -289,6 +299,114 @@ quiz) are in
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
 
+### 2026-11-09 · New DTHU logo (v2.34, then v2.35 fix)
+
+- Owner sent a new square logo (3D "DTHU" lettering over "DICE THRONE HUNGARY"). The image already
+  has a transparent background. Where it's used:
+  - top bar (`SiteHeader`, `regisztracio/layout.tsx`): `.brand-logo` (`public/images/dthu-logo.webp`,
+    just the DTHU lettering, unchanged) + the small "Dice Throne Hungary" text; the bold "DTHU" text is gone;
+  - login card and the registration guide's last step: the same image at 128 px;
+  - `src/app/icon.png`, `apple-icon.png` and `favicon.ico`: since v2.36 only the DTHU lettering on
+    white, without the "Dice Throne Hungary" text (owner's request; the page logos stay as they are).
+  `.brand-die` CSS is removed; `public/images/die.webp` is unused now but kept.
+- v2.34 was wrong: the cut-out step read the transparent background as black and also erased the D's
+  black front face (white D in light mode, black icon backgrounds); a cream outline hid it on the dark
+  bar. Owner: the white edge looked awful, and **don't change the graphic**. v2.35 uses the image's own
+  transparency with no outline. On the dark top bar the black sides of the D and T blend in; the owner
+  chose it as is (a CSS orange glow was offered and declined).
+- Verified: types, lint, tests; browser at desktop and 375 px, dark and light (top bar, login card).
+- The source image isn't in the repo; ask the owner for it if the logo needs remaking.
+### 2026-11-09 · Taktikai feladvány experiment, MVP, then parked (feature/puzzle)
+
+- Owner's request: a Dice Throne puzzle game (preset board, find the solution). His answers to the
+  open questions: Season 1 heroes first; the offensive roll fully preset; the defence counts every
+  outcome (percentage); no defender cards in the first one; only "find lethal"; card images; name
+  "Taktikai feladvány" (working title); XP and coin rewards set by admins later.
+- Built on `feature/puzzle` (branched from `main` at v2.33), committed there only:
+  `src/features/puzzle/` (README, rules engine, solver, puzzle 1, game component, CSS),
+  pages `src/app/(site)/jatekok/taktikai-feladvany/` (list + `[id]`), `routes.puzzles`/`routes.puzzle`,
+  registry entry `puzzle` (planned: no menu item), a Játékok hub card with `adminOnly`
+  (`GamesHub` gets `adminView`). Images (48 cards, 12 dice faces, 2 Season 1 boards, 2.1 MB) are
+  **not committed** (owner, 2026-11-09: no card images on the site yet): `public/jatekok/feladvany/`
+  is in `.gitignore` on the branch; `scripts/puzzle/assets.py` makes them from the Card Scanner repo
+  (only read): `python3 -I scripts/puzzle/assets.py ../Dice_Throne_Card_Scanner`.
+- Engine: Barbarian and Moon Elf abilities, defences and every upgrade, read off the Season 1 boards
+  and card images (the scanner's Moon Elf texts are empty, so they were read from the images).
+  `resolveAttack` gives win/tie/lose chances over every roll that follows (Blind, Overpower's roll,
+  Missed Me's 7,776 rolls, Evasive), with Hungarian notes. The solver tries every card play (puzzle 1:
+  109 states, about 50 ms) and finds the best line. Rules it assumes are listed in the README for the
+  owner to confirm.
+- Puzzle 1 "Vakon is látni": the answer is Buh-Bye! on your own Blind + Six-It! → Crit Bash II (100%);
+  Rage! is the trap (66.7%). A test checks the solver finds exactly that.
+- Verified: `npx tsc --noEmit`, `npm run lint`, `npm test` (276 tests, 16 new). Browser (scratch
+  preview with a fake admin, port 3100): the hub card shows for admins; played the solution and the
+  Rage! trap through the UI (result, notes, Megoldás); 375 px phone (no sideways scroll after a grid
+  fix), dark and light; Hőstábla popup.
+- The owner tested it locally. For that, the puzzle opens without login on `npm run dev` only
+  (`PUZZLE_OPEN_IN_DEV` in `lib/access.ts`); `NEXT_PUBLIC_FULL_SITE=1` was added to `.env.local` for the
+  test and removed again afterwards.
+- **Owner's finding:** he played Rage! (Ultimate) while Blind and got 66.7%. His ruling: Blind does not
+  stop an Ultimate, so that line should be 100%. The engine (`resolveAttack`) assumes Blind fails the
+  attack on 1–2 even for an Ultimate: that is wrong per the owner. Fixing it makes Rage! a second 100%
+  answer in puzzle 1, so puzzle 1 needs a new design too.
+- **Parked** (owner, 2026-11-09): stays on `feature/puzzle`, not merged into `main`. Roadmap R16 is
+  marked parked (also on `main`).
+- Next agent, if the owner picks it up: merge `main` into `feature/puzzle`, fix the Blind vs. Ultimate
+  rule (and check the other assumed rules in the README with him), redesign puzzle 1, then ask before
+  merging (no migration).
+
+### 2026-11-08 · XP popup kept coming back on the Időpontfoglaló tab (feature/xp, v2.33)
+
+- Owner: after closing, the popup reappeared whenever he clicked the Időpontfoglaló tab. The database
+  was right (every row marked seen within seconds, checked read-only): Next.js reused an older stored
+  copy of that section, from before the mark. Fix in `XpNotifier.tsx`: the browser remembers the
+  newest notice it showed (`localStorage` "dthu_xp_shown", keyed by the newest XP row id) and closing
+  refreshes the router's stored copies (`router.refresh()`).
+- Checked in the scratch copy, where marking is blocked, so the browser guard is the only thing
+  stopping a replay: shown once; not again after going to Hírek and back, after a full load, or after
+  the corner card auto-closes and the Áttekintés tab is clicked. Types, lint, tests.
+
+### 2026-11-08 · Level-up popup: several levels at once (feature/xp, v2.32)
+
+- Owner: when XP jumps several levels (e.g. a first place), show each level being reached. Built in
+  `XpNotifier.tsx`: the bar fills level by level, the number jumps with a small burst at each, chips
+  for the levels light up, the XP counter climbs, the ending (title, badge, buttons) and the full
+  fireworks come last; "Átugrás" skips; reduced motion jumps to the end. Driven by a 16 ms timer, not
+  requestAnimationFrame, so it doesn't stall in a hidden tab.
+- Checked in the scratch copy with example data (`/xpdemo/<mode>` links, scratch only): 0 → 4 and
+  0 → 6 with Barbár, desktop and 375 px. Types, lint, tests. Owner approved and pushed.
+
+### 2026-11-08 · XP step 1 (feature/xp, v2.31)
+
+- Owner chose from mockups: Profilom card option A, XP notification "1." (corner card), level-up popup
+  without the curtain reveal; badge try-on moved to the bottom of Profilom.
+- Built: migration 0012 (tables, `xp_award` / `xp_admin_adjust`), `lib/levels.ts`, `lib/finishers.ts`,
+  15 XP on every played match (hook in `setMatchPlayed`, never throws), admin XP page (hand XP,
+  tournament XP with podium, activities, curve, double XP, one user's history), Profilom card, header
+  bar, notification and level-up popup. Admins only (`XP_ADMINS_ONLY`).
+- Verified: types, lint, tests (new: levels, rewards, finishers). Migration run twice on an in-memory
+  Postgres with its rules checked (duplicates, inactive, both kinds of double XP, below-zero refusal).
+  Preview with example data (cookie-switched, scratch copy only): card desktop + phone, notification,
+  level-up with Holdtündé, admin page; found and fixed a crash where the popup rendered on the server.
+- Owner ran migration 0012; checked read-only before the push: four tables, 11 activities, no XP yet.
+- **Not verified:** any real write (golden rule); the "seen" marking (writes blocked in the preview, so
+  there the popup shows on every page). The owner tests both live.
+- The preview copy in `/private/tmp/...` lost files to the system's temp cleanup this session; it was
+  rebuilt (`npm ci`, `.env.local` copied, TEMP-PREVIEW patches reapplied). Expect that again.
+
+### 2026-11-08 · XP plan updated by the owner (roadmap only, nothing built)
+
+- Owner's changes recorded in `Features_Roadmap.md` → R4 "Owner's update, 2026-11-08": start at level
+  0, tutorial 25 XP, no first-sign-in XP, featured game of the day (5 XP), thumbs-up on news with
+  optional 5 XP, targeted double XP, podium set chosen per tournament, curtain reveal for the next
+  reward. Later the same day: daily quiz gives XP; built on the live database; test XP wiped and XP
+  opened only with the full site; curve **+20 a level** (level 20 = 4,300 XP); **podium extra doubled**
+  to 300/200/150; year two decided later. A day-by-day simulation of five player styles was shown to
+  the owner (committed hybrid level 20, website-only and tournament champion 17, tournament-only 12,
+  casual 11). Then, with realistic podium odds (about 20 players, ~90% never on the podium) and 6
+  rounds per tournament: **15 XP for every game played** (Bye counts) replaces the first-match 10 XP,
+  so a tournament is worth ~120 XP. Uncommitted.
+
 ### 2026-11-06 · Bajnokságok: DTHU's own tournament platform, step 1 (feature/tournament-pairing, committed, not merged)
 
 - **Owner direction (2026-11-06):** tournaments move from Karnyx to the site. Bajnokságok will hold
@@ -304,7 +422,7 @@ Newest first. Each session adds an entry (see CLAUDE.md → "End of every sessio
   players and admins. Results: player submits, opponent confirms or corrects, then locked; admins
   change anything. Bo1 only; formats other than Swiss "hamarosan". Details:
   `src/features/championships/README.md`.
-- **Migration renumbered to `0012_championships.sql`**: 0011 is `feature/live-banner`'s, already run
+- **Migration renumbered to `0012_championships.sql`** (and on 2026-11-09 to `0013`, since `main`'s XP took 0012): 0011 is `feature/live-banner`'s, already run
   live. Trimmed to what the code uses (no bracket columns, no `match_games`, no `max_players`).
   **Not run yet**; Dave's guide (claude.ai/artifact/96pQEhpvLqVLivxL1uiEX6) updated for it.
   Tested on the local database: applies cleanly on a pre-0012 schema.
@@ -317,7 +435,7 @@ Newest first. Each session adds an entry (see CLAUDE.md → "End of every sessio
   `supabase/config.toml` (from `supabase init`) is untracked on purpose.
 - **Next:** step 2 = own match page `/bajnoksagok/meccs/<id>` (time proposals + result panel,
   admin result buttons on every match), step 3 = Közelgő meccsek, calendar feed and reminders for
-  championships, step 4 = launch. Before merging: Dave runs 0012.
+  championships, step 4 = launch. Before merging: Dave runs 0013.
 
 ### 2026-11-05 · STATE.md and roadmap brought up to date (docs only, under v2.30)
 
@@ -1197,6 +1315,49 @@ webhook, no cron secret), so nothing local can post to Discord.
 ---
 
 ## Changelog
+
+### v2.36 · 2026-11-09 · `fix/icon-crop`
+**Changed (visible to players):** the browser tab, bookmark/favourites and phone home-screen icons
+show only the DTHU lettering (the "Dice Throne Hungary" text is cropped off). Page logos unchanged.
+**Manual steps:** none.
+**Verified:** preview sheet approved by the owner; types, lint, tests.
+
+### v2.35 · 2026-11-09 · `fix/logo-edge`
+**Fixed (visible to players):** the new logo is shown as designed: no white edge, the D's black face
+is back (it showed white in light mode), and the tab and phone icons have a white background again.
+**Manual steps:** none.
+**Verified:** types, lint, tests; browser at desktop, dark and light themes.
+
+### v2.34 · 2026-11-09 · `fix/new-logo`
+**Changed (visible to players):** the new DTHU logo in the top bar, on the login card and the
+registration pages; the browser tab icon and the phone home-screen icon use it too.
+**Manual steps:** none.
+**Verified:** types, lint, tests; browser at desktop and 375 px, dark and light themes.
+
+### v2.33 · 2026-11-08 · merge of `feature/xp`
+**Fixed (admins only):** the XP popup no longer comes back when switching to the Időpontfoglaló tab:
+the browser remembers the notice it showed, and closing it refreshes the stored page copies.
+**Manual steps:** none.
+**Verified:** types, lint, tests; browser with example data where the server mark is blocked: shown
+once, not again after other tabs, a full load or the auto-closing card; new deployment confirmed live.
+
+### v2.32 · 2026-11-08 · merge of `feature/xp`
+**Changed (admins only):** the level-up popup shows several levels in a row: the bar fills level by
+level, the number jumps at each with a small burst, the reached levels light up, the XP counter climbs,
+and the ending with the badge and the fireworks comes last. "Átugrás" skips it. Players see no change.
+**Manual steps:** none.
+**Verified:** types, lint, tests; browser with example data, 0 → 4 and 0 → 6 with Barbár, desktop and
+375 px; new deployment confirmed live.
+
+### v2.31 · 2026-11-08 · merge of `feature/xp`
+**Changed (admins only):** XP step 1. Profilom level card with a big XP bar, a thin XP bar in the
+header, a corner notification for new XP and a fireworks popup for a new level (with the level's badge).
+Played matches give 15 XP; Admin felület → XP kezelés gives tournament XP (finishing, Byes, podium),
+hand XP, activity amounts, the level curve and double XP. The badge test moved to the bottom of
+Profilom. Players see no change.
+**Manual steps:** migration 0012 (run by the owner before the push).
+**Verified:** types, lint, tests; migration run twice in memory with its rules checked; browser with a
+fake admin and example data, desktop and 375 px, dark and light; new deployment confirmed live.
 
 ### v2.30 · 2026-11-05 · docs update
 STATE.md and the roadmap brought up to date, no change to the site.
