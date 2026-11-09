@@ -1,6 +1,6 @@
 # Project state: DTHU website
 
-**Current version: v2.35** (2026-11-09). Live: https://dthu.hu builds from this repository's
+**Current version: v2.36** (2026-11-09). Live: https://dthu.hu builds from this repository's
 `main` (the owner moved Vercel over around 2026-11-01; checked live 2026-11-02). Every push to
 `main` deploys within a minute.
 **Launch phase: 1**: the public sees only the Meccsszervező; the whole site from the prototype
@@ -291,8 +291,8 @@ Newest first. Each session adds an entry (see CLAUDE.md → "End of every sessio
   - top bar (`SiteHeader`, `regisztracio/layout.tsx`): `.brand-logo` (`public/images/dthu-logo.webp`,
     just the DTHU lettering, unchanged) + the small "Dice Throne Hungary" text; the bold "DTHU" text is gone;
   - login card and the registration guide's last step: the same image at 128 px;
-  - `src/app/icon.png` and `apple-icon.png`: the full square logo on white; `favicon.ico`: the DTHU
-    lettering on white (16/32/48).
+  - `src/app/icon.png`, `apple-icon.png` and `favicon.ico`: since v2.36 only the DTHU lettering on
+    white, without the "Dice Throne Hungary" text (owner's request; the page logos stay as they are).
   `.brand-die` CSS is removed; `public/images/die.webp` is unused now but kept.
 - v2.34 was wrong: the cut-out step read the transparent background as black and also erased the D's
   black front face (white D in light mode, black icon backgrounds); a cream outline hid it on the dark
@@ -1270,6 +1270,12 @@ webhook, no cron secret), so nothing local can post to Discord.
 ---
 
 ## Changelog
+
+### v2.36 · 2026-11-09 · `fix/icon-crop`
+**Changed (visible to players):** the browser tab, bookmark/favourites and phone home-screen icons
+show only the DTHU lettering (the "Dice Throne Hungary" text is cropped off). Page logos unchanged.
+**Manual steps:** none.
+**Verified:** preview sheet approved by the owner; types, lint, tests.
 
 ### v2.35 · 2026-11-09 · `fix/logo-edge`
 **Fixed (visible to players):** the new logo is shown as designed: no white edge, the D's black face
