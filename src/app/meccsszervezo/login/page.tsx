@@ -23,7 +23,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
   const { hiba } = await searchParams;
   return (
     <div className="card mx-auto mt-6 max-w-md text-center">
-      <span className="brand-die mx-auto mb-3 block" style={{ width: 64, height: 64 }} aria-hidden />
+      <span className="brand-logo mx-auto mb-3 block" style={{ width: 128, height: 66 }} aria-hidden />
       <h1 className="text-2xl font-extrabold uppercase tracking-wide">Bejelentkezés</h1>
       <p className="muted mt-2">
         A Discord fiókoddal lépsz be, így az ellenfeled látja a Discord nevedet, és a bot meg tud jelölni a
