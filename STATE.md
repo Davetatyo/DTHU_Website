@@ -82,6 +82,7 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 | `live-banner` Élő adás | banner at the top of the layouts; `/api/live/voice`, `/api/live/now`; admin block on `/meccsszervezo/admin` | **on `feature/live-banner`, not merged**. Admins only until `LIVE_BANNER_ADMINS_ONLY` is false | real; migration 0011 has run; detection waits for Árpád's bot | see "Needs the owner"; `src/features/live-banner/README.md` on that branch |
 | `xp` XP and levels | Profilom card, header bar, popups; admin `/meccsszervezo/admin/xp` | **step 1 on `main` since v2.31**: admins only until `XP_ADMINS_ONLY` is false | real (migration 0012 has run) | owner tests live; then step 2 (Gyűjtemény) |
 | `hero-guide` Hős segédlet | `/meccsszervezo/meccs/<id>/hos-segedlet` (button on the match page) | **on `main` since v2.30**: admins only until `HERO_GUIDE_ADMINS_ONLY` is false, then everyone logged in | real; no tables | `src/features/hero-guide/README.md` |
+| `puzzle` Taktikai feladvány (experiment, working title) | `/jatekok/taktikai-feladvany`, `/jatekok/taktikai-feladvany/<id>`; card on the Játékok page | **parked** (owner, 2026-11-09): only on branch `feature/puzzle`, never merged into `main` | static: Season 1 Barbarian + Moon Elf rules from the Card Scanner repo; no tables. Images are **not committed** (owner): make them locally with `scripts/puzzle/assets.py` | when picked up: fix the Blind vs. Ultimate rule first (Features_Roadmap R16, `src/features/puzzle/README.md` on the branch) |
 | `profile` Profilkép, Profil szerkesztése, Kitiltás | `/meccsszervezo/profil`, `/meccsszervezo/admin/felhasznalo/<id>` | **live** (v2.2): every logged-in user can upload a picture; admin page and bans for all admins | all real | badge ring (R3/R4), cosmetics collection |
 
 ## Database (Supabase)
@@ -282,6 +283,45 @@ quiz) are in
 ## Handover log
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
+
+### 2026-11-09 · Taktikai feladvány experiment, MVP, then parked (feature/puzzle)
+
+- Owner's request: a Dice Throne puzzle game (preset board, find the solution). His answers to the
+  open questions: Season 1 heroes first; the offensive roll fully preset; the defence counts every
+  outcome (percentage); no defender cards in the first one; only "find lethal"; card images; name
+  "Taktikai feladvány" (working title); XP and coin rewards set by admins later.
+- Built on `feature/puzzle` (branched from `main` at v2.33), committed there only:
+  `src/features/puzzle/` (README, rules engine, solver, puzzle 1, game component, CSS),
+  pages `src/app/(site)/jatekok/taktikai-feladvany/` (list + `[id]`), `routes.puzzles`/`routes.puzzle`,
+  registry entry `puzzle` (planned: no menu item), a Játékok hub card with `adminOnly`
+  (`GamesHub` gets `adminView`). Images (48 cards, 12 dice faces, 2 Season 1 boards, 2.1 MB) are
+  **not committed** (owner, 2026-11-09: no card images on the site yet): `public/jatekok/feladvany/`
+  is in `.gitignore` on the branch; `scripts/puzzle/assets.py` makes them from the Card Scanner repo
+  (only read): `python3 -I scripts/puzzle/assets.py ../Dice_Throne_Card_Scanner`.
+- Engine: Barbarian and Moon Elf abilities, defences and every upgrade, read off the Season 1 boards
+  and card images (the scanner's Moon Elf texts are empty, so they were read from the images).
+  `resolveAttack` gives win/tie/lose chances over every roll that follows (Blind, Overpower's roll,
+  Missed Me's 7,776 rolls, Evasive), with Hungarian notes. The solver tries every card play (puzzle 1:
+  109 states, about 50 ms) and finds the best line. Rules it assumes are listed in the README for the
+  owner to confirm.
+- Puzzle 1 "Vakon is látni": the answer is Buh-Bye! on your own Blind + Six-It! → Crit Bash II (100%);
+  Rage! is the trap (66.7%). A test checks the solver finds exactly that.
+- Verified: `npx tsc --noEmit`, `npm run lint`, `npm test` (276 tests, 16 new). Browser (scratch
+  preview with a fake admin, port 3100): the hub card shows for admins; played the solution and the
+  Rage! trap through the UI (result, notes, Megoldás); 375 px phone (no sideways scroll after a grid
+  fix), dark and light; Hőstábla popup.
+- The owner tested it locally. For that, the puzzle opens without login on `npm run dev` only
+  (`PUZZLE_OPEN_IN_DEV` in `lib/access.ts`); `NEXT_PUBLIC_FULL_SITE=1` was added to `.env.local` for the
+  test and removed again afterwards.
+- **Owner's finding:** he played Rage! (Ultimate) while Blind and got 66.7%. His ruling: Blind does not
+  stop an Ultimate, so that line should be 100%. The engine (`resolveAttack`) assumes Blind fails the
+  attack on 1–2 even for an Ultimate: that is wrong per the owner. Fixing it makes Rage! a second 100%
+  answer in puzzle 1, so puzzle 1 needs a new design too.
+- **Parked** (owner, 2026-11-09): stays on `feature/puzzle`, not merged into `main`. Roadmap R16 is
+  marked parked (also on `main`).
+- Next agent, if the owner picks it up: merge `main` into `feature/puzzle`, fix the Blind vs. Ultimate
+  rule (and check the other assumed rules in the README with him), redesign puzzle 1, then ask before
+  merging (no migration).
 
 ### 2026-11-08 · XP popup kept coming back on the Időpontfoglaló tab (feature/xp, v2.33)
 

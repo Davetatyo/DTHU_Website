@@ -697,6 +697,24 @@ at any time (owner, 2026-11-05). Details: `src/features/hero-guide/README.md`.
 
 **Open questions:** when to open it (the images are Roxley's).
 
+### R16 · Taktikai feladvány (Dice Throne puzzles; working title)
+
+**Status:** Parked (owner, 2026-11-09). MVP built on branch `feature/puzzle`, not merged into `main`; admins only there.
+· **Feature id:** `puzzle` · **Depends on:** the Card Scanner repo's Season 1 data (copied in), Játékok (R6)
+
+A preset 1v1 board at the end of the attacker's roll: play cards, pick an ability, find the line
+that wins most surely. Every roll that follows is counted, so the score is a percentage.
+Owner's decisions (2026-11-09): Season 1 heroes first, offensive roll preset, every defence outcome
+counted, no defender cards yet, only "find lethal" yet, card images, XP and coin rewards set by
+admins later. Details and the rules the engine assumes: `src/features/puzzle/README.md`.
+
+**Owner's test (2026-11-09):** Rage! (Ultimate) while Blind scored 66.7%; per the owner, Blind does
+not stop an Ultimate, so it should be 100%. When picked up: fix that rule in the engine first, then
+redesign puzzle 1 (Rage! would be a second 100% answer).
+
+**Open questions:** confirm the other assumed rules (README on the branch); more puzzles and goals
+(defend, tie, maximise damage); defender cards; more heroes; rewards.
+
 ---
 
 ## Built
