@@ -31,7 +31,7 @@ export function StepWizard({ loginUrl }: { loginUrl: string }) {
     return (
       <div className="wiz-wrap">
         <div className="wiz-card wiz-final">
-          <span className="brand-die mx-auto" style={{ width: 64, height: 64 }} aria-hidden />
+          <span className="brand-logo mx-auto block" style={{ width: 128, height: 66 }} aria-hidden />
           <h3>Készen állsz!</h3>
           <p>
             Most már tudod, hogyan működik a rendszer. Kattints a gombra, lépj be

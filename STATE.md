@@ -1,6 +1,6 @@
 # Project state: DTHU website
 
-**Current version: v2.33** (2026-11-08). Live: https://dthu.hu builds from this repository's
+**Current version: v2.34** (2026-11-09). Live: https://dthu.hu builds from this repository's
 `main` (the owner moved Vercel over around 2026-11-01; checked live 2026-11-02). Every push to
 `main` deploys within a minute.
 **Launch phase: 1**: the public sees only the Meccsszervező; the whole site from the prototype
@@ -283,6 +283,20 @@ quiz) are in
 ## Handover log
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
+
+### 2026-11-09 · New DTHU logo (v2.34, fix/new-logo → main)
+
+- Owner sent a new square logo (3D "DTHU" lettering over "DICE THRONE HUNGARY", white background)
+  and asked to replace the logo. Cut out of the white background (flood fill from the edges), then:
+  - top bar (`SiteHeader`, `regisztracio/layout.tsx`): `.brand-logo` (`public/images/dthu-logo.webp`,
+    just the DTHU lettering with a thin cream outline, because its black faces vanish on the dark
+    bar) + the small "Dice Throne Hungary" text; the bold "DTHU" text is gone;
+  - login card and the registration guide's last step: the same image at 128 px;
+  - `src/app/icon.png` and `apple-icon.png`: the full square logo; `favicon.ico`: the DTHU lettering
+    on white (16/32/48).
+  `.brand-die` CSS is removed; `public/images/die.webp` is unused now but kept.
+- Verified: types, lint, tests; browser at desktop and 375 px, dark and light (top bar, login card).
+- The source image isn't in the repo; ask the owner for it if the logo needs remaking.
 
 ### 2026-11-09 · Taktikai feladvány experiment, MVP, then parked (feature/puzzle)
 
@@ -1253,6 +1267,12 @@ webhook, no cron secret), so nothing local can post to Discord.
 ---
 
 ## Changelog
+
+### v2.34 · 2026-11-09 · `fix/new-logo`
+**Changed (visible to players):** the new DTHU logo in the top bar, on the login card and the
+registration pages; the browser tab icon and the phone home-screen icon use it too.
+**Manual steps:** none.
+**Verified:** types, lint, tests; browser at desktop and 375 px, dark and light themes.
 
 ### v2.33 · 2026-11-08 · merge of `feature/xp`
 **Fixed (admins only):** the XP popup no longer comes back when switching to the Időpontfoglaló tab:

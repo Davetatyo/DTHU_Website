@@ -40,11 +40,8 @@ export async function SiteHeader({
     <header className="topbar">
       <div className="tb-row r1">
         <Link href={seesFullSite(adminView) ? routes.home : routes.organizer} className="brand" aria-label="DTHU – Dice Throne Hungary, főoldal">
-          <span className="brand-die" aria-hidden />
-          <span>
-            <b>DTHU</b>
-            <small>Dice Throne Hungary</small>
-          </span>
+          <span className="brand-logo" aria-hidden />
+          <small>Dice Throne Hungary</small>
         </Link>
         {section && <span className="kicker hidden sm:inline">{section}</span>}
         <div className="tb-right">

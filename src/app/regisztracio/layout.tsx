@@ -9,11 +9,8 @@ export default function RegisterLayout({ children }: Readonly<{ children: React.
       <header className="topbar">
         <div className="tb-row r1">
           <Link href={routes.register} className="brand" aria-label="DTHU – Dice Throne Hungary">
-            <span className="brand-die" aria-hidden />
-            <span>
-              <b>DTHU</b>
-              <small>Dice Throne Hungary</small>
-            </span>
+            <span className="brand-logo" aria-hidden />
+            <small>Dice Throne Hungary</small>
           </Link>
           <div className="tb-right">
             <ThemeToggle />
