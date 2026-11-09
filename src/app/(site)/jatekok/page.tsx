@@ -36,7 +36,7 @@ export default async function GamesPage() {
           Dice Throne játékok a közösségnek. A Napi kvíz és a Szerencsekerék minden éjfélkor (budapesti idő) újraindul.
         </p>
       </div>
-      <GamesHub daily={daily} />
+      <GamesHub daily={daily} adminView={adminView} />
     </div>
   );
 }

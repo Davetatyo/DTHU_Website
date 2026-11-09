@@ -34,6 +34,8 @@ export const FEATURES: Feature[] = [
   { id: "alchemist", label: "Alkimista", route: "/alkimista", status: "preview" },
   // Opens from the match page, not the menu. "planned" keeps it out of the menu.
   { id: "hero-guide", label: "Hős segédlet", route: "/meccsszervezo", status: "planned" },
+  // Opens from the Játékok page (admins only while it's an experiment), no menu item.
+  { id: "puzzle", label: "Taktikai feladvány", route: "/jatekok/taktikai-feladvany", status: "planned" },
   // Profilom card, header bar and popups; no menu item.
   { id: "xp", label: "XP", route: "/meccsszervezo/profil", status: "planned" },
 ];

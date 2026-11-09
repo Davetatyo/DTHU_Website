@@ -40,3 +40,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Taktikai feladvány images (feature/puzzle): made locally by scripts/puzzle/assets.py, not committed (owner, 2026-11-09).
+/public/jatekok/feladvany/

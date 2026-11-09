@@ -17,10 +17,10 @@ const DAILY_ART: Record<NonNullable<GameCard["daily"]>, ArtSpec> = {
  * out and locked (not a link) with a countdown to the next 00:00 (Budapest); before that it
  * shows no timer.
  */
-export function GamesHub({ daily }: { daily?: DailyDone }) {
+export function GamesHub({ daily, adminView = false }: { daily?: DailyDone; adminView?: boolean }) {
   return (
     <div className="cards tall">
-      {GAMES.map((g) => {
+      {GAMES.filter((g) => adminView || !g.adminOnly).map((g) => {
         const done = !!(g.daily && daily?.[g.daily]);
         const art: ArtSpec = g.picture
           ? { img: g.picture, pos: "center 25%" }

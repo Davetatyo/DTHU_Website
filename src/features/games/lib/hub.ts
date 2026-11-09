@@ -1,5 +1,6 @@
 // The games on the Játékok page, in order. Each game has its own page under /jatekok.
 
+import { PUZZLE_ADMINS_ONLY, PUZZLE_OPEN_IN_DEV } from "@/features/puzzle/lib/access";
 import { routes } from "@/lib/routes";
 
 export type GameCard = {
@@ -12,6 +13,8 @@ export type GameCard = {
   badge: "Új" | "Hamarosan";
   /** A once-a-day game: its card turns grey with a countdown once today's turn is used. */
   daily?: "quiz" | "spin";
+  /** Only shown in admin view (an experiment not open to players yet). */
+  adminOnly?: boolean;
 };
 
 export const GAMES: GameCard[] = [
@@ -54,5 +57,14 @@ export const GAMES: GameCard[] = [
     href: routes.dailySpin,
     badge: "Új",
     daily: "spin",
+  },
+  {
+    id: "puzzle",
+    name: "Taktikai feladvány",
+    blurb: "Kész asztal, kész kockák: találd meg a lapjaiddal a halálos támadást. Kísérleti játék.",
+    href: routes.puzzles,
+    picture: "/jatekok/feladvany/boards/barbarian.webp",
+    badge: "Új",
+    adminOnly: PUZZLE_ADMINS_ONLY && !PUZZLE_OPEN_IN_DEV,
   },
 ];

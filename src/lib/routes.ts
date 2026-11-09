@@ -28,6 +28,9 @@ export const routes = {
   tacticianGame: "/jatekok/taktikai-elony",
   diceGame: "/jatekok/kockazat",
   spotGame: "/jatekok/szemfules",
+  /** Taktikai feladvány (see features/puzzle): the list and one puzzle. */
+  puzzles: "/jatekok/taktikai-feladvany",
+  puzzle: (id: string) => `/jatekok/taktikai-feladvany/${id}`,
   shop: "/bolt",
   shopAdmin: "/bolt/admin",
   rulebook: "/szabalytar",
