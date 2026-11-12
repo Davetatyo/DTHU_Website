@@ -11,12 +11,23 @@ export interface MatchResult {
   p1: PlayerId;
   p2: PlayerId | null;
   winner: PlayerId | null;
-  /** "draw": played with no winner, half a point each. */
+  /** "draw": played with no winner. */
   status: "pending" | "played" | "bye" | "forfeit" | "draw";
+  /** Health each player finished on (from the result report), for the HP tiebreaker. */
+  hpA?: number;
+  hpB?: number;
 }
 
-/** Points for a draw (a win is 1). */
-export const DRAW_POINTS = 0.5;
+/** Points per result, set by an admin per championship. Multiples of 0.5. */
+export interface Scoring {
+  win: number;
+  draw: number;
+  loss: number;
+  bye: number;
+}
+
+/** Until an admin changes it: win 1, draw ½, loss 0, Bye counts as a win. */
+export const DEFAULT_SCORING: Scoring = { win: 1, draw: 0.5, loss: 0, bye: 1 };
 
 export interface Pairing {
   p1: PlayerId;
@@ -43,7 +54,9 @@ export interface Standing {
   wins: number;
   draws: number;
   losses: number;
+  /** Buchholz: all opponents' points; a Bye counts as an opponent with the player's own points. */
   buchholz: number;
+  /** HP difference: + the HP you won with, − the HP your opponent beat you with; draws and Byes 0. */
+  hpDiff: number;
   headToHead?: Record<PlayerId, number>;
-  gameDiff: number;
 }

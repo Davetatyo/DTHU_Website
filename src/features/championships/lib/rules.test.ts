@@ -3,6 +3,9 @@ import {
   isDecided,
   isStartDue,
   matchHistory,
+  parseScoring,
+  scoringLabel,
+  scoringOf,
   registrationBlocker,
   roundDeadline,
   stepAfterCompletedRound,
@@ -99,5 +102,40 @@ describe("roundDeadline", () => {
     const from = new Date("2026-11-10T18:00:00Z");
     expect(roundDeadline({}, from).toISOString()).toBe("2026-11-17T18:00:00.000Z");
     expect(roundDeadline({ round_days: 3 }, from).toISOString()).toBe("2026-11-13T18:00:00.000Z");
+  });
+});
+
+describe("scoring", () => {
+  const form = (win: string, draw: string, loss: string, bye = "") => parseScoring({ win, draw, loss, bye });
+
+  it("defaults to 1 / ½ / 0 with the Bye as a win", () => {
+    expect(scoringOf({})).toEqual({ win: 1, draw: 0.5, loss: 0, bye: 1 });
+    expect(scoringOf({ points: { win: 3, draw: 1, loss: 0, bye: 3 } })).toEqual({ win: 3, draw: 1, loss: 0, bye: 3 });
+  });
+
+  it("reads half points with a comma or a dot; an empty Bye means as much as a win", () => {
+    expect(form("3", "1", "0")).toEqual({ ok: true, scoring: { win: 3, draw: 1, loss: 0, bye: 3 } });
+    expect(form("1", "0,5", "0", "0.5")).toEqual({ ok: true, scoring: { win: 1, draw: 0.5, loss: 0, bye: 0.5 } });
+  });
+
+  it("refuses odd values and impossible orders", () => {
+    expect(form("1", "0.3", "0").ok).toBe(false);
+    expect(form("11", "1", "0").ok).toBe(false);
+    expect(form("-1", "0", "0").ok).toBe(false);
+    expect(form("", "1", "0").ok).toBe(false);
+    expect(form("1", "1", "1").ok).toBe(false); // win must beat loss
+    expect(form("2", "3", "0").ok).toBe(false); // draw above a win
+  });
+
+  it("labels the scoring in Hungarian", () => {
+    expect(scoringLabel({ win: 1, draw: 0.5, loss: 0, bye: 1 })).toBe("győzelem 1, döntetlen ½, vereség 0, Bye 1 pont");
+    expect(scoringLabel({ win: 3, draw: 1.5, loss: 0, bye: 3 })).toBe("győzelem 3, döntetlen 1,5, vereség 0, Bye 3 pont");
+  });
+
+  it("matchHistory takes the finishing health from the reports", () => {
+    const match = { id: "m1", round_id: "r1", player_a_id: "a", player_b_id: "b", status: "played", winner_id: "a" } as ChampionshipMatch;
+    const [h] = matchHistory([{ id: "r1", number: 1 }], [match], new Map([["m1", { hp_a: 14, hp_b: 0 }]]));
+    expect(h).toMatchObject({ hpA: 14, hpB: 0, winner: "a", status: "played" });
+    expect(matchHistory([{ id: "r1", number: 1 }], [match])[0].hpA).toBeUndefined();
   });
 });

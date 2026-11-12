@@ -17,7 +17,7 @@ import { PlayerAvatar } from "@/features/profile/components/PlayerAvatar";
 import { getPlayers, getRounds } from "@/features/match-organizer/lib/data";
 import { formatDateTime, utcToWallTime } from "@/features/match-organizer/lib/time";
 import { getChampionshipMatches, startDue, getRegistrations, getTournamentBySlug } from "@/features/championships/lib/run";
-import { FORMAT_LABELS, STATUS_LABELS } from "@/features/championships/lib/rules";
+import { FORMAT_LABELS, scoringLabel, scoringOf, STATUS_LABELS } from "@/features/championships/lib/rules";
 
 export const metadata: Metadata = { title: "Verseny kezelése" };
 
@@ -56,6 +56,7 @@ export default async function AdminTournamentPage({
           <span className="badge badge-proposed">{STATUS_LABELS[t.status]}</span> {FORMAT_LABELS[t.format]}
           {t.best_of > 1 && ` · Bo${t.best_of}`}
           {t.settings.rounds ? ` · ${t.settings.rounds} forduló` : " · fordulók: automatikus"}
+          {` · ${scoringLabel(scoringOf(t.settings))}`}
           {` · ${t.auto_pairing ? "automatikus" : "kézi"} párosítás`} ·{" "}
           {t.status !== "draft" && (
             <Link href={routes.championship(t.slug)} className="underline">

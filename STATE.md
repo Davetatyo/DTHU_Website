@@ -80,7 +80,7 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 | `alchemist` Alkimista | `/alkimista` + help vial | preview | knowledge base from the prototype; unanswered questions only in the browser | admin inbox for unanswered questions |
 | `register-page` Regisztráció | `/regisztracio` | **live** | static guide content; tournament banner real | owner review of Hungarian texts |
 | `live-banner` Élő adás | banner at the top of the layouts; `/api/live/voice`, `/api/live/now`; admin block on `/meccsszervezo/admin` | **on `feature/live-banner`, not merged**. Admins only until `LIVE_BANNER_ADMINS_ONLY` is false | real; migration 0011 has run; detection waits for Árpád's bot | see "Needs the owner"; `src/features/live-banner/README.md` on that branch |
-| `championships` Bajnokságok (DTHU's own tournament platform, replaces the Időpontfoglaló at launch) | `/bajnoksagok`, `/bajnoksagok/osszes`, `/bajnoksagok/<slug>`, admin `/bajnoksagok/admin` | preview (admins only), **on `feature/tournament-pairing`, not merged** | real once migration 0013 has run; sign-up with 3 heroes, Swiss auto pairing, player-reported results with confirmation, standings with draws | owner runs migration 0013; next: own match page, Közelgő meccsek + reminders, then launch (see the feature README) |
+| `championships` Bajnokságok (DTHU's own tournament platform, replaces the Időpontfoglaló at launch) | `/bajnoksagok`, `/bajnoksagok/osszes`, `/bajnoksagok/<slug>`, admin `/bajnoksagok/admin` | preview (admins only), **on `feature/tournament-pairing`, not merged** | real once migration 0013 has run; sign-up with 3 heroes, admin-set points per result, Dutch-system Swiss pairing, player-reported results with confirmation, standings with full Buchholz (Bye = own points) then HP difference | owner runs migration 0013; next: own match page, Közelgő meccsek + reminders, then launch (see the feature README) |
 | `xp` XP and levels | Profilom card, header bar, popups; admin `/meccsszervezo/admin/xp` | **step 1 on `main` since v2.31**: admins only until `XP_ADMINS_ONLY` is false | real (migration 0012 has run) | owner tests live; then step 2 (Gyűjtemény) |
 | `hero-guide` Hős segédlet | `/meccsszervezo/meccs/<id>/hos-segedlet` (button on the match page) | **on `main` since v2.30**: admins only until `HERO_GUIDE_ADMINS_ONLY` is false, then everyone logged in | real; no tables | `src/features/hero-guide/README.md` |
 | `puzzle` Taktikai feladvány (experiment, working title) | `/jatekok/taktikai-feladvany`, `/jatekok/taktikai-feladvany/<id>`; card on the Játékok page | **parked** (owner, 2026-11-09): only on branch `feature/puzzle`, never merged into `main` | static: Season 1 Barbarian + Moon Elf rules from the Card Scanner repo; no tables. Images are **not committed** (owner): make them locally with `scripts/puzzle/assets.py` | when picked up: fix the Blind vs. Ultimate rule first (Features_Roadmap R16, `src/features/puzzle/README.md` on the branch) |
@@ -204,7 +204,10 @@ sample data (no tables yet; tickets and coins become real with migrations 0008 a
 0. **Bajnokságok (`feature/tournament-pairing`, not merged).** Run migration **0013** (renumbered from 0012) in the Supabase
    SQL editor before this branch is merged and deployed (guide: claude.ai/artifact/96pQEhpvLqVLivxL1uiEX6).
    Then test it live as an admin. To answer: should a result nobody confirms be confirmed
-   automatically after a while (now an admin settles it)?
+   automatically after a while (now an admin settles it)? **New on the branch (2026-11-13, Árpád's
+   requests):** points per result set at creation; Dutch Swiss pairing that never rematches or gives a
+   second Bye (refuses the round instead); full Buchholz, then HP difference; Buch/ÉK admin-only.
+   Confirm these choices (feature README → "Scoring, tiebreakers and pairing").
 0. **Élő adás (`feature/live-banner`, not merged; migration 0011 has run).** To do: add
    `LIVE_BOT_SECRET` in Vercel and redeploy if not done yet, send it privately to Árpád, merge the branch
    (the banner stays admins only), add the voice channels on the admin page, and test with Árpád once
@@ -275,6 +278,9 @@ quiz) are in
   and links to the Időpontfoglaló overview, where they aren't listed (planned: step 2 in the
   feature README). "Lejátszottuk" on the Időpontfoglaló's match page marks a championship match
   played without a result.
+- Bajnokságok: results don't award XP yet (`actions/results.ts` sets the match played directly).
+  Points can't be changed after a championship is created. If no pairing without a rematch or a
+  second Bye exists (e.g. after a late drop-out), the round is refused until an admin acts.
 
 ## Technical debt
 
@@ -298,6 +304,73 @@ quiz) are in
 ## Handover log
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
+
+### 2026-11-12/13 · Bajnokságok: scoring, Dutch pairing, full Buchholz + HP; committed and pushed on feature/tournament-pairing (not merged)
+
+Covers the 2026-11-10 entry below too. **Status: on the branch, pushed to GitHub, not merged;
+nothing deployed, version unchanged (v2.36).** Árpád asked for these changes; Dave hasn't reviewed
+them yet (message drafted for him). Decisions for Dave to confirm are marked "Árpád" in the feature
+README → "Scoring, tiebreakers and pairing".
+
+
+- Árpád asked for Buchholz that counts every opponent through the end of the tournament
+  (Cut-1 showed 0 for everyone after round 1). `engine/standings.ts` now sums all opponents'
+  points; a Bye counts as a dummy opponent with the player's own points (FIDE C.07 Art. 16.4),
+  replacing the earlier "Bye = 0-point opponent". Pairing is unchanged: it never used Buchholz
+  (Dutch system pairs by points, then seed).
+- Tooltips and the standings legend updated (Hungarian), tests updated.
+- Árpád's pairing requirements (rematch / second Bye mandatory, then equal scores, smallest score
+  differences, Bye to the lowest group, no repeated floating, seeds, Buchholz only for
+  standings): the engine already met all but one. The rematch / second-Bye fallback is gone:
+  `nextSwissRound` now refuses with `NO_CLEAN_PAIRING`, and auto pairing reports that instead of
+  silently not starting the round (`advanceAfterResult`).
+- Local test data: Docker Desktop must be running for the local Supabase (otherwise every page
+  hangs ~30 s). Seeded "Teszt Pontozás Kupa" (`/bajnoksagok/teszt-pontozas`, 7 players, 3/1/0/3,
+  2 rounds with HP) in the LOCAL database with a scratchpad script that uses the real engine.
+- Standings: the Buch and ÉK columns are admin-only (Árpád, 2026-11-12): `StandingsTable`
+  `showTiebreaks` = `getAdminView()` on the overview, always on the admin page. Players still
+  get the order those decide, plus a one-line note. It's a server component, so the hidden values
+  aren't in the page payload either (checked with curl in both views).
+- Create form: the Bye field is wider so its "mint a győzelem" placeholder fits at 375 px.
+- **Verified (2026-11-13):** `npx tsc --noEmit`, `npm run lint`, `npm test` (377 green);
+  screenshots on the LOCAL Supabase of the standings (admin and player view) and the Pontozás fields,
+  desktop + 375 px, dark + light, no horizontal scroll. Not clicked through: entering a result with
+  HP after these changes (standings checked with seeded data).
+- **Left out of the commit on purpose:** the TEMP-PREVIEW fake admin in `src/lib/auth.ts` and
+  `src/middleware.ts` (local only, kept in Árpád's working tree), `supabase/config.toml` +
+  `supabase/.gitignore` (local Supabase setup) and the design plan .md.
+- **Next:** Dave runs migration 0013 (guide updated to 0013), reviews the decisions, then merge
+  to `main` via a pull request with his OK, bump the version and add a changelog entry.
+
+### 2026-11-10 · Bajnokságok: points per result, Dutch pairing, Cut-1 Buchholz + HP tiebreak (superseded in part by the entry above: Cut-1 → full Buchholz; now committed)
+
+- **2026-11-09:** merged `main` (v2.36) into the branch (merge commit `862dfd0`, not pushed). `main`'s XP
+  took migration number 0012, so the championships migration is now **`0013_championships.sql`**.
+  Dave's guide (claude.ai/artifact/96pQEhpvLqVLivxL1uiEX6) still says 0012 and needs updating.
+- **Asked for (2026-11-10):** admins set the points for a win, draw and loss when creating a
+  championship; proper Swiss pairing and Buchholz; HP as a tiebreaker. Choices made with the owner's
+  side: tiebreak order **points → Buchholz → HP**; HP = **difference** (winner + their HP, loser − the
+  same; the loser's own HP ignored, since a conceded game can end with HP left); **Dutch system**
+  pairing; **Cut-1** Buchholz. Details in `src/features/championships/README.md` → "Scoring,
+  tiebreakers and pairing".
+- **Built:** `engine/matching.ts` (maximum weight matching, Edmonds' blossom, a port of the
+  public-domain mwmatching.py with bigint weights), `engine/swiss.ts` rewritten as Dutch pairing on
+  top of it, `engine/standings.ts` (configurable scoring, Cut-1, HP difference, dropped players'
+  points still count), `engine/scoring.ts`. Points live in `tournaments.settings.points` (no
+  migration); create form has a "Pontozás" fieldset (`FormatPicker.tsx`), parsed by `parseScoring`.
+  Standings table: columns P, Gy, D, V, Buch, ÉK with a legend; the admin page header shows the
+  scoring. `gameDiff` is gone from `Standing` (replaced by `hpDiff`). No bigint literals (`0n`):
+  tsconfig targets ES2017, so `BigInt(…)` is used.
+- **Verified:** `npx tsc --noEmit`, `npm run lint`, `npm test` (all green; matching checked against
+  brute force on 1,500 random graphs plus mwmatching's own cases; Dutch pairing checked against a
+  brute-force search of every pairing on the Bye and floater rules; 64 players × 6 rounds pair in
+  well under a second). **Not verified in a browser:** the running dev server on port 3000 had
+  crashed ("Jest worker encountered 2 child process exceptions") and stopping it was not allowed in
+  this session. A Playwright script for the check is in the session scratchpad (`pw/check.js`):
+  form + standings at desktop/375 px, dark/light, then creates "Pontozás teszt" (3/1/0) and tries an
+  invalid draw value, **on the local Supabase only**.
+- **Next:** restart `npm run dev`, run the browser check, show the owner screenshots, then commit on
+  the branch with his OK.
 
 ### 2026-11-09 · New DTHU logo (v2.34, then v2.35 fix)
 

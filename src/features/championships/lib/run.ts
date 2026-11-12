@@ -3,7 +3,7 @@ import { getSiteUrl } from "@/lib/site";
 import { getPlayers, getRounds } from "@/features/match-organizer/lib/data";
 import { nextSwissRound } from "./engine";
 import { notifyChampionshipRound } from "./notify";
-import { isDecided, isStartDue, matchHistory, roundDeadline, seededParticipants, stepAfterCompletedRound } from "./rules";
+import { isDecided, isStartDue, matchHistory, roundDeadline, scoringOf, seededParticipants, stepAfterCompletedRound } from "./rules";
 import type { Championship, ChampionshipMatch, MatchReport, Registration, Round } from "./types";
 
 // Server side of Bajnokságok: reads, start, round creation, auto-advance. Championships never set
@@ -81,7 +81,7 @@ export async function createEngineRound(t: Championship, deadline: Date): Promis
 
   const number = (rounds[0]?.number ?? 0) + 1;
   const { pairings, warnings } = nextSwissRound(seededParticipants(t.id, players), matchHistory(rounds, matches), {
-    seed: `${t.id}-${number}`,
+    scoring: scoringOf(t.settings),
   });
   if (pairings.length === 0) return { ok: false, error: warnings[0] ?? "Nem sikerült párosítani." };
 
@@ -195,7 +195,7 @@ export async function advanceAfterResult(roundId: string): Promise<string | null
   }
   if (step === "next_round") {
     const next = await createEngineRound(tournament, roundDeadline(tournament.settings, new Date()));
-    return next.ok ? `A ${next.round.number}. forduló automatikusan elindult.` : null;
+    return next.ok ? `A ${next.round.number}. forduló automatikusan elindult.` : `A következő forduló nem indult el: ${next.error}`;
   }
   return null;
 }

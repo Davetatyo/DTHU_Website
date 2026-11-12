@@ -16,6 +16,8 @@ export type ChampionshipSettings = {
   rounds?: number;
   /** Days each automatically created round lasts (deadline = round start + this). */
   round_days?: number;
+  /** Points for a win, draw, loss and Bye, set when the championship is created (default 1 / ½ / 0 / 1). */
+  points?: { win: number; draw: number; loss: number; bye: number };
 };
 
 export type Championship = {

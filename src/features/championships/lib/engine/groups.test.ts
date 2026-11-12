@@ -57,12 +57,12 @@ describe("seedPlayoffs", () => {
   it("returns correct number of qualified players", () => {
     const groupStandings: Record<string, Standing[]> = {
       A: [
-        { id: "p1", rank: 1, points: 3, wins: 3, draws: 0, losses: 0, buchholz: 0, gameDiff: 3 },
-        { id: "p5", rank: 2, points: 2, wins: 2, draws: 0, losses: 1, buchholz: 0, gameDiff: 1 },
+        { id: "p1", rank: 1, points: 3, wins: 3, draws: 0, losses: 0, buchholz: 0, hpDiff: 0 },
+        { id: "p5", rank: 2, points: 2, wins: 2, draws: 0, losses: 1, buchholz: 0, hpDiff: 0 },
       ],
       B: [
-        { id: "p2", rank: 1, points: 3, wins: 3, draws: 0, losses: 0, buchholz: 0, gameDiff: 3 },
-        { id: "p6", rank: 2, points: 1, wins: 1, draws: 0, losses: 2, buchholz: 0, gameDiff: -1 },
+        { id: "p2", rank: 1, points: 3, wins: 3, draws: 0, losses: 0, buchholz: 0, hpDiff: 0 },
+        { id: "p6", rank: 2, points: 1, wins: 1, draws: 0, losses: 2, buchholz: 0, hpDiff: 0 },
       ],
     };
     const result = seedPlayoffs(groupStandings, 2);
@@ -72,12 +72,12 @@ describe("seedPlayoffs", () => {
   it("group winners get top seeds", () => {
     const groupStandings: Record<string, Standing[]> = {
       A: [
-        { id: "p1", rank: 1, points: 3, wins: 3, draws: 0, losses: 0, buchholz: 0, gameDiff: 3 },
-        { id: "p3", rank: 2, points: 1, wins: 1, draws: 0, losses: 2, buchholz: 0, gameDiff: -1 },
+        { id: "p1", rank: 1, points: 3, wins: 3, draws: 0, losses: 0, buchholz: 0, hpDiff: 0 },
+        { id: "p3", rank: 2, points: 1, wins: 1, draws: 0, losses: 2, buchholz: 0, hpDiff: 0 },
       ],
       B: [
-        { id: "p2", rank: 1, points: 2, wins: 2, draws: 0, losses: 1, buchholz: 0, gameDiff: 1 },
-        { id: "p4", rank: 2, points: 0, wins: 0, draws: 0, losses: 3, buchholz: 0, gameDiff: -3 },
+        { id: "p2", rank: 1, points: 2, wins: 2, draws: 0, losses: 1, buchholz: 0, hpDiff: 0 },
+        { id: "p4", rank: 2, points: 0, wins: 0, draws: 0, losses: 3, buchholz: 0, hpDiff: 0 },
       ],
     };
     const result = seedPlayoffs(groupStandings, 2);
@@ -89,12 +89,12 @@ describe("seedPlayoffs", () => {
   it("runners-up are in reversed group order to cross with winners", () => {
     const groupStandings: Record<string, Standing[]> = {
       A: [
-        { id: "p1", rank: 1, points: 3, wins: 3, draws: 0, losses: 0, buchholz: 0, gameDiff: 3 },
-        { id: "p3", rank: 2, points: 1, wins: 1, draws: 0, losses: 2, buchholz: 0, gameDiff: -1 },
+        { id: "p1", rank: 1, points: 3, wins: 3, draws: 0, losses: 0, buchholz: 0, hpDiff: 0 },
+        { id: "p3", rank: 2, points: 1, wins: 1, draws: 0, losses: 2, buchholz: 0, hpDiff: 0 },
       ],
       B: [
-        { id: "p2", rank: 1, points: 2, wins: 2, draws: 0, losses: 1, buchholz: 0, gameDiff: 1 },
-        { id: "p4", rank: 2, points: 0, wins: 0, draws: 0, losses: 3, buchholz: 0, gameDiff: -3 },
+        { id: "p2", rank: 1, points: 2, wins: 2, draws: 0, losses: 1, buchholz: 0, hpDiff: 0 },
+        { id: "p4", rank: 2, points: 0, wins: 0, draws: 0, losses: 3, buchholz: 0, hpDiff: 0 },
       ],
     };
     const result = seedPlayoffs(groupStandings, 2);

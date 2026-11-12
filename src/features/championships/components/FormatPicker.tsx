@@ -48,6 +48,38 @@ export function FormatPicker() {
         </label>
         <input id="round_days" name="round_days" type="number" className="input w-32" min={1} max={60} defaultValue={7} />
       </div>
+      <fieldset className="w-full">
+        <legend className="label">
+          Pontozás
+          <InfoTip text="Ennyi pontot ér egy győzelem, döntetlen, vereség és Bye. 0 és 10 között, fél pontos lépésekben. A verseny indulása után nem módosítható. Holtversenynél előbb a Buchholz (az összes ellenfél pontjainak összege), aztán az életerő-különbség dönt." />
+        </legend>
+        <div className="flex flex-wrap gap-3">
+          {POINT_FIELDS.map((f) => (
+            <div key={f.name}>
+              <label className="label" htmlFor={f.name}>
+                {f.label}
+              </label>
+              <input
+                id={f.name}
+                name={f.name}
+                type="text"
+                inputMode="decimal"
+                className={f.placeholder ? "input w-40" : "input w-24"}
+                defaultValue={f.value}
+                placeholder={f.placeholder}
+                required={f.name !== "points_bye"}
+              />
+            </div>
+          ))}
+        </div>
+      </fieldset>
     </div>
   );
 }
+
+const POINT_FIELDS = [
+  { name: "points_win", label: "Győzelem", value: "1", placeholder: undefined },
+  { name: "points_draw", label: "Döntetlen", value: "0,5", placeholder: undefined },
+  { name: "points_loss", label: "Vereség", value: "0", placeholder: undefined },
+  { name: "points_bye", label: "Bye", value: "", placeholder: "mint a győzelem" },
+] as const;

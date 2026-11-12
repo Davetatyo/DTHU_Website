@@ -11,7 +11,7 @@ import { InfoTip } from "@/components/InfoTip";
 import { routes } from "@/lib/routes";
 import type { ChampionshipAccess } from "@/features/championships/lib/access";
 import { reportRights, reportStatus, resultButtonLabel } from "@/features/championships/lib/results";
-import { isDecided, swissRoundCount, tournamentStandings } from "@/features/championships/lib/rules";
+import { isDecided, scoringLabel, scoringOf, swissRoundCount, tournamentStandings } from "@/features/championships/lib/rules";
 import { getChampionshipMatches, getMatchReports } from "@/features/championships/lib/run";
 import type { Championship, ChampionshipMatch, MatchReport } from "@/features/championships/lib/types";
 import { ChampionshipMatchCards, ChampionshipMatchList } from "./ChampionshipMatches";
@@ -47,7 +47,7 @@ export async function ChampionshipOverview({
   const roundMatches = round ? byTable(matches.filter((m) => m.round_id === round.id)) : [];
   const reports = await getMatchReports(matches.map((m) => m.id));
   const nameOf = new Map(players.map((p) => [p.id, p.karnyx_name]));
-  const table = tournamentStandings(t.id, players, rounds, matches);
+  const table = tournamentStandings(t, players, rounds, matches, reports);
   const total = swissRoundCount(t.settings, players.length);
   const finished = t.status === "finished";
   const path = routes.championship(t.slug);
@@ -195,11 +195,11 @@ export async function ChampionshipOverview({
           <div className="hh">
             <h2>
               Állás
-              <InfoTip text="Győzelem 1 pont, döntetlen fél pont, Bye 1 pont. Sorrend: pont, Buchholz (az ellenfelek pontjainak összege), egymás elleni eredmény, győzelem-különbség." />
+              <InfoTip text={`Pontozás: ${scoringLabel(scoringOf(t.settings))}. Sorrend: pont, Buchholz (az összes ellenfél pontjainak összege), életerő-különbség, egymás elleni eredmény.`} />
             </h2>
           </div>
           <div className="panel3 p-4">
-            <StandingsTable standings={table} nameMap={nameOf} />
+            <StandingsTable standings={table} nameMap={nameOf} scoringText={scoringLabel(scoringOf(t.settings))} showTiebreaks={adminView} />
           </div>
         </section>
       )}

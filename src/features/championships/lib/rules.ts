@@ -1,6 +1,16 @@
-import { createRng, defaultSwissRounds, shuffle, standings } from "./engine";
-import type { MatchResult, Participant, Standing } from "./engine/types";
-import type { ChampionshipMatch, Player, Registration, Round, ChampionshipFormat, ChampionshipSettings, ChampionshipStatus } from "./types";
+import { createRng, DEFAULT_SCORING, defaultSwissRounds, shuffle, standings } from "./engine";
+import type { MatchResult, Participant, Scoring, Standing } from "./engine/types";
+import type {
+  Championship,
+  ChampionshipMatch,
+  MatchReport,
+  Player,
+  Registration,
+  Round,
+  ChampionshipFormat,
+  ChampionshipSettings,
+  ChampionshipStatus,
+} from "./types";
 
 export const HEROES_PER_PLAYER = 3;
 const DEFAULT_ROUND_DAYS = 7;
@@ -76,15 +86,68 @@ export function isDecided(m: {
   return m.status === "bye" || !m.player_b_id || !!m.winner_id || !!m.is_draw;
 }
 
-export function matchHistory(rounds: Pick<Round, "id" | "number">[], matches: ChampionshipMatch[]): MatchResult[] {
+/**
+ * The engine's view of the matches. `reports` adds the health each player finished on (for the
+ * HP tiebreaker); a match without a report counts as 0 HP.
+ */
+export function matchHistory(
+  rounds: Pick<Round, "id" | "number">[],
+  matches: ChampionshipMatch[],
+  reports?: ReadonlyMap<string, Pick<MatchReport, "hp_a" | "hp_b">>,
+): MatchResult[] {
   const numberOf = new Map(rounds.map((r) => [r.id, r.number]));
-  return matches.map((m) => ({
-    round: numberOf.get(m.round_id) ?? 1,
-    p1: m.player_a_id,
-    p2: m.player_b_id,
-    winner: m.winner_id ?? null,
-    status: !m.player_b_id || m.status === "bye" ? "bye" : m.winner_id ? "played" : m.is_draw ? "draw" : "pending",
-  }));
+  return matches.map((m) => {
+    const report = reports?.get(m.id);
+    return {
+      round: numberOf.get(m.round_id) ?? 1,
+      p1: m.player_a_id,
+      p2: m.player_b_id,
+      winner: m.winner_id ?? null,
+      status: !m.player_b_id || m.status === "bye" ? "bye" : m.winner_id ? "played" : m.is_draw ? "draw" : "pending",
+      ...(report ? { hpA: report.hp_a, hpB: report.hp_b } : {}),
+    };
+  });
+}
+
+/** The championship's points per result, or the default (win 1, draw ½, loss 0, Bye 1). */
+export function scoringOf(settings: ChampionshipSettings | undefined): Scoring {
+  return { ...DEFAULT_SCORING, ...(settings?.points ?? {}) };
+}
+
+const MAX_POINTS = 10;
+
+/**
+ * Reads the points fields of the create form: numbers from 0 to 10 in steps of 0.5 (comma or
+ * dot), a win worth more than a loss, a draw between them. An empty Bye field means "as a win".
+ */
+export function parseScoring(input: {
+  win: string;
+  draw: string;
+  loss: string;
+  bye: string;
+}): { ok: true; scoring: Scoring } | { ok: false; error: string } {
+  const read = (raw: string): number | null => {
+    const text = raw.trim().replace(",", ".");
+    if (!/^\d+(\.\d+)?$/.test(text)) return null;
+    const n = Number(text);
+    return n >= 0 && n <= MAX_POINTS && Number.isInteger(n * 2) ? n : null;
+  };
+  const win = read(input.win);
+  const draw = read(input.draw);
+  const loss = read(input.loss);
+  const bye = input.bye.trim() === "" ? win : read(input.bye);
+  if (win === null || draw === null || loss === null || bye === null) {
+    return { ok: false, error: `A pontok 0 és ${MAX_POINTS} közötti számok legyenek, fél pontos lépésekben (pl. 3, 1, 0,5).` };
+  }
+  if (win <= loss) return { ok: false, error: "A győzelem érjen több pontot, mint a vereség." };
+  if (draw < loss || draw > win) return { ok: false, error: "A döntetlen pontja a vereség és a győzelem közé essen." };
+  return { ok: true, scoring: { win, draw, loss, bye } };
+}
+
+/** "1 / ½ / 0, Bye 1" style summary of a scoring. */
+export function scoringLabel(s: Scoring): string {
+  const fmt = (n: number) => (Number.isInteger(n) ? String(n) : n === 0.5 ? "½" : String(n).replace(".", ","));
+  return `győzelem ${fmt(s.win)}, döntetlen ${fmt(s.draw)}, vereség ${fmt(s.loss)}, Bye ${fmt(s.bye)} pont`;
 }
 
 /** Stable seeds: shuffled once per tournament, the same every round. */
@@ -94,12 +157,13 @@ export function seededParticipants(tournamentId: string, players: Pick<Player, "
 }
 
 export function tournamentStandings(
-  tournamentId: string,
+  t: Pick<Championship, "id" | "settings">,
   players: Pick<Player, "id">[],
   rounds: Pick<Round, "id" | "number">[],
   matches: ChampionshipMatch[],
+  reports: ReadonlyMap<string, Pick<MatchReport, "hp_a" | "hp_b">>,
 ): Standing[] {
-  return standings(seededParticipants(tournamentId, players), matchHistory(rounds, matches));
+  return standings(seededParticipants(t.id, players), matchHistory(rounds, matches, reports), scoringOf(t.settings));
 }
 
 export function roundDeadline(settings: ChampionshipSettings, from: Date): Date {

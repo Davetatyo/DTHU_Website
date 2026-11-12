@@ -6,3 +6,6 @@ export { generateDoubleElimination } from "./double-elim";
 export { defaultSwissRounds, nextSwissRound } from "./swiss";
 export { generateGroups, seedPlayoffs } from "./groups";
 export { standings } from "./standings";
+export { matchHpDiff, matchPoints, pointsFrom } from "./scoring";
+export { DEFAULT_SCORING } from "./types";
+export type { Scoring } from "./types";

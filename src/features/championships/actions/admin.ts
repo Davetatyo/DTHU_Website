@@ -8,7 +8,7 @@ import { createAdminClient } from "@/lib/supabase/server";
 import { wallTimeToUtc } from "@/features/match-organizer/lib/time";
 import { createEngineRound, getTournamentBySlug, startTournament } from "@/features/championships/lib/run";
 import { RESERVED_SLUGS } from "@/features/championships/lib/access";
-import { FORMAT_LABELS, PLAYABLE_FORMATS } from "@/features/championships/lib/rules";
+import { FORMAT_LABELS, parseScoring, PLAYABLE_FORMATS } from "@/features/championships/lib/rules";
 import { slugify, uniqueSlug } from "@/lib/publishing";
 import type { Championship, ChampionshipFormat, ChampionshipSettings } from "@/features/championships/lib/types";
 
@@ -50,6 +50,10 @@ export async function createChampionship(formData: FormData) {
   if (rounds > 0) settings.rounds = Math.min(rounds, 20);
   const roundDays = Number(formData.get("round_days") || 0);
   if (roundDays > 0) settings.round_days = Math.min(roundDays, 60);
+  const field = (name: string) => String(formData.get(name) ?? "");
+  const scoring = parseScoring({ win: field("points_win"), draw: field("points_draw"), loss: field("points_loss"), bye: field("points_bye") });
+  if (!scoring.ok) go(back, "hiba", scoring.error);
+  settings.points = scoring.scoring;
 
   const startsAt = parseOptionalTime(formData.get("starts_at"), admin.timezone);
   if (startsAt === "invalid") go(back, "hiba", "Érvénytelen kezdési időpont.");

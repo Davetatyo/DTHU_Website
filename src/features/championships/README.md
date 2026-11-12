@@ -23,7 +23,7 @@ exactly as it is until then; there will be no Karnyx-league data in Bajnokságok
 
 ## How it works
 
-1. An admin creates a championship (Swiss, Bo1, rounds, round length, start time, auto pairing),
+1. An admin creates a championship (Swiss, Bo1, rounds, round length, points per result, start time, auto pairing),
    as a draft or with registration open.
 2. Players join with **3 different heroes**, can change them until the start and can lock in.
    Picks are **secret until the start**: `tournament_registrations` has RLS on and no read
@@ -45,7 +45,32 @@ exactly as it is until then; there will be no Karnyx-league data in Bajnokságok
    like a player until it's locked. Rules: `lib/results.ts`; server: `actions/results.ts`.
 6. A round is finished when every match has a locked result ("Lejátszottuk" alone doesn't
    count). With auto pairing the next Swiss round starts then; after the last round the
-   championship is finished. Win 1 point, draw ½, Bye 1. Bo1 only for now.
+   championship is finished. Bo1 only for now.
+
+## Scoring, tiebreakers and pairing (decided by Árpád, 2026-11-10 to 11-12; for Dave to confirm)
+
+- **Points** are set per championship in the create form (`settings.points`): win, draw, loss and
+  Bye, 0 to 10 in half points; an empty Bye field means "as a win". Default 1 / ½ / 0 / 1. They
+  can't be changed later (there is no edit form; a change mid-tournament would reshuffle the
+  standings). Parsing: `parseScoring` in `lib/rules.ts`.
+- **Standings** (`lib/engine/standings.ts`): points, then **full Buchholz** (all opponents'
+  points, nothing cut: Árpád's choice 2026-11-12, as our events are too short to drop an
+  opponent; a Bye counts as a dummy opponent with the player's own points, after FIDE C.07
+  Art. 16.4, so it neither helps nor hurts; a dropped player's points still count), then **HP difference** (win: + the health you finished
+  on; loss: − the health your opponent won with; your own health in a loss is ignored, so a
+  conceded game can't count against the winner; draws and Byes 0), then head-to-head, then seed.
+  HP comes from the locked `match_reports` row. The Buch and ÉK columns are **admin-only**
+  (Árpád, 2026-11-12): players see the order they decide, not the numbers
+  (`StandingsTable` `showTiebreaks`, from `getAdminView()`).
+- **Pairing** (`lib/engine/swiss.ts`): the **Dutch system** after FIDE C.04.3, without colours.
+  Score groups by points, ranked by seed inside; top half v bottom half; the fewest floaters,
+  counted from the top group down; smallest score differences; nobody floats the same way two
+  rounds running; the Bye to the lowest player of the lowest group who hasn't had one.
+  **No rematch and no second Bye, ever** (Árpád's requirement, 2026-11-12): when no pairing
+  without them exists, the round is refused with an error (`NO_CLEAN_PAIRING`) and the admin
+  decides; within the default round count a clean pairing always exists. All of it is
+  one cost per possible pair, solved for the whole field at once by a maximum weight matching
+  (`lib/engine/matching.ts`, Edmonds' blossom algorithm, tested against brute force).
 
 ## Data
 
@@ -58,7 +83,8 @@ tables `match_reports` (public read) and `tournament_registrations` (no read pol
 
 ## Code
 
-- `lib/engine/`: pure pairing engine with property tests. Swiss is wired to the site; round robin,
+- `lib/engine/`: pure pairing engine with property tests (Swiss pairing is checked against a brute force
+  search of every pairing for small fields). Swiss is wired to the site; round robin,
   single/double elimination and groups are ready but not wired (they show as "hamarosan"), and
   would need their own migration for bracket links.
 - `lib/rules.ts` (hero picks, start, next step, standings), `lib/results.ts` (result reports),
@@ -83,3 +109,5 @@ tables `match_reports` (public read) and `tournament_registrations` (no read pol
 - "Lejátszottuk" on the Időpontfoglaló's match page marks a championship match played without a
   result; it then lists as finished with no score until a result is entered (goes away with
   step 1).
+- Seeds are a random shuffle per championship, so inside a score group the Dutch order is by
+  that draw, not by any rating. A rating (e.g. last season's standing) could replace it later.

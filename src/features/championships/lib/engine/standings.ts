@@ -1,131 +1,97 @@
-import { DRAW_POINTS, type MatchResult, type Participant, type PlayerId, type Standing } from "./types";
+import { matchHpDiff, matchPoints } from "./scoring";
+import { DEFAULT_SCORING, type MatchResult, type Participant, type PlayerId, type Scoring, type Standing } from "./types";
 
-export function standings(players: Participant[], history: MatchResult[]): Standing[] {
+/**
+ * Standings, ranked by:
+ *   1. points (per the championship's scoring)
+ *   2. Buchholz: the sum of all opponents' current points, nothing cut (short events have too few
+ *      opponents to drop one). A Bye counts as a dummy opponent with the player's own points
+ *      (FIDE C.07 Art. 16.4), so it neither helps nor hurts the player who got it.
+ *   3. HP difference (see matchHpDiff)
+ *   4. head-to-head among the players still tied
+ *   5. seed
+ * Dropped players are left out of the table, but their points still count in their opponents'
+ * Buchholz.
+ */
+export function standings(players: Participant[], history: MatchResult[], scoring: Scoring = DEFAULT_SCORING): Standing[] {
   const active = players.filter((p) => !p.dropped);
-  const ids = new Set(active.map((p) => p.id));
   const seedMap = new Map(players.map((p) => [p.id, p.seed ?? Infinity]));
 
-  const stats = new Map<
-    PlayerId,
-    { wins: number; draws: number; losses: number; points: number; opponents: PlayerId[]; gameDiff: number }
-  >();
-  for (const p of active) {
-    stats.set(p.id, { wins: 0, draws: 0, losses: 0, points: 0, opponents: [], gameDiff: 0 });
-  }
+  type Stats = { wins: number; draws: number; losses: number; points: number; hpDiff: number; opponents: (PlayerId | null)[] };
+  const stats = new Map<PlayerId, Stats>();
+  const get = (id: PlayerId): Stats => {
+    let s = stats.get(id);
+    if (!s) {
+      s = { wins: 0, draws: 0, losses: 0, points: 0, hpDiff: 0, opponents: [] };
+      stats.set(id, s);
+    }
+    return s;
+  };
+  for (const p of players) get(p.id);
 
   for (const m of history) {
-    if (m.status === "pending") continue;
-
+    const pts = matchPoints(m, scoring);
+    if (!pts) continue;
+    const a = get(m.p1);
+    a.points += pts.p1;
+    if (!m.p2 || m.status === "bye") {
+      a.wins++;
+      a.opponents.push(null);
+      continue;
+    }
+    const b = get(m.p2);
+    b.points += pts.p2;
+    a.opponents.push(m.p2);
+    b.opponents.push(m.p1);
+    const hp = matchHpDiff(m);
+    a.hpDiff += hp.p1;
+    b.hpDiff += hp.p2;
     if (m.status === "draw") {
-      if (!m.p2) continue;
-      for (const [me, opp] of [
-        [m.p1, m.p2],
-        [m.p2, m.p1],
-      ]) {
-        const s = stats.get(me);
-        if (s) {
-          s.draws++;
-          s.points += DRAW_POINTS;
-          s.opponents.push(opp);
-        }
-      }
-      continue;
-    }
-
-    if (m.status === "bye") {
-      const s = stats.get(m.p1);
-      if (s) {
-        s.wins++;
-        s.points++;
-      }
-      continue;
-    }
-
-    if ((m.status === "played" || m.status === "forfeit") && m.winner) {
-      const loserId = m.winner === m.p1 ? m.p2 : m.p1;
-
-      const sw = stats.get(m.winner);
-      if (sw) {
-        sw.wins++;
-        sw.points++;
-        if (m.p2 && loserId) {
-          sw.opponents.push(loserId);
-          sw.gameDiff++;
-        }
-      }
-
-      if (loserId) {
-        const sl = stats.get(loserId);
-        if (sl) {
-          sl.losses++;
-          if (m.winner) {
-            sl.opponents.push(m.winner);
-            sl.gameDiff--;
-          }
-        }
-      }
+      a.draws++;
+      b.draws++;
+    } else if (m.winner === m.p1) {
+      a.wins++;
+      b.losses++;
+    } else {
+      b.wins++;
+      a.losses++;
     }
   }
 
-  // Buchholz: sum of opponents' points (byes add nothing)
-  const pointsOf = (id: PlayerId) => stats.get(id)?.points ?? 0;
+  const result: Standing[] = active.map((p) => {
+    const s = get(p.id);
+    const buchholz = s.opponents.reduce((sum, o) => sum + (o ? (stats.get(o)?.points ?? 0) : s.points), 0);
+    return { id: p.id, rank: 0, points: s.points, wins: s.wins, draws: s.draws, losses: s.losses, buchholz, hpDiff: s.hpDiff };
+  });
 
-  const result: Standing[] = [];
-  for (const [id, s] of stats) {
-    if (!ids.has(id)) continue;
-    const buchholz = s.opponents.reduce((sum, opp) => sum + pointsOf(opp), 0);
-    result.push({
-      id,
-      rank: 0,
-      points: s.points,
-      wins: s.wins,
-      draws: s.draws,
-      losses: s.losses,
-      buchholz,
-      gameDiff: s.gameDiff,
-    });
-  }
-
-  // Compute head-to-head among tied players
-  const byPoints = new Map<number, Standing[]>();
-  for (const s of result) {
-    const group = byPoints.get(s.points) ?? [];
-    group.push(s);
-    byPoints.set(s.points, group);
-  }
-
-  for (const group of byPoints.values()) {
+  // Head-to-head: wins minus losses against the others on the same points, Buchholz and HP.
+  const tieKey = (s: Standing) => `${s.points}|${s.buchholz}|${s.hpDiff}`;
+  const tied = new Map<string, Standing[]>();
+  for (const s of result) tied.set(tieKey(s), [...(tied.get(tieKey(s)) ?? []), s]);
+  for (const group of tied.values()) {
     if (group.length < 2) continue;
-    const groupIds = new Set(group.map((s) => s.id));
+    const ids = new Set(group.map((s) => s.id));
     for (const s of group) {
       const h2h: Record<PlayerId, number> = {};
       for (const m of history) {
-        if (m.status !== "played" && m.status !== "forfeit") continue;
-        if (!m.winner || !m.p2) continue;
-        if (m.winner === s.id && groupIds.has(m.p2)) {
-          h2h[m.p2] = (h2h[m.p2] ?? 0) + 1;
-        } else if (m.p2 && m.winner !== s.id) {
-          const loser = m.winner === m.p1 ? m.p2 : m.p1;
-          if (loser === s.id && groupIds.has(m.winner)) {
-            h2h[m.winner] = (h2h[m.winner] ?? 0) - 1;
-          }
-        }
+        if ((m.status !== "played" && m.status !== "forfeit") || !m.winner || !m.p2) continue;
+        const loser = m.winner === m.p1 ? m.p2 : m.p1;
+        if (m.winner === s.id && ids.has(loser)) h2h[loser] = (h2h[loser] ?? 0) + 1;
+        else if (loser === s.id && ids.has(m.winner)) h2h[m.winner] = (h2h[m.winner] ?? 0) - 1;
       }
       s.headToHead = h2h;
     }
   }
+  const h2hSum = (s: Standing) => (s.headToHead ? Object.values(s.headToHead).reduce((sum, v) => sum + v, 0) : 0);
 
-  // Sort: points desc → buchholz desc → h2h sum desc → gameDiff desc → seed asc
-  result.sort((a, b) => {
-    if (a.points !== b.points) return b.points - a.points;
-    if (a.buchholz !== b.buchholz) return b.buchholz - a.buchholz;
-    const h2hA = a.headToHead ? Object.values(a.headToHead).reduce((s, v) => s + v, 0) : 0;
-    const h2hB = b.headToHead ? Object.values(b.headToHead).reduce((s, v) => s + v, 0) : 0;
-    if (h2hA !== h2hB) return h2hB - h2hA;
-    if (a.gameDiff !== b.gameDiff) return b.gameDiff - a.gameDiff;
-    return (seedMap.get(a.id) ?? Infinity) - (seedMap.get(b.id) ?? Infinity);
-  });
-
+  result.sort(
+    (a, b) =>
+      b.points - a.points ||
+      b.buchholz - a.buchholz ||
+      b.hpDiff - a.hpDiff ||
+      h2hSum(b) - h2hSum(a) ||
+      (seedMap.get(a.id) ?? Infinity) - (seedMap.get(b.id) ?? Infinity),
+  );
   result.forEach((s, i) => (s.rank = i + 1));
   return result;
 }

@@ -2,7 +2,7 @@ import { SubmitButton } from "@/components/SubmitButton";
 import { InfoTip } from "@/components/InfoTip";
 import { generateEngineRound } from "@/features/championships/actions/admin";
 import { utcToWallTime, formatDateTime } from "@/features/match-organizer/lib/time";
-import { isDecided, roundDeadline, swissRoundCount, tournamentStandings } from "@/features/championships/lib/rules";
+import { isDecided, roundDeadline, scoringLabel, scoringOf, swissRoundCount, tournamentStandings } from "@/features/championships/lib/rules";
 import type { Championship, ChampionshipMatch, Player, Round } from "@/features/championships/lib/types";
 import { getMatchReports } from "@/features/championships/lib/run";
 import { RoundPairings } from "./RoundPairings";
@@ -30,8 +30,8 @@ export async function EngineRoundSection({
   const maxRounds = swissRoundCount(tournament.settings, players.length);
   const canGenerate = tournament.status === "running" && (!current || currentDone) && rounds.length < maxRounds;
   const nameOf = new Map(players.map((p) => [p.id, p.karnyx_name]));
-  const table = tournamentStandings(tournament.id, players, rounds, allMatches);
-  const reports = await getMatchReports(currentMatches.map((m) => m.id));
+  const reports = await getMatchReports(allMatches.map((m) => m.id));
+  const table = tournamentStandings(tournament, players, rounds, allMatches, reports);
 
   return (
     <div className="space-y-6">
@@ -97,9 +97,9 @@ export async function EngineRoundSection({
         <section className="card space-y-3">
           <h2 className="text-lg font-bold">
             Állás
-            <InfoTip text="Győzelem 1 pont, döntetlen fél pont, Bye 1 pont. Sorrend: pont, Buchholz (az ellenfelek pontjainak összege), egymás elleni eredmény, győzelem-különbség." />
+            <InfoTip text={`Pontozás: ${scoringLabel(scoringOf(tournament.settings))}. Sorrend: pont, Buchholz (az összes ellenfél pontjainak összege), életerő-különbség, egymás elleni eredmény.`} />
           </h2>
-          <StandingsTable standings={table} nameMap={nameOf} />
+          <StandingsTable standings={table} nameMap={nameOf} scoringText={scoringLabel(scoringOf(tournament.settings))} showTiebreaks />
         </section>
       )}
     </div>
