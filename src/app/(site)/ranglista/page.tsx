@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Art, heroArt } from "@/components/Art";
+import { PlayerLink } from "@/features/player-stats/components/PlayerLink";
 import { PlayerAvatar } from "@/features/profile/components/PlayerAvatar";
 import { getCurrentProfile } from "@/lib/auth";
 import { loadRanking } from "@/features/rankings/lib/load";
@@ -37,9 +38,13 @@ export default async function RankingsPage() {
               <div key={r.p} className={`pr-big${i < 3 ? " top" : ""}${r.p === me ? " me" : ""}`}>
                 <span className="n">{i + 1}</span>
                 <span className={`mv ${cls}`}>{label}</span>
-                <PlayerAvatar name={r.p} hero={r.hero} />
+                <PlayerLink name={r.p} decorative>
+                  <PlayerAvatar name={r.p} hero={r.hero} />
+                </PlayerLink>
                 <span className="min-w-0">
-                  <b>{r.p}</b>
+                  <b>
+                    <PlayerLink name={r.p} />
+                  </b>
                   <br />
                   <small className="muted">{r.hero}</small>
                 </span>

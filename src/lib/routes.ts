@@ -17,6 +17,12 @@ export const routes = {
   timetables: "/esemenynaptar",
   /** An event's own page (Eseménynaptár). */
   event: (slug: string) => `/esemenynaptar/${slug}`,
+  /** Bajnokságok: built-in tournaments with sign-up and hero picks. */
+  championships: "/bajnoksagok",
+  championship: (slug: string) => `/bajnoksagok/${slug}`,
+  championshipsAll: "/bajnoksagok/osszes",
+  championshipsAdmin: "/bajnoksagok/admin",
+  championshipAdmin: (slug: string) => `/bajnoksagok/admin/${slug}`,
   tickets: "/sorsolas",
   ticketsAdmin: "/sorsolas/admin",
   games: "/jatekok",
@@ -42,6 +48,9 @@ export const routes = {
   /** A match's Hős segédlet (see features/hero-guide). */
   heroGuide: (id: string) => `${MO}/meccs/${id}/hos-segedlet`,
   schedule: `${MO}/menetrend`,
+  /** Player stats (see features/player-stats): everyone's list and one player's page, by profile id. */
+  players: `${MO}/jatekosok`,
+  player: (profileId: string) => `${MO}/jatekos/${profileId}`,
   organizerFaq: `${MO}/gyik`,
   register: "/regisztracio",
   admin: `${MO}/admin`,

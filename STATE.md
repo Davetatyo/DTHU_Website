@@ -1,6 +1,6 @@
 # Project state: DTHU website
 
-**Current version: v2.37** (2026-11-13). Live: https://dthu.hu builds from this repository's
+**Current version: v2.38** (2026-11-14). Live: https://dthu.hu builds from this repository's
 `main` (the owner moved Vercel over around 2026-11-01; checked live 2026-11-02). Every push to
 `main` deploys within a minute.
 **Launch phase: 1**: the public sees only the Meccsszervező; the whole site from the prototype
@@ -80,10 +80,12 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 | `alchemist` Alkimista | `/alkimista` + help vial | preview | knowledge base from the prototype; unanswered questions only in the browser | admin inbox for unanswered questions |
 | `register-page` Regisztráció | `/regisztracio` | **live** | static guide content; tournament banner real | owner review of Hungarian texts |
 | `live-banner` Élő adás | banner at the top of the layouts; `/api/live/voice`, `/api/live/now`; admin block on `/meccsszervezo/admin` | **on `feature/live-banner`, not merged**. Admins only until `LIVE_BANNER_ADMINS_ONLY` is false | real; migration 0011 has run; detection waits for Árpád's bot | see "Needs the owner"; `src/features/live-banner/README.md` on that branch |
+| `championships` Bajnokságok (DTHU's own tournament platform, replaces the Időpontfoglaló at launch) | `/bajnoksagok`, `/bajnoksagok/osszes`, `/bajnoksagok/<slug>`, admin `/bajnoksagok/admin` | preview (admins only), **on `main` since v2.38** (via `feature/player-stats`) | real (migration 0013 has run); sign-up with 3 heroes, admin-set points per result, Dutch-system Swiss pairing, player-reported results with confirmation, standings with full Buchholz (Bye = own points) then HP difference | owner tests live; next: own match page, Közelgő meccsek + reminders, then launch (see the feature README) |
 | `xp` XP and levels | Profilom card, header bar, popups; admin `/meccsszervezo/admin/xp` | **step 1 on `main` since v2.31**: admins only until `XP_ADMINS_ONLY` is false | real (migration 0012 has run) | owner tests live; then step 2 (Gyűjtemény) |
 | `hero-guide` Hős segédlet | `/meccsszervezo/meccs/<id>/hos-segedlet` (button on the match page) | **on `main` since v2.30**: admins only until `HERO_GUIDE_ADMINS_ONLY` is false, then everyone logged in | real; no tables | `src/features/hero-guide/README.md` |
 | `puzzle` Taktikai feladvány (experiment, working title) | `/jatekok/taktikai-feladvany`, `/jatekok/taktikai-feladvany/<id>`; card on the Játékok page | **parked** (owner, 2026-11-09): only on branch `feature/puzzle`, never merged into `main` | static: Season 1 Barbarian + Moon Elf rules from the Card Scanner repo; no tables. Images are **not committed** (owner): make them locally with `scripts/puzzle/assets.py` | when picked up: fix the Blind vs. Ultimate rule first (Features_Roadmap R16, `src/features/puzzle/README.md` on the branch) |
 | `profile` Profilkép, Profil szerkesztése, Kitiltás | `/meccsszervezo/profil`, `/meccsszervezo/admin/felhasznalo/<id>` | **live** (v2.2): every logged-in user can upload a picture; admin page and bans for all admins | all real | badge ring (R3/R4), cosmetics collection |
+| `player-stats` Játékosok (player stats) | `/meccsszervezo/jatekosok`, `/meccsszervezo/jatekos/<profile id>`; Profilom card; links on Bajnokságok names | **on `main` since v2.38**; every logged-in player (`PLAYER_STATS_ADMINS_ONLY = false`) | real: computed from confirmed Bajnokságok results (migration 0013); no tables of its own; Karnyx league not counted (no winner/hero data) | Dave reviews live; players see the Játékosok tab now (`src/features/player-stats/README.md`) |
 
 ## Database (Supabase)
 
@@ -94,9 +96,14 @@ local development uses the live data too (see CLAUDE.md, golden rule 1).
 **Migrations** (`supabase/migrations/`, run by hand in the Supabase SQL Editor, in order):
 0001 init · 0002 profile pictures and bans · 0003 events · 0004 news · 0005 polls · 0006 links ·
 0007 match play modes · 0008 ticket draws · 0009 DTHU coins · 0010 daily spin and question · 0011 live
-banner (its code is on `feature/live-banner`) · 0012 XP. **All are applied** on the live database (checked
-2026-11-05 by reading a table from each). A new change gets the next number (0013…) and is run
-*before* the code that needs it is deployed.
+banner (its code is on `feature/live-banner`) · 0012 XP · 0013 Bajnokságok. **All are applied** on the live database (checked
+2026-11-05 by reading a table from each; 0013 checked 2026-11-14). A new change gets the next number (0014…) and is run
+*before* the code that needs it is deployed, with a guide for Dave in `docs/migrations/` (e.g.
+`docs/migrations/0013-championships-for-dave.md`). **0013 Bajnokságok has run** (found applied 2026-11-14:
+`match_reports` exists, tournaments have `format`/`status`; it was numbered 0012 until `main`'s XP migration took that number):
+tournament columns `format`, `best_of`, `settings`, `slug`, `status`, `starts_at`, `auto_pairing`;
+match columns `winner_id`, `is_draw`; tables `match_reports` and `tournament_registrations`. All
+additive, safe for the Időpontfoglaló, no overlap with 0012 XP.
 
 **Access model:** row level security is on for every table. The website reads and writes
 through the server with the service-role key and checks permissions in code
@@ -143,6 +150,8 @@ entries after a draw closes.
 | `xp_activities` *(0012)* | What each activity is worth, on/off | `key`, `name`, `amount`, `active` | – |
 | `xp_config` *(0012)* | Settings, e.g. the level curve | `key`, `value` (jsonb) | – |
 | `xp_boosts` *(0012)* | Double XP: a tournament, or a time window for chosen activities | `multiplier`, `starts_at`, `ends_at`, `activity_keys`, `tournament_id` | – |
+| `match_reports` *(0013)* | Result report of a championship match; a player submits, the opponent confirms, then locked | `match_id` (key, cascade), `outcome` (a/b/draw), `hp_a`, `hp_b`, `pick_a`/`pick_b`, `ban_a`/`ban_b`, `submitted_side` (a/b/admin), `submitted_by`, `submitted_at`, `confirmed_by`, `confirmed_at` | – |
+| `tournament_registrations` *(0013)* | Championship sign-ups with 3 secret heroes (no read policy) | primary key (`tournament_id`, `profile_id`), `karnyx_name`, `heroes` (3), `locked_at` | – |
 | `daily_streaks` *(0010)* | Days in a row per game (spin and quiz separately, 1..7) | `profile_id` + `game` (key), `current_length`, `last_completed_date` | – |
 
 \*Row counts on 2026-11-03, for scale only.
@@ -194,6 +203,11 @@ sample data (no tables yet; tickets and coins become real with migrations 0008 a
 0. **XP step 1 (v2.31, admins only; migration 0012 has run, checked 2026-11-08).** Test as an admin: mark a played match, give yourself XP on Admin felület → XP kezelés, watch the
    card, the notification and a level-up. When the full site opens: `delete from public.xp_events;`
    and set `XP_ADMINS_ONLY` to false.
+0. **Bajnokságok (on `main` since v2.38; migration 0013 has run).** Test it live as an admin. To answer: should a result nobody confirms be confirmed
+   automatically after a while (now an admin settles it)? **New on the branch (2026-11-13, Árpád's
+   requests):** points per result set at creation; Dutch Swiss pairing that never rematches or gives a
+   second Bye (refuses the round instead); full Buchholz, then HP difference; Buch/ÉK admin-only.
+   Confirm these choices (feature README → "Scoring, tiebreakers and pairing").
 0. **Élő adás (`feature/live-banner`, not merged; migration 0011 has run).** To do: add
    `LIVE_BOT_SECRET` in Vercel and redeploy if not done yet, send it privately to Árpád, merge the branch
    (the banner stays admins only), add the voice channels on the admin page, and test with Árpád once
@@ -260,6 +274,13 @@ quiz) are in
   recorded check with a real non-admin login. The owner tests as an admin.
 - Most full-site pages show sample data (see Features); the prototype strip says so.
 - Discord login works locally only on port 3000 (Supabase redirect allow-list).
+- Bajnokságok: the Időpontfoglaló's hourly 48-hour deadline warning also covers championship rounds
+  and links to the Időpontfoglaló overview, where they aren't listed (planned: step 2 in the
+  feature README). "Lejátszottuk" on the Időpontfoglaló's match page marks a championship match
+  played without a result.
+- Bajnokságok: results don't award XP yet (`actions/results.ts` sets the match played directly).
+  Points can't be changed after a championship is created. If no pairing without a rematch or a
+  second Bye exists (e.g. after a late drop-out), the round is refused until an admin acts.
 
 ## Technical debt
 
@@ -284,6 +305,59 @@ quiz) are in
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
 
+### 2026-11-14 · Roadmap R17–R19, migration guide for Dave, Bajnokságok + Játékosok merged to main (v2.38)
+
+- Read the three new briefs in `docs/` (ranking, Discord `/result` + spectating, website match reporting)
+  and added them to `Features_Roadmap.md` as **R17 → R18 → R19** (build order: the one match lifecycle
+  first, ranking second, Discord last; spectating is a later extension of R14). Árpád's decisions are
+  recorded there: standalone Ranked games, tournament matches count as ranked (skill rating and seasonal
+  LP), no Karnyx import. Dave still has to confirm them. Commit `dd12e82`.
+- Árpád's rules (2026-11-14): every new SQL gets a guide for Dave in `docs/migrations/` (first one:
+  `0013-championships-for-dave.md`); his `matchmaking-bot` is a separate project, worked on in its own
+  folder and never copied into this repository.
+- Migration **0013 was found applied** on the live database (read-only REST check: `match_reports` returns
+  200, `tournaments.format`/`status` exist), so `feature/player-stats` (which contains
+  `feature/tournament-pairing`) was merged into `main` with Árpád's OK. It includes the Bajnokságok hero icons
+  from the 2026-11-13 entry below.
+- **Verified:** `npx tsc --noEmit`, `npm run lint`, `npm test` (393 green) before the merge.
+- **Visible to players now:** the Játékosok tab and stats pages, the Profilom stats card, and hero icons on
+  the match page (also used by the Időpontfoglaló). Bajnokságok pages stay admin-only (phase 1).
+- **Left out of the commits on purpose:** the TEMP-PREVIEW lines in `src/lib/auth.ts` and `src/middleware.ts`
+  (local preview only), `supabase/config.toml` + `supabase/.gitignore` (local Supabase setup) and
+  `Dice Throne Community Platform Design & Build Plan.md` (older plan in the project root).
+- **Next:** Dave tests the Bajnokságok and Játékosok live; then plan R17 (needs a decision: extend `matches`
+  or add a canonical games table, since `matches.round_id` is NOT NULL).
+
+### 2026-11-13 · Player stats (Játékosok): committed on feature/player-stats, not merged
+
+**Status: on the new branch `feature/player-stats` (branched from `feature/tournament-pairing`; `main` v2.37 merged in as `fe4861a`, local only), feature work uncommitted; nothing deployed.**
+Árpád asked for profile stats: wins/losses, per-hero stats, win rates, visible to other players.
+Decided with him (2026-11-13): Dave agreed that stats are visible to every **logged-in** player
+(XP/level stay private); only **confirmed Bajnokságok results** count (the Karnyx league has no
+winner or hero data).
+
+- New feature `src/features/player-stats/` (README there): `lib/stats.ts` (pure, 14 tests),
+  `lib/data.ts` (profile → registrations → players → matches + confirmed match_reports),
+  `lib/access.ts` (`PLAYER_STATS_ADMINS_ONLY`, switched to **false** the same day at Árpád's request: every logged-in player sees stats, also in the admin's player view), components `PlayerStatsView`,
+  `PlayerLink`, `ProfileStatsCard`, `player-stats.css`.
+- Pages `src/app/meccsszervezo/jatekosok/page.tsx` and `jatekos/[id]/page.tsx`; routes
+  `players`, `player(id)`; "Játékosok" tab in the Meccsszervező layout (only for those who may
+  see stats); Profilom card; names in `StandingsTable` and `ParticipantList` link to stats; registry
+  entry (status planned, no site-menu item). Layout inspired by the screenshots Árpád sent (stat
+  tiles, hero win-rate bars, coloured match history).
+- **Verified:** `npx tsc --noEmit`, `npm run lint`, `npm test` (391 green). On the LOCAL Supabase:
+  list, a player page, Profilom and a championship page at 1280 px and 375 px, dark + light, no
+  horizontal scroll; FeriDT's numbers checked against a direct SQL query (3 games, 2–0–1).
+- **Clickable profiles (same day, Árpád):** `PlayerLink` can wrap an avatar (`decorative`: hidden from screen readers and Tab, the name next to it is the real link). Avatars and names open the stats page on the match page (header + contact cards), Bajnokságok "Következő meccsem", participant tiles, standings, the admin sign-up list and the Ranglista (sample names there match no profile yet). **Not** inside match rows and tiles: those are already links to the match (no nested links; checked: 0 nested anchors). Clicking the opponent on a match page opened their stats (Playwright, local).
+- **Állás legend (same day, Árpád):** the line under the standings (P = pont …, Holtversenyben …) is now admin-only; players see just the table (`StandingsTable`, shown only with `showTiebreaks`). This changes `feature/tournament-pairing` code, so it rides along on this branch.
+- **Kitiltott hősök (same day, Árpád):** hero portraits instead of names, the ban count as a red badge on each (name in the tooltip and for screen readers), top 5 only. Uses `heroPortrait()` from `main` (v2.37 hero icons, merged into this branch as `fe4861a`; a duplicate I had written was dropped); the stats page uses it for all hero icons. Avatars elsewhere unchanged.
+- **Hero icons in the Bajnokságok** (owner, 2026-11-13): every place a tournament showed hero names now shows round portraits (`HeroIcons` in `components/HeroIcon.tsx`, names in tooltips/aria-label): match rows and cards, Következő meccsem, Játékosok grid, admin round list and sign-ups, own locked sign-up, and the match page (also used by the Időpontfoglaló). Results: played hero + banned hero greyed and struck through (`HeroIcon banned`, `championships/components/HeroPicks.tsx`).
+- **Committed** on `feature/player-stats` (owner OK, 2026-11-13), not pushed. The TEMP-PREVIEW lines in `src/lib/auth.ts` and
+  `src/middleware.ts` are still in the working tree (local only, from the previous session):
+  keep them out of every commit.
+- **Next:** Dave reviews on dthu.hu after the merge; merge after `feature/tournament-pairing`.
+  Players get the Játékosok tab as soon as it is on `main`.
+
 ### 2026-11-13 · Hero icons in the Lista nézet (v2.37, feature/hero-icons → main)
 
 - Owner's request: on Áttekintés → Lista, show each player's heroes as small round icons instead of
@@ -299,6 +373,73 @@ Newest first. Each session adds an entry (see CLAUDE.md → "End of every sessio
 - Verified: types, lint, tests; browser at 1024 px and 375 px, dark and light, real round 3 data
   (none of the 22 player slots overflow). Previewed with the TEMP-PREVIEW fake profile and middleware
   bypass, both reverted (grep clean) before the commit.
+
+### 2026-11-12/13 · Bajnokságok: scoring, Dutch pairing, full Buchholz + HP; committed and pushed on feature/tournament-pairing (not merged)
+
+Covers the 2026-11-10 entry below too. **Status: on the branch, pushed to GitHub, not merged;
+nothing deployed, version unchanged (v2.36).** Árpád asked for these changes; Dave hasn't reviewed
+them yet (message drafted for him). Decisions for Dave to confirm are marked "Árpád" in the feature
+README → "Scoring, tiebreakers and pairing".
+
+
+- Árpád asked for Buchholz that counts every opponent through the end of the tournament
+  (Cut-1 showed 0 for everyone after round 1). `engine/standings.ts` now sums all opponents'
+  points; a Bye counts as a dummy opponent with the player's own points (FIDE C.07 Art. 16.4),
+  replacing the earlier "Bye = 0-point opponent". Pairing is unchanged: it never used Buchholz
+  (Dutch system pairs by points, then seed).
+- Tooltips and the standings legend updated (Hungarian), tests updated.
+- Árpád's pairing requirements (rematch / second Bye mandatory, then equal scores, smallest score
+  differences, Bye to the lowest group, no repeated floating, seeds, Buchholz only for
+  standings): the engine already met all but one. The rematch / second-Bye fallback is gone:
+  `nextSwissRound` now refuses with `NO_CLEAN_PAIRING`, and auto pairing reports that instead of
+  silently not starting the round (`advanceAfterResult`).
+- Local test data: Docker Desktop must be running for the local Supabase (otherwise every page
+  hangs ~30 s). Seeded "Teszt Pontozás Kupa" (`/bajnoksagok/teszt-pontozas`, 7 players, 3/1/0/3,
+  2 rounds with HP) in the LOCAL database with a scratchpad script that uses the real engine.
+- Standings: the Buch and ÉK columns are admin-only (Árpád, 2026-11-12): `StandingsTable`
+  `showTiebreaks` = `getAdminView()` on the overview, always on the admin page. Players still
+  get the order those decide, plus a one-line note. It's a server component, so the hidden values
+  aren't in the page payload either (checked with curl in both views).
+- Create form: the Bye field is wider so its "mint a győzelem" placeholder fits at 375 px.
+- **Verified (2026-11-13):** `npx tsc --noEmit`, `npm run lint`, `npm test` (377 green);
+  screenshots on the LOCAL Supabase of the standings (admin and player view) and the Pontozás fields,
+  desktop + 375 px, dark + light, no horizontal scroll. Not clicked through: entering a result with
+  HP after these changes (standings checked with seeded data).
+- **Left out of the commit on purpose:** the TEMP-PREVIEW fake admin in `src/lib/auth.ts` and
+  `src/middleware.ts` (local only, kept in Árpád's working tree), `supabase/config.toml` +
+  `supabase/.gitignore` (local Supabase setup) and the design plan .md.
+- **Next:** Dave runs migration 0013 (guide updated to 0013), reviews the decisions, then merge
+  to `main` via a pull request with his OK, bump the version and add a changelog entry.
+
+### 2026-11-10 · Bajnokságok: points per result, Dutch pairing, Cut-1 Buchholz + HP tiebreak (superseded in part by the entry above: Cut-1 → full Buchholz; now committed)
+
+- **2026-11-09:** merged `main` (v2.36) into the branch (merge commit `862dfd0`, not pushed). `main`'s XP
+  took migration number 0012, so the championships migration is now **`0013_championships.sql`**.
+  Dave's guide (claude.ai/artifact/96pQEhpvLqVLivxL1uiEX6) still says 0012 and needs updating.
+- **Asked for (2026-11-10):** admins set the points for a win, draw and loss when creating a
+  championship; proper Swiss pairing and Buchholz; HP as a tiebreaker. Choices made with the owner's
+  side: tiebreak order **points → Buchholz → HP**; HP = **difference** (winner + their HP, loser − the
+  same; the loser's own HP ignored, since a conceded game can end with HP left); **Dutch system**
+  pairing; **Cut-1** Buchholz. Details in `src/features/championships/README.md` → "Scoring,
+  tiebreakers and pairing".
+- **Built:** `engine/matching.ts` (maximum weight matching, Edmonds' blossom, a port of the
+  public-domain mwmatching.py with bigint weights), `engine/swiss.ts` rewritten as Dutch pairing on
+  top of it, `engine/standings.ts` (configurable scoring, Cut-1, HP difference, dropped players'
+  points still count), `engine/scoring.ts`. Points live in `tournaments.settings.points` (no
+  migration); create form has a "Pontozás" fieldset (`FormatPicker.tsx`), parsed by `parseScoring`.
+  Standings table: columns P, Gy, D, V, Buch, ÉK with a legend; the admin page header shows the
+  scoring. `gameDiff` is gone from `Standing` (replaced by `hpDiff`). No bigint literals (`0n`):
+  tsconfig targets ES2017, so `BigInt(…)` is used.
+- **Verified:** `npx tsc --noEmit`, `npm run lint`, `npm test` (all green; matching checked against
+  brute force on 1,500 random graphs plus mwmatching's own cases; Dutch pairing checked against a
+  brute-force search of every pairing on the Bye and floater rules; 64 players × 6 rounds pair in
+  well under a second). **Not verified in a browser:** the running dev server on port 3000 had
+  crashed ("Jest worker encountered 2 child process exceptions") and stopping it was not allowed in
+  this session. A Playwright script for the check is in the session scratchpad (`pw/check.js`):
+  form + standings at desktop/375 px, dark/light, then creates "Pontozás teszt" (3/1/0) and tries an
+  invalid draw value, **on the local Supabase only**.
+- **Next:** restart `npm run dev`, run the browser check, show the owner screenshots, then commit on
+  the branch with his OK.
 
 ### 2026-11-09 · New DTHU logo (v2.34, then v2.35 fix)
 
@@ -407,6 +548,36 @@ Newest first. Each session adds an entry (see CLAUDE.md → "End of every sessio
   casual 11). Then, with realistic podium odds (about 20 players, ~90% never on the podium) and 6
   rounds per tournament: **15 XP for every game played** (Bye counts) replaces the first-match 10 XP,
   so a tournament is worth ~120 XP. Uncommitted.
+
+### 2026-11-06 · Bajnokságok: DTHU's own tournament platform, step 1 (feature/tournament-pairing, committed, not merged)
+
+- **Owner direction (2026-11-06):** tournaments move from Karnyx to the site. Bajnokságok will hold
+  everything the Időpontfoglaló has plus the tournament itself; at launch the Időpontfoglaló tab is
+  removed and its old links redirect. Until then the Időpontfoglaló stays **exactly as on `main`**
+  (no file of it is changed on this branch) and Bajnokságok is admin-only (registry `preview`).
+- **Built:** own tab with sub-tabs (Áttekintés, Összes bajnokság, Kezelés). Áttekintés opens the
+  viewer's running championship (chips if several). Championship page in the Időpontfoglaló's
+  layout: header, round timeline, pairings as list/cards with scores, picks and bans, own match with
+  "Időpont egyeztetés" (still the Időpontfoglaló match page) and the slide-in result panel, round
+  progress (two counts admin-view only), earlier rounds, standings (draw = ½ point), players.
+  Visibility (`lib/access.ts`): running = everyone (read-only if not playing), finished = only its
+  players and admins. Results: player submits, opponent confirms or corrects, then locked; admins
+  change anything. Bo1 only; formats other than Swiss "hamarosan". Details:
+  `src/features/championships/README.md`.
+- **Migration renumbered to `0012_championships.sql`** (and on 2026-11-09 to `0013`, since `main`'s XP took 0012): 0011 is `feature/live-banner`'s, already run
+  live. Trimmed to what the code uses (no bracket columns, no `match_games`, no `max_players`).
+  **Not run yet**; Dave's guide (claude.ai/artifact/96pQEhpvLqVLivxL1uiEX6) updated for it.
+  Tested on the local database: applies cleanly on a pre-0012 schema.
+- **Verified:** `npx tsc --noEmit`, `npm run lint`, `npm test` (344), `npm run build`; Playwright
+  runs on a local Supabase (Docker) with seeded players: submit → correct → confirm, draw, lock,
+  admin entries, automatic next round, read-only and hidden views; desktop + 375 px, dark + light.
+- **Local test setup (not in git):** `npx supabase start` (Docker), `.env.development.local` points
+  `next dev` at it (Discord webhook empty). The TEMP-PREVIEW login bypass with `?as=<KarnyxName>`
+  is kept as a patch outside the repo and re-applied locally only; never commit it.
+  `supabase/config.toml` (from `supabase init`) is untracked on purpose.
+- **Next:** step 2 = own match page `/bajnoksagok/meccs/<id>` (time proposals + result panel,
+  admin result buttons on every match), step 3 = Közelgő meccsek, calendar feed and reminders for
+  championships, step 4 = launch. Before merging: Dave runs 0013.
 
 ### 2026-11-05 · STATE.md and roadmap brought up to date (docs only, under v2.30)
 
@@ -1286,6 +1457,16 @@ webhook, no cron secret), so nothing local can post to Discord.
 ---
 
 ## Changelog
+
+### v2.38 · 2026-11-14 · `feature/player-stats` (+ `feature/tournament-pairing`)
+**Changed (visible to players):** a new Játékosok tab in the Meccsszervező with per-player stats
+(wins/losses, hero win rates, match history) from confirmed Bajnokságok results; a stats card on
+Profilom; names and avatars link to the stats pages; hero portraits instead of hero names on the match
+page. **Admins only (phase 1):** the Bajnokságok, DTHU's own tournament platform (sign-up with 3 heroes,
+Swiss pairing, player-reported results, standings).
+**Manual steps:** migration 0013 (already applied on the live database, checked 2026-11-14).
+**Verified:** types, lint, tests (393); browser checks on local Supabase at 1280 px and 375 px, dark and light
+(2026-11-13); live check after deploy.
 
 ### v2.37 · 2026-11-13 · `feature/hero-icons`
 **Changed (visible to players):** in the Időpontfoglaló's list view, each player's heroes show as

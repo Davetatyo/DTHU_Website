@@ -15,6 +15,7 @@ import { removeMyAvatar, uploadMyAvatar } from "@/features/profile/actions/avata
 import { AdminBadgePicker } from "@/features/profile/components/AdminBadgePicker";
 import { getTestBadge } from "@/features/profile/lib/test-badge";
 import { ProfileXpCard } from "@/features/xp/components/ProfileXpCard";
+import { ProfileStatsCard } from "@/features/player-stats/components/ProfileStatsCard";
 
 export const metadata: Metadata = { title: "Profilom" };
 
@@ -47,6 +48,7 @@ export default async function ProfilePage({ searchParams }: { searchParams: Prom
         <h1>Profilom</h1>
       </div>
       <ProfileXpCard profileId={profile.id} avatarUrl={avatarPublicUrl(profile.avatar_path)} />
+      <ProfileStatsCard profileId={profile.id} hasKarnyxName={!!profile.karnyx_name} />
       <div className="card">
       {canUploadOwnAvatar(profile) && (
         <div className="mb-5 border-b pb-5" style={{ borderColor: "var(--line)" }}>

@@ -23,6 +23,7 @@ export type Feature = {
 export const FEATURES: Feature[] = [
   { id: "landing-page", label: "Hírek", route: "/", status: "preview" },
   { id: "match-organizer", label: "Időpontfoglaló", route: "/meccsszervezo", status: "live" },
+  { id: "championships", label: "Bajnokságok", route: "/bajnoksagok", status: "preview", badge: "ÚJ" },
   { id: "rankings", label: "Ranglista", route: "/ranglista", status: "preview" },
   { id: "timetables", label: "Eseménynaptár", route: "/esemenynaptar", status: "preview" },
   { id: "tickets", label: "Sorsolás", route: "/sorsolas", status: "preview", badge: "ÚJ" },
@@ -36,6 +37,8 @@ export const FEATURES: Feature[] = [
   { id: "hero-guide", label: "Hős segédlet", route: "/meccsszervezo", status: "planned" },
   // Profilom card, header bar and popups; no menu item.
   { id: "xp", label: "XP", route: "/meccsszervezo/profil", status: "planned" },
+  // A "Játékosok" tab in the Meccsszervező and links on player names; no site-menu item.
+  { id: "player-stats", label: "Játékosok", route: "/meccsszervezo/jatekosok", status: "planned" },
 ];
 
 /** Features that appear in the full-site menu (the Alchemist opens from its help vial instead). */

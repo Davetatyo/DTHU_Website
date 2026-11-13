@@ -7,6 +7,7 @@ import { HeroGuideLink } from "@/features/hero-guide/components/HeroGuideLink";
 import { canOpenHeroGuide } from "@/features/hero-guide/lib/hero-guide";
 import { SlotPicker } from "@/features/match-organizer/components/SlotPicker";
 import { StatusBadge } from "@/features/match-organizer/components/StatusBadge";
+import { PlayerLink } from "@/features/player-stats/components/PlayerLink";
 import { PlayerAvatar } from "@/features/profile/components/PlayerAvatar";
 import { SubmitButton } from "@/components/SubmitButton";
 import { InfoTip } from "@/components/InfoTip";
@@ -21,6 +22,7 @@ import { acceptProposal, adminReplacePlayer, adminResetMatch, adminSetTime, mark
 import { ModeTag } from "@/features/match-organizer/components/ModeTag";
 import { AcceptWithMode, PlayModeField } from "@/features/match-organizer/components/PlayModePicker";
 import { matchMode, showsMode, sideOf, type PlayMode } from "@/features/match-organizer/lib/play-mode";
+import { HeroIcons } from "@/components/HeroIcon";
 
 export const metadata: Metadata = { title: "Meccs" };
 
@@ -31,10 +33,14 @@ function PlayerCard({ player, profile, showContacts }: { player: Player | null; 
   return (
     <div className="card">
       <div className="flex items-center gap-3">
-        <PlayerAvatar name={player.karnyx_name} hero={player.heroes[0]} />
+        <PlayerLink name={player.karnyx_name} decorative>
+          <PlayerAvatar name={player.karnyx_name} hero={player.heroes[0]} />
+        </PlayerLink>
         <div className="min-w-0">
-          <div className="text-lg font-bold">{player.karnyx_name}</div>
-          {player.heroes.length > 0 && <div className="muted text-sm">{player.heroes.join(" · ")}</div>}
+          <div className="text-lg font-bold">
+            <PlayerLink name={player.karnyx_name} />
+          </div>
+          <HeroIcons heroes={player.heroes} />
         </div>
       </div>
       {showContacts && (
@@ -147,16 +153,22 @@ export default async function MatchPage({
           </div>
           <div className="vsbox">
             <div className="p">
-              <PlayerAvatar name={match.a.karnyx_name} hero={match.a.heroes[0]} size="lg" />
-              <h1 className="text-xl font-extrabold sm:text-2xl">{match.a.karnyx_name}</h1>
-              <small>{match.a.heroes.join(" · ")}</small>
+              <PlayerLink name={match.a.karnyx_name} decorative>
+                <PlayerAvatar name={match.a.karnyx_name} hero={match.a.heroes[0]} size="lg" />
+              </PlayerLink>
+              <h1 className="text-xl font-extrabold sm:text-2xl">
+                <PlayerLink name={match.a.karnyx_name} />
+              </h1>
+              <HeroIcons heroes={match.a.heroes} />
               {match.b && sideTag("a")}
             </div>
             <span className="vsx text-4xl">VS</span>
             <div className="p">
-              <PlayerAvatar name={match.b?.karnyx_name ?? null} hero={match.b?.heroes[0]} size="lg" />
-              <h2 className="text-xl font-extrabold sm:text-2xl">{match.b?.karnyx_name ?? "Bye"}</h2>
-              <small>{match.b ? match.b.heroes.join(" · ") : "nincs ellenfél"}</small>
+              <PlayerLink name={match.b?.karnyx_name} decorative>
+                <PlayerAvatar name={match.b?.karnyx_name ?? null} hero={match.b?.heroes[0]} size="lg" />
+              </PlayerLink>
+              <h2 className="text-xl font-extrabold sm:text-2xl">{match.b ? <PlayerLink name={match.b.karnyx_name} /> : "Bye"}</h2>
+              {match.b ? <HeroIcons heroes={match.b.heroes} /> : <small>nincs ellenfél</small>}
               {match.b && sideTag("b")}
             </div>
           </div>

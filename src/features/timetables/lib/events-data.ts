@@ -7,6 +7,8 @@ import { publicStorageUrl } from "@/lib/storage-url";
 import { createAdminClient } from "@/lib/supabase/server";
 import { dayKey } from "@/features/match-organizer/lib/time";
 import { getActiveTournament, getRounds } from "@/features/match-organizer/lib/data";
+import { getChampionships, getRegistrationCounts } from "@/features/championships/lib/run";
+import { tournamentCalendarItem } from "./tournament-items";
 import { EVENT_IMAGE_BUCKET, eventEnd, formatEventDate, publishState, type CalendarItem, type EventRow } from "./events";
 
 export { EVENT_IMAGE_BUCKET };
@@ -110,5 +112,21 @@ export const getCalendarItems = cache(async (timeZone: string): Promise<Calendar
     };
   });
 
-  return [...events.map((e) => eventToItem(e, timeZone, now)), ...roundItems];
+  return [...events.map((e) => eventToItem(e, timeZone, now)), ...roundItems, ...(await tournamentItems(timeZone, now))];
 });
+
+/** Bajnokságok (built-in tournaments). Empty before migration 0013, when the columns don't exist. */
+async function tournamentItems(timeZone: string, now: Date): Promise<CalendarItem[]> {
+  const tournaments = await getChampionships({ includeDrafts: false });
+  if (tournaments.length === 0) return [];
+  const ids = tournaments.map((t) => t.id);
+  const [{ data: rounds }, counts] = await Promise.all([
+    createAdminClient().from("rounds").select("tournament_id, starts_at, deadline, closed_at").in("tournament_id", ids),
+    getRegistrationCounts(ids),
+  ]);
+  return tournaments.flatMap((t) => {
+    const own = (rounds ?? []).filter((r) => r.tournament_id === t.id);
+    const item = tournamentCalendarItem(t, own, counts.get(t.id) ?? 0, timeZone, now);
+    return item ? [item] : [];
+  });
+}
