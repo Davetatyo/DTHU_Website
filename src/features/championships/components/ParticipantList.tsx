@@ -1,5 +1,6 @@
 import { PlayerLink } from "@/features/player-stats/components/PlayerLink";
 import { PlayerAvatar } from "@/features/profile/components/PlayerAvatar";
+import { HeroIcons } from "@/components/HeroIcon";
 
 export type Participant = { name: string; heroes?: string[]; locked?: boolean };
 
@@ -24,7 +25,7 @@ export function ParticipantList({ people }: { people: Participant[] }) {
                 </span>
               )}
             </div>
-            {p.heroes && p.heroes.length > 0 && <div className="muted truncate text-xs">{p.heroes.join(", ")}</div>}
+            {p.heroes && <HeroIcons heroes={p.heroes} />}
           </div>
         </li>
       ))}

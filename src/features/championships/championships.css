@@ -50,10 +50,6 @@
 .res-hp + .res-hp { border-top: 1px solid var(--line); }
 .res-hp .input { text-align: center; }
 
-/* Pick / ban chips on a match card. */
-.res-chips { display: flex; flex-direction: column; min-width: 0; font-size: 0.75rem; line-height: 1.3; color: var(--muted); }
-.res-chips s { color: var(--danger); text-decoration-thickness: 1px; }
-
 /* Bajnokságok sub-tabs (in the page, so they follow the theme). */
 .ch-tabs { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; border-bottom: 1px solid var(--line); }
 .ch-tabs::-webkit-scrollbar { display: none; }
@@ -82,15 +78,12 @@
 .res-score { font-weight: 800; color: var(--gold); white-space: nowrap; font-variant-numeric: tabular-nums; }
 .mr .sc.res-score { font-size: 1.05rem; }
 .res-score i { font-style: normal; margin: 0 3px; opacity: 0.7; }
-.res-picks { display: flex; flex-direction: column; min-width: 0; font-size: 0.75rem; line-height: 1.3; color: var(--muted); }
-.res-picks span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.res-picks s { color: var(--danger); text-decoration-thickness: 1px; }
-.mr .pl.r .res-picks { align-items: flex-end; }
+/* HeroPicks: the played hero, a gap, then the banned one. */
+.hero-picks .hero-ic + .hero-ic.ban { margin-left: 6px; }
 /* Cards are always dark: fixed colours. */
 .tile .res-won { color: #3fbf6f; }
 .tile .res-score { color: #e8c46a; font-size: 1.4rem; }
-.tile .res-picks { align-items: center; color: #cfcbd8; }
-.tile .res-picks s { color: #ff7a70; }
+.tile .hero-ic { box-shadow: 0 0 0 2px #15131c; }
 /* Phones: the green name already marks the winner, the cup would cut the name short. */
 @media (max-width: 640px) {
   .mr .res-cup { display: none; }

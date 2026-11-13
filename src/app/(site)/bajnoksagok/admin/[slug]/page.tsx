@@ -19,6 +19,7 @@ import { getPlayers, getRounds } from "@/features/match-organizer/lib/data";
 import { formatDateTime, utcToWallTime } from "@/features/match-organizer/lib/time";
 import { getChampionshipMatches, startDue, getRegistrations, getTournamentBySlug } from "@/features/championships/lib/run";
 import { FORMAT_LABELS, scoringLabel, scoringOf, STATUS_LABELS } from "@/features/championships/lib/rules";
+import { HeroIcons } from "@/components/HeroIcon";
 
 export const metadata: Metadata = { title: "Verseny kezelése" };
 
@@ -139,7 +140,9 @@ export default async function AdminTournamentPage({
                           <PlayerLink name={r.karnyx_name} />
                         </span>
                       </td>
-                      <td>{r.heroes.join(", ")}</td>
+                      <td>
+                        <HeroIcons heroes={r.heroes} />
+                      </td>
                       <td>{r.locked_at ? "🔒 véglegesítve" : <span className="muted">módosíthat</span>}</td>
                       <td className="text-right">
                         <form action={removeRegistration}>

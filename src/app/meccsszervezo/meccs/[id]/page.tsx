@@ -22,6 +22,7 @@ import { acceptProposal, adminReplacePlayer, adminResetMatch, adminSetTime, mark
 import { ModeTag } from "@/features/match-organizer/components/ModeTag";
 import { AcceptWithMode, PlayModeField } from "@/features/match-organizer/components/PlayModePicker";
 import { matchMode, showsMode, sideOf, type PlayMode } from "@/features/match-organizer/lib/play-mode";
+import { HeroIcons } from "@/components/HeroIcon";
 
 export const metadata: Metadata = { title: "Meccs" };
 
@@ -39,7 +40,7 @@ function PlayerCard({ player, profile, showContacts }: { player: Player | null; 
           <div className="text-lg font-bold">
             <PlayerLink name={player.karnyx_name} />
           </div>
-          {player.heroes.length > 0 && <div className="muted text-sm">{player.heroes.join(" · ")}</div>}
+          <HeroIcons heroes={player.heroes} />
         </div>
       </div>
       {showContacts && (
@@ -158,7 +159,7 @@ export default async function MatchPage({
               <h1 className="text-xl font-extrabold sm:text-2xl">
                 <PlayerLink name={match.a.karnyx_name} />
               </h1>
-              <small>{match.a.heroes.join(" · ")}</small>
+              <HeroIcons heroes={match.a.heroes} />
               {match.b && sideTag("a")}
             </div>
             <span className="vsx text-4xl">VS</span>
@@ -167,7 +168,7 @@ export default async function MatchPage({
                 <PlayerAvatar name={match.b?.karnyx_name ?? null} hero={match.b?.heroes[0]} size="lg" />
               </PlayerLink>
               <h2 className="text-xl font-extrabold sm:text-2xl">{match.b ? <PlayerLink name={match.b.karnyx_name} /> : "Bye"}</h2>
-              <small>{match.b ? match.b.heroes.join(" · ") : "nincs ellenfél"}</small>
+              {match.b ? <HeroIcons heroes={match.b.heroes} /> : <small>nincs ellenfél</small>}
               {match.b && sideTag("b")}
             </div>
           </div>

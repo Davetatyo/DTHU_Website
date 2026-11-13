@@ -286,6 +286,11 @@ a:hover { color: inherit; }
   .mr .pl.r .hero-ics { justify-content: flex-end; }
   .hero-ic { width: 28px; height: 28px; flex: none; border-radius: 50%; background-size: cover; background-position: center top; box-shadow: 0 0 0 2px var(--panel); display: inline-flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 800; color: #fff; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6); }
   .hero-ic + .hero-ic { margin-left: -5px; }
+  /* A banned hero: darkened and struck through (HeroIcon banned). */
+  .hero-ic.ban { position: relative; }
+  .hero-ic.ban::before { content: ""; position: absolute; inset: 0; border-radius: 50%; background: rgba(10, 8, 14, 0.5); }
+  .hero-ic.ban::after { content: ""; position: absolute; left: -1px; right: -1px; top: 50%; height: 2px; margin-top: -1px; border-radius: 1px; background: #ff5a52; transform: rotate(-45deg); }
+  .vsbox .p .hero-ics { justify-content: center; }
   .mr .sc { text-align: center; color: var(--muted); font-size: 13px; font-weight: 800; letter-spacing: 0.1em; }
   .mr .st { text-align: right; }
   .mr .go { color: var(--muted); font-size: 20px; text-align: right; }

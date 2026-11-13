@@ -23,6 +23,7 @@ import {
   startDue,
 } from "@/features/championships/lib/run";
 import { FORMAT_LABELS, STATUS_LABELS } from "@/features/championships/lib/rules";
+import { HeroIcons } from "@/components/HeroIcon";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const t = await getTournamentBySlug((await params).slug);
@@ -129,7 +130,7 @@ async function Registration({
             <div className="space-y-1 text-sm">
               <p>
                 <span className="badge badge-confirmed">Véglegesítve</span> Ezekkel a hősökkel indulsz:{" "}
-                <strong>{mine.heroes.join(", ")}</strong>
+                <HeroIcons heroes={mine.heroes} />
               </p>
               <p className="muted">A hősöket a többiek a kezdéskor látják.</p>
             </div>

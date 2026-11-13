@@ -1,37 +1,22 @@
 import Link from "next/link";
 import { routes } from "@/lib/routes";
-import { HeroAvatar } from "@/components/HeroAvatar";
+import { HeroIcons } from "@/components/HeroIcon";
 import { formatDateTime } from "@/features/match-organizer/lib/time";
 import { sideOf } from "@/features/match-organizer/lib/play-mode";
 import { reportRights, reportStatus, resultButtonLabel } from "@/features/championships/lib/results";
 import type { ChampionshipMatch, MatchReport, Player } from "@/features/championships/lib/types";
+import { HeroPicks } from "./HeroPicks";
 import { ResultPanel } from "./ResultPanel";
 
 function Side({ player, won, pick, ban }: { player: Player; won: boolean; pick?: string | null; ban?: string | null }) {
   return (
     <div className="flex min-w-0 items-center gap-2">
-      {pick && (
-        <span className="hidden sm:inline-flex">
-          <HeroAvatar name={pick} hero={pick} />
-        </span>
-      )}
       <div className="min-w-0">
         <div className="truncate font-semibold" style={won ? { color: "var(--ok)" } : undefined}>
           {won && "🏆 "}
           {player.karnyx_name}
         </div>
-        {pick ? (
-          <div className="res-chips">
-            <span className="truncate">{pick}</span>
-            {ban && (
-              <span className="truncate" title={`Kitiltva: ${ban}`}>
-                <s>{ban}</s>
-              </span>
-            )}
-          </div>
-        ) : (
-          player.heroes.length > 0 && <div className="muted truncate text-xs">{player.heroes.join(", ")}</div>
-        )}
+        {pick ? <HeroPicks pick={pick} ban={ban} /> : <HeroIcons heroes={player.heroes} />}
       </div>
     </div>
   );

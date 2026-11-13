@@ -1,5 +1,7 @@
 import Link from "next/link";
-import { Fragment, type CSSProperties } from "react";
+import type { CSSProperties } from "react";
+import { HeroIcons } from "@/components/HeroIcon";
+import { HeroPicks } from "./HeroPicks";
 import { PlayerAvatar } from "@/features/profile/components/PlayerAvatar";
 import { StatusBadge } from "@/features/match-organizer/components/StatusBadge";
 import { groupMatches } from "@/features/match-organizer/lib/schedule";
@@ -12,7 +14,7 @@ import type { ChampionshipMatch, MatchReport, Player } from "@/features/champion
 
 // A championship round's matches in the Időpontfoglaló's look (list rows or picture cards), plus
 // the result: the winner highlighted with 🏆, the final health instead of "VS", and under each
-// name the hero they played and the one that was banned. Only locked results are shown; a
+// name the hero they played and the one that was banned, as icons. Only locked results are shown; a
 // submitted one waiting for the opponent shows as "Jóváhagyásra vár".
 
 type Props = {
@@ -33,33 +35,6 @@ function resultOf(m: ChampionshipMatch, reports: Map<string, MatchReport>): Resu
   return null;
 }
 
-function Picks({ pick, ban }: { pick?: string | null; ban?: string | null }) {
-  if (!pick && !ban) return null;
-  return (
-    <small className="res-picks">
-      {pick && <span title="Ezzel a hőssel játszott">{pick}</span>}
-      {ban && (
-        <span title="Kitiltott hős">
-          <s>{ban}</s>
-        </span>
-      )}
-    </small>
-  );
-}
-
-function Heroes({ player }: { player: Player }) {
-  if (player.heroes.length === 0) return null;
-  return (
-    <small className="heroes">
-      {player.heroes.map((h, i) => (
-        <Fragment key={h}>
-          {i > 0 && <i className="sep"> · </i>}
-          <span>{h}</span>
-        </Fragment>
-      ))}
-    </small>
-  );
-}
 
 function Name({ player, won }: { player: Player; won: boolean }) {
   return (
@@ -89,7 +64,7 @@ function RowSide({ player, side, result }: { player: Player | null; side: "a" | 
       <PlayerAvatar name={player.karnyx_name} hero={(side === "a" ? r?.pick_a : r?.pick_b) ?? player.heroes[0]} />
       <span className="min-w-0">
         <Name player={player} won={result?.winner === side} />
-        {r ? <Picks pick={side === "a" ? r.pick_a : r.pick_b} ban={side === "a" ? r.ban_a : r.ban_b} /> : <Heroes player={player} />}
+        {r ? <HeroPicks pick={side === "a" ? r.pick_a : r.pick_b} ban={side === "a" ? r.ban_a : r.ban_b} /> : <HeroIcons heroes={player.heroes} />}
       </span>
     </span>
   );
@@ -204,15 +179,9 @@ function CardSide({ player, side, result }: { player: Player | null; side: "a" |
       <PlayerAvatar name={player.karnyx_name} hero={(side === "a" ? r?.pick_a : r?.pick_b) ?? player.heroes[0]} size="md" />
       <Name player={player} won={result?.winner === side} />
       {r ? (
-        <Picks pick={side === "a" ? r.pick_a : r.pick_b} ban={side === "a" ? r.ban_a : r.ban_b} />
+        <HeroPicks pick={side === "a" ? r.pick_a : r.pick_b} ban={side === "a" ? r.ban_a : r.ban_b} />
       ) : (
-        player.heroes.length > 0 && (
-          <small className="heroes">
-            {player.heroes.map((h) => (
-              <span key={h}>{h}</span>
-            ))}
-          </small>
-        )
+        <HeroIcons heroes={player.heroes} />
       )}
     </div>
   );

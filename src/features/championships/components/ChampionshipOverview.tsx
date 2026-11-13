@@ -9,6 +9,7 @@ import { sideOf } from "@/features/match-organizer/lib/play-mode";
 import { formatDateTime, timeLeft } from "@/features/match-organizer/lib/time";
 import type { ViewMode } from "@/features/match-organizer/lib/view";
 import { InfoTip } from "@/components/InfoTip";
+import { HeroIcons } from "@/components/HeroIcon";
 import { routes } from "@/lib/routes";
 import type { ChampionshipAccess } from "@/features/championships/lib/access";
 import { reportRights, reportStatus, resultButtonLabel } from "@/features/championships/lib/results";
@@ -263,7 +264,7 @@ function MyMatch({
               <PlayerAvatar name={opponent?.karnyx_name ?? null} hero={opponent?.heroes[0]} size="md" />
             </PlayerLink>
             <b>{opponent ? <PlayerLink name={opponent.karnyx_name} /> : "Bye"}</b>
-            <small>{opponent ? opponent.heroes.join(", ") : "nincs ellenfél"}</small>
+            {opponent ? <HeroIcons heroes={opponent.heroes} /> : <small>nincs ellenfél</small>}
           </div>
         </div>
         <div className="flex flex-col items-center gap-2 text-center">
