@@ -684,6 +684,10 @@ branch: `src/features/live-banner/README.md`, bot guide `src/features/live-banne
 **Open questions:** whether "1.5 hours or until everyone leaves" means the longer of the two, as
 built; which link works best on phones.
 
+**Later extension (Árpád, 2026-11-14):** per-match voice rooms for spectating and a "Megtekintés
+Discordon" link on the match card. See the spectating part of
+[docs/discord-match-reporting-and-live-spectating.md](docs/discord-match-reporting-and-live-spectating.md) and R19.
+
 ---
 
 ### R15 · Hős segédlet (read up on the heroes in your match)
@@ -714,6 +718,82 @@ redesign puzzle 1 (Rage! would be a second 100% answer).
 
 **Open questions:** confirm the other assumed rules (README on the branch); more puzzles and goals
 (defend, tie, maximise damage); defender cards; more heroes; rewards.
+
+---
+
+> **R17–R19 belong together** (added 2026-11-14 by Árpád; Dave to confirm). Full briefs in
+> `docs/`. The docs number themselves 01 ranking, 02 Discord, 03 website, but the build order
+> is **R17 → R18 → R19**: ranking only consumes finalized matches, and Discord is a second
+> entry point to the same match lifecycle, so both need R17's match model first.
+> **Before R17:** run migration 0013 and merge `feature/tournament-pairing` and
+> `feature/player-stats`. Their `match_reports` submit/confirm flow is the seed of R17, and a
+> match-model redesign across unmerged branches would mean rebasing a schema change three times.
+
+### R17 · Meccs jelentése (report any game on the website, one match lifecycle)
+
+**Status:** Ready to plan (Árpád, 2026-11-14) · **Feature id (proposed):** `match-reporting` ·
+**Depends on:** migration 0013 + `feature/tournament-pairing` and `feature/player-stats` merged.
+Brief: [docs/website-match-reporting-and-unified-game-logic.md](docs/website-match-reporting-and-unified-game-logic.md)
+
+A player reports a finished Casual or Ranked game on the website (opponent, both heroes, final HP,
+ultimates, outcome). It stays pending until the opponent accepts (Elfogadom) or disputes (Vitatom).
+Tournament games are reported on their existing match, not as a separate game. Every source
+(website, later Discord, admin) writes the same match record, and each match counts once.
+
+**Decisions (Árpád, 2026-11-14):**
+- Standalone **Ranked** games exist, next to Casual. Tournament matches also count as ranked.
+- Every match carries a "rated" flag fixed at creation: Ranked games get it, tournament matches
+  inherit it from their tournament, Casual never. Proposed: a per-tournament "rated" switch, on by
+  default, so test or fun tournaments can be excluded.
+- No Karnyx history import: it has no winner or hero data.
+
+**Data (draft):** today `matches.round_id` is NOT NULL and the players are tournament `players`, not
+`profiles`, so a game outside a tournament has nowhere to live. That is the first schema decision.
+Identity is already solved: `profiles.discord_id` is unique and every login is Discord OAuth.
+
+**Open questions:** extend `matches` or add a new canonical games table; expiry of unanswered reports;
+who resolves disputes; whether pending reports are public.
+
+### R18 · Ranglista: skill rating, seasons and all-time leaderboard
+
+**Status:** Ready to plan after R17 (Árpád, 2026-11-14) · **Feature id:** `rankings` (the existing
+Ranglista preview, today on sample data) · **Depends on:** R17 (finalized rated matches).
+Brief: [docs/ranking-system.md](docs/ranking-system.md)
+
+A permanent skill rating (Glicko-2 proposed), a six-month seasonal ladder with tiers and LP, and an
+all-time leaderboard (rating − 2 × RD) that never resets.
+
+**Decisions (Árpád, 2026-11-14):**
+- Rated tournament matches move **both** the skill rating and seasonal LP.
+- Ratings start fresh (or replay confirmed Bajnokságok results); no Karnyx import.
+
+**Advice to weigh:** build Glicko-2 + the all-time leaderboard first, and add seasons, tiers and LP once
+ranked volume is known. Seven tiers with two divisions spread a few dozen players too thin to mean much.
+The older "Dice Throne Community Platform Design & Build Plan.md" says Elo; pick one before planning
+(Glicko-2 suits low match volume better).
+
+**Open questions:** tier count for the community's size; placement and soft-reset rules; minimum games for
+an all-time position; what a draw counts as.
+
+### R19 · /result Discord parancs (report games from Discord)
+
+**Status:** Idea, after R17 (Árpád, 2026-11-14) · **Feature id (proposed):** `discord-results` ·
+**Depends on:** R17 (the bot calls the same match operations), R18 for rating effects.
+Brief: [docs/discord-match-reporting-and-live-spectating.md](docs/discord-match-reporting-and-live-spectating.md)
+
+`/result opponent:@user` in the casual or ranked results channel opens a modal; the opponent accepts or
+disputes with buttons, or on the website. Same pending → finalized lifecycle as R17, no second write path.
+
+- The bot is Árpád's `matchmaking-bot`, a separate project (one ~690-line `index.js`, discord.js 14).
+  Its code stays out of this repository; this repo only gets the website side (API, tables, screens).
+- The old screenshot + reaction + one-hour auto-save flow must be switched off (or kept for legacy data
+  only) once `/result` is live, so no game counts twice.
+- **Live spectating** from the same brief (a Discord voice room per scheduled match, a "Megtekintés
+  Discordon" link) is not part of R19: it extends R14 Élő adás, which already detects voice channels
+  through this bot.
+
+**Open questions:** does Discord's modal support hero selects well enough, or does the hero pick move to
+a follow-up message; what happens to `match-results.json` history.
 
 ---
 
