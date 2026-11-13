@@ -70,3 +70,28 @@ export function heroColors(hero: string | null | undefined): [string, string] {
 export function heroImage(hero: string | null | undefined): string | undefined {
   return hero ? IMAGES[hero] : undefined;
 }
+
+// Square hero portraits (300 px) shared with the Szabálytár, by slug ("Moon Elf" → moon-elf).
+const PORTRAITS = new Set([
+  "alchemist", "artificer", "barbarian", "black-panther", "black-widow", "captain-marvel", "cursed-pirate",
+  "cyclops", "deadpool", "doctor-strange", "druid", "duelist", "forgemaster", "gambit", "gunslinger",
+  "headless-horseman", "huntress", "iceman", "jean-grey", "krampus", "loki", "monk", "moon-elf",
+  "mystic-brawler", "necromancer", "ninja", "paladin", "pale-lady", "psylocke", "pyromancer", "raveness",
+  "rogue", "samurai", "santa", "scarlet-witch", "seraph", "shadow-thief", "spider-man", "storm", "sun-elf",
+  "tactician", "thor", "treant", "vampire-lord", "wolverine",
+]);
+
+export function heroSlug(hero: string): string {
+  return hero
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+/** The hero's round-icon portrait, or undefined when there's none (use heroColors then). */
+export function heroPortrait(hero: string | null | undefined): string | undefined {
+  if (!hero) return undefined;
+  const slug = heroSlug(hero);
+  return PORTRAITS.has(slug) ? `/szabalytar/img/heroes/${slug}.webp` : undefined;
+}
