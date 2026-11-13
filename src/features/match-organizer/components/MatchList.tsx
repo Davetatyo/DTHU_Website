@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { Fragment } from "react";
 import { matchMode, showsMode } from "../lib/play-mode";
 import { ModeTag } from "./ModeTag";
+import { HeroIcon } from "@/components/HeroIcon";
 import { PlayerAvatar } from "@/features/profile/components/PlayerAvatar";
 import { sameName } from "@/lib/auth";
 import { routes } from "@/lib/routes";
@@ -26,16 +26,13 @@ function Side({ player, side }: { player: Player | null; side: "l" | "r" }) {
       <PlayerAvatar name={player.karnyx_name} hero={player.heroes[0]} />
       <span className="min-w-0">
         <b>{player.karnyx_name}</b>
-        {/* The whole roster; a line breaks only between heroes (one per line on phones). */}
+        {/* The whole roster as small round portraits; the names are the tooltips. */}
         {player.heroes.length > 0 && (
-          <small className="heroes">
-            {player.heroes.map((h, i) => (
-              <Fragment key={h}>
-                {i > 0 && <i className="sep"> · </i>}
-                <span>{h}</span>
-              </Fragment>
+          <span className="hero-ics" role="img" aria-label={player.heroes.join(", ")}>
+            {player.heroes.map((h) => (
+              <HeroIcon key={h} hero={h} />
             ))}
-          </small>
+          </span>
         )}
       </span>
     </span>
