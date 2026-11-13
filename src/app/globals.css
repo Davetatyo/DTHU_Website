@@ -278,17 +278,21 @@ a:hover { color: inherit; }
   .mr .pl.r { flex-direction: row-reverse; text-align: right; }
   .mr .pl b { display: block; font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .mr .pl small { display: block; font-size: 12px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .mr .pl small.heroes { white-space: normal; line-height: 1.3; }
-  .mr .pl small.heroes span { white-space: nowrap; }
-  .mr .pl small.heroes .sep { font-style: normal; }
+  .mr .pl { gap: 8px; }
+  .mr .pl .av { width: 52px; height: 52px; border-width: 2px; }
+  .mr .pl .av .ini { font-size: 18px; }
+  /* A roster as slightly overlapping round portraits (three fit in a narrow player column). */
+  .hero-ics { display: flex; margin-top: 5px; }
+  .mr .pl.r .hero-ics { justify-content: flex-end; }
+  .hero-ic { width: 28px; height: 28px; flex: none; border-radius: 50%; background-size: cover; background-position: center top; box-shadow: 0 0 0 2px var(--panel); display: inline-flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 800; color: #fff; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6); }
+  .hero-ic + .hero-ic { margin-left: -5px; }
   .mr .sc { text-align: center; color: var(--muted); font-size: 13px; font-weight: 800; letter-spacing: 0.1em; }
   .mr .st { text-align: right; }
   .mr .go { color: var(--muted); font-size: 20px; text-align: right; }
   @media (max-width: 720px) {
     .mr { grid-template-columns: 64px minmax(0, 1fr) 30px minmax(0, 1fr); row-gap: 6px; }
     .mr .pl .av { display: none; }
-    .mr .pl small.heroes span { display: block; white-space: normal; }
-    .mr .pl small.heroes .sep { display: none; }
+    .hero-ic { width: 24px; height: 24px; }
     .mr .tm { font-size: 14px; }
     .mr .tm small { font-size: 9px; letter-spacing: 0.02em; }
     .mr .st { grid-column: 2 / -1; text-align: left; }

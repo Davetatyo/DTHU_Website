@@ -1,6 +1,6 @@
 # Project state: DTHU website
 
-**Current version: v2.36** (2026-11-09). Live: https://dthu.hu builds from this repository's
+**Current version: v2.37** (2026-11-13). Live: https://dthu.hu builds from this repository's
 `main` (the owner moved Vercel over around 2026-11-01; checked live 2026-11-02). Every push to
 `main` deploys within a minute.
 **Launch phase: 1**: the public sees only the Meccsszervező; the whole site from the prototype
@@ -304,6 +304,22 @@ quiz) are in
 ## Handover log
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
+
+### 2026-11-13 · Hero icons in the Lista nézet (v2.37, feature/hero-icons → main)
+
+- Owner's request: on Áttekintés → Lista, show each player's heroes as small round icons instead of
+  text, and make the player avatars bigger. Shown first on a clickable localhost preview, then approved.
+- `src/lib/heroes.ts`: `heroSlug()` and `heroPortrait()` (the Szabálytár's 300 px square portraits in
+  `public/szabalytar/img/heroes/`, 45 heroes; test in `src/lib/heroes.test.ts`).
+  `src/components/HeroIcon.tsx`: round portrait, or a circle in the hero's colours with initials;
+  the name is the tooltip, the roster is the `aria-label`.
+- `MatchList` rows: icons 28 px (24 px on phones), overlapping by 5 px so three fit at about 1000 px
+  width; avatars 52 px on desktop (still hidden on phones); old `.mr .pl small.heroes` CSS removed.
+  The Kártyák view (`MatchupGrid`) and match pages still show hero names as text.
+- Known limit: on phones there's no hover, so the hero names aren't shown in the list.
+- Verified: types, lint, tests; browser at 1024 px and 375 px, dark and light, real round 3 data
+  (none of the 22 player slots overflow). Previewed with the TEMP-PREVIEW fake profile and middleware
+  bypass, both reverted (grep clean) before the commit.
 
 ### 2026-11-12/13 · Bajnokságok: scoring, Dutch pairing, full Buchholz + HP; committed and pushed on feature/tournament-pairing (not merged)
 
@@ -1388,6 +1404,12 @@ webhook, no cron secret), so nothing local can post to Discord.
 ---
 
 ## Changelog
+
+### v2.37 · 2026-11-13 · `feature/hero-icons`
+**Changed (visible to players):** in the Időpontfoglaló's list view, each player's heroes show as
+small round portraits (name on hover) instead of text, and the player pictures are bigger on desktop.
+**Manual steps:** none.
+**Verified:** types, lint, tests; browser at desktop and 375 px, dark and light; owner tested on localhost.
 
 ### v2.36 · 2026-11-09 · `fix/icon-crop`
 **Changed (visible to players):** the browser tab, bookmark/favourites and phone home-screen icons
