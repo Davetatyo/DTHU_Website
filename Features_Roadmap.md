@@ -181,7 +181,7 @@ catalogue foundation; R4 is what fills the collection
 - **Locked items:** show the ones not yet earned greyed out, with how to get them (e.g. "Érd
   el a 10. szintet")? Or keep them hidden as a surprise? (Open question.)
 - **What others see:** only the worn cosmetics, next to the player's name and avatar. Never
-  their XP or level (R4). **Profiles aren't visible to other players at first** (owner,
+  their XP or level (R4). **Update 2026-11-13:** championship stats (Játékosok, `feature/player-stats`) are visible to every logged-in player with the owner's agreement; the rest of the profile stays private. **Profiles aren't visible to other players at first** (owner,
   2026-11-03; to be opened later), so the profile page is only ever your own.
 - **The player's own XP:** a level and XP progress block on top of the profile page, and a
   thin XP bar under the name in the header. Decided look: R4 → Look.

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { PlayerLink } from "@/features/player-stats/components/PlayerLink";
 import { PlayerAvatar } from "@/features/profile/components/PlayerAvatar";
 import { RoundTimeline } from "@/features/match-organizer/components/RoundTimeline";
 import { StatusBadge } from "@/features/match-organizer/components/StatusBadge";
@@ -249,13 +250,19 @@ function MyMatch({
       <div className="panel3 space-y-3 p-4">
         <div className="vsbox">
           <div className="p">
-            <PlayerAvatar name={me?.karnyx_name ?? null} hero={me?.heroes[0]} size="md" />
-            <b>{me?.karnyx_name}</b>
+            <PlayerLink name={me?.karnyx_name} decorative>
+              <PlayerAvatar name={me?.karnyx_name ?? null} hero={me?.heroes[0]} size="md" />
+            </PlayerLink>
+            <b>
+              <PlayerLink name={me?.karnyx_name} />
+            </b>
           </div>
           <span className="vsx">VS</span>
           <div className="p">
-            <PlayerAvatar name={opponent?.karnyx_name ?? null} hero={opponent?.heroes[0]} size="md" />
-            <b>{opponent?.karnyx_name ?? "Bye"}</b>
+            <PlayerLink name={opponent?.karnyx_name} decorative>
+              <PlayerAvatar name={opponent?.karnyx_name ?? null} hero={opponent?.heroes[0]} size="md" />
+            </PlayerLink>
+            <b>{opponent ? <PlayerLink name={opponent.karnyx_name} /> : "Bye"}</b>
             <small>{opponent ? opponent.heroes.join(", ") : "nincs ellenfél"}</small>
           </div>
         </div>

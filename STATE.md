@@ -85,6 +85,7 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 | `hero-guide` Hős segédlet | `/meccsszervezo/meccs/<id>/hos-segedlet` (button on the match page) | **on `main` since v2.30**: admins only until `HERO_GUIDE_ADMINS_ONLY` is false, then everyone logged in | real; no tables | `src/features/hero-guide/README.md` |
 | `puzzle` Taktikai feladvány (experiment, working title) | `/jatekok/taktikai-feladvany`, `/jatekok/taktikai-feladvany/<id>`; card on the Játékok page | **parked** (owner, 2026-11-09): only on branch `feature/puzzle`, never merged into `main` | static: Season 1 Barbarian + Moon Elf rules from the Card Scanner repo; no tables. Images are **not committed** (owner): make them locally with `scripts/puzzle/assets.py` | when picked up: fix the Blind vs. Ultimate rule first (Features_Roadmap R16, `src/features/puzzle/README.md` on the branch) |
 | `profile` Profilkép, Profil szerkesztése, Kitiltás | `/meccsszervezo/profil`, `/meccsszervezo/admin/felhasznalo/<id>` | **live** (v2.2): every logged-in user can upload a picture; admin page and bans for all admins | all real | badge ring (R3/R4), cosmetics collection |
+| `player-stats` Játékosok (player stats) | `/meccsszervezo/jatekosok`, `/meccsszervezo/jatekos/<profile id>`; Profilom card; links on Bajnokságok names | **on `feature/player-stats` (from `feature/tournament-pairing`), not merged**; every logged-in player (`PLAYER_STATS_ADMINS_ONLY = false`) | real: computed from confirmed Bajnokságok results (needs migration 0013); no tables of its own; Karnyx league not counted (no winner/hero data) | Dave reviews; note players see the tab as soon as it's merged (`src/features/player-stats/README.md`) |
 
 ## Database (Supabase)
 
@@ -304,6 +305,35 @@ quiz) are in
 ## Handover log
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
+
+### 2026-11-13 · Player stats (Játékosok): committed on feature/player-stats, not merged
+
+**Status: on the new branch `feature/player-stats` (branched from `feature/tournament-pairing`; `main` v2.37 merged in as `fe4861a`, local only), feature work uncommitted; nothing deployed.**
+Árpád asked for profile stats: wins/losses, per-hero stats, win rates, visible to other players.
+Decided with him (2026-11-13): Dave agreed that stats are visible to every **logged-in** player
+(XP/level stay private); only **confirmed Bajnokságok results** count (the Karnyx league has no
+winner or hero data).
+
+- New feature `src/features/player-stats/` (README there): `lib/stats.ts` (pure, 14 tests),
+  `lib/data.ts` (profile → registrations → players → matches + confirmed match_reports),
+  `lib/access.ts` (`PLAYER_STATS_ADMINS_ONLY`, switched to **false** the same day at Árpád's request: every logged-in player sees stats, also in the admin's player view), components `PlayerStatsView`,
+  `PlayerLink`, `ProfileStatsCard`, `player-stats.css`.
+- Pages `src/app/meccsszervezo/jatekosok/page.tsx` and `jatekos/[id]/page.tsx`; routes
+  `players`, `player(id)`; "Játékosok" tab in the Meccsszervező layout (only for those who may
+  see stats); Profilom card; names in `StandingsTable` and `ParticipantList` link to stats; registry
+  entry (status planned, no site-menu item). Layout inspired by the screenshots Árpád sent (stat
+  tiles, hero win-rate bars, coloured match history).
+- **Verified:** `npx tsc --noEmit`, `npm run lint`, `npm test` (391 green). On the LOCAL Supabase:
+  list, a player page, Profilom and a championship page at 1280 px and 375 px, dark + light, no
+  horizontal scroll; FeriDT's numbers checked against a direct SQL query (3 games, 2–0–1).
+- **Clickable profiles (same day, Árpád):** `PlayerLink` can wrap an avatar (`decorative`: hidden from screen readers and Tab, the name next to it is the real link). Avatars and names open the stats page on the match page (header + contact cards), Bajnokságok "Következő meccsem", participant tiles, standings, the admin sign-up list and the Ranglista (sample names there match no profile yet). **Not** inside match rows and tiles: those are already links to the match (no nested links; checked: 0 nested anchors). Clicking the opponent on a match page opened their stats (Playwright, local).
+- **Állás legend (same day, Árpád):** the line under the standings (P = pont …, Holtversenyben …) is now admin-only; players see just the table (`StandingsTable`, shown only with `showTiebreaks`). This changes `feature/tournament-pairing` code, so it rides along on this branch.
+- **Kitiltott hősök (same day, Árpád):** hero portraits instead of names, the ban count as a red badge on each (name in the tooltip and for screen readers), top 5 only. Uses `heroPortrait()` from `main` (v2.37 hero icons, merged into this branch as `fe4861a`; a duplicate I had written was dropped); the stats page uses it for all hero icons. Avatars elsewhere unchanged.
+- **Committed** on `feature/player-stats` (owner OK, 2026-11-13), not pushed. The TEMP-PREVIEW lines in `src/lib/auth.ts` and
+  `src/middleware.ts` are still in the working tree (local only, from the previous session):
+  keep them out of every commit.
+- **Next:** Dave reviews on dthu.hu after the merge; merge after `feature/tournament-pairing`.
+  Players get the Játékosok tab as soon as it is on `main`.
 
 ### 2026-11-13 · Hero icons in the Lista nézet (v2.37, feature/hero-icons → main)
 

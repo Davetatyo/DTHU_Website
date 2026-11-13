@@ -1,3 +1,4 @@
+import { PlayerLink } from "@/features/player-stats/components/PlayerLink";
 import type { Standing } from "@/features/championships/lib/engine/types";
 
 /** 2.5 → "2,5" (Hungarian decimal comma). */
@@ -42,7 +43,7 @@ export function StandingsTable({
           {standings.map((s) => (
             <tr key={s.id}>
               <td className="text-right font-bold">{s.rank}.</td>
-              <td className="font-medium">{nameMap.get(s.id) ?? s.id}</td>
+              <td className="font-medium">{nameMap.has(s.id) ? <PlayerLink name={nameMap.get(s.id)!} /> : s.id}</td>
               <td className="text-right font-bold">{num(s.points)}</td>
               <td className="text-right">{s.wins}</td>
               <td className="text-right">{s.draws}</td>
@@ -57,12 +58,15 @@ export function StandingsTable({
           ))}
         </tbody>
       </table>
-      <p className="muted mt-1 text-xs">
-        P = pont ({scoringText}), Gy = győzelem, D = döntetlen, V = vereség.
-        {showTiebreaks
-          ? " Holtversenyben: Buch = Buchholz (az összes ellenfél pontjainak összege; a Bye a játékos saját pontjaival számít, így nem jár előnnyel vagy hátránnyal), majd ÉK = életerő-különbség (győzelemnél + a megmaradt életerő, vereségnél − az ellenfélé). Ezt a két oszlopot csak az adminok látják."
-          : " Holtversenyben az ellenfelek erőssége (Buchholz), majd az életerő-különbség dönt."}
-      </p>
+      {/* The legend is admin-only (Árpád, 2026-11-13): players get the table without it. */}
+      {showTiebreaks && (
+        <p className="muted mt-1 text-xs">
+          P = pont ({scoringText}), Gy = győzelem, D = döntetlen, V = vereség. Holtversenyben: Buch = Buchholz (az összes
+          ellenfél pontjainak összege; a Bye a játékos saját pontjaival számít, így nem jár előnnyel vagy hátránnyal), majd ÉK =
+          életerő-különbség (győzelemnél + a megmaradt életerő, vereségnél − az ellenfélé). Ezt a két oszlopot csak az adminok
+          látják.
+        </p>
+      )}
     </div>
   );
 }

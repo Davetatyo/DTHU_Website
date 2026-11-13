@@ -6,6 +6,9 @@ import { headerBadge } from "@/features/profile/components/HeaderBadge";
 import { headerXp, XpNotices } from "@/features/xp/components/XpNotices";
 import { HeaderWallet } from "@/features/shop/components/HeaderWallet";
 import { getAdminView } from "@/lib/auth";
+import { canSeePlayerStats } from "@/features/player-stats/lib/access";
+import type { NavItem } from "@/components/site/NavTabs";
+import { routes } from "@/lib/routes";
 import { organizerTabs, siteMenu } from "@/lib/navigation";
 import { isDevPreview, seesFullSite } from "@/lib/site-mode";
 
@@ -20,10 +23,15 @@ export const metadata: Metadata = {
 export default async function OrganizerLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const adminView = await getAdminView();
   const full = seesFullSite(adminView);
+  // "Játékosok" (player stats), before GYIK, only for those who may see stats
+  // (admins while PLAYER_STATS_ADMINS_ONLY is on).
+  const tabs: NavItem[] = (await canSeePlayerStats())
+    ? [...organizerTabs.slice(0, -1), { href: routes.players, label: "Játékosok", also: [routes.player("").slice(0, -1)] }, ...organizerTabs.slice(-1)]
+    : organizerTabs;
 
   return (
     <>
-      <SiteHeader tabs={full ? siteMenu : organizerTabs} subTabs={full ? organizerTabs : undefined} section="Időpontfoglaló"
+      <SiteHeader tabs={full ? siteMenu : tabs} subTabs={full ? tabs : undefined} section="Időpontfoglaló"
         wallet={<HeaderWallet />}
         userBadge={await headerBadge()}
         userXp={await headerXp()}

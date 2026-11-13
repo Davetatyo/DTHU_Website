@@ -48,6 +48,9 @@ export const routes = {
   /** A match's Hős segédlet (see features/hero-guide). */
   heroGuide: (id: string) => `${MO}/meccs/${id}/hos-segedlet`,
   schedule: `${MO}/menetrend`,
+  /** Player stats (see features/player-stats): everyone's list and one player's page, by profile id. */
+  players: `${MO}/jatekosok`,
+  player: (profileId: string) => `${MO}/jatekos/${profileId}`,
   organizerFaq: `${MO}/gyik`,
   register: "/regisztracio",
   admin: `${MO}/admin`,

@@ -13,6 +13,7 @@ import {
   updateStartTime,
 } from "@/features/championships/actions/admin";
 import { EngineRoundSection } from "@/features/championships/components/EngineRoundSection";
+import { PlayerLink } from "@/features/player-stats/components/PlayerLink";
 import { PlayerAvatar } from "@/features/profile/components/PlayerAvatar";
 import { getPlayers, getRounds } from "@/features/match-organizer/lib/data";
 import { formatDateTime, utcToWallTime } from "@/features/match-organizer/lib/time";
@@ -132,8 +133,10 @@ export default async function AdminTournamentPage({
                     <tr key={r.profile_id}>
                       <td>
                         <span className="flex items-center gap-2 font-medium">
-                          <PlayerAvatar name={r.karnyx_name} />
-                          {r.karnyx_name}
+                          <PlayerLink name={r.karnyx_name} decorative>
+                            <PlayerAvatar name={r.karnyx_name} />
+                          </PlayerLink>
+                          <PlayerLink name={r.karnyx_name} />
                         </span>
                       </td>
                       <td>{r.heroes.join(", ")}</td>
