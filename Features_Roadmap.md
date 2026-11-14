@@ -731,8 +731,9 @@ redesign puzzle 1 (Rage! would be a second 100% answer).
 
 ### R17 · Meccs jelentése (report any game on the website, one match lifecycle)
 
-**Status:** **Planned** (Árpád, 2026-11-14; Dave to confirm) · **Feature id:** `match-reporting` ·
-**Branch:** `feature/match-reporting` (not created yet) · **Depends on:** migration 0013 and the
+**Status:** **In progress**: steps 1–4 of 5 built on the branch (2026-11-15), not merged; migration 0014 not run
+live yet · **Feature id:** `match-reporting` ·
+**Branch:** `feature/match-reporting` · **Depends on:** migration 0013 and the
 Bajnokságok + Játékosok (both on `main` since v2.38).
 **Plan:** [docs/r17-match-reporting-plan.md](docs/r17-match-reporting-plan.md) ·
 Brief: [docs/website-match-reporting-and-unified-game-logic.md](docs/website-match-reporting-and-unified-game-logic.md)
@@ -758,6 +759,8 @@ table when locked. Every source (website, later Discord, admin) ends in one `gam
 - Pending games: only the two players and admins see them; finalized: every logged-in player.
 - Admins only first (`MATCH_REPORTING_ADMINS_ONLY`), then players.
 - No Karnyx history import: it has no winner or hero data.
+- A Discord ping also goes out the moment a game is reported or corrected (Árpád, 2026-11-15), to the
+  player who has to answer.
 
 **Open questions:** none for now.
 

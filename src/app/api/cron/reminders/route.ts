@@ -8,10 +8,12 @@ import { formatDateTime } from "@/features/match-organizer/lib/time";
 import type { Round } from "@/features/match-organizer/lib/types";
 import { runDueDraws } from "@/features/tickets/lib/run";
 import { startDueTournaments } from "@/features/championships/lib/run";
+import { runGameReminders } from "@/features/match-reporting/lib/cron";
 
 // Called hourly by Supabase pg_cron (see docs/setup.md §6). Sends one warning per round 48 hours
 // before the deadline, pinging the players whose match still has no agreed time. The same run
-// also holds the ticket draws (Sorsolás) whose closing time has passed, so they need no own job.
+// also holds the ticket draws (Sorsolás) whose closing time has passed, so they need no own job,
+// and handles unanswered game reports (Játszmák: day-3 and last-call pings, 7-day expiry).
 
 const DEADLINE_WARNING_MS = 48 * 3600_000;
 
@@ -70,5 +72,13 @@ export async function GET(request: NextRequest) {
     console.error("Versenyindítás hiba", err);
   }
 
-  return NextResponse.json({ warnings, draws, started });
+  // Unanswered casual / ranked game reports (migration 0014).
+  let games = { expired: 0, reminded: 0 };
+  try {
+    games = await runGameReminders(site);
+  } catch (err) {
+    console.error("Játszma-emlékeztető hiba", err);
+  }
+
+  return NextResponse.json({ warnings, draws, started, games });
 }

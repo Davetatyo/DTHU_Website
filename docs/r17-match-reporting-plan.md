@@ -1,6 +1,7 @@
 # R17 Meccs jelentése: agreed plan
 
-**Status:** Steps 1–3 done on the branch (migration 0014 + Dave's guide, pure logic in
+**Status:** Steps 1–4 done on the branch (step 4: pages, report ping, reminders + expiry in the cron;
+see the STATE.md handover log). Earlier: steps 1–3 (migration 0014 + Dave's guide, pure logic in
 `src/features/match-reporting/lib/`, tournament bridge + profile-ID identity + stats from `games`, 2026-11-14); 0014 not run on the live database yet.
 Agreed with Árpád 2026-11-14; Dave to confirm.
 **Branch:** `feature/match-reporting` from `main`.
@@ -67,7 +68,9 @@ switch to comparing profile IDs (Karnyx-league rows without a profile keep the n
 
 1. **Ultimates:** recorded only for ranked and casual games, optional. Bajnokságok never record
    them (the result panel stays unchanged).
-2. **Unanswered reports:** expire after **7 days** with no effect (never an automatic win). The
+2. **Report ping (Árpád, 2026-11-15):** reporting or correcting a game pings the player who has to answer
+   right away, in the same channel.
+3. **Unanswered reports:** expire after **7 days** with no effect (never an automatic win). The
    player who has to answer gets **two Discord pings** in the Időpontfoglaló's channel (same webhook,
    `postToDiscord` + `mention()`), each with "x nap / óra maradt a játszma jóváhagyására" and a link
    to the game's page:
@@ -76,12 +79,12 @@ switch to comparing profile IDs (Karnyx-league rows without a profile keep the n
    Built on the hourly cron: `reminders_sent` (0 → 1 → 2) makes each ping go out once; pending games
    older than 7 days are expired (`game_expire`). A correction restarts the 7 days and the pings for
    the player who now has to answer.
-3. **Disputes:** "Javítom" works like the Bajnokságok: the corrected version goes back to the first
+4. **Disputes:** "Javítom" works like the Bajnokságok: the corrected version goes back to the first
    player to confirm; an admin settles stuck games.
-4. **Backdating:** `played_at` at most 7 days in the past, never in the future.
-5. **Visibility:** pending games only to the two players and admins; finalized games to every
+5. **Backdating:** `played_at` at most 7 days in the past, never in the future.
+6. **Visibility:** pending games only to the two players and admins; finalized games to every
    logged-in player (like the stats).
-6. **Release:** admins only first (`MATCH_REPORTING_ADMINS_ONLY`), then players.
+7. **Release:** admins only first (`MATCH_REPORTING_ADMINS_ONLY`), then players.
 
 Earlier (same day): standalone Ranked games exist; tournament matches count as ranked for both
 skill rating and seasonal LP (R18); no Karnyx history import.

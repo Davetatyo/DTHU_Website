@@ -51,6 +51,10 @@ export const routes = {
   /** Player stats (see features/player-stats): everyone's list and one player's page, by profile id. */
   players: `${MO}/jatekosok`,
   player: (profileId: string) => `${MO}/jatekos/${profileId}`,
+  /** Játszmák (see features/match-reporting): my games + inbox, the report form, one game. */
+  gameLog: `${MO}/jatszmak`,
+  gameNew: `${MO}/jatszmak/uj`,
+  gameView: (id: string) => `${MO}/jatszma/${id}`,
   organizerFaq: `${MO}/gyik`,
   register: "/regisztracio",
   admin: `${MO}/admin`,

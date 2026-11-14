@@ -26,7 +26,7 @@ export function gameSide(game: Pick<Game, "profile_a" | "profile_b">, profileId:
 }
 
 /** The profile who has to answer a pending game (the other side of the current version). */
-export function awaitingProfile(game: GameRef): string | null {
+export function awaitingProfile(game: Pick<Game, "status" | "profile_a" | "profile_b" | "reported_side">): string | null {
   if (game.status !== "pending") return null;
   if (game.reported_side === "a") return game.profile_b;
   if (game.reported_side === "b") return game.profile_a;

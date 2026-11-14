@@ -86,7 +86,7 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 | `puzzle` Taktikai feladvány (experiment, working title) | `/jatekok/taktikai-feladvany`, `/jatekok/taktikai-feladvany/<id>`; card on the Játékok page | **parked** (owner, 2026-11-09): only on branch `feature/puzzle`, never merged into `main` | static: Season 1 Barbarian + Moon Elf rules from the Card Scanner repo; no tables. Images are **not committed** (owner): make them locally with `scripts/puzzle/assets.py` | when picked up: fix the Blind vs. Ultimate rule first (Features_Roadmap R16, `src/features/puzzle/README.md` on the branch) |
 | `profile` Profilkép, Profil szerkesztése, Kitiltás | `/meccsszervezo/profil`, `/meccsszervezo/admin/felhasznalo/<id>` | **live** (v2.2): every logged-in user can upload a picture; admin page and bans for all admins | all real | badge ring (R3/R4), cosmetics collection |
 | `player-stats` Játékosok (player stats) | `/meccsszervezo/jatekosok`, `/meccsszervezo/jatekos/<profile id>`; Profilom card; links on Bajnokságok names | **on `main` since v2.38**; every logged-in player (`PLAYER_STATS_ADMINS_ONLY = false`) | real: computed from confirmed Bajnokságok results (migration 0013); no tables of its own; Karnyx league not counted (no winner/hero data) | Dave reviews live; players see the Játékosok tab now (`src/features/player-stats/README.md`) |
-| `match-reporting` Játszmák (R17 Meccs jelentése) | `/meccsszervezo/jatszmak` (planned, not built) | **on `feature/match-reporting`, not merged**: steps 1–3 done (migration 0014, pure logic, tournament bridge + profile-ID identity + Játékosok from `games`) | migration 0014 written, **not run live** | step 4: report form, inbox, game page, pings (`src/features/match-reporting/README.md`) |
+| `match-reporting` Játszmák (R17 Meccs jelentése) | `/meccsszervezo/jatszmak`, `/jatszmak/uj`, `/jatszma/<id>` | **on `feature/match-reporting`, not merged**: steps 1–4 of 5 done (migration 0014, pure logic, profile-ID identity + Játékosok from `games`, Játszmák pages + report ping + reminders/expiry; admins only) | migration 0014 written, **not run live** | step 5: admin edit/void, stats split, open to players (see Handover log) |
 
 ## Database (Supabase)
 
@@ -203,6 +203,8 @@ sample data (no tables yet; tickets and coins become real with migrations 0008 a
 
 ## Needs the owner
 
+0. **R17 Játszmák (`feature/match-reporting`, not merged):** send Dave `docs/migrations/0014-games-for-dave.md`;
+   he runs 0014 before the merge. Steps 1–4 built; step 5 next.
 0. **XP step 1 (v2.31, admins only; migration 0012 has run, checked 2026-11-08).** Test as an admin: mark a played match, give yourself XP on Admin felület → XP kezelés, watch the
    card, the notification and a level-up. When the full site opens: `delete from public.xp_events;`
    and set `XP_ADMINS_ONLY` to false.
@@ -307,6 +309,54 @@ quiz) are in
 ## Handover log
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
+
+### 2026-11-15 · R17 step 4 committed (feature/match-reporting) · START HERE for step 5
+
+**Where R17 stands:** steps 1–4 of 5 are committed on `feature/match-reporting` (not pushed, not merged).
+Plan: `docs/r17-match-reporting-plan.md`; feature guide: `src/features/match-reporting/README.md`.
+Migration **0014 is NOT run on the live database**; Dave runs it (guide `docs/migrations/0014-games-for-dave.md`)
+before the branch is merged: `startTournament` writes `players.profile_id` and would fail without it.
+
+**Step 4 (this session):** Játszmák tab + list + report form + game page + cron, approved by Árpád from
+screenshots. Then, at Árpád's request, a **Discord ping when a game is reported or corrected** (to the player
+who has to answer; `reportLine` in `lib/messages.ts`, `pingAnswerer` in `actions/games.ts`, never blocks the
+save). Verified locally: report → withdraw still works with the ping (webhook blank locally, nothing posted).
+
+**Step 5 (next), from the plan, to build and show screenshots before committing:**
+1. Admin list of games (all contexts/statuses, filter pending/stuck) and on the game page an admin panel:
+   **edit** (same `GameForm` fields + required reason → `rpc("game_admin_edit")`, settles a pending game) and
+   **void** (required reason → `rpc("game_void")`). Rights already in `lib/rights.ts` (`canAdminEdit`,
+   `canVoid`: not on your own pending game, not on tournament games). Probably a link from Admin felület.
+2. **Játékosok / Profilom split** Casual / Ranked / Bajnokság / Összes: `player-stats/lib/data.ts` reads only
+   `context = 'tournament'` today (`GAME_SELECT`/`loadGames`); add standalone finalized games and a filter.
+3. **Open to players:** set `MATCH_REPORTING_ADMINS_ONLY = false` (only with Árpád/Dave's OK), add a GYIK entry.
+4. Then: Dave runs 0014 → merge to `main` via PR with OK → version bump (v2.39) + changelog.
+
+**Local test setup that worked:** dev server `npx next dev -p 3000` (one only; restart if it stops
+hot-reloading), local Supabase in Docker (`supabase_db_DTHU_Website`, 0014 applied), `preview_as` cookie
+login (TEMP-PREVIEW lines in `src/lib/auth.ts` / `src/middleware.ts`, never commit them). Playwright via the
+global `@playwright/mcp` package with `executablePath` = `%LOCALAPPDATA%\ms-playwright\chromium_headless_shell-1217\...`.
+Admins-only pages need the test player to be admin locally (set `is_admin` and restore afterwards).
+
+### 2026-11-15 · R17 step 4 built (details)
+
+- **Built:** "Játszmák" tab (admins only, `MATCH_REPORTING_ADMINS_ONLY`; badge = games waiting for me),
+  `/meccsszervezo/jatszmak` (Elfogadásra vár / Elküldve / Lezárt), `/jatszmak/uj` (report form),
+  `/jatszma/<id>` (Elfogadom / Javítom / Visszavonom, history). Actions in `match-reporting/actions/games.ts`,
+  reads in `lib/data.ts`, cron in `lib/cron.ts` (wired into `/api/cron/reminders`, response gets `games`).
+  New pure modules + tests: `form.ts`, `labels.ts`, `messages.ts`. Routes `gameLog`, `gameNew`, `gameView`.
+- **Verified on the LOCAL Supabase** (Playwright, scratchpad `pw-games.cjs`, `pw-cancel.cjs`, `pw-shots.cjs`;
+  FeriDT made admin locally for the run, then restored): report → server error keeps every field → Ranked saved
+  → FeriDT sees badge 1 + inbox → corrects → PreviewAdmin confirms → final, history reported/corrected/confirmed;
+  Visszavonom with confirm dialog → Visszavonva. Cron (`cron.mjs`, refuses if a webhook is set): +73 h → ping 1,
+  +145 h → ping 2, +169 h → expired. Screenshots 375 px + 1280 px, dark + light, no horizontal overflow.
+  tsc, lint, `npm test` (442) green.
+- **Found and fixed while testing:** React 19 resets a form after its action, so after a validation error the
+  type switch fell back to Casual and the heroes cleared (a Ranked report was saved as Casual). Fields are now
+  controlled and the form remounts by the error's timestamp. Phone list layout and long names in the winner
+  switch fixed.
+- Local DB side effects (local only): test games, and the cron run marked 3 local rounds' 48 h warnings as sent.
+- Árpád approved; committed together with the report ping (entry above).
 
 ### 2026-11-14 (late night) · R17 step 3 done and committed (feature/match-reporting)
 
