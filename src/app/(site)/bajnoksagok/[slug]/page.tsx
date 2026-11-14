@@ -76,7 +76,7 @@ export default async function ChampionshipPage({
         <ChampionshipOverview
           tournament={t}
           access={access === "full" ? "full" : "readonly"}
-          viewerName={me?.karnyx_name ?? null}
+          viewer={me ? { id: me.id, karnyx_name: me.karnyx_name } : null}
           adminView={adminView}
           timeZone={tz}
           view={resolveView(nezet, (await cookies()).get(VIEW_COOKIE)?.value, "lista")}

@@ -6,8 +6,8 @@ source for stats now and the ranking later (R18). Discord `/result` (R19) will u
 database functions.
 
 **Plan and decisions:** [docs/r17-match-reporting-plan.md](../../../docs/r17-match-reporting-plan.md).
-**Status:** in progress on `feature/match-reporting`. Step 1 (migration 0014) and step 2 (pure logic,
-this folder's `lib/`) are written; no pages yet. Admins only first (`MATCH_REPORTING_ADMINS_ONLY`, to add
+**Status:** in progress on `feature/match-reporting`. Steps 1–3 done (migration 0014, pure logic in
+this folder's `lib/`, tournament bridge); no pages yet. Admins only first (`MATCH_REPORTING_ADMINS_ONLY`, to add
 in step 4).
 
 ## Routes (step 4, not built)

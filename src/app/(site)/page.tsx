@@ -9,7 +9,8 @@ import { NewsCard } from "@/features/landing-page/components/NewsCard";
 import { getPublishedNews } from "@/features/landing-page/lib/news-data";
 import { PowerRanking } from "@/features/rankings/components/PowerRanking";
 import { loadRanking } from "@/features/rankings/lib/load";
-import { getCurrentProfile, sameName } from "@/lib/auth";
+import { getCurrentProfile } from "@/lib/auth";
+import { sideOf } from "@/features/match-organizer/lib/play-mode";
 import { routes } from "@/lib/routes";
 import "@/features/landing-page/news.css";
 
@@ -24,8 +25,8 @@ export default async function NewsPage() {
   const real = matches.filter((m) => m.status !== "bye");
   const played = real.filter((m) => m.status === "played").length;
   const players = new Set(matches.flatMap((m) => [m.a.karnyx_name, ...(m.b ? [m.b.karnyx_name] : [])])).size;
-  const myMatch = viewer ? matches.find((m) => isParticipant(m, viewer.karnyx_name)) : undefined;
-  const meSide = myMatch && (sameName(myMatch.a.karnyx_name, viewer?.karnyx_name) ? myMatch.a : myMatch.b);
+  const myMatch = viewer ? matches.find((m) => isParticipant(m, viewer)) : undefined;
+  const meSide = myMatch && (sideOf(myMatch, viewer) === "a" ? myMatch.a : myMatch.b);
   const opp = myMatch && (meSide === myMatch.a ? myMatch.b : myMatch.a);
   const upcoming = matches.filter((m) => m.status === "confirmed" && m.scheduled_at && Date.parse(m.scheduled_at) > Date.now() - 86_400_000);
   const ranking = await loadRanking();

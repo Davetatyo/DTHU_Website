@@ -86,7 +86,7 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 | `puzzle` Taktikai feladvány (experiment, working title) | `/jatekok/taktikai-feladvany`, `/jatekok/taktikai-feladvany/<id>`; card on the Játékok page | **parked** (owner, 2026-11-09): only on branch `feature/puzzle`, never merged into `main` | static: Season 1 Barbarian + Moon Elf rules from the Card Scanner repo; no tables. Images are **not committed** (owner): make them locally with `scripts/puzzle/assets.py` | when picked up: fix the Blind vs. Ultimate rule first (Features_Roadmap R16, `src/features/puzzle/README.md` on the branch) |
 | `profile` Profilkép, Profil szerkesztése, Kitiltás | `/meccsszervezo/profil`, `/meccsszervezo/admin/felhasznalo/<id>` | **live** (v2.2): every logged-in user can upload a picture; admin page and bans for all admins | all real | badge ring (R3/R4), cosmetics collection |
 | `player-stats` Játékosok (player stats) | `/meccsszervezo/jatekosok`, `/meccsszervezo/jatekos/<profile id>`; Profilom card; links on Bajnokságok names | **on `main` since v2.38**; every logged-in player (`PLAYER_STATS_ADMINS_ONLY = false`) | real: computed from confirmed Bajnokságok results (migration 0013); no tables of its own; Karnyx league not counted (no winner/hero data) | Dave reviews live; players see the Játékosok tab now (`src/features/player-stats/README.md`) |
-| `match-reporting` Játszmák (R17 Meccs jelentése) | `/meccsszervezo/jatszmak` (planned, not built) | **on `feature/match-reporting`, not merged**: step 1 (migration 0014) + step 2 (pure logic) done | migration 0014 written, **not run live** | step 3: tournament bridge, stats from `games`, side by profile ID (`src/features/match-reporting/README.md`) |
+| `match-reporting` Játszmák (R17 Meccs jelentése) | `/meccsszervezo/jatszmak` (planned, not built) | **on `feature/match-reporting`, not merged**: steps 1–3 done (migration 0014, pure logic, tournament bridge + profile-ID identity + Játékosok from `games`) | migration 0014 written, **not run live** | step 4: report form, inbox, game page, pings (`src/features/match-reporting/README.md`) |
 
 ## Database (Supabase)
 
@@ -307,6 +307,35 @@ quiz) are in
 ## Handover log
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
+
+### 2026-11-14 (late night) · R17 step 3 done and committed (feature/match-reporting)
+
+- **Browser check done** after restarting the dev server (Árpád OK; the old one, up since 2026-11-12, had
+  stopped hot-reloading; stray wrapper processes from an earlier session were stopped too). On the LOCAL
+  Supabase as FeriDT: Bajnokságok own-match box + 3 highlighted rows; then FeriDT's Karnyx name was
+  renamed to "FeriRenamed" (local DB, restored afterwards): still owns the match, match page contact card
+  found, Játékosok unchanged.
+- That test found a gap, fixed: `profileFor` (now `match-organizer/lib/player-profile.ts`) looks linked
+  players up by `profile_id`; `getProfilesByKarnyx` also keys every profile by ID; Discord `mention()`
+  uses it. So championship pings, proposal pings, the match page cards and match XP find renamed players.
+- tsc, lint, `npm test` (434) green.
+
+### 2026-11-14 (late night) · R17 step 3 written (details)
+
+- **Identity by profile ID:** `isPlayer` / `sideOf(match, { id, karnyx_name })` in
+  `match-organizer/lib/play-mode.ts`: a player with `profile_id` matches only that account; unlinked
+  (Karnyx-league) players fall back to the name. `isParticipant` uses it; so do the match page, the
+  Időpontfoglaló overview, Hírek "my match", Hős segédlet, the match actions (authorize, play mode,
+  proposal recipients), and the Bajnokságok overview/lists/result actions (`viewerName` prop → `viewer`).
+  Display-only name highlights (MatchList, MatchupGrid, Közelgő meccsek, calendar `?player=`) still use
+  names: R20.
+- `startTournament` inserts `players.profile_id`; locking a result calls `rpc("game_from_match")`
+  (logged, never blocks the lock). **Needs 0014 live first** (the insert fails without the column).
+- Játékosok reads `games` (`statGameFromRow` in `player-stats/lib/stats.ts`, paged loader in `data.ts`).
+  Old vs new compared on the LOCAL DB with SQL: 18 = 18 game rows, 0 differences; FeriDT's page still
+  3 games 2–0–1.
+- **Next:** step 4 of the plan: report form, inbox, game page (admins only, `MATCH_REPORTING_ADMINS_ONLY`),
+  day-3 / 24-hours-left Discord pings and day-7 expiry in the hourly cron.
 
 ### 2026-11-14 (night) · R17 step 2: pure logic + tests (feature/match-reporting)
 

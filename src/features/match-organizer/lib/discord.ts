@@ -1,13 +1,14 @@
 // Posts to the tournament's Discord channel through a webhook.
 // Players who logged in get a real @mention; everyone else appears in bold.
 
+import { profileFor } from "./player-profile";
 import type { Player, Profile } from "./types";
 
 const MAX_MESSAGE = 1900; // Discord's limit is 2000 characters
 
 export function mention(player: Player | null, profiles: Map<string, Profile>): string {
   if (!player) return "**Bye**";
-  const profile = profiles.get(player.karnyx_name.toLowerCase());
+  const profile = profileFor(profiles, player);
   return profile?.discord_id ? `<@${profile.discord_id}>` : `**${player.karnyx_name}**`;
 }
 

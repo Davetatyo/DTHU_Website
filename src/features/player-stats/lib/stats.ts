@@ -1,5 +1,6 @@
-// Player statistics, pure logic. Built from confirmed Bajnokságok results only (match_reports
-// with confirmed_at set): the Karnyx league records neither a winner nor the heroes played.
+// Player statistics, pure logic. Built from finalized championship games (public.games,
+// migration 0014, which copies every locked Bajnokságok result): the Karnyx league records
+// neither a winner nor the heroes played. Casual and ranked games (R17) aren't counted yet.
 // Everything is computed when a page loads; there is no stats table (see the README).
 
 export type GameOutcome = "win" | "draw" | "loss";
@@ -69,6 +70,59 @@ export function toStatGame(match: StatMatchInput, report: StatReportInput | null
     hp: mine ? report.hp_a : report.hp_b,
     opponentHp: mine ? report.hp_b : report.hp_a,
   };
+}
+
+/** A games row (migration 0014) as the stats read it, with its tournament, round and names. */
+export type GameStatRow = {
+  id: string;
+  match_id: string | null;
+  profile_a: string;
+  profile_b: string;
+  hero_a: string | null;
+  hero_b: string | null;
+  hp_a: number;
+  hp_b: number;
+  ban_a: string | null;
+  ban_b: string | null;
+  outcome: "a" | "b" | "draw";
+  played_at: string;
+  confirmed_at: string | null;
+  tournament: { id: string; name: string } | null;
+  /** The championship match: round number and the names the players had in that tournament. */
+  match: { round: { number: number } | null; a: { karnyx_name: string } | null; b: { karnyx_name: string } | null } | null;
+  /** The profiles' current Karnyx names, used when the match is gone. */
+  pa: { karnyx_name: string | null } | null;
+  pb: { karnyx_name: string | null } | null;
+};
+
+/** A finalized game from one profile's side (null if the profile didn't play it). */
+export function statGameFromRow(row: GameStatRow, profileId: string): StatGame | null {
+  const side = row.profile_a === profileId ? "a" : row.profile_b === profileId ? "b" : null;
+  if (!side) return null;
+  const nameA = row.match?.a?.karnyx_name ?? row.pa?.karnyx_name ?? "?";
+  const nameB = row.match?.b?.karnyx_name ?? row.pb?.karnyx_name ?? "?";
+  return toStatGame(
+    {
+      id: row.match_id ?? row.id,
+      player_a_id: "a",
+      player_b_id: "b",
+      played_at: row.played_at,
+      a: { karnyx_name: nameA },
+      b: { karnyx_name: nameB },
+      round: { number: row.match?.round?.number ?? 0, tournament: row.tournament },
+    },
+    {
+      outcome: row.outcome,
+      hp_a: row.hp_a,
+      hp_b: row.hp_b,
+      pick_a: row.hero_a,
+      pick_b: row.hero_b,
+      ban_a: row.ban_a,
+      ban_b: row.ban_b,
+      confirmed_at: row.confirmed_at ?? row.played_at,
+    },
+    new Set([side]),
+  );
 }
 
 export type Record3 = { games: number; wins: number; draws: number; losses: number; /** 0..1, null with no games */ winRate: number | null };

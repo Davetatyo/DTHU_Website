@@ -6,7 +6,8 @@ import { MatchupGrid } from "@/features/match-organizer/components/MatchupGrid";
 import { RoundTimeline } from "@/features/match-organizer/components/RoundTimeline";
 import { StatusBadge } from "@/features/match-organizer/components/StatusBadge";
 import { ViewToggle } from "@/features/match-organizer/components/ViewToggle";
-import { getCurrentProfile, sameName } from "@/lib/auth";
+import { getCurrentProfile } from "@/lib/auth";
+import { sideOf } from "@/features/match-organizer/lib/play-mode";
 import {
   getActiveTournament,
   getOpenProposalCounts,
@@ -38,9 +39,10 @@ export default async function OrganizerHomePage({
   const rounds = tournament ? await getRounds(tournament.id) : [];
   const round = rounds[0] ?? null;
   const matches = round ? await getRoundMatches(round.id) : [];
-  const myMatch = viewer ? matches.find((m) => isParticipant(m, viewer.karnyx_name)) : undefined;
-  const opponent = myMatch && (sameName(myMatch.a.karnyx_name, viewer?.karnyx_name) ? myMatch.b : myMatch.a);
-  const me = myMatch && (sameName(myMatch.a.karnyx_name, viewer?.karnyx_name) ? myMatch.a : myMatch.b);
+  const myMatch = viewer ? matches.find((m) => isParticipant(m, viewer)) : undefined;
+  const mySide = myMatch ? sideOf(myMatch, viewer) : null;
+  const opponent = myMatch && (mySide === "a" ? myMatch.b : myMatch.a);
+  const me = myMatch && (mySide === "a" ? myMatch.a : myMatch.b);
 
   const real = matches.filter((m) => m.status !== "bye");
   const count = (s: string) => real.filter((m) => m.status === s).length;
