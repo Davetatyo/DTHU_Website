@@ -2,6 +2,7 @@
 // "manual", migration 0013); its rounds, matches and players use the Időpontfoglaló's tables,
 // so players agree on match times on the Időpontfoglaló's match page.
 
+import type { GameOutcome } from "@/lib/game-result";
 import type { MatchView, Player, Round } from "@/features/match-organizer/lib/types";
 
 export type { Player, Round };
@@ -36,7 +37,7 @@ export type Championship = {
 /** A match with its result (winner_id / is_draw, migration 0013). */
 export type ChampionshipMatch = MatchView & { winner_id?: string | null; is_draw?: boolean };
 
-export type ReportOutcome = "a" | "b" | "draw";
+export type ReportOutcome = GameOutcome;
 type ReportSide = "a" | "b" | "admin";
 
 /** The current result report of a match (public.match_reports). confirmed_at set = locked. */

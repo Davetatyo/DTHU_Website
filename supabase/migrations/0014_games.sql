@@ -333,13 +333,15 @@ begin
   if not found then raise exception 'unknown_game'; end if;
   if g.context = 'tournament' then raise exception 'tournament_game'; end if;
   if g.status not in ('pending', 'finalized') then raise exception 'not_open'; end if;
+  -- A player of the game acts as a player until it is final, so nobody settles their own game alone.
+  if g.status = 'pending' and p_by in (g.profile_a, g.profile_b) then raise exception 'not_allowed'; end if;
   update public.games set status = 'voided', updated_at = now() where id = p_game;
   perform public.game_log(p_game, 'voided', p_by, left(trim(p_reason), 300));
 end;
 $$;
 
 -- An admin sets the result of a pending or final standalone game; a pending one becomes final
--- (this is how an admin settles a stuck game). The reason is required.
+-- (this is how an admin settles a stuck game; only an admin who didn't play it). The reason is required.
 create or replace function public.game_admin_edit(p_game uuid, p_by uuid, p_fields jsonb, p_reason text)
 returns void
 language plpgsql
@@ -356,6 +358,8 @@ begin
   if not found then raise exception 'unknown_game'; end if;
   if g.context = 'tournament' then raise exception 'tournament_game'; end if;
   if g.status not in ('pending', 'finalized') then raise exception 'not_open'; end if;
+  -- A player of the game acts as a player until it is final, so nobody settles their own game alone.
+  if g.status = 'pending' and p_by in (g.profile_a, g.profile_b) then raise exception 'not_allowed'; end if;
   perform public.game_check_played_at((p_fields->>'played_at')::timestamptz, g.created_at);
 
   update public.games

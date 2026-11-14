@@ -1,6 +1,7 @@
 # R17 Meccs jelentése: agreed plan
 
-**Status:** Step 1 written (migration 0014 + Dave's guide, 2026-11-14; not run on the live database yet).
+**Status:** Steps 1–2 done on the branch (migration 0014 + Dave's guide, pure logic in
+`src/features/match-reporting/lib/`, 2026-11-14); 0014 not run on the live database yet.
 Agreed with Árpád 2026-11-14; Dave to confirm.
 **Branch:** `feature/match-reporting` from `main`.
 **Brief:** [website-match-reporting-and-unified-game-logic.md](website-match-reporting-and-unified-game-logic.md).

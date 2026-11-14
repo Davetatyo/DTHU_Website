@@ -86,6 +86,7 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 | `puzzle` Taktikai feladvány (experiment, working title) | `/jatekok/taktikai-feladvany`, `/jatekok/taktikai-feladvany/<id>`; card on the Játékok page | **parked** (owner, 2026-11-09): only on branch `feature/puzzle`, never merged into `main` | static: Season 1 Barbarian + Moon Elf rules from the Card Scanner repo; no tables. Images are **not committed** (owner): make them locally with `scripts/puzzle/assets.py` | when picked up: fix the Blind vs. Ultimate rule first (Features_Roadmap R16, `src/features/puzzle/README.md` on the branch) |
 | `profile` Profilkép, Profil szerkesztése, Kitiltás | `/meccsszervezo/profil`, `/meccsszervezo/admin/felhasznalo/<id>` | **live** (v2.2): every logged-in user can upload a picture; admin page and bans for all admins | all real | badge ring (R3/R4), cosmetics collection |
 | `player-stats` Játékosok (player stats) | `/meccsszervezo/jatekosok`, `/meccsszervezo/jatekos/<profile id>`; Profilom card; links on Bajnokságok names | **on `main` since v2.38**; every logged-in player (`PLAYER_STATS_ADMINS_ONLY = false`) | real: computed from confirmed Bajnokságok results (migration 0013); no tables of its own; Karnyx league not counted (no winner/hero data) | Dave reviews live; players see the Játékosok tab now (`src/features/player-stats/README.md`) |
+| `match-reporting` Játszmák (R17 Meccs jelentése) | `/meccsszervezo/jatszmak` (planned, not built) | **on `feature/match-reporting`, not merged**: step 1 (migration 0014) + step 2 (pure logic) done | migration 0014 written, **not run live** | step 3: tournament bridge, stats from `games`, side by profile ID (`src/features/match-reporting/README.md`) |
 
 ## Database (Supabase)
 
@@ -307,7 +308,25 @@ quiz) are in
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
 
-### 2026-11-14 (evening) · R17 step 1: migration 0014 + Dave's guide (feature/match-reporting, uncommitted)
+### 2026-11-14 (night) · R17 step 2: pure logic + tests (feature/match-reporting)
+
+- Step 1 committed (`63e3008`, Árpád's OK). Árpád: Dave always runs SQL changes in order before the code
+  that needs them goes up.
+- **Amended 0014** (still not run live): `game_void` / `game_admin_edit` refuse an admin who played the
+  game while it is pending (`not_allowed`), same rule as the Bajnokságok; tested locally.
+- **Step 2:** `src/lib/game-result.ts` (outcome + health, shared; `championships/lib/results.ts` now uses
+  it and `ReportOutcome` = `GameOutcome`, messages unchanged). New feature folder
+  `src/features/match-reporting/` (README; registry entry `planned`): `lib/types.ts`, `report.ts` (form
+  checks, `datetime-local` in the viewer's zone → UTC, 7-day backdate from the first report, `sameResult`),
+  `rights.ts`, `timing.ts` (day-3 ping, last call at 144 h, expiry at 168 h; a missed first ping is
+  skipped), `errors.ts` (DB codes → Hungarian). 34 new tests.
+- **Verified:** `npx tsc --noEmit`, `npm run lint`, `npm test` (427 green). `npm test` rewrites the
+  rulebook snapshot's line endings on this machine; restore it with `git checkout --` before committing.
+- **Next:** step 3: `startTournament` writes `players.profile_id`; `sideOf` and the Bajnokságok result
+  actions compare profile IDs (Karnyx-league rows fall back to the name); locking a result calls
+  `game_from_match`; Játékosok reads `games` with the same numbers as before.
+
+### 2026-11-14 (evening) · R17 step 1: migration 0014 + Dave's guide (feature/match-reporting, committed `63e3008`)
 
 - Wrote **`supabase/migrations/0014_games.sql`** and **`docs/migrations/0014-games-for-dave.md`** (step 1 of
   `docs/r17-match-reporting-plan.md`). Additive only: `players.profile_id` (unique per tournament,
