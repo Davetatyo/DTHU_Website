@@ -305,6 +305,23 @@ quiz) are in
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
 
+### 2026-11-14 (later) · R17 Meccs jelentése planned, nothing built
+
+- Plan agreed with Árpád: **[docs/r17-match-reporting-plan.md](docs/r17-match-reporting-plan.md)**
+  (design, decisions, screens, build order). Roadmap R17 is now "Planned" with the decisions.
+- Key points: a new `games` table fed by standalone casual/ranked reports and by locked Bajnokságok
+  results; `players.profile_id` added (tournament players are linked to accounts only by Karnyx name
+  today); ultimates only for casual/ranked; 7-day expiry with Discord pings on day 3 and 24 hours before expiry (Időpontfoglaló channel); admins only first.
+- **Identity rule:** R17 identifies people by profile ID only; Karnyx names are display-only and get
+  removed later (new roadmap item R20 Karnyx kivezetése).
+- Also this session: the expired `GITHUB_TOKEN` user environment variable was removed and the GitHub
+  connector's `GITHUB_PERSONAL_ACCESS_TOKEN` was set to the `gh` keyring login (both done by Árpád).
+- **Uncommitted:** this STATE.md entry, `Features_Roadmap.md` (R17) and `docs/r17-match-reporting-plan.md`,
+  on `feature/player-stats` (already merged; carry them to `feature/match-reporting`).
+- **Next:** create `feature/match-reporting` from `main`, then build step 1 of the plan: migration 0014 +
+  `docs/migrations/0014-games-for-dave.md` (every SQL change gets a guide for Dave). Dave runs it before
+  any code that needs it is deployed.
+
 ### 2026-11-14 · Roadmap R17–R19, migration guide for Dave, Bajnokságok + Játékosok merged to main (v2.38)
 
 - Read the three new briefs in `docs/` (ranking, Discord `/result` + spectating, website match reporting)
