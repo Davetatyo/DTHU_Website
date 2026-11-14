@@ -1,7 +1,8 @@
 # R17 Meccs jelentése: agreed plan
 
-**Status:** Planned (agreed with Árpád 2026-11-14; Dave to confirm). Nothing built yet.
-**Branch:** `feature/match-reporting` from `main` (not created yet).
+**Status:** Step 1 written (migration 0014 + Dave's guide, 2026-11-14; not run on the live database yet).
+Agreed with Árpád 2026-11-14; Dave to confirm.
+**Branch:** `feature/match-reporting` from `main`.
 **Brief:** [website-match-reporting-and-unified-game-logic.md](website-match-reporting-and-unified-game-logic.md).
 **Roadmap:** `Features_Roadmap.md` → R17. Followed by R18 (ranking) and R19 (Discord `/result`).
 

@@ -96,7 +96,7 @@ local development uses the live data too (see CLAUDE.md, golden rule 1).
 **Migrations** (`supabase/migrations/`, run by hand in the Supabase SQL Editor, in order):
 0001 init · 0002 profile pictures and bans · 0003 events · 0004 news · 0005 polls · 0006 links ·
 0007 match play modes · 0008 ticket draws · 0009 DTHU coins · 0010 daily spin and question · 0011 live
-banner (its code is on `feature/live-banner`) · 0012 XP · 0013 Bajnokságok. **All are applied** on the live database (checked
+banner (its code is on `feature/live-banner`) · 0012 XP · 0013 Bajnokságok · **0014 games (R17, written on `feature/match-reporting`, NOT run yet)**. **0001–0013 are applied** on the live database (checked
 2026-11-05 by reading a table from each; 0013 checked 2026-11-14). A new change gets the next number (0014…) and is run
 *before* the code that needs it is deployed, with a guide for Dave in `docs/migrations/` (e.g.
 `docs/migrations/0013-championships-for-dave.md`). **0013 Bajnokságok has run** (found applied 2026-11-14:
@@ -152,6 +152,8 @@ entries after a draw closes.
 | `xp_boosts` *(0012)* | Double XP: a tournament, or a time window for chosen activities | `multiplier`, `starts_at`, `ends_at`, `activity_keys`, `tournament_id` | – |
 | `match_reports` *(0013)* | Result report of a championship match; a player submits, the opponent confirms, then locked | `match_id` (key, cascade), `outcome` (a/b/draw), `hp_a`, `hp_b`, `pick_a`/`pick_b`, `ban_a`/`ban_b`, `submitted_side` (a/b/admin), `submitted_by`, `submitted_at`, `confirmed_by`, `confirmed_at` | – |
 | `tournament_registrations` *(0013)* | Championship sign-ups with 3 secret heroes (no read policy) | primary key (`tournament_id`, `profile_id`), `karnyx_name`, `heroes` (3), `locked_at` | – |
+| `games` *(0014, not run yet)* | One row per real game (casual/ranked reports + locked Bajnokságok results); the source for stats and the R18 ranking. Changed only through the `game_*` functions | `context`, `rated`, `source`, `status` (pending/finalized/cancelled/expired/voided), `profile_a`/`profile_b`, `hero_*`, `hp_*`, `ult_*` (casual/ranked), `ban_*` (tournament), `outcome`, `played_at`, `match_id` (unique), `tournament_id`, `reported_side`/`_by`/`_at`, `confirmed_by`/`_at`, `reminders_sent` | – |
+| `game_events` *(0014, not run yet)* | Append-only history of every game (a trigger refuses update/delete unless the game itself is gone) | `game_id`, `kind`, `actor_id`, `snapshot` (the game row after the change), `reason` | – |
 | `daily_streaks` *(0010)* | Days in a row per game (spin and quiz separately, 1..7) | `profile_id` + `game` (key), `current_length`, `last_completed_date` | – |
 
 \*Row counts on 2026-11-03, for scale only.
@@ -304,6 +306,36 @@ quiz) are in
 ## Handover log
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
+
+### 2026-11-14 (evening) · R17 step 1: migration 0014 + Dave's guide (feature/match-reporting, uncommitted)
+
+- Wrote **`supabase/migrations/0014_games.sql`** and **`docs/migrations/0014-games-for-dave.md`** (step 1 of
+  `docs/r17-match-reporting-plan.md`). Additive only: `players.profile_id` (unique per tournament,
+  backfilled from `tournament_registrations` by tournament + Karnyx name; Karnyx-league rows stay null),
+  `tournaments.rated` (default true), tables `games` and `game_events` (RLS on, no policies), functions
+  `game_report`, `game_respond`, `game_cancel`, `game_expire(p_now)`, `game_void`, `game_admin_edit`,
+  `game_from_match` + helpers `game_log`, `game_check_played_at` (service role only). The last statement
+  copies already-locked championship results into `games`.
+- Choices made while writing (beyond the plan; confirm with Árpád): a standalone game's reporter is always
+  side a; an admin who didn't play reports → final at once (`source` admin), an admin who played acts as a
+  player (same as Bajnokságok); `played_at` ≥ report creation − 7 days and ≤ now + 5 min; a correction
+  resets `reported_at` (restarts the 7 days) and `reminders_sent`; sending the same result back confirms;
+  cancel = whoever's version is pending; `game_from_match` is idempotent (no event when unchanged,
+  `match_changed` when an admin changes a locked result); profiles with games can't be deleted
+  (`on delete restrict`); deleting a tournament cascades to its games and their history.
+- **Verified on the LOCAL Supabase (Docker):** applied twice (second run a no-op, no duplicate events);
+  backfill linked 23/30 local players (the 7 unlinked are the seeded "Teszt Pontozás Kupa", no sign-ups).
+  A scripted test in a rolled-back transaction covered report → correct → confirm, stale `p_seen`, wrong
+  actor, winner on 0 HP, played 8 days ago / in the future, admin report, cancel, expiry at +6 d (no) /
+  +7 d (yes), void, admin edit, history immutable, tournament cascade, `authenticated` denied. Dave's
+  check queries and undo block were also run locally (undo inside a rollback). The local DB now has 0014
+  applied; a dump from before is at `/tmp/pre0014.dump` inside the `supabase_db_DTHU_Website` container.
+  `npx tsc --noEmit`, `npm run lint`, `npm test` (393) green; no app code changed.
+- **Not done:** nothing run on the live database; nothing committed (Árpád decides). `startTournament`
+  (`championships/lib/run.ts`) doesn't write `players.profile_id` for new championships yet: that's step 3,
+  and it may only ship after Dave runs 0014 (the insert would fail without the column).
+- **Next:** Árpád reviews and sends the guide to Dave; commit on `feature/match-reporting`; then step 2
+  of the plan (pure logic + tests).
 
 ### 2026-11-14 (later) · R17 Meccs jelentése planned, nothing built
 
