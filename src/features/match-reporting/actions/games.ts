@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { requireProfile } from "@/lib/auth";
+import { requireAdmin, requireProfile } from "@/lib/auth";
 import { HERO_NAMES } from "@/lib/heroes";
 import { routes } from "@/lib/routes";
 import { getSiteUrl } from "@/lib/site";
@@ -131,6 +131,58 @@ export async function confirmGame(formData: FormData) {
   });
   if (error) failed(id, gameErrorMessage(error.message));
   done(id, "Jóváhagytad, a játszma végleges.");
+}
+
+/** Max length of an admin's reason (the database keeps the first 300 characters). */
+const MAX_REASON = 300;
+
+function readReason(formData: FormData): string {
+  return String(formData.get("reason") ?? "").trim();
+}
+
+/**
+ * Admin: sets a casual / ranked game's result (fields from side a's view); a pending game becomes
+ * final. Not on a game the admin plays while it is pending (rights.ts, game_admin_edit).
+ */
+export async function adminEditGame(_prev: FormState, formData: FormData): Promise<FormState> {
+  const admin = await requireAdmin();
+  const game = await getGame(String(formData.get("game_id") ?? ""));
+  if (!game) return fail("A játszma nem található.");
+  if (!gameRights(game, { id: admin.id, admin: true }).canAdminEdit) return fail("Ezt a játszmát most nem módosíthatod.");
+  const reason = readReason(formData);
+  if (!reason) return fail("Írd be az indoklást.");
+  if (reason.length > MAX_REASON) return fail(`Az indoklás legfeljebb ${MAX_REASON} karakter lehet.`);
+
+  const checked = validateGameResult(toSideInput(readRelative(formData), "a"), {
+    heroNames: HERO_NAMES,
+    timeZone: admin.timezone,
+    now: new Date(),
+    since: new Date(game.created_at),
+  });
+  if (!checked.ok) return fail(checked.error);
+
+  const { error } = await createAdminClient().rpc("game_admin_edit", {
+    p_game: game.id,
+    p_by: admin.id,
+    p_fields: checked.value,
+    p_reason: reason,
+  });
+  if (error) return fail(gameErrorMessage(error.message));
+  revalidatePath(routes.adminGames);
+  done(game.id, game.status === "pending" ? "Módosítva, a játszma végleges." : "Módosítva.");
+}
+
+/** Admin: voids a casual / ranked game (it no longer counts anywhere). The reason is required. */
+export async function voidGame(formData: FormData) {
+  const admin = await requireAdmin();
+  const id = String(formData.get("game_id") ?? "");
+  const reason = readReason(formData);
+  if (!reason) failed(id, "Írd be az indoklást.");
+  if (reason.length > MAX_REASON) failed(id, `Az indoklás legfeljebb ${MAX_REASON} karakter lehet.`);
+  const { error } = await createAdminClient().rpc("game_void", { p_game: id, p_by: admin.id, p_reason: reason });
+  if (error) failed(id, gameErrorMessage(error.message));
+  revalidatePath(routes.adminGames);
+  done(id, "Érvénytelenítve: a játszma már nem számít bele semmibe.");
 }
 
 /** Visszavonom: the player whose version is pending withdraws it. */

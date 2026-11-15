@@ -49,6 +49,26 @@ export async function getMyGames(profileId: string, limit = 100): Promise<GameVi
   return (data as unknown as Row[]).map(toView);
 }
 
+/** Admin list filter: pending ones, final ones, the rest (withdrawn / expired / voided), or all. */
+export type AdminGameFilter = "pending" | "finalized" | "closed" | "all";
+export const ADMIN_GAME_FILTERS: readonly AdminGameFilter[] = ["pending", "finalized", "closed", "all"];
+
+/** Every game for the admin list (any player, any context), newest report first. */
+export async function getAdminGames(filter: AdminGameFilter, limit = 200): Promise<GameView[]> {
+  let query = createAdminClient().from("games").select(SELECT);
+  if (filter === "pending" || filter === "finalized") query = query.eq("status", filter);
+  else if (filter === "closed") query = query.in("status", ["cancelled", "expired", "voided"]);
+  const { data, error } = await query.order("reported_at", { ascending: false }).limit(limit);
+  if (error || !data) return [];
+  return (data as unknown as Row[]).map(toView);
+}
+
+/** How many games are pending (Admin felület card). */
+export async function countPendingGames(): Promise<number> {
+  const { count, error } = await createAdminClient().from("games").select("id", { count: "exact", head: true }).eq("status", "pending");
+  return error ? 0 : count ?? 0;
+}
+
 /** How many pending games wait for this player's answer (the tab badge). One query per request. */
 export const countAwaiting = cache(async (profileId: string): Promise<number> => {
   if (!isUuid(profileId)) return 0;

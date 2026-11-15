@@ -5,7 +5,7 @@ import { useActionState, useState } from "react";
 import { HeroIcon } from "@/components/HeroIcon";
 import { InfoTip } from "@/components/InfoTip";
 import { SubmitButton } from "@/components/SubmitButton";
-import { correctGame, reportGame, type FormState } from "@/features/match-reporting/actions/games";
+import { adminEditGame, correctGame, reportGame, type FormState } from "@/features/match-reporting/actions/games";
 import type { RelativeInput } from "@/features/match-reporting/lib/form";
 import "../match-reporting.css";
 
@@ -22,18 +22,25 @@ type Props = {
 } & (
   | { mode: "new"; opponents: Opponent[]; fixtures: Record<string, Fixture> }
   | { mode: "correct"; gameId: string; seen: string; opponentName: string }
+  /** Admin edit: myName / opponentName are sides a / b, initial is from side a. */
+  | { mode: "admin"; gameId: string; opponentName: string }
 );
+
+const ACTIONS = { new: reportGame, correct: correctGame, admin: adminEditGame } as const;
+const SUBMIT = { new: "Játszma elküldése", correct: "Javítás elküldése", admin: "Módosítás mentése" } as const;
 
 /**
  * The game result form, from the viewer's side. "new": casual / ranked, opponent, result.
  * "correct": the other player's version, prefilled, to send back corrected. The server checks
- * everything again (actions/games.ts).
+ * everything again (actions/games.ts). "admin": an admin sets the result of both sides, with a
+ * required reason.
  */
 export function GameForm(props: Props) {
-  const [state, action] = useActionState<FormState, FormData>(props.mode === "new" ? reportGame : correctGame, null);
+  const [state, action] = useActionState<FormState, FormData>(ACTIONS[props.mode], null);
   const [v, setV] = useState<RelativeInput>(props.initial);
   const [opponentId, setOpponentId] = useState("");
   const [context, setContext] = useState<"casual" | "ranked">("casual");
+  const [reason, setReason] = useState("");
   const set = (k: keyof RelativeInput, value: string) => setV((prev) => ({ ...prev, [k]: value }));
 
   const oppName = props.mode === "new" ? props.opponents.find((o) => o.id === opponentId)?.name ?? "Ellenfél" : props.opponentName;
@@ -56,12 +63,8 @@ export function GameForm(props: Props) {
     // React resets a form after its action; every field is controlled, and the key rebuilds the
     // fields from that state after an error, so nothing typed is lost.
     <form key={state?.at ?? 0} action={action} className="gr-form">
-      {props.mode === "correct" && (
-        <>
-          <input type="hidden" name="game_id" value={props.gameId} />
-          <input type="hidden" name="seen" value={props.seen} />
-        </>
-      )}
+      {props.mode !== "new" && <input type="hidden" name="game_id" value={props.gameId} />}
+      {props.mode === "correct" && <input type="hidden" name="seen" value={props.seen} />}
       {state?.error && <p className="alert-error" role="alert">{state.error}</p>}
 
       {props.mode === "new" && (
@@ -182,15 +185,27 @@ export function GameForm(props: Props) {
       <section className="gr-sec">
         <label>
           <span className="label">
-            Mikor játszottátok?
-            <InfoTip text="Legfeljebb 7 nappal korábbi játszmát lehet rögzíteni." />
+            {props.mode === "admin" ? "Mikor játszották?" : "Mikor játszottátok?"}
+            <InfoTip text="Legfeljebb 7 nappal korábbi játszmát lehet rögzíteni (az első beküldéstől számítva)." />
           </span>
           <input type="datetime-local" name="played_at" className="input" min={props.minWall} max={props.maxWall} value={v.played_at} onChange={(e) => set("played_at", e.target.value)} required />
         </label>
       </section>
 
+      {props.mode === "admin" && (
+        <section className="gr-sec">
+          <label>
+            <span className="label">
+              Indoklás
+              <InfoTip text="Kötelező. A játszma előzményeiben mindkét játékos látja." />
+            </span>
+            <textarea name="reason" className="input" rows={2} maxLength={300} value={reason} onChange={(e) => setReason(e.target.value)} required />
+          </label>
+        </section>
+      )}
+
       <div className="flex flex-wrap items-center justify-end gap-2">
-        <SubmitButton>{props.mode === "new" ? "Játszma elküldése" : "Javítás elküldése"}</SubmitButton>
+        <SubmitButton>{SUBMIT[props.mode]}</SubmitButton>
       </div>
     </form>
   );
