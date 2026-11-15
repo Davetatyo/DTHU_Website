@@ -1,6 +1,6 @@
 # Project state: DTHU website
 
-**Current version: v2.39** (2026-11-15, live: pushed after Dave ran migration 0014). Live: https://dthu.hu builds from this repository's
+**Current version: v2.40** (2026-11-15). Live: https://dthu.hu builds from this repository's
 `main` (the owner moved Vercel over around 2026-11-01; checked live 2026-11-02). Every push to
 `main` deploys within a minute.
 **Launch phase: 1**: the public sees only the Meccsszervező; the whole site from the prototype
@@ -86,7 +86,7 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 | `puzzle` Taktikai feladvány (experiment, working title) | `/jatekok/taktikai-feladvany`, `/jatekok/taktikai-feladvany/<id>`; card on the Játékok page | **parked** (owner, 2026-11-09): only on branch `feature/puzzle`, never merged into `main` | static: Season 1 Barbarian + Moon Elf rules from the Card Scanner repo; no tables. Images are **not committed** (owner): make them locally with `scripts/puzzle/assets.py` | when picked up: fix the Blind vs. Ultimate rule first (Features_Roadmap R16, `src/features/puzzle/README.md` on the branch) |
 | `profile` Profilkép, Profil szerkesztése, Kitiltás | `/meccsszervezo/profil`, `/meccsszervezo/admin/felhasznalo/<id>` | **live** (v2.2): every logged-in user can upload a picture; admin page and bans for all admins | all real | badge ring (R3/R4), cosmetics collection |
 | `player-stats` Játékosok (player stats) | `/meccsszervezo/jatekosok`, `/meccsszervezo/jatekos/<profile id>`; Profilom card; links on Bajnokságok names | **on `main` since v2.38**; every logged-in player (`PLAYER_STATS_ADMINS_ONLY = false`) | real: computed from confirmed Bajnokságok results (migration 0013); no tables of its own; Karnyx league not counted (no winner/hero data) | Dave reviews live; players see the Játékosok tab now (`src/features/player-stats/README.md`) |
-| `match-reporting` Játszmák (R17 Meccs jelentése) | `/meccsszervezo/jatszmak`, `/jatszmak/uj`, `/jatszma/<id>` | steps 1–4 **live on `main` (v2.39, pushed 2026-11-15)**; **step 5 committed** on `feature/match-reporting` (not merged; v2.40) (admin list + edit/void, Játékosok split; admins only) | migration 0014 **run live** (2026-11-15) | merge step 5 → `main` + push (v2.40) with OK; open to players only with his OK (see Handover log) |
+| `match-reporting` Játszmák (R17 Meccs jelentése) | `/meccsszervezo/jatszmak`, `/jatszmak/uj`, `/jatszma/<id>` | steps 1–4 **live on `main` (v2.39, pushed 2026-11-15)**; **step 5 live on `main` (v2.40, admins only)** (admin list + edit/void, Játékosok split; admins only) | migration 0014 **run live** (2026-11-15) | open to players only with his OK (see Handover log) |
 
 ## Database (Supabase)
 
@@ -203,8 +203,8 @@ sample data (no tables yet; tickets and coins become real with migrations 0008 a
 
 ## Needs the owner
 
-0. **R17 Játszmák:** steps 1–4 live (v2.39, 0014 run). Step 5 committed on `feature/match-reporting` (screenshots approved
-   by Árpád 2026-11-15); merge + push as v2.40 with his OK.
+0. **R17 Játszmák:** steps 1–4 live (v2.39, 0014 run). Step 5 live as v2.40 (admins only). Next: open to players
+   (`MATCH_REPORTING_ADMINS_ONLY = false` + publish the GYIK draft) with Árpád's OK.
    To decide: may an admin edit/void **their own** game once it is final (built: yes, only pending is refused)?
    Should admin edits/voids ping the players on Discord (built: no)?
 0. **XP step 1 (v2.31, admins only; migration 0012 has run, checked 2026-11-08).** Test as an admin: mark a played match, give yourself XP on Admin felület → XP kezelés, watch the
@@ -312,11 +312,10 @@ quiz) are in
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
 
-### 2026-11-15 (evening) · R17 step 5 COMMITTED (feature/match-reporting, not merged) · START HERE
+### 2026-11-15 (evening) · R17 step 5 shipped as v2.40 (merged to `main`, pushed) · START HERE
 
 **Update:** Árpád approved the screenshots; step 5 committed on `feature/match-reporting` without the TEMP-PREVIEW lines
-(they stay uncommitted in the working tree for local testing). Next: merge into `main`, version bump v2.40 + changelog, push
-(only with OK). The two open questions below are still open; the built defaults ship.
+(they stay uncommitted in the working tree for local testing). Then, with his OK, merged into `main` (`44e2302`) and pushed as v2.40. The two open questions below are still open; the built defaults ship.
 
 **Built (uncommitted on `feature/match-reporting`, which equals local `main` + these changes):**
 1. **Játszmák kezelése** `/meccsszervezo/admin/jatszmak` (`routes.adminGames`, `requireAdmin`): every game, filter
@@ -1667,6 +1666,17 @@ webhook, no cron secret), so nothing local can post to Discord.
 ---
 
 ## Changelog
+
+### v2.40 · 2026-11-15 · `feature/match-reporting` (R17 step 5) · merge `44e2302`
+**Changed (visible to players):** nothing. **Admins only:** Admin felület → "Játszmák" card (pending count) and
+Játszmák kezelése (`/meccsszervezo/admin/jatszmak`, filter Függőben / Végleges / Egyéb / Mind); on a casual / ranked
+game page an Admin box: Eredmény módosítása (required reason, a pending game becomes final) and Érvénytelenítés
+(reason + confirm). Játékosok / player page / Profilom: Összes / Bajnokság / Ranked / Casual split, shown only to
+viewers who can use the Játszmák (admins for now), so players still see championships only.
+**Manual steps:** none (uses migration 0014, already run).
+**Verified:** tsc, lint, `npm test` (447); local Supabase: admin edit of a pending game, void with confirm, missing
+reason refused, non-admin sees no filter and is sent away from the admin list; screenshots 375 px + 1280 px, dark +
+light (approved by Árpád). Live check after the push (2026-11-15): Vercel deploy of `44e2302` succeeded; pages answer, logged-out visitors (also on the new admin page) are sent to /regisztracio, calendar feed 200. Note: `44e2302` was pushed before this changelog (a chained command), the changelog followed in a docs commit.
 
 ### v2.39 · 2026-11-15 · `feature/match-reporting` (R17 steps 1–4) · merge `bcf036f`
 **Changed (visible to players):** nothing new on screen. Players are now recognised in tournament matches by
