@@ -1,6 +1,6 @@
 # Project state: DTHU website
 
-**Current version: v2.38** (2026-11-14). Live: https://dthu.hu builds from this repository's
+**Current version: v2.39** (2026-11-15, merged locally; push waits for migration 0014). Live: https://dthu.hu builds from this repository's
 `main` (the owner moved Vercel over around 2026-11-01; checked live 2026-11-02). Every push to
 `main` deploys within a minute.
 **Launch phase: 1**: the public sees only the Meccsszervező; the whole site from the prototype
@@ -1604,6 +1604,19 @@ webhook, no cron secret), so nothing local can post to Discord.
 ---
 
 ## Changelog
+
+### v2.39 · 2026-11-15 · `feature/match-reporting` (R17 steps 1–4) · merge `bcf036f`
+**Changed (visible to players):** nothing new on screen. Players are now recognised in tournament matches by
+their account (not their Karnyx name), so renaming yourself in Profilom no longer breaks your own match,
+pings or XP; Karnyx-league players without an account still match by name. Játékosok reads the new
+`games` table (same numbers). **Admins only:** a "Játszmák" tab: report casual / ranked games, the
+opponent accepts (Elfogadom), corrects (Javítom) or the reporter withdraws (Visszavonom); Discord ping on
+report / correction, reminders on day 3 and 24 hours before the 7-day expiry (hourly cron).
+**Manual steps:** **Dave runs `supabase/migrations/0014_games.sql` BEFORE this is pushed** (guide
+`docs/migrations/0014-games-for-dave.md`): starting a championship fails without `players.profile_id`.
+**Verified:** tsc, lint, `npm test` (443); local Supabase: migration applied twice + scripted function
+tests; Playwright report → correct → confirm, withdraw, rename test, cron +73 h / +145 h / +169 h;
+screenshots 375 px + 1280 px, dark + light. Live check after the push: pending.
 
 ### v2.38 · 2026-11-14 · `feature/player-stats` (+ `feature/tournament-pairing`)
 **Changed (visible to players):** a new Játékosok tab in the Meccsszervező with per-player stats
