@@ -4,12 +4,12 @@ import { notFound, redirect } from "next/navigation";
 import { HeroAvatar } from "@/components/HeroAvatar";
 import { HeroIcon } from "@/components/HeroIcon";
 import { SubmitButton } from "@/components/SubmitButton";
-import { requireProfile } from "@/lib/auth";
+import { getAdminView, requireProfile } from "@/lib/auth";
 import { HERO_NAMES } from "@/lib/heroes";
 import { routes } from "@/lib/routes";
 import { formatDateTime, utcToWallTime } from "@/features/match-organizer/lib/time";
 import { avatarPublicUrl } from "@/features/profile/lib/avatar";
-import { cancelGame, confirmGame } from "@/features/match-reporting/actions/games";
+import { cancelGame, confirmGame, voidGame } from "@/features/match-reporting/actions/games";
 import { GameForm } from "@/features/match-reporting/components/GameForm";
 import { canUseMatchReporting } from "@/features/match-reporting/lib/access";
 import { getGame, getGameEvents, type GamePlayer } from "@/features/match-reporting/lib/data";
@@ -48,6 +48,10 @@ export default async function GamePage({
   const nameOf = (pid: string | null) => (pid === game.profile_a ? game.a.name : pid === game.profile_b ? game.b.name : "Admin");
   const opponentName = side === "a" ? game.b.name : game.a.name;
   const now = new Date();
+  const minWall = utcToWallTime(new Date(new Date(game.created_at).getTime() - BACKDATE_DAYS * 86_400_000), tz);
+  // UI only: admins in "Játékos nézet" see the page as a player (permissions: rights + requireAdmin).
+  const adminUi = await getAdminView();
+  const showAdmin = adminUi && (rights.canAdminEdit || rights.canVoid);
 
   return (
     <div className="mx-auto max-w-2xl space-y-4">
@@ -115,7 +119,7 @@ export default async function GamePage({
                 heroNames={HERO_NAMES}
                 myName={side === "a" ? game.a.name : game.b.name}
                 maxWall={utcToWallTime(now, tz)}
-                minWall={utcToWallTime(new Date(new Date(game.created_at).getTime() - BACKDATE_DAYS * 86_400_000), tz)}
+                minWall={minWall}
                 initial={fromGame(game, side!, utcToWallTime(new Date(game.played_at), tz))}
               />
             </div>
@@ -135,6 +139,68 @@ export default async function GamePage({
             </SubmitButton>
           </form>
         </section>
+      )}
+
+      {showAdmin && (
+        <section className="gr-card" aria-labelledby="gr-admin">
+          <div className="space-y-3 p-4">
+            <h2 id="gr-admin" className="font-extrabold">
+              Admin
+            </h2>
+            <p className="text-sm">
+              {pending
+                ? "Még nem végleges. Ha elakadt, itt beállíthatod az eredményt (ezzel végleges lesz), vagy érvénytelenítheted."
+                : "Végleges játszma. Ha hibás, itt javíthatod, vagy érvénytelenítheted: akkor nem számít bele semmibe."}{" "}
+              Az indoklást a játékosok is látják az előzményekben.
+            </p>
+            {rights.canAdminEdit && (
+              <details className="gr-correct">
+                <summary className="btn btn-secondary">Eredmény módosítása</summary>
+                <div className="mt-4">
+                  <GameForm
+                    mode="admin"
+                    gameId={game.id}
+                    myName={game.a.name}
+                    opponentName={game.b.name}
+                    heroNames={HERO_NAMES}
+                    maxWall={utcToWallTime(now, tz)}
+                    minWall={minWall}
+                    initial={fromGame(game, "a", utcToWallTime(new Date(game.played_at), tz))}
+                  />
+                </div>
+              </details>
+            )}
+            {rights.canVoid && (
+              <details className="gr-correct">
+                <summary className="btn btn-secondary">Érvénytelenítés</summary>
+                <form action={voidGame} className="mt-4 space-y-3">
+                  <input type="hidden" name="game_id" value={game.id} />
+                  <label className="block">
+                    <span className="label">Indoklás</span>
+                    <textarea name="reason" className="input" rows={2} maxLength={300} required />
+                  </label>
+                  <div className="flex justify-end">
+                    <SubmitButton
+                      className="btn btn-danger"
+                      confirm="Biztosan érvényteleníted ezt a játszmát? Utána nem számít bele semmibe, és nem lehet visszaállítani."
+                    >
+                      Érvénytelenítem
+                    </SubmitButton>
+                  </div>
+                </form>
+              </details>
+            )}
+            <p className="text-sm">
+              <Link href={routes.adminGames} className="link">
+                Minden játszma (admin)
+              </Link>
+            </p>
+          </div>
+        </section>
+      )}
+
+      {adminUi && game.context === "tournament" && (
+        <p className="alert-info text-sm">Bajnoki eredményt a bajnokság meccsoldalán lehet módosítani; itt csak megjelenik.</p>
       )}
 
       {events.length > 0 && (

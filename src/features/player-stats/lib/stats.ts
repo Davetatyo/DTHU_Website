@@ -1,13 +1,20 @@
-// Player statistics, pure logic. Built from finalized championship games (public.games,
-// migration 0014, which copies every locked Bajnokságok result): the Karnyx league records
-// neither a winner nor the heroes played. Casual and ranked games (R17) aren't counted yet.
+// Player statistics, pure logic. Built from finalized games (public.games, migration 0014):
+// locked Bajnokságok results (copied in) and confirmed casual / ranked games (R17). The Karnyx
+// league records neither a winner nor the heroes played, so it isn't counted.
 // Everything is computed when a page loads; there is no stats table (see the README).
 
 export type GameOutcome = "win" | "draw" | "loss";
 
-/** One finished championship game, seen from one player's side. */
+/** Where a game was played: a championship, or a standalone ranked / casual game. */
+export type StatContext = "tournament" | "ranked" | "casual";
+
+/** One finished game, seen from one player's side. */
 export type StatGame = {
+  /** The championship match's id, else the game's id (stable sort key). */
   matchId: string;
+  context: StatContext;
+  /** The games row (null for a game built straight from a match report). */
+  gameId: string | null;
   /** When it was played (matches.played_at, else when the result was confirmed). */
   date: string;
   tournamentId: string;
@@ -58,6 +65,8 @@ export function toStatGame(match: StatMatchInput, report: StatReportInput | null
   const mine = side === "a";
   return {
     matchId: match.id,
+    context: "tournament",
+    gameId: null,
     date: match.played_at ?? report.confirmed_at,
     tournamentId: match.round?.tournament?.id ?? "",
     tournamentName: match.round?.tournament?.name ?? "",
@@ -75,6 +84,7 @@ export function toStatGame(match: StatMatchInput, report: StatReportInput | null
 /** A games row (migration 0014) as the stats read it, with its tournament, round and names. */
 export type GameStatRow = {
   id: string;
+  context: StatContext;
   match_id: string | null;
   profile_a: string;
   profile_b: string;
@@ -101,7 +111,7 @@ export function statGameFromRow(row: GameStatRow, profileId: string): StatGame |
   if (!side) return null;
   const nameA = row.match?.a?.karnyx_name ?? row.pa?.karnyx_name ?? "?";
   const nameB = row.match?.b?.karnyx_name ?? row.pb?.karnyx_name ?? "?";
-  return toStatGame(
+  const game = toStatGame(
     {
       id: row.match_id ?? row.id,
       player_a_id: "a",
@@ -123,6 +133,34 @@ export function statGameFromRow(row: GameStatRow, profileId: string): StatGame |
     },
     new Set([side]),
   );
+  return game && { ...game, context: row.context, gameId: row.id };
+}
+
+/** The Játékosok filter: every finished game, or one kind. */
+export type StatKind = "all" | StatContext;
+
+/** Filter tabs in their order, with the URL value (?tipus=) and label. */
+export const STAT_KINDS: readonly { kind: StatKind; param: string; label: string }[] = [
+  { kind: "all", param: "osszes", label: "Összes" },
+  { kind: "tournament", param: "bajnoksag", label: "Bajnokság" },
+  { kind: "ranked", param: "ranked", label: "Ranked" },
+  { kind: "casual", param: "casual", label: "Casual" },
+];
+
+/** ?tipus= value → kind; anything unknown (or missing) is "all". */
+export function parseStatKind(param: string | undefined): StatKind {
+  return STAT_KINDS.find((k) => k.param === param)?.kind ?? "all";
+}
+
+export function filterByKind<G extends StatGame>(games: readonly G[], kind: StatKind): G[] {
+  return kind === "all" ? [...games] : games.filter((g) => g.context === kind);
+}
+
+/** How many games of each kind (the numbers on the filter tabs). */
+export function countByKind(games: readonly StatGame[]): Record<StatKind, number> {
+  const out: Record<StatKind, number> = { all: games.length, tournament: 0, ranked: 0, casual: 0 };
+  for (const g of games) out[g.context] += 1;
+  return out;
 }
 
 export type Record3 = { games: number; wins: number; draws: number; losses: number; /** 0..1, null with no games */ winRate: number | null };
@@ -131,7 +169,7 @@ export type HeroRecord = Record3 & { hero: string };
 
 export type PlayerStats<G extends StatGame = StatGame> = {
   total: Record3;
-  /** Distinct championships with at least one finished game. */
+  /** Distinct championships with at least one finished game (casual / ranked games don't count). */
   championships: number;
   /** Same result in a row, counted back from the latest game (null with no games). */
   currentStreak: { outcome: GameOutcome; length: number } | null;
@@ -208,7 +246,7 @@ export function computeStats<G extends StatGame>(input: G[]): PlayerStats<G> {
 
   return {
     total,
-    championships: new Set(games.map((g) => g.tournamentId)).size,
+    championships: new Set(games.filter((g) => g.context === "tournament" && g.tournamentId).map((g) => g.tournamentId)).size,
     currentStreak,
     bestWinStreak,
     heroes: heroTable(games, (g) => g.hero).sort(byGames),

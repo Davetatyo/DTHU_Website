@@ -27,6 +27,7 @@ import {
   updateDeadline,
 } from "@/features/match-organizer/actions/admin";
 import { ImportForm } from "@/features/match-organizer/components/ImportForm";
+import { countPendingGames } from "@/features/match-reporting/lib/data";
 
 export const metadata: Metadata = { title: "Admin felület" };
 
@@ -59,6 +60,7 @@ export default async function AdminPage({
     ? reminder.unscheduled.length * 2 + reminder.awaitingAnswer.reduce((n, t) => n + t.responders.length, 0)
     : 0;
   const webhookConfigured = !!process.env.DISCORD_WEBHOOK_URL;
+  const pendingGames = await countPendingGames();
   const now = new Date();
   const awaitingPlayed = matches.filter((m) => m.status === "confirmed" && m.scheduled_at && new Date(m.scheduled_at) < now);
   const counts = {
@@ -83,6 +85,19 @@ export default async function AdminPage({
         </div>
         <Link href={routes.adminXp} className="btn btn-secondary">
           XP kezelés ›
+        </Link>
+      </section>
+
+      <section className="card flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 className="font-bold">Játszmák</h2>
+          <p className="muted text-sm">
+            Casual, ranked és bajnoki játszmák: elakadt játszma lezárása, eredmény módosítása, érvénytelenítés indoklással.
+            {pendingGames > 0 && ` Most ${pendingGames} vár jóváhagyásra.`}
+          </p>
+        </div>
+        <Link href={routes.adminGames} className="btn btn-secondary">
+          Játszmák kezelése ›
         </Link>
       </section>
 

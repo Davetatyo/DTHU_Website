@@ -3,7 +3,7 @@
 
 import { cache } from "react";
 import { createAdminClient } from "@/lib/supabase/server";
-import { statGameFromRow, type GameStatRow, type StatGame } from "./stats";
+import { statGameFromRow, type GameStatRow, type StatContext, type StatGame } from "./stats";
 
 /** A game plus the opponent's profile (for a link to their stats), when known. */
 export type ProfileGame = StatGame & { opponentProfileId: string | null };
@@ -11,7 +11,7 @@ export type ProfileGame = StatGame & { opponentProfileId: string | null };
 export type StatsProfile = { id: string; karnyx_name: string; avatar_path: string | null };
 
 const GAME_SELECT =
-  "id, match_id, profile_a, profile_b, hero_a, hero_b, hp_a, hp_b, ban_a, ban_b, outcome, played_at, confirmed_at, " +
+  "id, context, match_id, profile_a, profile_b, hero_a, hero_b, hp_a, hp_b, ban_a, ban_b, outcome, played_at, confirmed_at, " +
   "tournament:tournaments(id, name), " +
   "match:matches(round:rounds(number), a:players!matches_player_a_fkey(karnyx_name), b:players!matches_player_b_fkey(karnyx_name)), " +
   "pa:profiles!games_profile_a_fkey(karnyx_name), pb:profiles!games_profile_b_fkey(karnyx_name)";
@@ -19,11 +19,11 @@ const GAME_SELECT =
 const PAGE = 1000;
 
 /**
- * Finished championship games by profile id, from the games table (migration 0014). Games carry
- * profile ids, so they stay with the profile even if the player changes their Karnyx name.
- * Pass a profile id to load only that player's games.
+ * Finalized games of the given contexts by profile id, from the games table (migration 0014).
+ * Games carry profile ids, so they stay with the profile even if the player changes their Karnyx
+ * name. Pass a profile id to load only that player's games.
  */
-async function loadGames(onlyProfileId?: string): Promise<Map<string, ProfileGame[]>> {
+async function loadGames(contexts: readonly StatContext[], onlyProfileId?: string): Promise<Map<string, ProfileGame[]>> {
   const byProfile = new Map<string, ProfileGame[]>();
   // The id goes into a filter string: only a real uuid.
   if (onlyProfileId && !/^[0-9a-f-]{36}$/i.test(onlyProfileId)) return byProfile;
@@ -31,7 +31,7 @@ async function loadGames(onlyProfileId?: string): Promise<Map<string, ProfileGam
 
   const rows: GameStatRow[] = [];
   for (let from = 0; ; from += PAGE) {
-    let query = db.from("games").select(GAME_SELECT).eq("context", "tournament").eq("status", "finalized");
+    let query = db.from("games").select(GAME_SELECT).in("context", [...contexts]).eq("status", "finalized");
     if (onlyProfileId) query = query.or(`profile_a.eq.${onlyProfileId},profile_b.eq.${onlyProfileId}`);
     const { data, error } = await query.order("id").range(from, from + PAGE - 1);
     if (error || !data) break;
@@ -55,14 +55,14 @@ async function loadGames(onlyProfileId?: string): Promise<Map<string, ProfileGam
   return byProfile;
 }
 
-/** One player's finished championship games. */
-export async function getPlayerGames(profileId: string): Promise<ProfileGame[]> {
-  return (await loadGames(profileId)).get(profileId) ?? [];
+/** One player's finished games of the given contexts (see statContexts in access.ts). */
+export async function getPlayerGames(profileId: string, contexts: readonly StatContext[]): Promise<ProfileGame[]> {
+  return (await loadGames(contexts, profileId)).get(profileId) ?? [];
 }
 
-/** Every player's games, for the players list. */
-export async function getAllPlayerGames(): Promise<Map<string, ProfileGame[]>> {
-  return loadGames();
+/** Every player's games of the given contexts, for the players list. */
+export async function getAllPlayerGames(contexts: readonly StatContext[]): Promise<Map<string, ProfileGame[]>> {
+  return loadGames(contexts);
 }
 
 /** A player whose stats page can be shown: has a Karnyx name and isn't banned. */

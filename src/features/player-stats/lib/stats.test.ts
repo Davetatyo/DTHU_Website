@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { computeStats, formatWinRate, MIN_MATCHUP_GAMES, recordLabel, statGameFromRow, streakLabel, toStatGame, type GameOutcome, type GameStatRow, type StatGame, type StatMatchInput, type StatReportInput } from "./stats";
+import { computeStats, countByKind, filterByKind, formatWinRate, parseStatKind, MIN_MATCHUP_GAMES, recordLabel, statGameFromRow, streakLabel, toStatGame, type GameOutcome, type GameStatRow, type StatGame, type StatMatchInput, type StatReportInput } from "./stats";
 
 const match = (over: Partial<StatMatchInput> = {}): StatMatchInput => ({
   id: "m1",
@@ -29,6 +29,8 @@ const game = (outcome: GameOutcome, over: Partial<StatGame> = {}): StatGame => {
   n += 1;
   return {
     matchId: `g${String(n).padStart(3, "0")}`,
+    context: "tournament",
+    gameId: null,
     date: `2026-10-${String(n).padStart(2, "0")}T18:00:00Z`,
     tournamentId: "t1",
     tournamentName: "Kupa",
@@ -47,6 +49,7 @@ const game = (outcome: GameOutcome, over: Partial<StatGame> = {}): StatGame => {
 describe("statGameFromRow", () => {
   const row = (over: Partial<GameStatRow> = {}): GameStatRow => ({
     id: "g1",
+    context: "tournament",
     match_id: "m1",
     profile_a: "PA",
     profile_b: "PB",
@@ -67,8 +70,8 @@ describe("statGameFromRow", () => {
   });
 
   it("gives the same game as the match report did, from either profile", () => {
-    expect(statGameFromRow(row(), "PA")).toEqual(toStatGame(match(), report(), new Set(["pa"])));
-    expect(statGameFromRow(row(), "PB")).toEqual(toStatGame(match(), report(), new Set(["pb"])));
+    expect(statGameFromRow(row(), "PA")).toEqual({ ...toStatGame(match(), report(), new Set(["pa"])), gameId: "g1" });
+    expect(statGameFromRow(row(), "PB")).toEqual({ ...toStatGame(match(), report(), new Set(["pb"])), gameId: "g1" });
   });
 
   it("uses the tournament names, else the current profile names", () => {
@@ -78,6 +81,35 @@ describe("statGameFromRow", () => {
 
   it("skips profiles that didn't play", () => {
     expect(statGameFromRow(row(), "PC")).toBeNull();
+  });
+
+  it("reads a standalone ranked game: no tournament, no round, current names", () => {
+    const g = statGameFromRow(row({ id: "g9", context: "ranked", match_id: null, tournament: null, match: null, ban_a: null, ban_b: null }), "PB");
+    expect(g).toMatchObject({ context: "ranked", gameId: "g9", matchId: "g9", tournamentId: "", round: 0, opponentName: "AnnaNow", outcome: "loss", bannedHero: null });
+  });
+});
+
+describe("stat kinds", () => {
+  const games = [game("win"), game("loss", { context: "ranked" }), game("draw", { context: "casual" }), game("win", { context: "ranked" })];
+
+  it("parses the URL value, defaulting to all", () => {
+    expect(parseStatKind("bajnoksag")).toBe("tournament");
+    expect(parseStatKind("ranked")).toBe("ranked");
+    expect(parseStatKind("casual")).toBe("casual");
+    expect(parseStatKind("osszes")).toBe("all");
+    expect(parseStatKind(undefined)).toBe("all");
+    expect(parseStatKind("tournament")).toBe("all");
+  });
+
+  it("filters and counts by kind", () => {
+    expect(filterByKind(games, "all")).toHaveLength(4);
+    expect(filterByKind(games, "ranked").map((g) => g.outcome)).toEqual(["loss", "win"]);
+    expect(countByKind(games)).toEqual({ all: 4, tournament: 1, ranked: 2, casual: 1 });
+  });
+
+  it("counts only championships, not standalone games", () => {
+    expect(computeStats(games).championships).toBe(1);
+    expect(computeStats(filterByKind(games, "ranked")).championships).toBe(0);
   });
 });
 

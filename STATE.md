@@ -1,6 +1,6 @@
 # Project state: DTHU website
 
-**Current version: v2.39** (2026-11-15, merged locally; push waits for migration 0014). Live: https://dthu.hu builds from this repository's
+**Current version: v2.39** (2026-11-15, live: pushed after Dave ran migration 0014). Live: https://dthu.hu builds from this repository's
 `main` (the owner moved Vercel over around 2026-11-01; checked live 2026-11-02). Every push to
 `main` deploys within a minute.
 **Launch phase: 1**: the public sees only the Meccsszervező; the whole site from the prototype
@@ -86,7 +86,7 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 | `puzzle` Taktikai feladvány (experiment, working title) | `/jatekok/taktikai-feladvany`, `/jatekok/taktikai-feladvany/<id>`; card on the Játékok page | **parked** (owner, 2026-11-09): only on branch `feature/puzzle`, never merged into `main` | static: Season 1 Barbarian + Moon Elf rules from the Card Scanner repo; no tables. Images are **not committed** (owner): make them locally with `scripts/puzzle/assets.py` | when picked up: fix the Blind vs. Ultimate rule first (Features_Roadmap R16, `src/features/puzzle/README.md` on the branch) |
 | `profile` Profilkép, Profil szerkesztése, Kitiltás | `/meccsszervezo/profil`, `/meccsszervezo/admin/felhasznalo/<id>` | **live** (v2.2): every logged-in user can upload a picture; admin page and bans for all admins | all real | badge ring (R3/R4), cosmetics collection |
 | `player-stats` Játékosok (player stats) | `/meccsszervezo/jatekosok`, `/meccsszervezo/jatekos/<profile id>`; Profilom card; links on Bajnokságok names | **on `main` since v2.38**; every logged-in player (`PLAYER_STATS_ADMINS_ONLY = false`) | real: computed from confirmed Bajnokságok results (migration 0013); no tables of its own; Karnyx league not counted (no winner/hero data) | Dave reviews live; players see the Játékosok tab now (`src/features/player-stats/README.md`) |
-| `match-reporting` Játszmák (R17 Meccs jelentése) | `/meccsszervezo/jatszmak`, `/jatszmak/uj`, `/jatszma/<id>` | **on `feature/match-reporting`, not merged**: steps 1–4 of 5 done (migration 0014, pure logic, profile-ID identity + Játékosok from `games`, Játszmák pages + report ping + reminders/expiry; admins only) | migration 0014 written, **not run live** | step 5: admin edit/void, stats split, open to players (see Handover log) |
+| `match-reporting` Játszmák (R17 Meccs jelentése) | `/meccsszervezo/jatszmak`, `/jatszmak/uj`, `/jatszma/<id>` | steps 1–4 **live on `main` (v2.39, pushed 2026-11-15)**; **step 5 committed** on `feature/match-reporting` (not merged; v2.40) (admin list + edit/void, Játékosok split; admins only) | migration 0014 **run live** (2026-11-15) | merge step 5 → `main` + push (v2.40) with OK; open to players only with his OK (see Handover log) |
 
 ## Database (Supabase)
 
@@ -97,8 +97,8 @@ local development uses the live data too (see CLAUDE.md, golden rule 1).
 **Migrations** (`supabase/migrations/`, run by hand in the Supabase SQL Editor, in order):
 0001 init · 0002 profile pictures and bans · 0003 events · 0004 news · 0005 polls · 0006 links ·
 0007 match play modes · 0008 ticket draws · 0009 DTHU coins · 0010 daily spin and question · 0011 live
-banner (its code is on `feature/live-banner`) · 0012 XP · 0013 Bajnokságok · **0014 games (R17, written on `feature/match-reporting`, NOT run yet)**. **0001–0013 are applied** on the live database (checked
-2026-11-05 by reading a table from each; 0013 checked 2026-11-14). A new change gets the next number (0014…) and is run
+banner (its code is on `feature/live-banner`) · 0012 XP · 0013 Bajnokságok · 0014 games (R17). **0001–0014 are applied** on the live database (checked
+2026-11-05 by reading a table from each; 0013 checked 2026-11-14, 0014 on 2026-11-15). A new change gets the next number (0015…) and is run
 *before* the code that needs it is deployed, with a guide for Dave in `docs/migrations/` (e.g.
 `docs/migrations/0013-championships-for-dave.md`). **0013 Bajnokságok has run** (found applied 2026-11-14:
 `match_reports` exists, tournaments have `format`/`status`; it was numbered 0012 until `main`'s XP migration took that number):
@@ -203,8 +203,10 @@ sample data (no tables yet; tickets and coins become real with migrations 0008 a
 
 ## Needs the owner
 
-0. **R17 Játszmák (`feature/match-reporting`, not merged):** send Dave `docs/migrations/0014-games-for-dave.md`;
-   he runs 0014 before the merge. Steps 1–4 built; step 5 next.
+0. **R17 Játszmák:** steps 1–4 live (v2.39, 0014 run). Step 5 committed on `feature/match-reporting` (screenshots approved
+   by Árpád 2026-11-15); merge + push as v2.40 with his OK.
+   To decide: may an admin edit/void **their own** game once it is final (built: yes, only pending is refused)?
+   Should admin edits/voids ping the players on Discord (built: no)?
 0. **XP step 1 (v2.31, admins only; migration 0012 has run, checked 2026-11-08).** Test as an admin: mark a played match, give yourself XP on Admin felület → XP kezelés, watch the
    card, the notification and a level-up. When the full site opens: `delete from public.xp_events;`
    and set `XP_ADMINS_ONLY` to false.
@@ -310,7 +312,45 @@ quiz) are in
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
 
-### 2026-11-15 (later) · v2.39 merged LOCALLY, push waits for Dave's migration 0014 · START HERE
+### 2026-11-15 (evening) · R17 step 5 COMMITTED (feature/match-reporting, not merged) · START HERE
+
+**Update:** Árpád approved the screenshots; step 5 committed on `feature/match-reporting` without the TEMP-PREVIEW lines
+(they stay uncommitted in the working tree for local testing). Next: merge into `main`, version bump v2.40 + changelog, push
+(only with OK). The two open questions below are still open; the built defaults ship.
+
+**Built (uncommitted on `feature/match-reporting`, which equals local `main` + these changes):**
+1. **Játszmák kezelése** `/meccsszervezo/admin/jatszmak` (`routes.adminGames`, `requireAdmin`): every game, filter
+   Függőben / Végleges / Egyéb / Mind (`?allapot=`), 200 newest, "n napja vár" (amber from day 3). Card on Admin felület
+   with the pending count (`countPendingGames`). Row: `components/AdminGameRow.tsx`.
+2. **Admin box on the game page** (admin view only): Eredmény módosítása (`GameForm` mode `admin`, side a's view + required
+   reason → `adminEditGame` → `rpc("game_admin_edit")`) and Érvénytelenítés (reason + confirm → `voidGame` → `rpc("game_void")`).
+   Rights unchanged (`lib/rights.ts`). Tournament games show a note pointing to the Bajnokságok match.
+3. **Stats split:** `StatGame` has `context` + `gameId`; `player-stats/lib/access.ts → statContexts()` = championships only,
+   plus ranked/casual when the viewer can use the Játszmák (admins only for now, so test games never reach players' stats).
+   With those: filter Összes / Bajnokság / Ranked / Casual (`?tipus=`, `StatKindNav`) on Játékosok and the player page,
+   split counts on Profilom; "Bajnokság" tile becomes "Különböző ellenfél" for ranked/casual. Pure helpers + 5 new tests.
+4. **GYIK draft** (not published): `src/features/match-reporting/README.md` → "GYIK entry (draft, not published)".
+
+**Verified on the LOCAL Supabase** (dev server restarted: the old one from 2026-11-14 served stale server actions,
+"A játszma nem található"; restart fixed it). Playwright (scratchpad of this session: `pw-step5.cjs`, `pw-step5b.cjs`,
+`pw-game.cjs`, `pw-console.cjs`), AnnaDT made admin locally for the run and **restored to non-admin**: PreviewAdmin on his own
+pending game sees no Admin box; AnnaDT: missing reason → "Írd be az indoklást.", edit of pending ranked game `5dd7f185…` →
+final (FeriDT wins 3–0), history shows the reason; void of final casual `67de498b…` with confirm → Érvénytelenítve; FeriDT
+(non-admin) sees championships only, no filter, and is sent away from the admin list. Screenshots 375 + 1280, dark +
+light, no horizontal overflow, no console errors. tsc, lint, `npm test` (447) green.
+Local DB side effects (local only): those two games edited/voided.
+
+**Not done / next:**
+- Show Árpád the screenshots (`shots/` in this session's scratchpad); on his OK commit step 5 (**without** the TEMP-PREVIEW
+  lines in `src/lib/auth.ts` / `src/middleware.ts`: `git checkout --` both or keep them out of `git add`; check
+  `grep -rn TEMP-PREVIEW src`). Ships as v2.40 after v2.39 is live.
+- Open to players (`MATCH_REPORTING_ADMINS_ONLY = false` + paste the GYIK draft into `meccsszervezo/gyik/page.tsx`) only
+  with Árpád's OK. That also turns on casual/ranked in everyone's stats.
+- Two open questions (Needs the owner, item 0).
+
+### 2026-11-15 (later) · v2.39 merged and PUSHED (Dave ran 0014; deployed 2026-11-15)
+
+**Update:** Dave ran 0014, Árpád said push: `main` pushed (`37d5547..5c5f124`), Vercel deploy succeeded. Note: a stale `GITHUB_TOKEN` env var breaks `git push`; push with `env -u GITHUB_TOKEN git -c credential.helper= -c "credential.helper=!gh auth git-credential" push origin main` (uses the keyring login).
 
 **State of git (check with `git log --oneline origin/main..main`):** local `main` has R17 steps 1–4 merged
 (`bcf036f`) + the v2.39 changelog (`171f0ff`) + this entry, **not pushed**. `feature/match-reporting` was
@@ -1639,7 +1679,7 @@ report / correction, reminders on day 3 and 24 hours before the 7-day expiry (ho
 `docs/migrations/0014-games-for-dave.md`): starting a championship fails without `players.profile_id`.
 **Verified:** tsc, lint, `npm test` (443); local Supabase: migration applied twice + scripted function
 tests; Playwright report → correct → confirm, withdraw, rename test, cron +73 h / +145 h / +169 h;
-screenshots 375 px + 1280 px, dark + light. Live check after the push: pending.
+screenshots 375 px + 1280 px, dark + light. Live check after the push (2026-11-15): migration 0014 confirmed live by a read-only REST check (games, game_events, players.profile_id answer 200); Vercel deploy of 5c5f124 succeeded; dthu.hu pages answer (logged-out visitors are sent to /regisztracio as before), calendar feed 200.
 
 ### v2.38 · 2026-11-14 · `feature/player-stats` (+ `feature/tournament-pairing`)
 **Changed (visible to players):** a new Játékosok tab in the Meccsszervező with per-player stats

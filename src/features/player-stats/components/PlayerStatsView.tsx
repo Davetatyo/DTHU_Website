@@ -6,7 +6,8 @@ import { formatShortDate } from "@/features/match-organizer/lib/time";
 import { avatarPublicUrl } from "@/features/profile/lib/avatar";
 import { routes } from "@/lib/routes";
 import type { ProfileGame, StatsProfile } from "../lib/data";
-import { formatWinRate, MIN_MATCHUP_GAMES, recordLabel, streakLabel, type HeroRecord, type PlayerStats } from "../lib/stats";
+import { formatWinRate, MIN_MATCHUP_GAMES, recordLabel, streakLabel, type HeroRecord, type PlayerStats, type StatKind } from "../lib/stats";
+import { StatKindNav } from "./StatKindNav";
 import "../player-stats.css";
 
 /** Rows shown before "Továbbiak". */
@@ -16,6 +17,31 @@ const FIRST_GAMES = 10;
 const MAX_BANS = 5;
 
 const RESULT: Record<ProfileGame["outcome"], string> = { win: "Győzelem", draw: "Döntetlen", loss: "Vereség" };
+
+/** The filter, when casual and ranked games count for this viewer (null: championships only). */
+export type StatFilter = { kind: StatKind; counts: Record<StatKind, number>; basePath: string } | null;
+
+/** What the numbers are based on, under the name. */
+const BASIS: Record<StatKind, { text: string; tip: string }> = {
+  all: {
+    text: "Minden lezárt játszma alapján",
+    tip: "A Bajnokságok lezárt eredményei és a jóváhagyott casual és ranked játszmák. A régi Karnyx-liga meccseinél nincs rögzítve a győztes és a hős, ezért azok nem szerepelnek.",
+  },
+  tournament: {
+    text: "Bajnokság eredmények alapján",
+    tip: "Csak a Bajnokságok lezárt (mindkét fél által megerősített) eredményei számítanak. A régi Karnyx-liga meccseinél nincs rögzítve a győztes és a hős, ezért azok nem szerepelnek.",
+  },
+  ranked: { text: "Ranked játszmák alapján", tip: "Csak az ellenfél által jóváhagyott (vagy admin által lezárt) ranked játszmák." },
+  casual: { text: "Casual játszmák alapján", tip: "Csak az ellenfél által jóváhagyott (vagy admin által lezárt) casual játszmák." },
+};
+
+/** "Még nincs lezárt …": own / someone else's, per kind (Hungarian possessive forms). */
+const NONE_YET: Record<StatKind, { own: string; other: string }> = {
+  all: { own: "játszmád", other: "játszmája" },
+  tournament: { own: "bajnoki meccsed", other: "bajnoki meccse" },
+  ranked: { own: "ranked játszmád", other: "ranked játszmája" },
+  casual: { own: "casual játszmád", other: "casual játszmája" },
+};
 
 function Bar({ r }: { r: HeroRecord }) {
   const pct = (n: number) => `${(n / r.games) * 100}%`;
@@ -66,7 +92,15 @@ function GameRow({ g, timeZone }: { g: ProfileGame; timeZone: string }) {
           {g.opponentHero ? ` (${g.opponentHero})` : ""} · életerő {g.hp}–{g.opponentHp}
         </small>
         <small>
-          {g.tournamentName}, {g.round}. forduló
+          {g.context === "tournament" ? (
+            `${g.tournamentName}, ${g.round}. forduló`
+          ) : g.gameId ? (
+            <Link className="link" href={routes.gameView(g.gameId)}>
+              {g.context === "ranked" ? "Ranked" : "Casual"} játszma
+            </Link>
+          ) : (
+            `${g.context === "ranked" ? "Ranked" : "Casual"} játszma`
+          )}
         </small>
       </span>
     </li>
@@ -95,19 +129,24 @@ export function PlayerStatsView({
   stats,
   timeZone,
   isOwn,
+  filter = null,
 }: {
   profile: StatsProfile;
   stats: PlayerStats<ProfileGame>;
   timeZone: string;
   isOwn: boolean;
+  filter?: StatFilter;
 }) {
   const t = stats.total;
+  const kind: StatKind = filter?.kind ?? "tournament";
+  const basis = BASIS[kind];
+  const opponents = new Set(stats.games.map((g) => g.opponentProfileId ?? g.opponentName)).size;
   const topHero = stats.heroes[0]?.hero ?? null;
   const tiles: [string, string][] = [
     [String(t.games), "Meccs"],
     [formatWinRate(t.winRate), "Győzelmi arány"],
     [`${t.wins}–${t.draws}–${t.losses}`, "Győzelem–döntetlen–vereség"],
-    [String(stats.championships), "Bajnokság"],
+    kind === "ranked" || kind === "casual" ? [String(opponents), "Különböző ellenfél"] : [String(stats.championships), "Bajnokság"],
     [streakLabel(stats.currentStreak), "Jelenlegi sorozat"],
     [String(stats.bestWinStreak), "Leghosszabb győzelmi sorozat"],
   ];
@@ -122,16 +161,18 @@ export function PlayerStatsView({
           <p className="kicker">{isOwn ? "A statisztikám" : "Játékos statisztika"}</p>
           <h1>{profile.karnyx_name}</h1>
           <p className="ps-sub">
-            Bajnokság eredmények alapján
-            <InfoTip text="Csak a Bajnokságok lezárt (mindkét fél által megerősített) eredményei számítanak. A régi Karnyx-liga meccseinél nincs rögzítve a győztes és a hős, ezért azok nem szerepelnek." />
+            {basis.text}
+            <InfoTip text={basis.tip} />
           </p>
         </div>
       </section>
 
+      {filter && <StatKindNav basePath={filter.basePath} kind={filter.kind} counts={filter.counts} />}
+
       {t.games === 0 ? (
         <p className="card muted">
-          {isOwn ? "Még nincs lezárt bajnoki meccsed." : "Még nincs lezárt bajnoki meccse."} Az első megerősített eredmény után itt
-          jelennek meg a statisztikák.
+          Még nincs lezárt {NONE_YET[kind][isOwn ? "own" : "other"]}.{" "}
+          Az első megerősített eredmény után itt jelennek meg a statisztikák.
         </p>
       ) : (
         <>
