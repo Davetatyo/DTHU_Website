@@ -310,7 +310,30 @@ quiz) are in
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
 
-### 2026-11-15 · R17 step 4 committed (feature/match-reporting) · START HERE for step 5
+### 2026-11-15 (later) · v2.39 merged LOCALLY, push waits for Dave's migration 0014 · START HERE
+
+**State of git (check with `git log --oneline origin/main..main`):** local `main` has R17 steps 1–4 merged
+(`bcf036f`) + the v2.39 changelog (`171f0ff`) + this entry, **not pushed**. `feature/match-reporting` was
+fast-forwarded to the same commit and is the checked-out branch. Pushing `main` deploys v2.39 to dthu.hu.
+
+**Waiting for Dave:** he must run `supabase/migrations/0014_games.sql` first (starting a championship fails
+without `players.profile_id`). He hasn't yet: 0014 isn't on GitHub, so Árpád sends him the two files
+(`0014_games.sql` + `docs/migrations/0014-games-for-dave.md`) directly. Dave also re-ran 0013 and got
+`policy "match_reports public read" … already exists`: harmless, 0013 was already applied (one transaction,
+nothing changed); told him not to touch 0013.
+
+**When Árpád says Dave is done and says "push":** (optional, read-only) confirm 0014 is live, e.g. that the
+REST endpoint for `games` answers 200; then `git push origin main`; check dthu.hu picked it up (Bajnokságok
+and Játékosok pages load); fill in "Live check" in the v2.39 changelog entry; tell Árpád what players see
+(nothing new; Játszmák is admins only).
+
+**Meanwhile / next: R17 step 5 on `feature/match-reporting`** (agreed with Árpád; doesn't need Dave; ships
+later as v2.40 after Dave has tested v2.39 live). See the step-5 list in the entry below: (1) admin game
+list + edit/void panel with a required reason, (2) Játékosok / Profilom split Casual / Ranked / Bajnokság /
+Összes, (3) draft a GYIK entry (don't publish). Opening to players (`MATCH_REPORTING_ADMINS_ONLY = false`)
+needs Árpád's OK. Show screenshots (375 px + desktop, dark + light) before committing, as in step 4.
+
+### 2026-11-15 · R17 step 4 committed (feature/match-reporting) · step-5 details
 
 **Where R17 stands:** steps 1–4 of 5 are committed on `feature/match-reporting` (not pushed, not merged).
 Plan: `docs/r17-match-reporting-plan.md`; feature guide: `src/features/match-reporting/README.md`.
