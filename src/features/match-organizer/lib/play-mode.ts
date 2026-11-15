@@ -29,11 +29,30 @@ export function matchMode(match: Pick<MatchView, "mode_a" | "mode_b" | "player_b
   return a === b ? a : "hybrid";
 }
 
-/** Which side of the match a player is on, by Karnyx name. */
-export function sideOf(match: Pick<MatchView, "a" | "b">, karnyxName: string | null | undefined): "a" | "b" | null {
-  if (!karnyxName) return null;
-  if (sameName(match.a.karnyx_name, karnyxName)) return "a";
-  if (match.b && sameName(match.b.karnyx_name, karnyxName)) return "b";
+/**
+ * Who someone is, for finding their side of a match: the profile ID decides; the Karnyx name is
+ * only used for Karnyx-league players without a linked account (until R20 retires Karnyx).
+ */
+export type Identity = { id: string; karnyx_name: string | null };
+
+/**
+ * Whether a tournament player is this person. A player linked to an account (players.profile_id,
+ * migration 0014) matches only that account, so a renamed Karnyx name can't match someone else's
+ * entry; an unlinked player (Karnyx league) is matched by Karnyx name.
+ */
+export function isPlayer(
+  player: { karnyx_name: string; profile_id?: string | null } | null | undefined,
+  who: Identity | null | undefined,
+): boolean {
+  if (!player || !who) return false;
+  if (player.profile_id) return player.profile_id === who.id;
+  return sameName(player.karnyx_name, who.karnyx_name);
+}
+
+/** Which side of the match a person is on (see isPlayer). */
+export function sideOf(match: Pick<MatchView, "a" | "b">, who: Identity | null | undefined): "a" | "b" | null {
+  if (isPlayer(match.a, who)) return "a";
+  if (isPlayer(match.b, who)) return "b";
   return null;
 }
 

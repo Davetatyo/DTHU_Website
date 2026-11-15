@@ -5,8 +5,10 @@ import { SiteHeader } from "@/components/site/SiteHeader";
 import { headerBadge } from "@/features/profile/components/HeaderBadge";
 import { headerXp, XpNotices } from "@/features/xp/components/XpNotices";
 import { HeaderWallet } from "@/features/shop/components/HeaderWallet";
-import { getAdminView } from "@/lib/auth";
+import { getAdminView, getCurrentProfile } from "@/lib/auth";
 import { canSeePlayerStats } from "@/features/player-stats/lib/access";
+import { canUseMatchReporting } from "@/features/match-reporting/lib/access";
+import { countAwaiting } from "@/features/match-reporting/lib/data";
 import type { NavItem } from "@/components/site/NavTabs";
 import { routes } from "@/lib/routes";
 import { organizerTabs, siteMenu } from "@/lib/navigation";
@@ -25,9 +27,16 @@ export default async function OrganizerLayout({ children }: Readonly<{ children:
   const full = seesFullSite(adminView);
   // "Játékosok" (player stats), before GYIK, only for those who may see stats
   // (admins while PLAYER_STATS_ADMINS_ONLY is on).
-  const tabs: NavItem[] = (await canSeePlayerStats())
-    ? [...organizerTabs.slice(0, -1), { href: routes.players, label: "Játékosok", also: [routes.player("").slice(0, -1)] }, ...organizerTabs.slice(-1)]
-    : organizerTabs;
+  // "Játszmák" (R17 match reporting) before them, with the number of games waiting for the
+  // viewer's answer (admins only while MATCH_REPORTING_ADMINS_ONLY is on).
+  const extra: NavItem[] = [];
+  if (await canUseMatchReporting()) {
+    const me = await getCurrentProfile();
+    const waiting = me ? await countAwaiting(me.id) : 0;
+    extra.push({ href: routes.gameLog, label: "Játszmák", prefix: true, also: [routes.gameView("").slice(0, -1)], badge: waiting ? String(waiting) : undefined });
+  }
+  if (await canSeePlayerStats()) extra.push({ href: routes.players, label: "Játékosok", also: [routes.player("").slice(0, -1)] });
+  const tabs: NavItem[] = extra.length ? [...organizerTabs.slice(0, -1), ...extra, ...organizerTabs.slice(-1)] : organizerTabs;
 
   return (
     <>

@@ -5,7 +5,7 @@ import { HeroPicks } from "./HeroPicks";
 import { PlayerAvatar } from "@/features/profile/components/PlayerAvatar";
 import { StatusBadge } from "@/features/match-organizer/components/StatusBadge";
 import { groupMatches } from "@/features/match-organizer/lib/schedule";
-import { sideOf } from "@/features/match-organizer/lib/play-mode";
+import { sideOf, type Identity } from "@/features/match-organizer/lib/play-mode";
 import { formatDateTime, formatShortDate, formatTime } from "@/features/match-organizer/lib/time";
 import { heroColors } from "@/lib/heroes";
 import { routes } from "@/lib/routes";
@@ -21,7 +21,7 @@ type Props = {
   matches: ChampionshipMatch[];
   reports: Map<string, MatchReport>;
   timeZone: string;
-  viewerName?: string | null;
+  viewer?: Identity | null;
 };
 
 type Result = { winner: "a" | "b" | "draw"; report: MatchReport | null } | null;
@@ -120,7 +120,7 @@ function TimeCell({ m, result, timeZone, now }: { m: ChampionshipMatch; result: 
 }
 
 /** List view: rows grouped like the Időpontfoglaló (agreed days, open, finished, Bye). */
-export function ChampionshipMatchList({ matches, reports, timeZone, viewerName, grouped = true }: Props & { grouped?: boolean }) {
+export function ChampionshipMatchList({ matches, reports, timeZone, viewer, grouped = true }: Props & { grouped?: boolean }) {
   if (matches.length === 0) return <p className="muted">Nincs meccs.</p>;
   const now = new Date();
   // Finished = has a final result, so the grouping puts them under "Lejátszott".
@@ -139,7 +139,7 @@ export function ChampionshipMatchList({ matches, reports, timeZone, viewerName, 
           )}
           {g.matches.map((m) => {
             const result = resultOf(m, reports);
-            const mine = !!viewerName && !!sideOf(m, viewerName);
+            const mine = !!sideOf(m, viewer);
             return (
               <Link key={m.id} href={routes.match(m.id)} className={`mr${mine ? " me" : ""}${m.status === "bye" ? " faded" : ""}`}>
                 <TimeCell m={m} result={result} timeZone={timeZone} now={now} />
@@ -198,7 +198,7 @@ const CHIP = {
 };
 
 /** Card view: one picture tile per match in the played (or first) heroes' colours. */
-export function ChampionshipMatchCards({ matches, reports, timeZone, viewerName }: Props) {
+export function ChampionshipMatchCards({ matches, reports, timeZone, viewer }: Props) {
   const now = new Date();
   return (
     <div className="cards">
@@ -221,7 +221,7 @@ export function ChampionshipMatchCards({ matches, reports, timeZone, viewerName 
                 : CHIP[m.status === "proposed" ? "proposed" : "pending"];
         const [c1] = heroColors(result?.report?.pick_a ?? m.a.heroes[0]);
         const [c2] = heroColors(result?.report?.pick_b ?? m.b?.heroes[0]);
-        const mine = !!viewerName && !!sideOf(m, viewerName);
+        const mine = !!sideOf(m, viewer);
         return (
           <Link key={m.id} href={routes.match(m.id)} className={`tile tile-match${mine ? " me" : ""}${m.status === "bye" ? " faded" : ""}`}>
             <div className="img ph-art" style={{ "--c1": c1, "--c2": c2 } as CSSProperties} />

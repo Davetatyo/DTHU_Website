@@ -731,28 +731,38 @@ redesign puzzle 1 (Rage! would be a second 100% answer).
 
 ### R17 · Meccs jelentése (report any game on the website, one match lifecycle)
 
-**Status:** Ready to plan (Árpád, 2026-11-14) · **Feature id (proposed):** `match-reporting` ·
-**Depends on:** migration 0013 + `feature/tournament-pairing` and `feature/player-stats` merged.
+**Status:** **In progress**: steps 1–4 of 5 built on the branch (2026-11-15), not merged; migration 0014 not run
+live yet · **Feature id:** `match-reporting` ·
+**Branch:** `feature/match-reporting` · **Depends on:** migration 0013 and the
+Bajnokságok + Játékosok (both on `main` since v2.38).
+**Plan:** [docs/r17-match-reporting-plan.md](docs/r17-match-reporting-plan.md) ·
 Brief: [docs/website-match-reporting-and-unified-game-logic.md](docs/website-match-reporting-and-unified-game-logic.md)
 
 A player reports a finished Casual or Ranked game on the website (opponent, both heroes, final HP,
-ultimates, outcome). It stays pending until the opponent accepts (Elfogadom) or disputes (Vitatom).
-Tournament games are reported on their existing match, not as a separate game. Every source
-(website, later Discord, admin) writes the same match record, and each match counts once.
+optional ultimates, outcome). It stays pending until the opponent accepts (Elfogadom) or corrects it
+(Javítom). Tournament games keep their Bajnokságok result flow and are copied into the same `games`
+table when locked. Every source (website, later Discord, admin) ends in one `games` row, counted once.
 
 **Decisions (Árpád, 2026-11-14):**
 - Standalone **Ranked** games exist, next to Casual. Tournament matches also count as ranked.
-- Every match carries a "rated" flag fixed at creation: Ranked games get it, tournament matches
-  inherit it from their tournament, Casual never. Proposed: a per-tournament "rated" switch, on by
-  default, so test or fun tournaments can be excluded.
+- A new `games` table (not an extended `matches`), with `match_id` unique for tournament games, an
+  append-only `game_events` history and SQL functions for every state change. `players.profile_id`
+  is added, because tournament players are linked to accounts only by Karnyx name today.
+- Every game carries a "rated" flag fixed at creation: Ranked yes, Casual never, tournament games from
+  a new `tournaments.rated` switch (on by default).
+- Ultimates: only for ranked and casual games, optional; Bajnokságok never record them.
+- Unanswered reports expire after 7 days (no automatic win). Two Discord pings in the Időpontfoglaló's
+  channel, with time left and a link to the game: on day 3, and a last call 24 hours before expiry if
+  still pending. A correction restarts the clock for the player who now has to answer.
+- Javítom sends the corrected version back to the first player; admins settle stuck games.
+- `played_at` at most 7 days back, never in the future.
+- Pending games: only the two players and admins see them; finalized: every logged-in player.
+- Admins only first (`MATCH_REPORTING_ADMINS_ONLY`), then players.
 - No Karnyx history import: it has no winner or hero data.
+- A Discord ping also goes out the moment a game is reported or corrected (Árpád, 2026-11-15), to the
+  player who has to answer.
 
-**Data (draft):** today `matches.round_id` is NOT NULL and the players are tournament `players`, not
-`profiles`, so a game outside a tournament has nowhere to live. That is the first schema decision.
-Identity is already solved: `profiles.discord_id` is unique and every login is Discord OAuth.
-
-**Open questions:** extend `matches` or add a new canonical games table; expiry of unanswered reports;
-who resolves disputes; whether pending reports are public.
+**Open questions:** none for now.
 
 ### R18 · Ranglista: skill rating, seasons and all-time leaderboard
 
@@ -794,6 +804,34 @@ disputes with buttons, or on the website. Same pending → finalized lifecycle a
 
 **Open questions:** does Discord's modal support hero selects well enough, or does the hero pick move to
 a follow-up message; what happens to `match-results.json` history.
+
+
+### R20 · Karnyx kivezetése (move tournaments fully onto the website, remove Karnyx)
+
+**Status:** Idea (Árpád, 2026-11-14) · **Depends on:** the Bajnokságok launch (it replaces the
+Időpontfoglaló and its Karnyx imports), R17 (`players.profile_id`, identity by profile ID).
+
+Karnyx is only in the site because tournaments still run there. Once every tournament runs on the
+Bajnokságok, Karnyx is taken out completely: the pairing import, the "Karnyx név" on profiles as an
+identity, and every match-by-name lookup. People are identified by their profile ID; a display name
+stays for showing.
+
+- Today Karnyx names appear in about 52 files (checked 2026-11-14), the biggest users being the
+  Időpontfoglaló (`match-organizer`), the Bajnokságok (sign-up stores `karnyx_name`), player stats,
+  XP, tickets, the header and the admin pages.
+- Profiles without a Karnyx name are hidden from Játékosok today (`getStatsProfile` requires one):
+  this needs a display-name replacement first.
+
+**Decisions (Árpád, 2026-11-14):**
+- Every player creates their **own username for the website**, and it is the name shown everywhere
+  (replaces the Karnyx name as display name). Identity stays the profile ID; the username is only for
+  showing and finding people (e.g. the R17 opponent search).
+- It needs its own column (proposed `profiles.username`): the existing `display_name` comes from
+  Discord at login (`src/app/auth/callback/route.ts`), so it can't hold a name players choose.
+
+**Open questions:** unique (case-insensitive) or not; allowed length and characters; can it be changed,
+and how often; prefill from today's Karnyx name so nobody starts empty; required on first login (like the
+Karnyx name prompt today); what happens to the old Időpontfoglaló seasons (keep read-only or archive).
 
 ---
 

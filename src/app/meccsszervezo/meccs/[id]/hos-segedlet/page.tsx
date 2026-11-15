@@ -13,7 +13,8 @@ import { SpriteSheet } from "@/features/rulebook/components/SpriteSheet";
 import { allEntries, knownIds, renderEntry } from "@/features/rulebook/lib/content";
 import { entryPath } from "@/features/rulebook/lib/pages";
 import "@/features/rulebook/rulepop.css";
-import { getAdminView, getCurrentProfile, sameName } from "@/lib/auth";
+import { getAdminView, getCurrentProfile } from "@/lib/auth";
+import { isPlayer } from "@/features/match-organizer/lib/play-mode";
 import { routes } from "@/lib/routes";
 
 export const metadata: Metadata = { title: "Hős segédlet" };
@@ -32,7 +33,7 @@ export default async function HeroGuidePage({ params }: { params: Promise<{ id: 
   const side = (player: Player): GuideSide => ({
     name: player.karnyx_name,
     avatar: <PlayerAvatar name={player.karnyx_name} hero={player.heroes[0]} />,
-    isMe: sameName(player.karnyx_name, viewer?.karnyx_name),
+    isMe: isPlayer(player, viewer),
     heroes: player.heroes.map((name) => {
       const heroId = heroIdFromName(name);
       return { name, id: heroId, entry: known.has(heroId) ? renderEntry({ kind: "hero", id: heroId }) : null };

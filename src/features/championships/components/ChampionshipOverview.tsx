@@ -5,7 +5,7 @@ import { RoundTimeline } from "@/features/match-organizer/components/RoundTimeli
 import { StatusBadge } from "@/features/match-organizer/components/StatusBadge";
 import { ViewToggle } from "@/features/match-organizer/components/ViewToggle";
 import { getPlayers, getRounds } from "@/features/match-organizer/lib/data";
-import { sideOf } from "@/features/match-organizer/lib/play-mode";
+import { sideOf, type Identity } from "@/features/match-organizer/lib/play-mode";
 import { formatDateTime, timeLeft } from "@/features/match-organizer/lib/time";
 import type { ViewMode } from "@/features/match-organizer/lib/view";
 import { InfoTip } from "@/components/InfoTip";
@@ -32,14 +32,14 @@ export const VIEW_COOKIE = "nezet";
 export async function ChampionshipOverview({
   tournament: t,
   access,
-  viewerName,
+  viewer,
   adminView,
   timeZone: tz,
   view,
 }: {
   tournament: Championship;
   access: Exclude<ChampionshipAccess, "signup" | "hidden">;
-  viewerName: string | null;
+  viewer: Identity | null;
   adminView: boolean;
   timeZone: string;
   view: ViewMode;
@@ -59,7 +59,7 @@ export async function ChampionshipOverview({
   const open = real.filter((m) => !isDecided(m));
   const awaiting = open.filter((m) => reportStatus(reports.get(m.id) ?? null) === "pending").length;
   const count = (s: string) => open.filter((m) => m.status === s && reportStatus(reports.get(m.id) ?? null) === "none").length;
-  const myMatch = access === "full" && viewerName ? roundMatches.find((m) => sideOf(m, viewerName)) : undefined;
+  const myMatch = access === "full" && viewer ? roundMatches.find((m) => sideOf(m, viewer)) : undefined;
   const roundOpen = !!round && !round.closed_at && !round.completed_at && !finished;
 
   return (
@@ -119,7 +119,7 @@ export async function ChampionshipOverview({
           {/* Phones: the own match first, above the pairings (the side column comes last there). */}
           {myMatch && (
             <div className="ch-mine-top">
-              <MyMatch match={myMatch} viewerName={viewerName} adminView={adminView} report={reports.get(myMatch.id) ?? null} path={path} timeZone={tz} />
+              <MyMatch match={myMatch} viewer={viewer} adminView={adminView} report={reports.get(myMatch.id) ?? null} path={path} timeZone={tz} />
             </div>
           )}
           <section className="min-w-0 space-y-5">
@@ -129,9 +129,9 @@ export async function ChampionshipOverview({
                 <ViewToggle current={view} path={path} cookie={VIEW_COOKIE} />
               </div>
               {view === "kartyak" ? (
-                <ChampionshipMatchCards matches={roundMatches} reports={reports} timeZone={tz} viewerName={viewerName} />
+                <ChampionshipMatchCards matches={roundMatches} reports={reports} timeZone={tz} viewer={viewer} />
               ) : (
-                <ChampionshipMatchList matches={roundMatches} reports={reports} timeZone={tz} viewerName={viewerName} />
+                <ChampionshipMatchList matches={roundMatches} reports={reports} timeZone={tz} viewer={viewer} />
               )}
             </div>
 
@@ -145,7 +145,7 @@ export async function ChampionshipOverview({
                     matches={byTable(matches.filter((m) => m.round_id === r.id))}
                     reports={reports}
                     timeZone={tz}
-                    viewerName={viewerName}
+                    viewer={viewer}
                     grouped={false}
                   />
                 </div>
@@ -156,7 +156,7 @@ export async function ChampionshipOverview({
           <aside className="space-y-5">
             {myMatch && (
               <div className="ch-mine-side">
-                <MyMatch match={myMatch} viewerName={viewerName} adminView={adminView} report={reports.get(myMatch.id) ?? null} path={path} timeZone={tz} />
+                <MyMatch match={myMatch} viewer={viewer} adminView={adminView} report={reports.get(myMatch.id) ?? null} path={path} timeZone={tz} />
               </div>
             )}
 
@@ -223,20 +223,20 @@ function byTable(list: ChampionshipMatch[]): ChampionshipMatch[] {
 /** "Következő meccsem": the viewer's match in the latest round, with the time and result buttons. */
 function MyMatch({
   match: m,
-  viewerName,
+  viewer,
   adminView,
   report,
   path,
   timeZone,
 }: {
   match: ChampionshipMatch;
-  viewerName: string | null;
+  viewer: Identity | null;
   adminView: boolean;
   report: MatchReport | null;
   path: string;
   timeZone: string;
 }) {
-  const side = sideOf(m, viewerName);
+  const side = sideOf(m, viewer);
   const me = side === "a" ? m.a : m.b;
   const opponent = side === "a" ? m.b : m.a;
   const decided = isDecided(m);

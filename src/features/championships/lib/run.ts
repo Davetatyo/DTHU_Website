@@ -132,7 +132,7 @@ export async function startTournament(t: Championship): Promise<StartOutcome> {
   if (!claimed?.length) return { ok: false, error: "A verseny már elindult." };
 
   const { error } = await db.from("players").insert(
-    registrations.map((r) => ({ tournament_id: t.id, karnyx_name: r.karnyx_name, heroes: r.heroes })),
+    registrations.map((r) => ({ tournament_id: t.id, profile_id: r.profile_id, karnyx_name: r.karnyx_name, heroes: r.heroes })),
   );
   if (error) {
     await db.from("tournaments").update({ status: "registration" }).eq("id", t.id);

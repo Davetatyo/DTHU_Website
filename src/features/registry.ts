@@ -39,6 +39,8 @@ export const FEATURES: Feature[] = [
   { id: "xp", label: "XP", route: "/meccsszervezo/profil", status: "planned" },
   // A "Játékosok" tab in the Meccsszervező and links on player names; no site-menu item.
   { id: "player-stats", label: "Játékosok", route: "/meccsszervezo/jatekosok", status: "planned" },
+  // R17: a "Játszmák" tab in the Meccsszervező (admins only first); no site-menu item.
+  { id: "match-reporting", label: "Játszmák", route: "/meccsszervezo/jatszmak", status: "planned" },
 ];
 
 /** Features that appear in the full-site menu (the Alchemist opens from its help vial instead). */

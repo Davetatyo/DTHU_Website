@@ -1,11 +1,10 @@
+import { checkResult } from "@/lib/game-result";
 import type { MatchReport, ReportOutcome } from "./types";
 
 // Result reports: one player submits (winner, final health, picks and bans), the opponent
 // confirms. If the opponent disagrees they correct it, and the correction waits for the first
 // player. A confirmed result is locked; only admins can change it, and an admin's report is
 // locked right away. Pure rules here, the database side is in actions/results.ts.
-
-const MAX_HP = 99;
 
 export type ReportFields = Pick<MatchReport, "outcome" | "hp_a" | "hp_b" | "pick_a" | "pick_b" | "ban_a" | "ban_b">;
 
@@ -45,32 +44,19 @@ export function reportRights(
   return { canSubmit: false, canConfirm: false, locksOnSubmit: false };
 }
 
-function parseHp(raw: string): number | null {
-  const s = raw.trim();
-  if (!/^\d{1,2}$/.test(s)) return null;
-  const n = Number(s);
-  return n <= MAX_HP ? n : null;
-}
-
 /**
  * Checks a submitted form. Picks and bans come from each player's 3 heroes, and a player's
- * banned hero can't be the one they played. A winner can't finish on 0 health (both on 0 is a
- * draw); the loser may have health left (conceded game).
+ * banned hero can't be the one they played. Outcome and health follow `checkResult` (shared
+ * with standalone games).
  */
 export function validateReport(
   input: ReportInput,
   heroesA: readonly string[],
   heroesB: readonly string[],
 ): { ok: true; report: ReportFields } | { ok: false; error: string } {
-  const outcome = input.outcome as ReportOutcome;
-  if (!["a", "b", "draw"].includes(outcome)) return { ok: false, error: "Válaszd ki a győztest vagy a döntetlent." };
-
-  const hp_a = parseHp(input.hp_a);
-  const hp_b = parseHp(input.hp_b);
-  if (hp_a === null || hp_b === null) return { ok: false, error: `Az életerő 0 és ${MAX_HP} közötti egész szám legyen.` };
-  if ((outcome === "a" && hp_a === 0) || (outcome === "b" && hp_b === 0)) {
-    return { ok: false, error: "A győztes nem végezhet 0 életerővel. Ha mindketten 0-n álltok, az döntetlen." };
-  }
+  const result = checkResult(input.outcome, input.hp_a, input.hp_b);
+  if (!result.ok) return result;
+  const { outcome, hp_a, hp_b } = result;
 
   const sides = [
     { label: "A", heroes: heroesA, pick: input.pick_a.trim(), ban: input.ban_a.trim() },

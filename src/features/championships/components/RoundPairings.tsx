@@ -2,7 +2,7 @@ import Link from "next/link";
 import { routes } from "@/lib/routes";
 import { HeroIcons } from "@/components/HeroIcon";
 import { formatDateTime } from "@/features/match-organizer/lib/time";
-import { sideOf } from "@/features/match-organizer/lib/play-mode";
+import { sideOf, type Identity } from "@/features/match-organizer/lib/play-mode";
 import { reportRights, reportStatus, resultButtonLabel } from "@/features/championships/lib/results";
 import type { ChampionshipMatch, MatchReport, Player } from "@/features/championships/lib/types";
 import { HeroPicks } from "./HeroPicks";
@@ -31,14 +31,14 @@ export function RoundPairings({
   matches,
   reports,
   timeZone,
-  viewerName,
+  viewer,
   adminView,
   back,
 }: {
   matches: ChampionshipMatch[];
   reports: Map<string, MatchReport>;
   timeZone: string;
-  viewerName?: string | null;
+  viewer?: Identity | null;
   adminView: boolean;
   back: string;
 }) {
@@ -51,7 +51,7 @@ export function RoundPairings({
         const b = m.b!;
         const report = reports.get(m.id) ?? null;
         const status = reportStatus(report);
-        const side = sideOf(m, viewerName);
+        const side = sideOf(m, viewer);
         const rights = reportRights(report, { side, admin: adminView });
         const showPanel = rights.canSubmit || rights.canConfirm;
         const shown = status === "locked" ? report : null;

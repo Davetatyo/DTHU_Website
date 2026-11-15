@@ -86,6 +86,7 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 | `puzzle` Taktikai feladvány (experiment, working title) | `/jatekok/taktikai-feladvany`, `/jatekok/taktikai-feladvany/<id>`; card on the Játékok page | **parked** (owner, 2026-11-09): only on branch `feature/puzzle`, never merged into `main` | static: Season 1 Barbarian + Moon Elf rules from the Card Scanner repo; no tables. Images are **not committed** (owner): make them locally with `scripts/puzzle/assets.py` | when picked up: fix the Blind vs. Ultimate rule first (Features_Roadmap R16, `src/features/puzzle/README.md` on the branch) |
 | `profile` Profilkép, Profil szerkesztése, Kitiltás | `/meccsszervezo/profil`, `/meccsszervezo/admin/felhasznalo/<id>` | **live** (v2.2): every logged-in user can upload a picture; admin page and bans for all admins | all real | badge ring (R3/R4), cosmetics collection |
 | `player-stats` Játékosok (player stats) | `/meccsszervezo/jatekosok`, `/meccsszervezo/jatekos/<profile id>`; Profilom card; links on Bajnokságok names | **on `main` since v2.38**; every logged-in player (`PLAYER_STATS_ADMINS_ONLY = false`) | real: computed from confirmed Bajnokságok results (migration 0013); no tables of its own; Karnyx league not counted (no winner/hero data) | Dave reviews live; players see the Játékosok tab now (`src/features/player-stats/README.md`) |
+| `match-reporting` Játszmák (R17 Meccs jelentése) | `/meccsszervezo/jatszmak`, `/jatszmak/uj`, `/jatszma/<id>` | **on `feature/match-reporting`, not merged**: steps 1–4 of 5 done (migration 0014, pure logic, profile-ID identity + Játékosok from `games`, Játszmák pages + report ping + reminders/expiry; admins only) | migration 0014 written, **not run live** | step 5: admin edit/void, stats split, open to players (see Handover log) |
 
 ## Database (Supabase)
 
@@ -96,7 +97,7 @@ local development uses the live data too (see CLAUDE.md, golden rule 1).
 **Migrations** (`supabase/migrations/`, run by hand in the Supabase SQL Editor, in order):
 0001 init · 0002 profile pictures and bans · 0003 events · 0004 news · 0005 polls · 0006 links ·
 0007 match play modes · 0008 ticket draws · 0009 DTHU coins · 0010 daily spin and question · 0011 live
-banner (its code is on `feature/live-banner`) · 0012 XP · 0013 Bajnokságok. **All are applied** on the live database (checked
+banner (its code is on `feature/live-banner`) · 0012 XP · 0013 Bajnokságok · **0014 games (R17, written on `feature/match-reporting`, NOT run yet)**. **0001–0013 are applied** on the live database (checked
 2026-11-05 by reading a table from each; 0013 checked 2026-11-14). A new change gets the next number (0014…) and is run
 *before* the code that needs it is deployed, with a guide for Dave in `docs/migrations/` (e.g.
 `docs/migrations/0013-championships-for-dave.md`). **0013 Bajnokságok has run** (found applied 2026-11-14:
@@ -152,6 +153,8 @@ entries after a draw closes.
 | `xp_boosts` *(0012)* | Double XP: a tournament, or a time window for chosen activities | `multiplier`, `starts_at`, `ends_at`, `activity_keys`, `tournament_id` | – |
 | `match_reports` *(0013)* | Result report of a championship match; a player submits, the opponent confirms, then locked | `match_id` (key, cascade), `outcome` (a/b/draw), `hp_a`, `hp_b`, `pick_a`/`pick_b`, `ban_a`/`ban_b`, `submitted_side` (a/b/admin), `submitted_by`, `submitted_at`, `confirmed_by`, `confirmed_at` | – |
 | `tournament_registrations` *(0013)* | Championship sign-ups with 3 secret heroes (no read policy) | primary key (`tournament_id`, `profile_id`), `karnyx_name`, `heroes` (3), `locked_at` | – |
+| `games` *(0014, not run yet)* | One row per real game (casual/ranked reports + locked Bajnokságok results); the source for stats and the R18 ranking. Changed only through the `game_*` functions | `context`, `rated`, `source`, `status` (pending/finalized/cancelled/expired/voided), `profile_a`/`profile_b`, `hero_*`, `hp_*`, `ult_*` (casual/ranked), `ban_*` (tournament), `outcome`, `played_at`, `match_id` (unique), `tournament_id`, `reported_side`/`_by`/`_at`, `confirmed_by`/`_at`, `reminders_sent` | – |
+| `game_events` *(0014, not run yet)* | Append-only history of every game (a trigger refuses update/delete unless the game itself is gone) | `game_id`, `kind`, `actor_id`, `snapshot` (the game row after the change), `reason` | – |
 | `daily_streaks` *(0010)* | Days in a row per game (spin and quiz separately, 1..7) | `profile_id` + `game` (key), `current_length`, `last_completed_date` | – |
 
 \*Row counts on 2026-11-03, for scale only.
@@ -200,6 +203,8 @@ sample data (no tables yet; tickets and coins become real with migrations 0008 a
 
 ## Needs the owner
 
+0. **R17 Játszmák (`feature/match-reporting`, not merged):** send Dave `docs/migrations/0014-games-for-dave.md`;
+   he runs 0014 before the merge. Steps 1–4 built; step 5 next.
 0. **XP step 1 (v2.31, admins only; migration 0012 has run, checked 2026-11-08).** Test as an admin: mark a played match, give yourself XP on Admin felület → XP kezelés, watch the
    card, the notification and a level-up. When the full site opens: `delete from public.xp_events;`
    and set `XP_ADMINS_ONLY` to false.
@@ -304,6 +309,148 @@ quiz) are in
 ## Handover log
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
+
+### 2026-11-15 · R17 step 4 committed (feature/match-reporting) · START HERE for step 5
+
+**Where R17 stands:** steps 1–4 of 5 are committed on `feature/match-reporting` (not pushed, not merged).
+Plan: `docs/r17-match-reporting-plan.md`; feature guide: `src/features/match-reporting/README.md`.
+Migration **0014 is NOT run on the live database**; Dave runs it (guide `docs/migrations/0014-games-for-dave.md`)
+before the branch is merged: `startTournament` writes `players.profile_id` and would fail without it.
+
+**Step 4 (this session):** Játszmák tab + list + report form + game page + cron, approved by Árpád from
+screenshots. Then, at Árpád's request, a **Discord ping when a game is reported or corrected** (to the player
+who has to answer; `reportLine` in `lib/messages.ts`, `pingAnswerer` in `actions/games.ts`, never blocks the
+save). Verified locally: report → withdraw still works with the ping (webhook blank locally, nothing posted).
+
+**Step 5 (next), from the plan, to build and show screenshots before committing:**
+1. Admin list of games (all contexts/statuses, filter pending/stuck) and on the game page an admin panel:
+   **edit** (same `GameForm` fields + required reason → `rpc("game_admin_edit")`, settles a pending game) and
+   **void** (required reason → `rpc("game_void")`). Rights already in `lib/rights.ts` (`canAdminEdit`,
+   `canVoid`: not on your own pending game, not on tournament games). Probably a link from Admin felület.
+2. **Játékosok / Profilom split** Casual / Ranked / Bajnokság / Összes: `player-stats/lib/data.ts` reads only
+   `context = 'tournament'` today (`GAME_SELECT`/`loadGames`); add standalone finalized games and a filter.
+3. **Open to players:** set `MATCH_REPORTING_ADMINS_ONLY = false` (only with Árpád/Dave's OK), add a GYIK entry.
+4. Then: Dave runs 0014 → merge to `main` via PR with OK → version bump (v2.39) + changelog.
+
+**Local test setup that worked:** dev server `npx next dev -p 3000` (one only; restart if it stops
+hot-reloading), local Supabase in Docker (`supabase_db_DTHU_Website`, 0014 applied), `preview_as` cookie
+login (TEMP-PREVIEW lines in `src/lib/auth.ts` / `src/middleware.ts`, never commit them). Playwright via the
+global `@playwright/mcp` package with `executablePath` = `%LOCALAPPDATA%\ms-playwright\chromium_headless_shell-1217\...`.
+Admins-only pages need the test player to be admin locally (set `is_admin` and restore afterwards).
+
+### 2026-11-15 · R17 step 4 built (details)
+
+- **Built:** "Játszmák" tab (admins only, `MATCH_REPORTING_ADMINS_ONLY`; badge = games waiting for me),
+  `/meccsszervezo/jatszmak` (Elfogadásra vár / Elküldve / Lezárt), `/jatszmak/uj` (report form),
+  `/jatszma/<id>` (Elfogadom / Javítom / Visszavonom, history). Actions in `match-reporting/actions/games.ts`,
+  reads in `lib/data.ts`, cron in `lib/cron.ts` (wired into `/api/cron/reminders`, response gets `games`).
+  New pure modules + tests: `form.ts`, `labels.ts`, `messages.ts`. Routes `gameLog`, `gameNew`, `gameView`.
+- **Verified on the LOCAL Supabase** (Playwright, scratchpad `pw-games.cjs`, `pw-cancel.cjs`, `pw-shots.cjs`;
+  FeriDT made admin locally for the run, then restored): report → server error keeps every field → Ranked saved
+  → FeriDT sees badge 1 + inbox → corrects → PreviewAdmin confirms → final, history reported/corrected/confirmed;
+  Visszavonom with confirm dialog → Visszavonva. Cron (`cron.mjs`, refuses if a webhook is set): +73 h → ping 1,
+  +145 h → ping 2, +169 h → expired. Screenshots 375 px + 1280 px, dark + light, no horizontal overflow.
+  tsc, lint, `npm test` (442) green.
+- **Found and fixed while testing:** React 19 resets a form after its action, so after a validation error the
+  type switch fell back to Casual and the heroes cleared (a Ranked report was saved as Casual). Fields are now
+  controlled and the form remounts by the error's timestamp. Phone list layout and long names in the winner
+  switch fixed.
+- Local DB side effects (local only): test games, and the cron run marked 3 local rounds' 48 h warnings as sent.
+- Árpád approved; committed together with the report ping (entry above).
+
+### 2026-11-14 (late night) · R17 step 3 done and committed (feature/match-reporting)
+
+- **Browser check done** after restarting the dev server (Árpád OK; the old one, up since 2026-11-12, had
+  stopped hot-reloading; stray wrapper processes from an earlier session were stopped too). On the LOCAL
+  Supabase as FeriDT: Bajnokságok own-match box + 3 highlighted rows; then FeriDT's Karnyx name was
+  renamed to "FeriRenamed" (local DB, restored afterwards): still owns the match, match page contact card
+  found, Játékosok unchanged.
+- That test found a gap, fixed: `profileFor` (now `match-organizer/lib/player-profile.ts`) looks linked
+  players up by `profile_id`; `getProfilesByKarnyx` also keys every profile by ID; Discord `mention()`
+  uses it. So championship pings, proposal pings, the match page cards and match XP find renamed players.
+- tsc, lint, `npm test` (434) green.
+
+### 2026-11-14 (late night) · R17 step 3 written (details)
+
+- **Identity by profile ID:** `isPlayer` / `sideOf(match, { id, karnyx_name })` in
+  `match-organizer/lib/play-mode.ts`: a player with `profile_id` matches only that account; unlinked
+  (Karnyx-league) players fall back to the name. `isParticipant` uses it; so do the match page, the
+  Időpontfoglaló overview, Hírek "my match", Hős segédlet, the match actions (authorize, play mode,
+  proposal recipients), and the Bajnokságok overview/lists/result actions (`viewerName` prop → `viewer`).
+  Display-only name highlights (MatchList, MatchupGrid, Közelgő meccsek, calendar `?player=`) still use
+  names: R20.
+- `startTournament` inserts `players.profile_id`; locking a result calls `rpc("game_from_match")`
+  (logged, never blocks the lock). **Needs 0014 live first** (the insert fails without the column).
+- Játékosok reads `games` (`statGameFromRow` in `player-stats/lib/stats.ts`, paged loader in `data.ts`).
+  Old vs new compared on the LOCAL DB with SQL: 18 = 18 game rows, 0 differences; FeriDT's page still
+  3 games 2–0–1.
+- **Next:** step 4 of the plan: report form, inbox, game page (admins only, `MATCH_REPORTING_ADMINS_ONLY`),
+  day-3 / 24-hours-left Discord pings and day-7 expiry in the hourly cron.
+
+### 2026-11-14 (night) · R17 step 2: pure logic + tests (feature/match-reporting)
+
+- Step 1 committed (`63e3008`, Árpád's OK). Árpád: Dave always runs SQL changes in order before the code
+  that needs them goes up.
+- **Amended 0014** (still not run live): `game_void` / `game_admin_edit` refuse an admin who played the
+  game while it is pending (`not_allowed`), same rule as the Bajnokságok; tested locally.
+- **Step 2:** `src/lib/game-result.ts` (outcome + health, shared; `championships/lib/results.ts` now uses
+  it and `ReportOutcome` = `GameOutcome`, messages unchanged). New feature folder
+  `src/features/match-reporting/` (README; registry entry `planned`): `lib/types.ts`, `report.ts` (form
+  checks, `datetime-local` in the viewer's zone → UTC, 7-day backdate from the first report, `sameResult`),
+  `rights.ts`, `timing.ts` (day-3 ping, last call at 144 h, expiry at 168 h; a missed first ping is
+  skipped), `errors.ts` (DB codes → Hungarian). 34 new tests.
+- **Verified:** `npx tsc --noEmit`, `npm run lint`, `npm test` (427 green). `npm test` rewrites the
+  rulebook snapshot's line endings on this machine; restore it with `git checkout --` before committing.
+- **Next:** step 3: `startTournament` writes `players.profile_id`; `sideOf` and the Bajnokságok result
+  actions compare profile IDs (Karnyx-league rows fall back to the name); locking a result calls
+  `game_from_match`; Játékosok reads `games` with the same numbers as before.
+
+### 2026-11-14 (evening) · R17 step 1: migration 0014 + Dave's guide (feature/match-reporting, committed `63e3008`)
+
+- Wrote **`supabase/migrations/0014_games.sql`** and **`docs/migrations/0014-games-for-dave.md`** (step 1 of
+  `docs/r17-match-reporting-plan.md`). Additive only: `players.profile_id` (unique per tournament,
+  backfilled from `tournament_registrations` by tournament + Karnyx name; Karnyx-league rows stay null),
+  `tournaments.rated` (default true), tables `games` and `game_events` (RLS on, no policies), functions
+  `game_report`, `game_respond`, `game_cancel`, `game_expire(p_now)`, `game_void`, `game_admin_edit`,
+  `game_from_match` + helpers `game_log`, `game_check_played_at` (service role only). The last statement
+  copies already-locked championship results into `games`.
+- Choices made while writing (beyond the plan; confirm with Árpád): a standalone game's reporter is always
+  side a; an admin who didn't play reports → final at once (`source` admin), an admin who played acts as a
+  player (same as Bajnokságok); `played_at` ≥ report creation − 7 days and ≤ now + 5 min; a correction
+  resets `reported_at` (restarts the 7 days) and `reminders_sent`; sending the same result back confirms;
+  cancel = whoever's version is pending; `game_from_match` is idempotent (no event when unchanged,
+  `match_changed` when an admin changes a locked result); profiles with games can't be deleted
+  (`on delete restrict`); deleting a tournament cascades to its games and their history.
+- **Verified on the LOCAL Supabase (Docker):** applied twice (second run a no-op, no duplicate events);
+  backfill linked 23/30 local players (the 7 unlinked are the seeded "Teszt Pontozás Kupa", no sign-ups).
+  A scripted test in a rolled-back transaction covered report → correct → confirm, stale `p_seen`, wrong
+  actor, winner on 0 HP, played 8 days ago / in the future, admin report, cancel, expiry at +6 d (no) /
+  +7 d (yes), void, admin edit, history immutable, tournament cascade, `authenticated` denied. Dave's
+  check queries and undo block were also run locally (undo inside a rollback). The local DB now has 0014
+  applied; a dump from before is at `/tmp/pre0014.dump` inside the `supabase_db_DTHU_Website` container.
+  `npx tsc --noEmit`, `npm run lint`, `npm test` (393) green; no app code changed.
+- **Not done:** nothing run on the live database; nothing committed (Árpád decides). `startTournament`
+  (`championships/lib/run.ts`) doesn't write `players.profile_id` for new championships yet: that's step 3,
+  and it may only ship after Dave runs 0014 (the insert would fail without the column).
+- **Next:** Árpád reviews and sends the guide to Dave; commit on `feature/match-reporting`; then step 2
+  of the plan (pure logic + tests).
+
+### 2026-11-14 (later) · R17 Meccs jelentése planned, nothing built
+
+- Plan agreed with Árpád: **[docs/r17-match-reporting-plan.md](docs/r17-match-reporting-plan.md)**
+  (design, decisions, screens, build order). Roadmap R17 is now "Planned" with the decisions.
+- Key points: a new `games` table fed by standalone casual/ranked reports and by locked Bajnokságok
+  results; `players.profile_id` added (tournament players are linked to accounts only by Karnyx name
+  today); ultimates only for casual/ranked; 7-day expiry with Discord pings on day 3 and 24 hours before expiry (Időpontfoglaló channel); admins only first.
+- **Identity rule:** R17 identifies people by profile ID only; Karnyx names are display-only and get
+  removed later (new roadmap item R20 Karnyx kivezetése).
+- Also this session: the expired `GITHUB_TOKEN` user environment variable was removed and the GitHub
+  connector's `GITHUB_PERSONAL_ACCESS_TOKEN` was set to the `gh` keyring login (both done by Árpád).
+- **Uncommitted:** this STATE.md entry, `Features_Roadmap.md` (R17) and `docs/r17-match-reporting-plan.md`,
+  on `feature/player-stats` (already merged; carry them to `feature/match-reporting`).
+- **Next:** create `feature/match-reporting` from `main`, then build step 1 of the plan: migration 0014 +
+  `docs/migrations/0014-games-for-dave.md` (every SQL change gets a guide for Dave). Dave runs it before
+  any code that needs it is deployed.
 
 ### 2026-11-14 · Roadmap R17–R19, migration guide for Dave, Bajnokságok + Játékosok merged to main (v2.38)
 

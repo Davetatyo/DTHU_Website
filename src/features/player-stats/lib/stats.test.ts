@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { computeStats, formatWinRate, MIN_MATCHUP_GAMES, recordLabel, streakLabel, toStatGame, type GameOutcome, type StatGame, type StatMatchInput, type StatReportInput } from "./stats";
+import { computeStats, formatWinRate, MIN_MATCHUP_GAMES, recordLabel, statGameFromRow, streakLabel, toStatGame, type GameOutcome, type GameStatRow, type StatGame, type StatMatchInput, type StatReportInput } from "./stats";
 
 const match = (over: Partial<StatMatchInput> = {}): StatMatchInput => ({
   id: "m1",
@@ -43,6 +43,43 @@ const game = (outcome: GameOutcome, over: Partial<StatGame> = {}): StatGame => {
     ...over,
   };
 };
+
+describe("statGameFromRow", () => {
+  const row = (over: Partial<GameStatRow> = {}): GameStatRow => ({
+    id: "g1",
+    match_id: "m1",
+    profile_a: "PA",
+    profile_b: "PB",
+    hero_a: "Barbarian",
+    hero_b: "Monk",
+    hp_a: 12,
+    hp_b: 0,
+    ban_a: "Ninja",
+    ban_b: "Paladin",
+    outcome: "a",
+    played_at: "2026-11-05T18:00:00Z",
+    confirmed_at: "2026-11-05T20:00:00Z",
+    tournament: { id: "t1", name: "Őszi Kupa" },
+    match: { round: { number: 2 }, a: { karnyx_name: "Anna" }, b: { karnyx_name: "Bence" } },
+    pa: { karnyx_name: "AnnaNow" },
+    pb: { karnyx_name: "BenceNow" },
+    ...over,
+  });
+
+  it("gives the same game as the match report did, from either profile", () => {
+    expect(statGameFromRow(row(), "PA")).toEqual(toStatGame(match(), report(), new Set(["pa"])));
+    expect(statGameFromRow(row(), "PB")).toEqual(toStatGame(match(), report(), new Set(["pb"])));
+  });
+
+  it("uses the tournament names, else the current profile names", () => {
+    expect(statGameFromRow(row(), "PA")?.opponentName).toBe("Bence");
+    expect(statGameFromRow(row({ match: null }), "PA")).toMatchObject({ opponentName: "BenceNow", round: 0, matchId: "m1" });
+  });
+
+  it("skips profiles that didn't play", () => {
+    expect(statGameFromRow(row(), "PC")).toBeNull();
+  });
+});
 
 describe("toStatGame", () => {
   it("reads side A", () => {

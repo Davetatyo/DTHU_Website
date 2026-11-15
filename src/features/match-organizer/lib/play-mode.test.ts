@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { matchMode, parsePlayMode, showsMode, sideOf } from "./play-mode";
+import { isPlayer, matchMode, parsePlayMode, showsMode, sideOf } from "./play-mode";
 
 const base = { player_b_id: "b", mode_a: null, mode_b: null } as const;
 
@@ -31,10 +31,22 @@ describe("helpers", () => {
 
   it("finds a player's side by Karnyx name, ignoring case", () => {
     const m = { a: { karnyx_name: "Dave" }, b: { karnyx_name: "RP" } } as Parameters<typeof sideOf>[0];
-    expect(sideOf(m, "dave")).toBe("a");
-    expect(sideOf(m, "RP")).toBe("b");
-    expect(sideOf(m, "Someone")).toBeNull();
+    expect(sideOf(m, { id: "x", karnyx_name: "dave" })).toBe("a");
+    expect(sideOf(m, { id: "x", karnyx_name: "RP" })).toBe("b");
+    expect(sideOf(m, { id: "x", karnyx_name: "Someone" })).toBeNull();
+    expect(sideOf(m, { id: "x", karnyx_name: null })).toBeNull();
     expect(sideOf(m, null)).toBeNull();
+  });
+
+  it("a player linked to an account matches only that account, never by name", () => {
+    const m = {
+      a: { karnyx_name: "Dave", profile_id: "p-dave" },
+      b: { karnyx_name: "RP", profile_id: null },
+    } as Parameters<typeof sideOf>[0];
+    expect(sideOf(m, { id: "p-dave", karnyx_name: "Renamed" })).toBe("a");
+    expect(sideOf(m, { id: "p-other", karnyx_name: "Dave" })).toBeNull();
+    expect(sideOf(m, { id: "p-rp", karnyx_name: "rp" })).toBe("b");
+    expect(isPlayer(null, { id: "p", karnyx_name: "Dave" })).toBe(false);
   });
 
   it("shows the mode on rows once agreed, or once someone has chosen", () => {

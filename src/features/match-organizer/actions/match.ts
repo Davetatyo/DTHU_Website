@@ -7,7 +7,7 @@ import { requireProfile, sameName } from "@/lib/auth";
 import { getMatch, getPlayers, isParticipant } from "@/features/match-organizer/lib/data";
 import { notifyConfirmed, notifyProposal, notifySwap } from "@/features/match-organizer/lib/notify";
 import { cleanKarnyxName } from "@/features/match-organizer/lib/profile";
-import { parsePlayMode, sideOf } from "@/features/match-organizer/lib/play-mode";
+import { parsePlayMode, sideOf, type Identity } from "@/features/match-organizer/lib/play-mode";
 import { planSwap, type SwapMatch } from "@/features/match-organizer/lib/swap";
 import type { MatchView, Player } from "@/features/match-organizer/lib/types";
 import { setMatchPlayed } from "@/features/match-organizer/lib/rounds";
@@ -27,9 +27,9 @@ function back(matchId: string, key: "uzenet" | "hiba", text: string): never {
  * has no side). Separate from the other updates on purpose: if migration 0007 hadn't been run,
  * proposing and accepting still work and only the choice is lost.
  */
-async function savePlayMode(match: MatchView, karnyxName: string | null, formData: FormData) {
+async function savePlayMode(match: MatchView, who: Identity, formData: FormData) {
   if (!formData.has("play_mode")) return;
-  const side = sideOf(match, karnyxName);
+  const side = sideOf(match, who);
   if (!side) return;
   await createAdminClient()
     .from("matches")
@@ -42,7 +42,7 @@ async function authorize(matchId: string) {
   const profile = await requireProfile();
   const match = await getMatch(matchId);
   if (!match) redirect(routes.organizer);
-  if (!profile.is_admin && !isParticipant(match, profile.karnyx_name)) {
+  if (!profile.is_admin && !isParticipant(match, profile)) {
     back(matchId, "hiba", "Ez nem a te meccsed.");
   }
   if (match.status === "bye") back(matchId, "hiba", "Ez egy Bye, nincs mit egyeztetni.");
@@ -85,12 +85,12 @@ export async function proposeTimes(formData: FormData) {
     .from("matches")
     .update({ status: "proposed", scheduled_at: null, reminder_sent: false, updated_at: new Date().toISOString() })
     .eq("id", matchId);
-  await savePlayMode(match, profile.karnyx_name, formData);
+  await savePlayMode(match, profile, formData);
 
   // Players answer their opponent's proposal; an admin's proposal goes to both players.
-  const playing = isParticipant(match, profile.karnyx_name);
+  const playing = isParticipant(match, profile);
   const recipients = playing
-    ? [sameName(match.a.karnyx_name, profile.karnyx_name) ? match.b! : match.a]
+    ? [sideOf(match, profile) === "a" ? match.b! : match.a]
     : [match.a, match.b!];
   const proposerName = playing ? profile.karnyx_name! : "Az admin";
   const { notified, unregistered, failed } = await notifyProposal(match, recipients, proposerName, await getSiteUrl());
@@ -134,7 +134,7 @@ export async function acceptProposal(formData: FormData) {
     .from("matches")
     .update({ status: "confirmed", scheduled_at: proposal.starts_at, reminder_sent: false, updated_at: new Date().toISOString() })
     .eq("id", matchId);
-  await savePlayMode(match, profile.karnyx_name, formData);
+  await savePlayMode(match, profile, formData);
 
   await notifyConfirmed(match, new Date(proposal.starts_at), await getSiteUrl());
   back(matchId, "uzenet", "Időpont megerősítve! Add hozzá a naptáradhoz.");
@@ -144,9 +144,9 @@ export async function acceptProposal(formData: FormData) {
 export async function setPlayMode(formData: FormData) {
   const matchId = String(formData.get("match_id"));
   const { profile, match } = await authorize(matchId);
-  if (!sideOf(match, profile.karnyx_name)) back(matchId, "hiba", "Csak a saját játékmódodat állíthatod be.");
+  if (!sideOf(match, profile)) back(matchId, "hiba", "Csak a saját játékmódodat állíthatod be.");
   if (match.status === "played") back(matchId, "hiba", "A meccs már le van játszva.");
-  await savePlayMode(match, profile.karnyx_name, formData);
+  await savePlayMode(match, profile, formData);
   back(matchId, "uzenet", "Játékmód elmentve.");
 }
 

@@ -39,17 +39,21 @@ async function load(formData: FormData) {
   if (!t || t.format === "manual") go(back, "hiba", "Ez nem bajnoksági meccs.");
 
   const report = (existing as MatchReport | null) ?? null;
-  const side = sideOf(match, profile.karnyx_name);
+  const side = sideOf(match, profile);
   const rights = reportRights(report, { side, admin: profile.is_admin });
   const open = t.status === "running" || (profile.is_admin && t.status === "finished");
   if (!open) go(back, "hiba", "Ennél a versenynél most nem lehet eredményt rögzíteni.");
   return { back, profile, match, report, side, rights };
 }
 
-/** Copies a locked result onto the match, then finishes the round / starts the next one. */
+/**
+ * Copies a locked result onto the match and into the games table (game_from_match, migration
+ * 0014), then finishes the round / starts the next one.
+ */
 async function applyLocked(
   match: { id: string; round_id: string; player_a_id: string; player_b_id: string | null; played_at: string | null },
   outcome: ReportFields["outcome"],
+  by: string,
 ): Promise<string | null> {
   const db = createAdminClient();
   const now = new Date().toISOString();
@@ -58,6 +62,9 @@ async function applyLocked(
     .update({ ...matchResultColumns(outcome, match), status: "played", played_at: match.played_at ?? now, updated_at: now })
     .eq("id", match.id);
   await db.from("proposals").update({ status: "superseded" }).eq("match_id", match.id).eq("status", "open");
+  // The result stays locked even if this fails; the games row is written again on the next change.
+  const { error } = await db.rpc("game_from_match", { p_match: match.id, p_by: by });
+  if (error) console.error("game_from_match failed", match.id, error.message);
   return advanceAfterResult(match.round_id);
 }
 
@@ -92,7 +99,7 @@ export async function submitResult(formData: FormData) {
     const row = { ...fields, submitted_side: "admin", submitted_by: profile.id, submitted_at: now, confirmed_by: profile.id, confirmed_at: now };
     const { error } = await db.from("match_reports").upsert({ match_id: match.id, ...row }, { onConflict: "match_id" });
     if (error) go(back, "hiba", `Nem sikerült menteni: ${error.message}`);
-    go(back, "uzenet", lockedMessage(await applyLocked(match, fields.outcome)));
+    go(back, "uzenet", lockedMessage(await applyLocked(match, fields.outcome, profile.id)));
   }
 
   // The opponent's pending report with exactly the same result: that's a confirmation.
@@ -125,7 +132,7 @@ async function confirm(
     .is("confirmed_at", null)
     .select("match_id");
   if (!data?.length) go(back, "hiba", "Közben változott az eredmény, frissítsd az oldalt és nézd meg újra.");
-  go(back, "uzenet", lockedMessage(await applyLocked(match, report.outcome)));
+  go(back, "uzenet", lockedMessage(await applyLocked(match, report.outcome, profile.id)));
 }
 
 export async function confirmResult(formData: FormData) {

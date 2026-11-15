@@ -1,0 +1,68 @@
+/* Játszmák: game list, report form, game page. Win = info blue, loss = red (as in the player
+   stats), draw = muted. */
+
+.gr-card { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.gr-card > h2 { font-weight: 800; font-size: 1rem; padding: 14px 16px 4px; display: flex; align-items: center; gap: 8px; }
+.gr-card > .gr-note { color: var(--muted); font-size: 13px; padding: 0 16px 12px; }
+.gr-list { list-style: none; margin: 0; padding: 0; }
+.gr-list > li { border-top: 1px solid var(--line); }
+.gr-empty { color: var(--muted); font-size: 14px; padding: 4px 16px 16px; }
+.gr-count { display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 11px; background: var(--red); color: #fff; font-size: 12px; font-weight: 800; }
+
+/* List rows */
+.gr-row { display: grid; grid-template-columns: 5.6rem minmax(0, 1fr) auto; align-items: center; gap: 4px 12px; padding: 10px 16px; border-left: 4px solid transparent; }
+.gr-row:hover { background: var(--bg2); }
+.gr-row.win { border-left-color: var(--info); }
+.gr-row.loss { border-left-color: var(--red); }
+.gr-row.draw { border-left-color: var(--muted); }
+.gr-when b { display: block; font-size: 13px; font-weight: 800; white-space: nowrap; }
+.gr-when small { color: var(--muted); font-size: 12px; }
+.gr-vs { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.gr-heroes { display: flex; flex: none; }
+.gr-heroes .hero-ic { width: 28px; height: 28px; }
+.gr-heroes .hero-ic + .hero-ic { margin-left: -6px; }
+.gr-name { display: block; font-weight: 700; overflow-wrap: anywhere; }
+.gr-vs small { display: block; font-size: 12px; }
+/* Phones: date and status on the first line, the players below at full width. */
+@media (max-width: 480px) {
+  .gr-row { grid-template-columns: minmax(0, 1fr) auto; }
+  .gr-when { grid-column: 1; grid-row: 1; display: flex; gap: 8px; align-items: baseline; }
+  .gr-row .badge { grid-column: 2; grid-row: 1; }
+  .gr-vs { grid-column: 1 / -1; grid-row: 2; }
+}
+
+/* Form */
+.gr-form { display: flex; flex-direction: column; gap: 20px; }
+.gr-sec { display: flex; flex-direction: column; gap: 10px; }
+.gr-sec h3 { font-weight: 800; font-size: 1rem; }
+.gr-two { display: grid; gap: 12px; }
+@media (min-width: 560px) { .gr-two { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+.gr-seg, .gr-outcome { display: grid; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.gr-seg { grid-template-columns: 1fr 1fr; }
+.gr-outcome { grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); }
+.gr-seg label, .gr-outcome label { cursor: pointer; text-align: center; padding: 8px 10px; font-weight: 700; color: var(--muted); background: var(--bg2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gr-seg label + label, .gr-outcome label + label { border-left: 1px solid var(--line); }
+.gr-seg label:has(input:checked), .gr-outcome label:has(input:checked) { background: var(--panel); color: var(--gold); box-shadow: inset 0 -2px 0 var(--gold); }
+.gr-seg label:has(input:focus-visible), .gr-outcome label:has(input:focus-visible) { outline: 2px solid var(--gold); outline-offset: -2px; }
+.gr-hero { display: flex; align-items: center; gap: 8px; }
+.gr-hero .hero-ic, .gr-hero-empty { flex: none; width: 36px; height: 36px; border-radius: 50%; }
+.gr-hero-empty { border: 1px dashed var(--line); }
+
+/* Game page */
+.gr-head { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 12px; padding: 16px; }
+.gr-side { display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; min-width: 0; }
+.gr-side .gr-pname { font-weight: 800; overflow-wrap: anywhere; }
+.gr-side .gr-hp { font-size: 28px; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
+.gr-side small { color: var(--muted); font-size: 12px; }
+.gr-side.won .gr-pname { color: var(--gold); }
+.gr-side .gr-hero-line { display: flex; align-items: center; gap: 6px; font-size: 13px; }
+.gr-side .gr-hero-line .hero-ic { width: 24px; height: 24px; }
+.gr-mid { font-weight: 800; color: var(--muted); font-size: 13px; letter-spacing: 0.06em; }
+.gr-meta { display: flex; flex-wrap: wrap; gap: 6px 16px; padding: 10px 16px; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); }
+.gr-meta b { color: var(--fg); font-weight: 700; }
+.gr-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.gr-hist { list-style: none; margin: 0; padding: 0 16px 14px; font-size: 13px; }
+.gr-hist li { display: flex; gap: 10px; padding: 4px 0; }
+.gr-hist time { color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.gr-correct > summary { cursor: pointer; list-style: none; }
+.gr-correct > summary::-webkit-details-marker { display: none; }

@@ -11,9 +11,9 @@ import { PlayerLink } from "@/features/player-stats/components/PlayerLink";
 import { PlayerAvatar } from "@/features/profile/components/PlayerAvatar";
 import { SubmitButton } from "@/components/SubmitButton";
 import { InfoTip } from "@/components/InfoTip";
-import { getAdminView, getCurrentProfile, sameName } from "@/lib/auth";
+import { getAdminView, getCurrentProfile } from "@/lib/auth";
 import { matchEvent } from "@/features/match-organizer/lib/calendar";
-import { getMatch, getProfilesByKarnyx, getProposals, getSwapSuggestions, isParticipant, profileFor } from "@/features/match-organizer/lib/data";
+import { getMatch, getProfilesByKarnyx, getProposals, getSwapSuggestions, profileFor } from "@/features/match-organizer/lib/data";
 import { googleCalendarUrl } from "@/features/match-organizer/lib/ics";
 import { getSiteUrl } from "@/lib/site";
 import { DEFAULT_TIMEZONE, formatDateTime, pickerDays, utcToWallTime } from "@/features/match-organizer/lib/time";
@@ -84,7 +84,8 @@ export default async function MatchPage({
   const proposals = await getProposals(id);
   const open = proposals.filter((p) => p.status === "open");
 
-  const isMine = !!viewer && isParticipant(match, viewer.karnyx_name);
+  const mySide = sideOf(match, viewer);
+  const isMine = mySide !== null;
   // Admin tools follow the header switch: in the player view the page looks as a player sees it.
   const isAdmin = await getAdminView();
   const canSwap = isAdmin && match.status !== "played" && match.status !== "bye" && !match.round.closed_at;
@@ -92,7 +93,7 @@ export default async function MatchPage({
   const active = match.status !== "played" && match.status !== "bye";
   const canAct = (isMine || isAdmin) && active;
   const showHeroGuide = canOpenHeroGuide({ hasOpponent: !!match.b, isLoggedIn: !!viewer, isAdmin });
-  const opponent = isMine ? (sameName(match.a.karnyx_name, viewer?.karnyx_name) ? match.b : match.a) : null;
+  const opponent = mySide ? (mySide === "a" ? match.b : match.a) : null;
   const opponentUnregistered = !!opponent && !profileFor(profiles, opponent);
 
   // Only the side that did not propose can accept; the proposer waits or changes the proposal.
@@ -103,7 +104,6 @@ export default async function MatchPage({
 
   // Játékmód: each player's own choice; a missing choice counts as webcam.
   const modeOf = (side: "a" | "b"): PlayMode | null => (side === "a" ? match.mode_a : match.mode_b) ?? null;
-  const mySide = isMine ? sideOf(match, viewer?.karnyx_name) : null;
   const myMode = mySide ? modeOf(mySide) : null;
   const agreed = match.status === "confirmed" || match.status === "played";
   const sideTag = (side: "a" | "b") => {
@@ -112,7 +112,8 @@ export default async function MatchPage({
     if (agreed) return <ModeTag mode="webcam" player note="(alap)" />;
     return <span className="pm-tag"><i>még nem választott</i></span>;
   };
-  const proposerSide = open.length ? sideOf(match, proposerName(open[0].proposed_by)) : null;
+  const proposerSide =
+    open.length && open[0].proposed_by ? sideOf(match, { id: open[0].proposed_by, karnyx_name: proposerName(open[0].proposed_by) }) : null;
   const proposerMode = proposerSide ? modeOf(proposerSide) : null;
   const mode = matchMode(match);
 

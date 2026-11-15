@@ -4,7 +4,8 @@ export type { Profile } from "@/lib/types";
 
 export type Tournament = { id: string; name: string; is_active: boolean; created_at: string };
 
-export type Player = { id: string; tournament_id: string; karnyx_name: string; heroes: string[] };
+/** profile_id: the linked account (migration 0014); null for Karnyx-league rows, missing before 0014. */
+export type Player = { id: string; tournament_id: string; karnyx_name: string; heroes: string[]; profile_id?: string | null };
 
 export type Round = {
   id: string;

@@ -1,5 +1,6 @@
-import { sameName } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/server";
+import { sideOf, type Identity } from "./play-mode";
+import { profileFor, profileIdKey, profileNameKey } from "./player-profile";
 import type { MatchView, Player, Profile, Proposal, Round, Tournament } from "./types";
 
 // Reads run server-side with the service client. Pages decide what to show to whom:
@@ -97,25 +98,28 @@ export async function getPlayers(tournamentId: string): Promise<Player[]> {
   return (data ?? []) as Player[];
 }
 
-/** Profiles keyed by lower-cased Karnyx name. */
+/**
+ * Profiles for looking up tournament players with profileFor (lib/player-profile.ts): the given
+ * Karnyx names (lower-cased keys, for unlinked Karnyx-league players) plus every profile by ID
+ * (for players linked to an account, whose current name may differ). The table is small.
+ */
 export async function getProfilesByKarnyx(names: string[]): Promise<Map<string, Profile>> {
   const map = new Map<string, Profile>();
   if (names.length === 0) return map;
-  const { data } = await createAdminClient().from("profiles").select("*").not("karnyx_name", "is", null);
-  const wanted = new Set(names.map((n) => n.toLowerCase()));
+  const { data } = await createAdminClient().from("profiles").select("*");
+  const wanted = new Set(names.map(profileNameKey));
   for (const p of (data ?? []) as Profile[]) {
-    const key = p.karnyx_name!.toLowerCase();
-    if (wanted.has(key)) map.set(key, p);
+    map.set(profileIdKey(p.id), p);
+    if (p.karnyx_name && wanted.has(profileNameKey(p.karnyx_name))) map.set(profileNameKey(p.karnyx_name), p);
   }
   return map;
 }
 
-export function profileFor(map: Map<string, Profile>, player: Player | null): Profile | null {
-  return player ? map.get(player.karnyx_name.toLowerCase()) ?? null : null;
-}
+export { profileFor };
 
-export function isParticipant(match: MatchView, karnyxName: string | null): boolean {
-  return sameName(match.a.karnyx_name, karnyxName) || sameName(match.b?.karnyx_name, karnyxName);
+/** Whether the person plays this match (by account, see sideOf). */
+export function isParticipant(match: MatchView, who: Identity | null | undefined): boolean {
+  return sideOf(match, who) !== null;
 }
 
 /**
@@ -152,11 +156,10 @@ export async function getSwapSuggestions(match: MatchView): Promise<{ name: stri
 
 /** The viewer's match in the latest round of the active tournament. */
 export async function getMyLatestMatch(profile: Profile): Promise<MatchView | null> {
-  if (!profile.karnyx_name) return null;
   const tournament = await getActiveTournament();
   if (!tournament) return null;
   const round = await getLatestRound(tournament.id);
   if (!round) return null;
   const matches = await getRoundMatches(round.id);
-  return matches.find((m) => isParticipant(m, profile.karnyx_name)) ?? null;
+  return matches.find((m) => isParticipant(m, profile)) ?? null;
 }
