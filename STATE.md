@@ -1,6 +1,6 @@
 # Project state: DTHU website
 
-**Current version: v2.40** (2026-11-15). Live: https://dthu.hu builds from this repository's
+**Current version: v2.41** (2026-11-18). Live: https://dthu.hu builds from this repository's
 `main` (the owner moved Vercel over around 2026-11-01; checked live 2026-11-02). Every push to
 `main` deploys within a minute.
 **Launch phase: 1**: the public sees only the Meccsszervező; the whole site from the prototype
@@ -82,7 +82,7 @@ in `reference/artifact` (open `reference/artifact/index.html`).
 | `live-banner` Élő adás | banner at the top of the layouts; `/api/live/voice`, `/api/live/now`; admin block on `/meccsszervezo/admin` | **on `feature/live-banner`, not merged**. Admins only until `LIVE_BANNER_ADMINS_ONLY` is false | real; migration 0011 has run; detection waits for Árpád's bot | see "Needs the owner"; `src/features/live-banner/README.md` on that branch |
 | `championships` Bajnokságok (DTHU's own tournament platform, replaces the Időpontfoglaló at launch) | `/bajnoksagok`, `/bajnoksagok/osszes`, `/bajnoksagok/<slug>`, admin `/bajnoksagok/admin` | preview (admins only), **on `main` since v2.38** (via `feature/player-stats`) | real (migration 0013 has run); sign-up with 3 heroes, admin-set points per result, Dutch-system Swiss pairing, player-reported results with confirmation, standings with full Buchholz (Bye = own points) then HP difference | owner tests live; next: own match page, Közelgő meccsek + reminders, then launch (see the feature README) |
 | `xp` XP and levels | Profilom card, header bar, popups; admin `/meccsszervezo/admin/xp` | **step 1 on `main` since v2.31**: admins only until `XP_ADMINS_ONLY` is false | real (migration 0012 has run) | owner tests live; then step 2 (Gyűjtemény) |
-| `hero-guide` Hős segédlet | `/meccsszervezo/meccs/<id>/hos-segedlet` (button on the match page) | **on `main` since v2.30**: admins only until `HERO_GUIDE_ADMINS_ONLY` is false, then everyone logged in | real; no tables | `src/features/hero-guide/README.md` |
+| `hero-guide` Hős segédlet | `/meccsszervezo/meccs/<id>/hos-segedlet` (button on the match page) | **live** since v2.41 for everyone logged in (admins only v2.30–v2.40) | real; no tables | `src/features/hero-guide/README.md` |
 | `puzzle` Taktikai feladvány (experiment, working title) | `/jatekok/taktikai-feladvany`, `/jatekok/taktikai-feladvany/<id>`; card on the Játékok page | **parked** (owner, 2026-11-09): only on branch `feature/puzzle`, never merged into `main` | static: Season 1 Barbarian + Moon Elf rules from the Card Scanner repo; no tables. Images are **not committed** (owner): make them locally with `scripts/puzzle/assets.py` | when picked up: fix the Blind vs. Ultimate rule first (Features_Roadmap R16, `src/features/puzzle/README.md` on the branch) |
 | `profile` Profilkép, Profil szerkesztése, Kitiltás | `/meccsszervezo/profil`, `/meccsszervezo/admin/felhasznalo/<id>` | **live** (v2.2): every logged-in user can upload a picture; admin page and bans for all admins | all real | badge ring (R3/R4), cosmetics collection |
 | `player-stats` Játékosok (player stats) | `/meccsszervezo/jatekosok`, `/meccsszervezo/jatekos/<profile id>`; Profilom card; links on Bajnokságok names | **on `main` since v2.38**; every logged-in player (`PLAYER_STATS_ADMINS_ONLY = false`) | real: computed from confirmed Bajnokságok results (migration 0013); no tables of its own; Karnyx league not counted (no winner/hero data) | Dave reviews live; players see the Játékosok tab now (`src/features/player-stats/README.md`) |
@@ -221,8 +221,6 @@ sample data (no tables yet; tickets and coins become real with migrations 0008 a
    his bot has the reporter (`src/features/live-banner/bot/README.md`). To answer: should a short game
    stay on the banner for the full 1.5 hours (built that way), and should spectators keep it on (built:
    no)? Merging: this branch's STATE.md and roadmap repeat these notes, so keep `main`'s version.
-0. **Hős segédlet (v2.30, admins only).** Test it live. To open it to everyone logged in: decide on
-   Roxley's images, set `HERO_GUIDE_ADMINS_ONLY` to false, add it to the GYIK.
 0. **Napi kvíz + Szerencsekerék (on `main`, migration 0010 has run):** write the first daily questions
    (Játékok → "Napi játékok kezelése" → Kérdésbank); until there is a ready question the Napi kvíz says
    "Mára nincs kérdés". None yet, checked 2026-11-05.
@@ -311,6 +309,17 @@ quiz) are in
 ## Handover log
 
 Newest first. Each session adds an entry (see CLAUDE.md → "End of every session").
+
+### 2026-11-18 · Hős segédlet opened to players (v2.41, fix/open-hero-guide → main)
+
+- A player reported they don't see the Hős segédlet. Checked: it was still admins-only on live `main`
+  (`HERO_GUIDE_ADMINS_ONLY = true`), by design since v2.30. The owner decided to open it.
+- `HERO_GUIDE_ADMINS_ONLY = false`: every logged-in user gets the orange button on matches with an
+  opponent, and the page. Registry entry stays `planned` (no menu item; it opens from the match page).
+- GYIK (`app/meccsszervezo/gyik/page.tsx`, "Lejátszás és eredmény"): new "Mire való a „Hős segédlet”
+  gomb?" entry, approved by the owner. Hero guide README updated.
+- Not changed: Roxley's boards and leaflets are now visible to players (the owner knew, see the README).
+- Verified: types, lint, tests (the access rule is tested with the flag both ways).
 
 ### 2026-11-15 (evening) · R17 step 5 shipped as v2.40 (merged to `main`, pushed) · START HERE
 
@@ -1666,6 +1675,12 @@ webhook, no cron secret), so nothing local can post to Discord.
 ---
 
 ## Changelog
+
+### v2.41 · 2026-11-18 · `fix/open-hero-guide`
+**Changed (visible to players):** the Hős segédlet is open to everyone logged in: the orange button on
+every match with an opponent. New GYIK entry explaining it.
+**Manual steps:** none.
+**Verified:** types, lint, tests.
 
 ### v2.40 · 2026-11-15 · `feature/match-reporting` (R17 step 5) · merge `44e2302`
 **Changed (visible to players):** nothing. **Admins only:** Admin felület → "Játszmák" card (pending count) and

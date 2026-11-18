@@ -5,7 +5,7 @@
 | Folder | `src/features/hero-guide/` |
 | Branch | `feature/hero-guide` |
 | Route | `/meccsszervezo/meccs/<id>/hos-segedlet` |
-| Status | **Admins only** until `HERO_GUIDE_ADMINS_ONLY` in `lib/hero-guide.ts` is set to false |
+| Status | **Live** for everyone logged in since v2.41 (2026-11-18); `HERO_GUIDE_ADMINS_ONLY` in `lib/hero-guide.ts` turns admins-only back on |
 
 ## What it is
 
@@ -22,7 +22,8 @@ Owner's decision, 2026-11-05:
   there before the time is agreed and stays after the match is played. A Bye has none.
 - Everyone logged in, whether or not they play in the match. Others opening the address go to the
   match page.
-- Now, in the test phase, only admins.
+- Admins only during the test phase; opened to everyone logged in on 2026-11-18 (owner, after a
+  player asked for it).
 
 ## How it works
 
@@ -33,10 +34,9 @@ The page renders both players' hero entries on the server (`rulebook/lib/content
 A roster name becomes a Szabálytár id by `heroIdFromName`. A name that matches no hero shows a short
 note instead of an entry. On 2026-11-05 all 28 hero names in the tournament matched.
 
-## Before opening it to players
+## Known limits
 
-- Decide on the images: players would see Roxley's boards and leaflets for the first time, and it may
-  be worth asking Roxley first (see the rulebook README).
-- Add it to the GYIK (`app/meccsszervezo/gyik/page.tsx`).
+- Players see Roxley's boards and leaflets here (the owner opened it on 2026-11-18 knowing that).
+- The GYIK entry is in `app/meccsszervezo/gyik/page.tsx` ("Lejátszás és eredmény"); keep it in line.
 - The Szabálytár's own pages stay closed to players in phase 1. Popups work, but while one is open the
   address bar shows its `/szabalytar/…` link, and reloading there or opening it elsewhere redirects.

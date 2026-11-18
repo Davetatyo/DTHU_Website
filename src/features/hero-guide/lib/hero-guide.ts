@@ -1,7 +1,7 @@
 // Rules of the Hős segédlet (owner, 2026-11-05). Pure and browser-safe.
 
-/** Test phase: only admins get it. Set to false to open it to everyone who is logged in. */
-export const HERO_GUIDE_ADMINS_ONLY = true;
+/** true = admins only (the test phase until 2026-11-18). false = everyone who is logged in. */
+export const HERO_GUIDE_ADMINS_ONLY = false;
 
 /**
  * Whether this visitor gets the Hős segédlet of a match. A hero roster doesn't depend on the match's

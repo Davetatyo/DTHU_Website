@@ -96,6 +96,10 @@ const SECTIONS: Section[] = [
         a: "Discordon, a megbeszélt időpontban.",
       },
       {
+        q: "Mire való a „Hős segédlet” gomb?",
+        a: "A meccs oldalán találod a narancssárga gombot. Megnyit egy oldalt, ahol a meccs két játékosának hőseiről olvashatsz: válaszd ki a játékost (az ellenfeled van elöl), aztán az egyik hősét, és látod a hős tábláját és kiskönyvét, a jelzőit és a szabálypontosításokat. Minden meccshez megnyithatod, amelyiken van ellenfél, a lejátszás előtt és után is.",
+      },
+      {
         q: "Mire való a „Lejátszottuk” gomb?",
         a: "Ezzel jelzitek, hogy a meccs megvolt. Bármelyik játékos megnyomhatja. Ha egy forduló minden meccse lejátszva, az admin elindíthatja a következőt.",
       },
